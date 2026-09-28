@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# 运行时数据（记忆/灵魂/SQLite/工件/日志——不入库）
+data/
+
+# 密钥与环境
+.env
+.env.local
+
+# Node / 前端
+node_modules/
+dist/
+out/
+
+# Electron 打包
+release/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
