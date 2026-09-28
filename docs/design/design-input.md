@@ -61,4 +61,4 @@ MVP 六个用户故事（设计必须让它们走得通）：
 
 ## 7. 参考（仅供参考，可推翻）
 
-概念图 `assets/agentcrew-desktop-concept-v1.png`（方向感：三栏、深色、青绿主色——**仅参考**）；MVP 定义与增量池见 `docs/08`。
+概念图 `assets/agentcrew-desktop-concept-v1.png`（方向感：三栏、深色、青绿主色——**仅参考**）；MVP 定义与增量池见 `../product/product-brief.md`。

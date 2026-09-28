@@ -1,7 +1,7 @@
 # 04 · 权限治理详设
 
 > 模块深潜 #3 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（G1–G2 对齐，其余直接设计）**
-> 上游依据：[01-设计对齐纪要](./01-设计对齐纪要.md)（Q14 B 档 / Q4 真实执行）、[02-Harness与Session事件模型](./02-Harness与Session事件模型详设.md)（审批事件、工具三态）、[03-Memory系统详设](./03-Memory系统详设.md)（skill 账本）
+> 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)（Q14 B 档 / Q4 真实执行）、[02-Harness与Session事件模型](./harness-session.md)（审批事件、工具三态）、[03-Memory系统详设](./memory-system.md)（skill 账本）
 > 参考源码：`workMate/openwork/ee/packages/den-db/src/schema/sharables/`（config_object + grant 表族）、`workMate/ZCode/apps/zcode-cli/packages/core/src/permission/`、`workMate/AionUi`（四选项契约）、`workMate/learn-workbuddy/s23_audit_sandbox/`
 
 ---

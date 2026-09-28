@@ -1,7 +1,7 @@
 # 06 · 桌面壳与前端详设
 
 > 模块深潜 #5 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（F1 对齐，其余直接设计）——设计阶段收官**
-> 上游依据：[01-设计对齐纪要](./01-设计对齐纪要.md)（Q7 桌面形态/前端 AI 生成、Q16 四屏深度）
+> 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)（Q7 桌面形态/前端 AI 生成、Q16 四屏深度）
 > 参考源码：`workMate/AionUi/packages/web-host/src/backend-launcher.ts`（sidecar 监管）、`workMate/eigent/electron/main/init.ts`（spawn）、`workMate/ZCode/packages/desktop/`（安全边界）
 
 ---

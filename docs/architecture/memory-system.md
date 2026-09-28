@@ -1,7 +1,7 @@
 # 03 · Memory 系统详设
 
 > 模块深潜 #2 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（M1–M3 对齐，其余技术细节直接设计）**
-> 上游依据：[01-设计对齐纪要](./01-设计对齐纪要.md)（Q12 全项 Memory + hermes 蓝图）、[02-Harness与Session事件模型](./02-Harness与Session事件模型详设.md)（事件与循环挂钩点）
+> 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)（Q12 全项 Memory + hermes 蓝图）、[02-Harness与Session事件模型](./harness-session.md)（事件与循环挂钩点）
 > 参考源码：`workMate/hermes-agent/`（Python，源码级）
 
 ---

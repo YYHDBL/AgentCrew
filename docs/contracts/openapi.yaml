@@ -1,0 +1,58 @@
+# MVP API 草案（DRAFT——交互规格定稿后冻结）
+
+openapi: 3.1.0
+info:
+  title: AgentCrew Sidecar API
+  version: 0.1.0-draft
+servers:
+  - url: http://127.0.0.1:{port}
+    variables: { port: { default: "8710" } }
+security: [ { bearerToken: [ ] } ]
+components:
+  securitySchemes:
+    bearerToken: { type: http, scheme: bearer, description: AGENTCREW_TOKEN（env 注入，不经 stdout） }
+  schemas:
+    ApiResponse:
+      type: object
+      properties: { success: { type: boolean }, data: {} }
+paths:
+  /api/health:
+    get: { summary: 健康检查, security: [ ], responses: { "200": { description: ok } } }
+  /api/conversations:
+    get: { summary: 任务列表, responses: { "200": { description: 列表 } } }
+    post:
+      summary: 新建任务（会话）
+      requestBody: { content: { application/json: { schema: { type: object, required: [agent_id], properties: { agent_id: { type: string }, title: { type: string } } } } } } }
+      responses: { "201": { description: 创建 } }
+  /api/conversations/{id}:
+    delete: { summary: 删除任务, parameters: [ { name: id, in: path, required: true, schema: { type: string } } ], responses: { "204": { description: 删除 } } }
+  /api/conversations/{id}/instructions:
+    post:
+      summary: 派活（can_send 直跑 / can_queue 入队 / 否则 409）
+      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
+      requestBody: { content: { application/json: { schema: { type: object, required: [text], properties: { text: { type: string } } } } } }
+      responses: { "202": { description: 已受理（直跑或入队） }, "409": { description: 当前不可发送（原因见 body） } }
+  /api/conversations/{id}/state:
+    get: { summary: FSM 快照（state + 等待计数 + can_send/queue/cancel + 队列长度）, parameters: [ { name: id, in: path, required: true, schema: { type: string } } ], responses: { "200": { description: 快照 } } }
+  /api/conversations/{id}/messages:
+    get: { summary: 聊天记录投影, parameters: [ { name: id, in: path, required: true, schema: { type: string } } ], responses: { "200": { description: 分页消息 } } }
+  /api/conversations/{id}/stream:
+    get:
+      summary: 会话级 SSE 聚合流（事件 + FSM + 通知；from=global_seq 重放）
+      parameters: [ { name: id, in: path, required: true, schema: { type: string } }, { name: from, in: query, schema: { type: integer } } ]
+      responses: { "200": { description: text/event-stream } }
+  /api/task-runs/{id}/events:
+    get:
+      summary: 任务事件流 SSE（from=任务内 seq）
+      parameters: [ { name: id, in: path, required: true, schema: { type: string } }, { name: from, in: query, schema: { type: integer } } ]
+      responses: { "200": { description: text/event-stream } }
+  /api/task-runs/{id}/cancel:
+    post: { summary: 取消, parameters: [ { name: id, in: path, required: true, schema: { type: string } } ], responses: { "202": { description: 取消中 } } }
+  /api/task-runs/{id}/resume:
+    post: { summary: 恢复（新 attempt；存在 pending_verification 时 409）, parameters: [ { name: id, in: path, required: true, schema: { type: string } } ], responses: { "202": { description: 恢复中 }, "409": { description: 有待核验调用 } } }
+  /api/tool-approvals/{callId}:
+    post:
+      summary: 审批决定（allow_once/allow_always/reject_once/reject_always；绑定 input_hash 校验）
+      parameters: [ { name: callId, in: path, required: true, schema: { type: string } } ]
+      requestBody: { content: { application/json: { schema: { type: object, required: [decision], properties: { decision: { type: string, enum: [allow_once, allow_always, reject_once, reject_always] } } } } } }
+      responses: { "200": { description: 已决定 }, "409": { description: input_hash 不符或已决 } }

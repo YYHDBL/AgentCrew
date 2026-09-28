@@ -1,7 +1,7 @@
 # 05 · 定时任务与轨迹审计详设
 
 > 模块深潜 #4 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（C1–C2 对齐，其余直接设计；C2 按用户指示参考 hermes）**
-> 上游依据：[01-设计对齐纪要](./01-设计对齐纪要.md)（Q17 cron 语义）、[02-Harness与Session事件模型](./02-Harness与Session事件模型详设.md)（闸门/事件/排队）、[03-Memory系统详设](./03-Memory系统详设.md)（fork 基础设施、skill 账本）、[04-权限治理详设](./04-权限治理详设.md)（pattern 规则、审计链）
+> 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)（Q17 cron 语义）、[02-Harness与Session事件模型](./harness-session.md)（闸门/事件/排队）、[03-Memory系统详设](./memory-system.md)（fork 基础设施、skill 账本）、[04-权限治理详设](./governance.md)（pattern 规则、审计链）
 > 参考源码：`workMate/AionCore/crates/aionui-cron/`（四段式/错过语义）、`workMate/AionUi/packages/desktop/src/common/adapter/ipcBridge.ts`（ICronJob 契约）、`workMate/hermes-agent/agent/background_review.py`（fork 机制）
 
 ---
