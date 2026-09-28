@@ -72,7 +72,8 @@ started_at, ended_at
 
 **run_events（唯一事实源，append-only）**
 ```
-id TEXT PK,
+global_seq INTEGER PRIMARY KEY AUTOINCREMENT,  -- 全局单调游标（会话级 SSE 用，v1.2）
+id TEXT UNIQUE,
 task_run_id FK, seq INT, UNIQUE(task_run_id, seq),   -- seq 会话内单调递增
 conversation_id FK,                        -- 冗余，方便按会话拉流
 agent_run_id TEXT NULL,                    -- M5 多 Agent 预留位
@@ -110,6 +111,19 @@ created_at
 
 ---
 
+### 2.3 持久化契约（v1.2 新增——建表前的事实源分级协议）
+
+| 层级 | 内容 | 规则 |
+|---|---|---|
+| **执行事件**（run_events） | 任务执行过程的一切事实 | append-only；**事件载荷必须携带重建模型上下文所需的全文**：`LLM_REQUEST_DONE` 含完整回复文本；`TOOL_COMPLETED` 含完整工具输出（内联上限 32KB，超出落 artifact 文件并在事件中留指针——**工件文件随任务存活，不得删除**，重建时按需读取）；用户指令原文入 `RUN_QUEUED` 载荷 |
+| **投影表**（messages/steps/llm_calls/tool_calls） | 查询加速视图 | 全部可从执行事件 + 工件重建；messages 只存用户消息与最终回复属于**投影裁剪**，不是事实源 |
+| **业务状态表**（grant/规则/角色/记忆/cron/连接器） | 各领域权威状态 | **不从 run_events 重建**，各有自己的账本（memory_ledger、审计链、cron_job_runs）；事件流里只有它们的变更事件 |
+| **上下文恢复** | resume 的重建依据 | = 执行事件（全文 + 工件）；M1 压缩生效后，`CONTEXT_COMPACTED` 的摘要成为替代旧消息的持久内容 |
+
+**会话级游标**：`global_seq`（事件表自增主键）跨任务稳定有序，供会话聚合 SSE 使用；任务内 `seq` 保持不变。
+
+---
+
 ## 3. 事件类型枚举（M0 全集）
 
 ```python
@@ -137,7 +151,7 @@ class RunEventType(StrEnum):
     TOOL_DISPATCHED     = "tool.dispatched"       # 已开始执行（此后崩溃 = outcome_unknown）
     TOOL_COMPLETED      = "tool.completed"        # 含输出摘要 / artifact 指针
     TOOL_FAILED         = "tool.failed"
-    TOOL_SKIPPED_IDEMPOTENT = "tool.skipped_idempotent"   # 恢复时账本命中，拦截重复副作用
+    TOOL_SKIPPED_IDEMPOTENT = "tool.skipped_idempotent"   # 外部幂等键命中：供应商侧确认已执行（v1.2 语义）
     TOOL_PENDING_VERIFICATION = "tool.pending_verification"  # 结果不明，暂停自动重试待人工核验（v1.1）
 
     # 权限与人机交互（喂 D4 的等待计数器）
@@ -237,8 +251,8 @@ class ToolMetadata:
 
 M0 内置工具：`read_file` / `write_file` / `list_dir` / `bash` / `http_request`。
 
-**判定纪律（v1.1 修订，堵绕过）**：
-- bash 只读判定：命令首词（经规范化解析）命中**固定白名单** `ls / cat / head / tail / grep / find / wc / pwd / file / stat / du / diff` 才算 read_only——**`python`、`awk`、`sed`、管道组合等可执行任意代码的一律不算**，全部走审批
+**判定纪律（v1.2 收紧）**：
+- bash 只读判定需**同时满足两条**：① 命令首词 ∈ 固定白名单 `ls / cat / head / tail / grep / wc / pwd / file / stat / du / diff`（**v1.2 移除 `find`——其 `-exec` 可执行任意命令**）；② **不含任何元字符或重定向**（`;` `&&` `||` `|` 反引号 `$( )` `>` `<` 换行）——任一命中即丧失只读资格，走审批。`python`、`awk`、`sed` 等可执行任意代码的一律不算只读
 - 路径类匹配一律先 `realpath()` 规范化（解析符号链接）再比前缀
 - `http_request` 目标域名受连接器配置 `allowed_hosts` 约束（M0 默认为空 = 全部需审批）
 
@@ -250,7 +264,7 @@ M0 内置工具：`read_file` / `write_file` / `list_dir` / `bash` / `http_reque
   - `verifiable`（可核验，如写文件——存在性/内容可检查）：恢复后自动核验，能确认则补 completed
   - `external_idempotency`（支持外部幂等键，如带 Idempotency-Key 的 HTTP API）：重试安全
   - `outcome_unknown`（结果不可核验，如发通知）：崩溃后 → `pending_verification`，**暂停自动重试**，Run Center 标"待核验"，人工确认后才继续（定时任务重试同样遵守）
-  恢复时若模型重新发起与账本中已完成调用相同的写操作：按 `TOOL_SKIPPED_IDEMPOTENT` 拦截并喂回上次结果；与账本冲突（同参数但账本为 pending_verification）→ 挂起待核验，**绝不静默重放**
+  **恢复后的重发语义（v1.2 修订）**：resume 把历史调用及其结果重放进上下文（模型"看得见"已做过什么）；此后**模型新发出的任何调用都是新决定**——新 `call_id`、正常过闸门执行，**绝不因参数相同而自动跳过**（否则两次有意执行会被错误合并）。防重复副作用不靠跳过，靠分类语义：`external_idempotency` 工具的外部幂等键由 `(task_run_id, input_hash)` 派生、供应商侧去重（命中时发 TOOL_SKIPPED_IDEMPOTENT）；`verifiable` 重执行天然安全且事后核验；`outcome_unknown` 反正处于待核验暂停态
 
 ---
 
@@ -263,7 +277,7 @@ M0 内置工具：`read_file` / `write_file` / `list_dir` / `bash` / `http_reque
 
 **用户点"恢复"**：
 1. 新建 `RunAttempt(kind=resume, resume_reason=...)`
-2. 从 `run_events` 重放重建完整消息上下文
+2. 从 `run_events` 重放重建完整消息上下文（事件载荷含回复全文与工具输出，超限部分读工件——见 §2.3 持久化契约）
 3. 注入两段系统提示：副作用账本（"你已执行：整理了 1-30 号发票写入 half.xlsx；结果不明：调用过 send_mail"）+ 恢复指令（"任务中断于第 31 张，请决定如何继续"）
 4. 幂等钥匙自动拦截重复副作用（§6.2）
 5. 发 `RUN_RESUMED`，进入正常循环
@@ -281,6 +295,7 @@ class Provider(Protocol):
 - 工具调用格式归一为内部 `ToolCall{id, name, input}`（GLM/OpenAI/Anthropic 的差异封在本层——面试讲述点）
 - aux 槽（flash）服务：压缩摘要、记忆提炼、轨迹审计、标题生成（M1+）
 - 测试用 `FauxProvider`（确定性假模型，learn-workbuddy 离线模式同款思路）：不花 token 跑通全链路回归
+- 接入验证纪律（v1.2）：GLM 与 DeepSeek 的**流式 tool calls、usage 返回、错误码必须用真实 key 在接入首周验证**；DeepSeek 思考模式的 `reasoning_content` 按官方要求在后续请求中保留回传
 
 ---
 
