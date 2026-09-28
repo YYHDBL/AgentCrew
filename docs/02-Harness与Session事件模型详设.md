@@ -264,7 +264,7 @@ M0 内置工具：`read_file` / `write_file` / `list_dir` / `bash` / `http_reque
   - `verifiable`（可核验，如写文件——存在性/内容可检查）：恢复后自动核验，能确认则补 completed
   - `external_idempotency`（支持外部幂等键，如带 Idempotency-Key 的 HTTP API）：重试安全
   - `outcome_unknown`（结果不可核验，如发通知）：崩溃后 → `pending_verification`，**暂停自动重试**，Run Center 标"待核验"，人工确认后才继续（定时任务重试同样遵守）
-  **恢复后的重发语义（v1.2 修订）**：resume 把历史调用及其结果重放进上下文（模型"看得见"已做过什么）；此后**模型新发出的任何调用都是新决定**——新 `call_id`、正常过闸门执行，**绝不因参数相同而自动跳过**（否则两次有意执行会被错误合并）。防重复副作用不靠跳过，靠分类语义：`external_idempotency` 工具的外部幂等键由 `(task_run_id, input_hash)` 派生、供应商侧去重（命中时发 TOOL_SKIPPED_IDEMPOTENT）；`verifiable` 重执行天然安全且事后核验；`outcome_unknown` 反正处于待核验暂停态
+  **恢复后的重发语义（v1.2 修订）**：resume 把历史调用及其结果重放进上下文（模型"看得见"已做过什么）；此后**模型新发出的任何调用都是新决定**——新 `call_id`、正常过闸门执行，**绝不因参数相同而自动跳过**（否则两次有意执行会被错误合并）。防重复副作用不靠跳过，靠分类语义：`external_idempotency` 工具的外部幂等键由 `(task_run_id, call_id)` 派生（v1.3 修订）——**同一次逻辑调用**的重试与核验后重执行复用同键（供应商侧去重兜底，命中发 TOOL_SKIPPED_IDEMPOTENT），而**同任务中两次合法的相同请求各有 call_id、各得各键，绝不合并**；`verifiable` 重执行天然安全且事后核验；`outcome_unknown` 反正处于待核验暂停态
 
 ---
 
@@ -294,7 +294,7 @@ class Provider(Protocol):
 - M0 实现 GLM（主力 + flash 各一个配置）；`StreamEvent` 归一为：`text_delta / tool_call / usage / done / error`
 - 工具调用格式归一为内部 `ToolCall{id, name, input}`（GLM/OpenAI/Anthropic 的差异封在本层——面试讲述点）
 - aux 槽（flash）服务：压缩摘要、记忆提炼、轨迹审计、标题生成（M1+）
-- 测试用 `FauxProvider`（确定性假模型，learn-workbuddy 离线模式同款思路）：不花 token 跑通全链路回归
+- 测试纪律（v1.3，用户确认**禁止 mock 与假测试**）：不设假 Provider——所有测试调用真实 GLM（控成本走 aux 槽），断言产物文件与数据库状态，不断言模型措辞
 - 接入验证纪律（v1.2）：GLM 与 DeepSeek 的**流式 tool calls、usage 返回、错误码必须用真实 key 在接入首周验证**；DeepSeek 思考模式的 `reasoning_content` 按官方要求在后续请求中保留回传
 
 ---
@@ -340,8 +340,8 @@ GET  /api/conversations/:id/state            FSM 快照（can_send/can_queue/can
 ## 11. 验收与测试
 
 - **M0 验收**：能对话调工具、过程实时可见、刷新页面事件重放恢复界面、杀进程重启后会话可恢复、同会话指令排队自动接续
-- 测试四类：reducer 纯函数单测（状态迁移表全覆盖）；FauxProvider 端到端（离线回归全链路）；故障注入（第 N 条事件后熔断 → 恢复 → 断言终态与幂等）；投影重建一致性（随机事件序列 → 重放 → 比对投影表）
-- **测试哲学（v1.1）**：单元/回归用 FauxProvider（确定性、零成本）；**验收与演示一律真实 GLM + 真实文件产物**（含进程中断后的实际外部结果检查）——两层缺一不可
+- 测试四类：reducer 等自有纯函数的参数化单测（状态迁移表全覆盖——构造输入测自有代码，不属于 mock）；真实 GLM 端到端（aux 槽控成本，断言库与产物状态）；故障注入（真实 kill 进程于第 N 条事件后 → 恢复 → 断言终态与幂等）；投影重建一致性（真实事件序列 → 重放 → 比对投影表）
+- **测试哲学（v1.3 修订，覆盖 v1.1 双层方案——用户最终确认禁止 mock/假测试）**：外部系统一律真实——真实 GLM、真实文件产物、真实进程中断；自有纯函数（reducer/调度计算/权限判定）的参数化单测正常保留
 
 ## 12. 参考
 
