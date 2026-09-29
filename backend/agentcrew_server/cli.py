@@ -24,7 +24,10 @@ import uvicorn
 
 from .api.app import create_app
 from .config import ConfigError, load_config
+from .db.audit import verify_with_anchor
 from .db.database import Database
+from .db.migrations import MigrationFailedError, run_migrations
+from .db.write_channel import WriteChannel
 from .instance_lock import (
     DataDirNotWritable,
     InstanceLock,
@@ -33,7 +36,7 @@ from .instance_lock import (
 )
 from .lifecycle import run_startup_hooks
 from .logging_setup import setup_logging, shutdown_logging
-from .runtime import RuntimeState
+from .runtime import DiagnosticInfo, RuntimeState
 from .secrets import register_secret
 
 READY_MARKER = "AGENTCREW_READY"
@@ -178,6 +181,7 @@ def main(argv: list[str] | None = None) -> int:
 
     lock = InstanceLock(data_dir)
     db: Database | None = None
+    channel: WriteChannel | None = None
     try:
         try:
             lock.acquire()
@@ -191,10 +195,61 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:  # noqa: BLE001 —— SQLite 打开失败按启动失败处理
             log.exception("startup.fail SQLite 打开失败：%s", e)
             return 1
-        log.info("startup.db opened journal_mode=%s busy_timeout=5000", db.journal_mode)
-        run_startup_hooks(db, log)
+        log.info(
+            "startup.db opened journal_mode=%s busy_timeout=%sms",
+            db.journal_mode, db.busy_timeout_ms,
+        )
 
-        runtime = RuntimeState(log=log, data_dir=data_dir, db=db)
+        # §1 第 3-4 步：升级前快照 + 版本化迁移
+        diagnostic: DiagnosticInfo | None = None
+        try:
+            migration = run_migrations(db.write_conn, data_dir / "backups")
+            if migration.status == "conflict":
+                log.error("startup.fail %s", migration.error)
+                print(f"启动失败：{migration.error}", file=sys.stderr)
+                return 1
+            if migration.status == "applied":
+                log.info(
+                    "startup.migrations applied v%s→v%s 已应用=%s 升级前快照=%s",
+                    migration.current_version, migration.target_version,
+                    migration.applied_versions, migration.snapshot_path,
+                )
+            else:
+                log.info("startup.migrations up_to_date v%s", migration.target_version)
+        except MigrationFailedError as e:
+            log.error("startup.migrations failed：%s", e)
+            diagnostic = DiagnosticInfo(reason=f"迁移失败：{e}")
+
+        # §1 第 5 步：审计链两级校验（空链 = 通过；C6 起有写入方）
+        if diagnostic is None:
+            verification = verify_with_anchor(
+                db.write_conn, data_dir / "chain-head.txt"
+            )
+            if not verification.ok:
+                log.error(
+                    "startup.audit 审计链校验失败 seq=%s：%s",
+                    verification.broken_at_seq, verification.reason,
+                )
+                diagnostic = DiagnosticInfo(
+                    reason=(
+                        f"审计链校验失败（seq={verification.broken_at_seq}："
+                        f"{verification.reason}）"
+                    ),
+                    hint="审计账本不可信，系统拒绝进入正常模式；"
+                    "可从 backups/ 快照还原后重启",
+                )
+            else:
+                log.info("startup.audit 审计链校验通过（%s 条）", verification.checked_count)
+
+        run_startup_hooks(log)
+        if diagnostic is not None:
+            log.warning("startup.diagnostic 只读诊断模式：%s", diagnostic.reason)
+
+        channel = WriteChannel(db.write_conn)
+        runtime = RuntimeState(
+            log=log, data_dir=data_dir, db=db,
+            write_channel=channel, diagnostic=diagnostic,
+        )
         app = create_app(runtime)
 
         port = pick_port(args.port)
@@ -224,7 +279,9 @@ def main(argv: list[str] | None = None) -> int:
         log.info("shutdown.exit 正常退出（exit 0）")
         return 0
     finally:
-        # lifespan 未跑或中途失败时兜底；正常路径 db 已在 shutdown() 关闭
+        # lifespan 未跑或中途失败时兜底；正常路径 channel/db 已在 shutdown() 关闭
+        if channel is not None and not channel.closed:
+            channel.close()
         if db is not None and not db.closed:
             try:
                 db.checkpoint_passive()

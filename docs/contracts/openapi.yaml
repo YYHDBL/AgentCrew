@@ -266,6 +266,24 @@ paths:
                     type: object
                     properties:
                       status: { type: string }
+  /api/diagnostics:
+    get:
+      tags: [settings]
+      summary: 诊断入口（迁移失败/审计链断裂 → 只读诊断模式，backend-service §1）
+      responses:
+        "200":
+          description: 正常模式返回 mode=normal；诊断模式含原因与恢复提示
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      mode: { type: string, enum: [normal, diagnostic] }
+                      reason: { type: string }
+                      hint: { type: string }
   /api/limits:
     get:
       tags: [materials]

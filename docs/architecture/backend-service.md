@@ -1,6 +1,6 @@
 # 后端服务层详设（FastAPI sidecar）
 
-> 维护：后端 Agent ｜ 版本：v1.2（2026-09-29，C1 落地：错误码表补 4 项）｜ 上游：[harness-design](./harness-design.md)、[desktop-shell](./desktop-shell.md)、[../contracts/openapi.yaml](../contracts/openapi.yaml)
+> 维护：后端 Agent ｜ 版本：v1.3（2026-09-29，C2 落地：诊断端点定为 `/api/diagnostics`，契约已同步；v1.2=C1 错误码表补 4 项）｜ 上游：[harness-design](./harness-design.md)、[desktop-shell](./desktop-shell.md)、[../contracts/openapi.yaml](../contracts/openapi.yaml)
 > 本文收拢**服务层**设计：启动/关闭、写通道、SSE 边界、配置、CORS、日志、错误码、并发、数据目录。全部技术决策。
 
 ---
@@ -16,7 +16,7 @@
    -wal 文件中，单复制 agentcrew.db 会丢事务（SQLite 官方要求）；保留最近 3 份）
 → 执行迁移（每条迁移单独事务，SQLite DDL 可回滚；版本冲突[目标<当前] → 拒绝启动报两版本号；
    迁移中途失败 → 该事务回滚 + 进入只读诊断模式，界面提示从 backups/ 还原）
-→ 审计链校验（失败 → 只读诊断模式：仅 /api/health 与诊断端点，业务端点 503 DIAGNOSTIC_MODE）
+→ 审计链校验（失败 → 只读诊断模式：仅 /api/health 与 /api/diagnostics，业务端点 503 DIAGNOSTIC_MODE）
 → 种子检查（M2 幂等 seed）
 → 启动对账（running→interrupted；dispatched 无终态→核验/待核验）
 → 起事件总线 + RunManager + 定时调度（P5）

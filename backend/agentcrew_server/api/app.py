@@ -1,7 +1,9 @@
-"""FastAPI 装配：/api/health、CORS allow-all、统一错误信封、优雅关闭 lifespan。
+"""FastAPI 装配：/api/health、/api/diagnostics、CORS allow-all、统一错误信封。
 
-契约：docs/contracts/openapi.yaml v0.3——M0-C1 只交付 /api/health（其余路由
-随 C3/C5/C6/C7/C9 增补）。docs/redoc/openapi 端点关闭：契约以 yaml 文件为准。
+契约：docs/contracts/openapi.yaml v0.3——M0-C2 交付 health + diagnostics
+（只读诊断模式入口，backend-service §1）；其余路由随 C3/C5/C6/C7/C9 增补。
+docs/redoc/openapi 端点关闭：契约以 yaml 文件为准。
+中间件全部纯 ASGI 实现（envelope/诊断守卫），对 C3 的流式 SSE 透明。
 """
 
 from __future__ import annotations
@@ -13,7 +15,37 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from ..runtime import RuntimeState
 from .envelope import EnvelopeMiddleware
-from .errors import install_error_handlers
+from .errors import ErrorCode, error_response, install_error_handlers
+
+# 诊断模式下仍然可用的端点（§1：仅 health 与诊断端点）
+_DIAGNOSTIC_ALLOWED_PATHS = frozenset({"/api/health", "/api/diagnostics"})
+
+
+class DiagnosticGuardMiddleware:
+    """只读诊断模式守卫：业务端点 503 DIAGNOSTIC_MODE，health/diagnostics 放行。"""
+
+    def __init__(self, app, runtime: RuntimeState):
+        self.app = app
+        self.runtime = runtime
+
+    async def __call__(self, scope, receive, send) -> None:
+        if (
+            scope["type"] == "http"
+            and self.runtime.diagnostic is not None
+            and scope["path"].startswith("/api")
+            and scope["path"] not in _DIAGNOSTIC_ALLOWED_PATHS
+        ):
+            response = error_response(
+                ErrorCode.DIAGNOSTIC_MODE,
+                "只读诊断模式：业务端点不可用",
+                detail={
+                    "reason": self.runtime.diagnostic.reason,
+                    "hint": self.runtime.diagnostic.hint,
+                },
+            )
+            await response(scope, receive, send)
+            return
+        await self.app(scope, receive, send)
 
 
 def create_app(runtime: RuntimeState) -> FastAPI:
@@ -33,6 +65,7 @@ def create_app(runtime: RuntimeState) -> FastAPI:
     )
     install_error_handlers(app)
     app.add_middleware(EnvelopeMiddleware)
+    app.add_middleware(DiagnosticGuardMiddleware, runtime=runtime)
     # CORS allow-all：安全由 Bearer 承担（显式头、无 cookie、无 CSRF 面）
     # ——backend-service.md §5，第四轮审查确认保留
     app.add_middleware(
@@ -42,5 +75,15 @@ def create_app(runtime: RuntimeState) -> FastAPI:
     @app.get("/api/health")
     async def health() -> dict:
         return {"status": "ok"}
+
+    @app.get("/api/diagnostics")
+    async def diagnostics() -> dict:
+        if runtime.diagnostic is None:
+            return {"mode": "normal"}
+        return {
+            "mode": "diagnostic",
+            "reason": runtime.diagnostic.reason,
+            "hint": runtime.diagnostic.hint,
+        }
 
     return app
