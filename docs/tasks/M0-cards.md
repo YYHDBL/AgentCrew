@@ -58,7 +58,7 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 - **依赖**：C1（可与 C2/C3 并行开发，验收独立）
 - **交付物**：`Provider` 协议 + `StreamEvent` 归一（text_delta/tool_call/usage/done/error）；GLM 适配器（main/aux 双槽配置化，走 OpenAI 兼容端点）；错误分类（网络/限流/鉴权/内容过滤/未知）；重试（限流与网络错误，退避，上限 3）
 - **失败状态**：坏 key（分类=auth，不重试，冒泡为可读错误）；流中断（分类+可重试一次续跑）；usage 缺失（记 0 并打警告日志，不失败）
-- **真实运行验收**：**用真实 key** 跑三个脚本并记录到 `docs/tech/provider-verification.md`：① 无工具纯文本流式；② 带工具定义→模型真实返回 tool_use→归一为内部 ToolCall；③ 坏 key→错误分类正确。usage 字段真实打印
+- **真实运行验收**：**用真实 key** 跑四个脚本并记录到 `docs/tech/provider-verification.md`：① 无工具纯文本流式；② 带工具定义→模型真实返回 tool_use→归一为内部 ToolCall；③ 坏 key→错误分类正确；④ **缓存与思考参数（v1.5）**：同前缀第二次请求，记录 usage 是否返回缓存命中字段（GLM prompt cache 支持情况→决定是否做缓存中断检测）；GLM 思考模式参数与返回验证。usage 字段真实打印
 
 ### C5 · 工具注册表与五个内置工具
 

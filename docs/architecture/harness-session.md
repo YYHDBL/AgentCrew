@@ -271,6 +271,11 @@ async def run_task(task: TaskRun, attempt: RunAttempt, ctx: RunContext):
 - **循环属于 agent，机制属于 harness**：权限门、幂等、外部化、压缩都是循环里的挂钩点，不改循环结构
 - 回合上限（默认 40）与 token 预算守门，超限走 RUN_FAILED（带原因）
 - 流式文本块经内存总线直推 SSE，**不落库**；LLM_REQUEST_DONE 事件 payload 携带全文
+- **Prompt 组装含环境块（v1.5）**：system prompt 首段注入运行环境事实（当前日期时间、macOS、任务工作目录、资料目录、授权文件夹清单、工作区名）——小文必须知道"自己在哪、今天几号、材料在哪"
+- **循环稳定性三招（v1.5，防呆守门）**：
+  1. **重复调用守门**：连续 N=3 次相同 (tool, input_hash) 调用且结果未变 → 中止本轮并注入纠正消息（"你已连续三次得到相同结果，请换思路或汇报障碍"），再犯 → RUN_FAILED(reason=doom_loop)。参考：hermes doom-loop 防护 / ZCode 探针
+  2. **停滞看门狗**：每个运行中任务记录 `last_progress_at`（模型 delta / 工具完成 / 审批决定都刷新）；超过停滞阈值（默认 600s，可配）且非等待用户 → 判定卡死，RUN_FAILED(reason=stalled)。**不做累计超时**（长任务合法），只看"最近一次进展"（Eigent 滑动窗口模式）
+  3. **输出解析重试**：模型返回的 tool_use 参数不合法（JSON 损坏/schema 不符）→ 请求级局部重试：把解析错误作为 tool_result 回填给模型重说，最多 2 次；仍坏 → RUN_FAILED(reason=unparseable)。**不污染对话历史**（Eigent 同款：重试的原始坏响应用后缀标记保留但可被压缩层清理）
 - M1 在循环中插入：compact 检查（模型请求前）、工具结果外部化（入上下文前）、记忆提炼 fork（回合结束后）
 
 ---
