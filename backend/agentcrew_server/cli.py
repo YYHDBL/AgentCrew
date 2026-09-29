@@ -22,6 +22,8 @@ from pathlib import Path
 
 import uvicorn
 
+from agentcrew_core.provider.glm_anthropic import DEFAULT_BASE_URL
+
 from .api.app import create_app
 from .bus import EventBus
 from .config import ConfigError, load_config
@@ -30,6 +32,7 @@ from .db.database import Database
 from .db.event_store import EventStore
 from .db.migrations import MigrationFailedError, run_migrations
 from .db.write_channel import WriteChannel
+from .providers import build_provider
 from .instance_lock import (
     DataDirNotWritable,
     InstanceLock,
@@ -306,12 +309,20 @@ def main(argv: list[str] | None = None) -> int:
         # 同步入队——发布顺序 = 提交顺序（backend-service §2 v1.9）
         bus = EventBus()
         event_store = EventStore(channel, publisher=bus.publish)
+        # Provider 双槽（M0-C4）：main/aux 从配置链构建（ADR-009：Anthropic 端点）
+        provider = build_provider(config.values.get("models", {}))
         runtime = RuntimeState(
             log=log, data_dir=data_dir, db=db,
             write_channel=channel, diagnostic=diagnostic,
-            token=token, bus=bus, event_store=event_store,
+            token=token, bus=bus, event_store=event_store, provider=provider,
         )
         log.info("startup.bus 事件总线就绪（队列上限 1000，SSE 连接上限 32）")
+        log.info(
+            "startup.provider main=%s aux=%s @ %s",
+            config.values.get("models", {}).get("main", {}).get("model", "?"),
+            config.values.get("models", {}).get("aux", {}).get("model", "?"),
+            DEFAULT_BASE_URL,
+        )
         app = create_app(runtime)
 
         port = pick_port(args.port)

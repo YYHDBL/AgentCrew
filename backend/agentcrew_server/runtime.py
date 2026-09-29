@@ -13,6 +13,8 @@ from .db.database import Database
 from .db.write_channel import WriteChannel
 
 if TYPE_CHECKING:  # 避免运行时循环导入（bus 导入 core.events 而已，防御性）
+    from agentcrew_core.provider import GLMAnthropicProvider
+
     from .bus import EventBus
     from .db.event_store import EventStore
 
@@ -35,6 +37,7 @@ class RuntimeState:
     token: str = ""
     bus: "EventBus | None" = None
     event_store: "EventStore | None" = None
+    provider: GLMAnthropicProvider | None = None
 
     async def shutdown(self) -> None:
         """优雅关闭（§7 顺序；任务取消/不写终态随 C8/C9 填充）。"""
@@ -43,6 +46,12 @@ class RuntimeState:
         if self.bus is not None:
             self.bus.shutdown_all()
             await asyncio.sleep(0.3)
+        if self.provider is not None:
+            try:
+                await self.provider.aclose()
+                self.log.info("shutdown.provider closed")
+            except Exception as e:  # noqa: BLE001
+                self.log.warning("shutdown.provider 关闭异常：%s", e)
         if self.write_channel is not None and not self.write_channel.closed:
             self.write_channel.close()
         if self.db is not None and not self.db.closed:
