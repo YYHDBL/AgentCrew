@@ -8,6 +8,8 @@
 > **v1.2 修订（开工前二次审查，2026-09-28）**：SSE 改带鉴权 fetch 流（原生 EventSource 无法携带 Authorization 头，重连与游标由前端显式实现）；token 改经环境变量注入 sidecar、绝不进 stdout/日志；bash 只读白名单移除 find（-exec 漏洞）并加元字符一票否决；恢复后模型重发调用 = 新决定（同参跳过会错误合并两次有意执行，防重复改由副作用分类承担）；run_events 增 global_seq 会话级游标；新增**持久化契约**（docs/02 §2.3：事件载荷全文 + 工件保留 + 业务表边界）；种子规则去 python、"登录"改"演示身份切换"；审计链头每 100 条周期快照（崩溃也有锚点，两级校验）；**打包仅 macOS（用户拍板不做 Windows）**；Provider 真实凭证首周验证纪律（含 DeepSeek reasoning_content 回传）。测试哲学由 v1.3 修正（用户最终确认禁止 mock）。
 >
 > **v1.3 修订（M0 拆分前契约修正，2026-09-28）**：SSE 解析用现成库——后端 `sse-starlette`、前端 `@microsoft/fetch-event-source`（Eigent 同款），不自研解析；外部幂等键改由 `(task_run_id, call_id)` 派生——**同任务两次合法相同请求各得各键、绝不合并**，同键仅用于同一次逻辑调用的重试/核验后重执行；**测试禁止 mock 与假测试（用户确认，覆盖此前双层方案）**：真实 GLM、真实文件产物、真实进程中断，自有纯函数的参数化单测不属于 mock。M0 任务卡拆分见 [../tasks/M0-cards.md](../tasks/M0-cards.md)。
+>
+> **v1.6 修订（2026-09-30，用户裁定）**：**定位修订——AgentCrew 是通用 Agent 基座，办公是后续专项优化**；**工具 less-is-more**：M0 核心四件套 read_file/write_file/bash/http_request，设"工具准入纪律"（治理语义或上下文友好度不可替代才准入；禁止 read_word 式碎片工具；grep/glob/edit/list_dir 不设，bash+read 覆盖，专项工具按需后加）；**bash 子进程环境变量白名单**（仅 PATH/HOME/LANG/TZ/TERM，绝不传 AGENTCREW_TOKEN/API key——堵"子进程读 token 反打接口"的击穿孔）；**沙箱提前**：macOS 自带 Seatbelt（sandbox-exec），M2 落地于 bash 工具（从"明确不做"移出；参考 CC/EasyMint 分层——三级闸门即判定层，Seatbelt 为强制层）；补循环稳定性三招 + 环境信息注入 + 流式 tool_call 拼装 + 守门参数总表（docs 02 v1.5/v1.6）。数据保留/归档策略待 M4 打磨期定。
 
 ---
 
@@ -130,7 +132,7 @@
 - 简历表述："Supervisor 动态派发子 Agent（子 Agent 为完整 ReAct 循环）"
 
 ### 4.7 明确不做（写进 README 的 Future Work）
-远程访问（手机控桌面）、多用户服务器、SSO/动态角色/凭据双模式、外部记忆插件生态、LLM 大合并 curator、沙箱容器执行、开源社区运营
+远程访问（手机控桌面）、多用户服务器、SSO/动态角色/凭据双模式、外部记忆插件生态、LLM 大合并 curator、开源社区运营。（v1.6：沙箱从本清单移出——M2 用 macOS Seatbelt 落地于 bash，见 ADR-008）
 
 ---
 
@@ -140,7 +142,7 @@
 |---|---|---|
 | **M0 地基** | Python 后端骨架 + 自研 ReAct 循环 + GLM 双槽接入 + provider 薄适配 + 工具注册表 + **权限闸门基础（元数据分级 + 审批四选项 + bash 只读白名单 + 本地 token 认证）** + 事件溯源落盘 + 事件总线 + SSE + Electron 壳 + 最简聊天页 + **一条贯穿用真实办公任务** | 能对话、能调工具、写操作必弹审批、过程实时可见；杀进程后重启，会话可恢复 |
 | **M1 记忆与上下文** | 三层记忆 + 限额冻结快照 + 双库路由 + 阈值压缩（模板摘要）+ 输出外部化 + 提炼 fork + 长期记忆治理全项 + Skill 三级加载 | 长会话不爆上下文；隔天再聊记得住偏好；超限记忆自动整合 |
-| **M2 安全与治理深化** | grant 授权表 + 员工规则 pattern（realpath 规范化 + HTTP 域名）+ 幂等副作用账本（三分类 + 待核验）+ 哈希链审计（链头外置快照）+ 组织/角色/资源模型 + 种子组织（演示身份切换） | grant 撤销即时生效；恢复重跑不重复副作用、结果不明暂停待核验；审计链校验通过 |
+| **M2 安全与治理深化** | grant 授权表 + 员工规则 pattern（realpath 规范化 + HTTP 域名）+ 幂等副作用账本（三分类 + 待核验）+ 哈希链审计（链头外置快照）+ 组织/角色/资源模型 + 种子组织（演示身份切换）+ **bash 套 macOS Seatbelt 沙盒（v1.6：读写范围=任务 scope，网络仅白名单）** | grant 撤销即时生效；恢复重跑不重复副作用、结果不明暂停待核验；审计链校验通过；**沙盒越界写入被系统拦截** |
 | **M3 监控回放与自动化** | Run Center（时间线/重放/指标/失败归因）+ 轨迹审计 Agent + cron 定时任务 + Agent Studio + Admin Center | 一单任务全链路可视可回放；审计 Agent 出改进报告；定时任务按时触发且错过不补跑 |
 | **M4 打磨与演示** | 四屏打磨 + 真实办公场景（文档/表格/HTTP）+ 数据分析第二 demo + **DeepSeek 第二供应商接入** + how-it-works 文档 + 面试问答清单 | 完整 demo 可 15 分钟讲清全部机制；双供应商切换可用 |
 | **M5 加时赛** | 多 Agent：spawn_agent 工具 + 完整 ReAct 子 Agent fork + 子运行并入事件流 | Supervisor 能拆活派给子 Agent 并汇总结果 |

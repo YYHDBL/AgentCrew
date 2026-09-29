@@ -299,14 +299,30 @@ class ToolMetadata:
     max_output_bytes: int = 100_000     # 超限外部化（M1）
 ```
 
-M0 内置工具：`read_file` / `write_file` / `list_dir` / `bash` / `http_request`。
+M0 内置工具 = **核心四件套**（v1.6，用户裁定 less-is-more + 通用基座定位）：`read_file` / `write_file` / `bash` / `http_request`。
+
+**工具准入纪律（v1.6——什么才有资格成为工具）**：bash 是万能工具，专用工具必须满足以下之一才准入——① **承担治理语义**：`http_request` 是网络访问的唯一受治入口（域名白名单/外部幂等键），bash 里的 curl/wget 一律走审批且无域名豁免；② **上下文/投影友好度不可替代**：`read_file` 提供分页读（cat 大文件对模型是灾难）；`write_file` 是 verifiable 类与 **artifacts 产物投影的唯一来源**（bash 重定向写的文件不进产物卡——产物=结构化工具产生，口径见 §2.2）。**不设** grep/glob/edit/list_dir/专项格式工具（read_word 之类碎片化设计明确禁止）——bash 与 read 覆盖，专项工具（Excel/图片/文档）按需在增量片再加。
 
 **判定纪律（v1.2 收紧）**：
 - bash 只读判定需**同时满足两条**：① 命令首词 ∈ 固定白名单 `ls / cat / head / tail / grep / wc / pwd / file / stat / du / diff`（**v1.2 移除 `find`——其 `-exec` 可执行任意命令**）；② **不含任何元字符或重定向**（`;` `&&` `||` `|` 反引号 `$( )` `>` `<` 换行）——任一命中即丧失只读资格，走审批。`python`、`awk`、`sed` 等可执行任意代码的一律不算只读
+- **bash 子进程环境变量白名单（v1.6，安全必守）**：子进程仅继承 `PATH / HOME / LANG / TZ / TERM`；**绝不传 `AGENTCREW_TOKEN`、模型 API key 或任何凭据类变量**——否则 sidecar 里任何 bash 调用都能读到 token 反向调用接口，权限体系被整体击穿
 - 路径类匹配一律先 `realpath()` 规范化（解析符号链接）再比前缀
 - **路径合法范围 = 任务级 scope（v1.4，F001）**：`工作区数据目录 ∪ 任务资料目录(data/conversations/<id>/materials/) ∪ 用户授权的原位置文件夹(folders_json)`；scope 外路径在判定层直接拒绝（OUT_OF_SCOPE，可读原因展示），不进入审批
 - `http_request` 目标域名受连接器配置 `allowed_hosts` 约束（M0 默认为空 = 全部需审批）
 - 材料/文件夹只是**提供来源与范围**，不授予任何权限：范围内读写仍走三级闸门（元数据分级 → 规则 → 审批）
+
+### 6.3 守门参数总表（v1.6——散落各处的"刹车"集中一处调）
+
+| 守门 | 默认值 | 触发动作 | 出处 |
+|---|---|---|---|
+| 回合上限 | 40 回合/任务 | RUN_FAILED(reason=max_steps) | §5 |
+| token 预算 | 历史 80% 触发压缩；硬上限拒绝请求 | 压缩 / RUN_FAILED | M1 |
+| 重复调用 | 连续 3 次同 (tool,input_hash) 同结果 | 注入纠偏 → 再犯 RUN_FAILED(doom_loop) | §5 v1.5 |
+| 停滞看门狗 | 600s 无进展（等待用户时暂停计时） | RUN_FAILED(stalled) | §5 v1.5 |
+| 解析重试 | 坏 tool_use 回填重说，上限 2 次 | RUN_FAILED(unparseable) | §5 v1.5 |
+| 工具超时 | 60s（按工具可配） | 杀进程组，工具级 error | §6 |
+| Provider 重试 | 限流/网络错误退避重试，上限 3 | 冒泡 RUN_FAILED | §8 |
+| bash 输出 | >32KB 外部化 | 工件落盘留指针 | §6 |
 
 ### 6.2 调度与并发规则
 
@@ -352,6 +368,7 @@ class Provider(Protocol):
 ```
 
 - M0 实现 GLM（主力 + flash 各一个配置）；`StreamEvent` 归一为：`text_delta / tool_call / usage / done / error`
+- **流式 tool_call 拼装（v1.6）**：模型的 tool arguments 以 JSON 碎片流式到达，适配层负责缓冲拼装为完整 JSON 再解析校验——**绝不把半成品参数交给循环**；拼装完成前 tool_call 事件对前端只报"进行中"不带参数
 - 工具调用格式归一为内部 `ToolCall{id, name, input}`（GLM/OpenAI/Anthropic 的差异封在本层——面试讲述点）
 - aux 槽（flash）服务：压缩摘要、记忆提炼、轨迹审计、标题生成（M1+）
 - 测试纪律（v1.3，用户确认**禁止 mock 与假测试**）：不设假 Provider——所有测试调用真实 GLM（控成本走 aux 槽），断言产物文件与数据库状态，不断言模型措辞

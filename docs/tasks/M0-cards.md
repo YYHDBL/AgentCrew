@@ -63,9 +63,9 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 ### C5 · 工具注册表与五个内置工具
 
 - **依赖**：C1
-- **交付物**：`ToolMetadata` 全字段 + 注册表 + 调度器（destructive 串行 / concurrent_safe·read_only 并行 / 上限 4）；`call_id` 生成与三分类声明；五工具：`read_file`（verifiable，realpath 规范）、`write_file`（verifiable，成功/失败发 `artifact.ready/failed` 事件）、`list_dir`（read_only）、`bash`（白名单+元字符判定→分级；超时杀进程组）、`http_request`（`allowed_hosts` 约束；外部幂等键随请求头发送）；**路径合法范围判定（v1.4）：realpath ∈ 工作区目录 ∪ 任务资料目录 ∪ folders_json 授权文件夹，范围外直接 OUT_OF_SCOPE 拒绝（带原因，不进审批）**；输出 >32KB 落 `data/artifacts/<task_run_id>/` 工件留指针
+- **交付物**：`ToolMetadata` 全字段 + 注册表 + 调度器（destructive 串行 / concurrent_safe·read_only 并行 / 上限 4）；`call_id` 生成与三分类声明；**核心四件套（v1.6，less-is-more）**：`read_file`（verifiable，分页读，realpath 规范）、`write_file`（verifiable，成功/失败发 `artifact.ready/failed` 事件，**产物投影唯一来源**）、`bash`（白名单+元字符判定→分级；超时杀进程组；**子进程环境变量白名单：仅 PATH/HOME/LANG/TZ/TERM，绝不传 AGENTCREW_TOKEN 与任何 key**）、`http_request`（`allowed_hosts` 约束=网络唯一受治入口；外部幂等键随请求头发送）；不设 grep/glob/edit/list_dir（bash 与 read 覆盖，准入纪律见 docs 02 §6.1）；**路径合法范围判定（v1.4）：realpath ∈ 工作区目录 ∪ 任务资料目录 ∪ folders_json 授权文件夹，范围外直接 OUT_OF_SCOPE 拒绝（带原因，不进审批）**；输出 >32KB 落 `data/artifacts/<task_run_id>/` 工件留指针
 - **失败状态**：工具超时（timeout_ms，杀子进程组，返回 error 结果不崩任务）；命令注入判定为非只读（走审批，不是拒绝）；工件目录写失败（工具报错+审计）；scope 外路径（OUT_OF_SCOPE 错误信息含该路径与合法范围）
-- **真实运行验收**：判定函数参数化单测（白名单×元字符×scope 三矩阵）；五个工具各真实执行一次（真文件真命令真 http 请求一个真实 URL）；scope 外路径真实被拒且错误含原因；大输出真实触发外部化并检查工件文件存在
+- **真实运行验收**：判定函数参数化单测（白名单×元字符×scope 三矩阵）；四个工具各真实执行一次（真文件真命令真 http 请求一个真实 URL）；**bash 里 `echo $AGENTCREW_TOKEN` 真实输出为空**（env 白名单验证）；scope 外路径真实被拒且错误含原因；大输出真实触发外部化并检查工件文件存在
 
 ### C6 · 审批闸门（M0 部分）
 
