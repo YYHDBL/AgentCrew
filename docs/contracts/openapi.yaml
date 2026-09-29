@@ -1,10 +1,14 @@
 # AgentCrew Sidecar API（v0.2-draft——对齐产品 F001–F010 后修订）
-
-> 维护：后端 Agent。`x-phase` 标注实现批次（m0 = 当前切片；p3/p4/p5 = 增量池）。交互规格定稿后冻结。
-> 鉴权：所有请求带 `Authorization: Bearer <AGENTCREW_TOKEN>`（环境变量注入，不经 stdout）。
-
+# 维护：后端 Agent。x-phase 标注实现批次（m0 = 当前切片；p3/p4/p5 = 增量池）。交互规格定稿后冻结。
+# 鉴权：所有请求带 Authorization: Bearer <AGENTCREW_TOKEN>（环境变量注入，不经 stdout）。
+# 响应信封（v1.7 统一）：成功 = {"data": ...}；错误 = {"error": {code, message, detail}}。
 openapi: 3.1.0
-info: { title: AgentCrew Sidecar API, version: 0.2.0-draft }
+info:
+  title: AgentCrew Sidecar API
+  version: 0.2.1-draft
+  description: |
+    单用户本地 sidecar。所有端点默认 Bearer 鉴权（除 /api/health）。
+    成功响应统一包裹 {"data": ...}；错误响应统一 {"error": {code, message, detail}}。
 servers:
   - { url: "http://127.0.0.1:{port}", variables: { port: { default: "8710" } } }
 security: [ { bearerToken: [] } ]
@@ -24,11 +28,15 @@ components:
   schemas:
     Error:
       type: object
-      required: [ code, message ]
+      required: [ error ]
       properties:
-        code: { type: string, examples: [INVALID_PATH, QUEUE_PAUSED, PENDING_VERIFICATION, APPROVAL_STALE, OUT_OF_SCOPE] }
-        message: { type: string }
-        detail: { type: object, additionalProperties: true }
+        error:
+          type: object
+          required: [ code, message ]
+          properties:
+            code: { type: string, examples: [INVALID_PATH, QUEUE_PAUSED, PENDING_VERIFICATION, APPROVAL_STALE, OUT_OF_SCOPE, PROTECTED_PATH] }
+            message: { type: string }
+            detail: { type: object, additionalProperties: true }
     TaskRunSummary:
       type: object
       properties:
@@ -171,7 +179,7 @@ paths:
       tags: [runs]
       summary: 任务的执行记录列表（含 attempt 边界，F008）
       parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: TaskRunSummary[] } }
+      responses: { "200": { description: "TaskRunSummary 数组" } }
   /api/conversations/{id}/stream:
     get:
       tags: [runs]
@@ -200,14 +208,14 @@ paths:
       tags: [artifacts]
       summary: 任务产物列表（可按 run 过滤；缺失状态由探测更新，F004）
       parameters: [ { name: id, in: path, required: true, schema: { type: string } }, { name: task_run_id, in: query, schema: { type: string } } ]
-      responses: { "200": { description: Artifact[], content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Artifact" } } } } } }
+      responses: { "200": { description: "Artifact 数组", content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Artifact" } } } } } }
 
   /api/conversations/{id}/pending-verifications:
     get:
       tags: [verifications]
       summary: 待核验调用清单（F003）
       parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: PendingVerification[] } }
+      responses: { "200": { description: "PendingVerification 数组" } }
 
   /api/task-runs/{id}/events:
     get:
@@ -230,7 +238,7 @@ paths:
       tags: [approvals]
       summary: 审批列表（status=pending 供界面刷新后恢复审批卡，F005）
       parameters: [ { name: id, in: path, required: true, schema: { type: string } }, { name: status, in: query, schema: { type: string, enum: [pending, resolved] } } ]
-      responses: { "200": { description: Approval[] } }
+      responses: { "200": { description: "Approval 数组" } }
   /api/task-runs/{id}/cancel:
     post:
       tags: [queue]
@@ -296,8 +304,7 @@ paths:
     get:
       tags: [cron]
       summary: 定时任务列表（含 next_run、启用状态、创建来源）
-      responses: { "200": { description: jobs[] }
-        }
+      responses: { "200": { description: "jobs 数组" } }
     post:
       tags: [cron]
       summary: 创建定时任务（自动化页或审批通过后由 agent 路径调用；同一契约）
@@ -339,4 +346,4 @@ paths:
       tags: [cron]
       summary: 运行记录（fired/missed/skipped/failed，可返回对应任务）
       parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: runs[] } }
+      responses: { "200": { description: "runs 数组" } }
