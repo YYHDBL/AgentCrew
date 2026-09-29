@@ -281,6 +281,17 @@ paths:
         "200": { description: "已记录（confirmed_executed→completed(verified_by_user)；confirmed_not_executed→not_executed，恢复时告知模型需重做）" }
         "409": { description: 该调用不处于待核验状态 }
 
+  /api/settings:
+    get:
+      tags: [tasks]
+      summary: 后端运行配置（models/gates/limits；api_key 脱敏只回尾 4 位）
+      responses: { "200": { description: settings } }
+    patch:
+      tags: [tasks]
+      summary: 更新 gates/limits 即时生效；改 models 重建 provider；变更入审计链
+      requestBody: { content: { application/json: { schema: { type: object } } } }
+      responses: { "200": { description: 已更新 } }
+
   /api/cron/jobs:
     get:
       tags: [cron]

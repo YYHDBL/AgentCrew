@@ -35,9 +35,9 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 ### C1 · 工程骨架与启动
 
 - **依赖**：无
-- **交付物（接口与数据变更）**：`backend/pyproject.toml`（uv 管理，依赖：fastapi、uvicorn、sse-starlette、pydantic、aiosqlite/内置 sqlite3、httpx）；分包 `agentcrew_core/`（events/loop/tools/provider/ports）与 `agentcrew_server/`（api/db/run_manager）；`python -m agentcrew_server --port N --data-dir D --parent-pid P` 入口（读 `AGENTCREW_TOKEN` 环境变量）；`GET /api/health`；stdout 就绪标记 `AGENTCREW_READY {"port":N}`（**绝不含 token**）；日志原子落 `data/logs/sidecar.log`
-- **失败状态**：端口被占（换端口重试 3 次后报错退出）；data-dir 不可写（明确报错非崩溃）；未知异常（捕获→日志→非零退出码）
-- **真实运行验收**：命令行启动→stdout 出现就绪标记→`curl /api/health` 返回 ok→Ctrl-C 干净退出；日志文件有内容且**全文搜不到 token**
+- **交付物**：`backend/pyproject.toml`（uv 管理，依赖：fastapi、uvicorn、sse-starlette、pydantic、aiosqlite/内置 sqlite3、httpx）；分包 `agentcrew_core/`（events/loop/tools/provider/ports）与 `agentcrew_server/`（api/db/run_manager）；`python -m agentcrew_server --port N --data-dir D --parent-pid P` 入口（读 `AGENTCREW_TOKEN` 环境变量）；**启动序列按 backend-service.md §1**（instance.lock → DB → 迁移 → 审计链校验[断→只读诊断模式] → 对账 → listen → AGENTCREW_READY）；**配置链 env > data/config.json > 默认**；**CORS allow-all**（安全由 Bearer 承担，backend-service §3）；统一错误信封中间件 + 错误码表（§4）；`GET /api/health`；日志轮转 5MB×3（token/key 永不入日志）；**SIGTERM/SIGINT 优雅关闭**（§6：停收→取消任务不写终态→链头快照→checkpoint WAL→exit 0）
+- **失败状态**：端口被占（换端口重试 3 次后报错退出）；data-dir 不可写（明确报错非崩溃）；instance.lock 已锁（退出码 2）；未知异常（捕获→日志→非零退出码）
+- **真实运行验收**：命令行启动→stdout 出现就绪标记→`curl /api/health` 返回 ok→Ctrl-C 干净退出（退出码 0）；日志有内容且**全文搜不到 token**；`curl -H "Origin: http://localhost:5173"` 预检通过（CORS）；PATCH /api/settings 改一个守门参数→GET 生效且审计链多一条；kill -TERM 期间运行中任务状态保持 running（下次启动对账为 interrupted）
 
 ### C2 · 数据层：建表 + 事件追加 + 投影
 
