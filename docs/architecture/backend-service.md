@@ -1,6 +1,6 @@
 # 后端服务层详设（FastAPI sidecar）
 
-> 维护：后端 Agent ｜ 版本：v1.1（2026-09-30，第四轮外审回稿修订）｜ 上游：[harness-design](./harness-design.md)、[desktop-shell](./desktop-shell.md)、[../contracts/openapi.yaml](../contracts/openapi.yaml)
+> 维护：后端 Agent ｜ 版本：v1.2（2026-09-29，C1 落地：错误码表补 4 项）｜ 上游：[harness-design](./harness-design.md)、[desktop-shell](./desktop-shell.md)、[../contracts/openapi.yaml](../contracts/openapi.yaml)
 > 本文收拢**服务层**设计：启动/关闭、写通道、SSE 边界、配置、CORS、日志、错误码、并发、数据目录。全部技术决策。
 
 ---
@@ -72,6 +72,9 @@
 |---|---|---|
 | INVALID_PATH / NOT_FOUND | 400/404 | 路径非法 / 资源不存在 |
 | OUT_OF_SCOPE / PROTECTED_PATH | 403 | 超出任务 scope / 受保护路径 |
+| UNAUTHORIZED | 401 | Bearer 缺失/错误（C3 鉴权；C1 起保留映射，v1.2 补） |
+| METHOD_NOT_ALLOWED | 405 | 方法不支持（框架 405 统一信封，v1.2 补） |
+| VALIDATION_ERROR | 422 | 请求体校验失败（框架校验异常统一信封，v1.2 补） |
 | APPROVAL_PENDING | 409 | 等待审批时发送指令 |
 | APPROVAL_STALE | 409 | 审批已被**不同决定**处理或 input_hash 不符（同决定重试 → 200 幂等返回首次结果，v1.1 明确） |
 | PENDING_VERIFICATION | 409 | resume/继续队列被待核验阻塞（detail 含清单） |
@@ -79,6 +82,7 @@
 | INVALID_TRANSITION | 409 | FSM 非法迁移（detail 返回当前合法动作） |
 | QUESTION_STALE | 409 | 提问已回答/已取消后再次提交 |
 | CONFIG_WRITE_FAILED | 500 | 配置文件写入失败（内存未变） |
+| INTERNAL_ERROR | 500 | 未捕获异常统一信封（v1.2 补） |
 | SSE_LIMIT | 503 | SSE 连接超上限 |
 | DIAGNOSTIC_MODE | 503 | 只读诊断模式 |
 
