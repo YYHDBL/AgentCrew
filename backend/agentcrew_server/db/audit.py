@@ -73,29 +73,42 @@ def verify_internal(conn: sqlite3.Connection) -> ChainVerification:
     return ChainVerification(True, checked_count=count)
 
 
+class CorruptChainHeadError(RuntimeError):
+    """chain-head.txt 存在但无法解析——按 fail-closed 处理，不当作"无快照"。"""
+
+
 def read_chain_head(path: Path) -> tuple[int, str] | None:
-    """链头快照文件 → (seq, hash)；文件不存在返回 None。"""
+    """链头快照文件 → (seq, hash)；文件不存在返回 None，损坏抛 CorruptChainHeadError。"""
     if not path.exists():
         return None
-    parts = path.read_text(encoding="utf-8").strip().split(maxsplit=1)
+    text = path.read_text(encoding="utf-8").strip()
+    parts = text.split(maxsplit=1)
     if len(parts) != 2:
-        return None
+        raise CorruptChainHeadError(f"链头快照文件损坏（无法解析）：{path}")
     try:
-        return int(parts[0]), parts[1]
+        seq = int(parts[0])
     except ValueError:
-        return None
+        raise CorruptChainHeadError(f"链头快照文件损坏（seq 非整数）：{path}") from None
+    return seq, parts[1]
 
 
 def verify_with_anchor(
     conn: sqlite3.Connection, chain_head_path: Path
 ) -> ChainVerification:
-    """两级校验：①内部链 → ②快照锚点（锚点 seq 处的 hash 必须与文件一致）。"""
+    """两级校验：①内部链 → ②快照锚点（锚点 seq 处的 hash 必须与文件一致）。
+
+    锚点文件损坏 ≠ 文件不存在：快照由本进程原子写入，损坏意味着篡改或磁盘
+    故障——fail-closed 判定校验失败（进只读诊断模式），不得静默降级为无锚点。
+    """
     internal = verify_internal(conn)
     if not internal.ok:
         return internal
-    anchor = read_chain_head(chain_head_path)
+    try:
+        anchor = read_chain_head(chain_head_path)
+    except CorruptChainHeadError as e:
+        return ChainVerification(False, None, str(e), internal.checked_count)
     if anchor is None:
-        return internal  # 无快照文件：①已覆盖全部条目
+        return internal  # 无快照文件（从未写过）：①已覆盖全部条目
     seq, expected_hash = anchor
     row = conn.execute(
         "SELECT hash FROM audit_log WHERE seq = ?", (seq,)

@@ -21,9 +21,12 @@ def test_redact_multiple_occurrences():
     assert redact("a SECRETVALUE99 b SECRETVALUE99") == "a *** b ***"
 
 
-def test_short_values_not_registered():
-    register_secret("short")  # < 8 字符：不登记，避免误伤普通词
-    assert redact("short") == "short"
+def test_short_secret_is_still_redacted():
+    # 外审回稿：红线绝对——短 api_key（如用户手填的 6 位 key）同样必须遮蔽
+    register_secret("k3y!")
+    register_secret("ab12")
+    assert redact("api_key=k3y!") == "api_key=***"
+    assert redact("token ab12 in error") == "token *** in error"
 
 
 def test_empty_value_ignored():

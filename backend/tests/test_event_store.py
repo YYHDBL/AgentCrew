@@ -171,3 +171,98 @@ def test_publisher_called_after_commit_in_order(tmp_path):
 
     channel.close()
     db.close()
+
+
+def test_publisher_failure_does_not_duplicate_event(tmp_path):
+    """外审回稿：发布回调抛 locked/busy 类异常不得触发写通道重试（会重复追加）。"""
+    db, channel, _ = _setup(tmp_path)
+
+    def bad_publisher(_event):
+        raise sqlite3.OperationalError("database is locked")
+
+    store = EventStore(channel, publisher=bad_publisher)
+    asyncio.run(_append_mini_run(store))  # 全程发布失败，但追加必须每条恰好一次
+    count = db.read_conn.execute("SELECT count(*) FROM run_events").fetchone()[0]
+    assert count == 10
+    types = [row[0] for row in db.read_conn.execute(
+        "SELECT type FROM run_events ORDER BY global_seq")]
+    assert types.count("run.queued") == 1
+
+    channel.close()
+    db.close()
+
+
+def test_projection_unique_violation_rolls_back_event_only(tmp_path):
+    """外审回稿：隔离"投影失败"（非事件行 FK 失败）——同事务回滚的直接证据。
+
+    重复 call_id 的事件行本身合法（新 id/新 seq/真实会话），但投影 INSERT
+    撞 tool_calls.call_id UNIQUE → 整个事务回滚 → 事件不得入库。
+    """
+    db, channel, store = _setup(tmp_path)
+    asyncio.run(_append_mini_run(store))  # 建 run-1 父行（task_runs/messages 等）
+    asyncio.run(store.append(
+        task_run_id="run-1", conversation_id="conv-1", type=T.TOOL_PREPARED,
+        payload={"call_id": "dup-call", "tool_name": "bash",
+                 "side_effect_class": "outcome_unknown", "input_hash": "h",
+                 "risk_level": "low", "input": {"cmd": "ls"}},
+    ))
+    count_ok = db.read_conn.execute("SELECT count(*) FROM run_events").fetchone()[0]
+
+    with pytest.raises(sqlite3.IntegrityError):
+        asyncio.run(store.append(
+            task_run_id="run-1", conversation_id="conv-1", type=T.TOOL_PREPARED,
+            payload={"call_id": "dup-call", "tool_name": "bash",
+                     "side_effect_class": "outcome_unknown", "input_hash": "h2",
+                     "risk_level": "low", "input": {"cmd": "ls -l"}},
+        ))
+    count_bad = db.read_conn.execute("SELECT count(*) FROM run_events").fetchone()[0]
+    assert count_bad == count_ok, "投影 UNIQUE 失败后事件不应入库"
+    assert db.read_conn.execute(
+        "SELECT count(*) FROM tool_calls WHERE call_id='dup-call'"
+    ).fetchone()[0] == 1
+
+    channel.close()
+    db.close()
+
+
+def test_concurrent_appends_across_two_runs(tmp_path):
+    """外审回稿：并发追加的真实覆盖——global_seq 唯一连续、任务内 seq 连续、
+    发布顺序 == global_seq 升序（单写 executor 串行的直接证据）。"""
+    db, channel, _ = _setup(tmp_path)
+    published = []
+    store = EventStore(channel, publisher=published.append)
+    # 先顺序建两个任务的 RUN_QUEUED（task_runs 父行），再并发灌事件
+    for run_id in ("run-a", "run-b"):
+        asyncio.run(store.append(
+            task_run_id=run_id, conversation_id="conv-1", type=T.RUN_QUEUED,
+            payload={"instruction": f"任务 {run_id}"},
+        ))
+
+    async def burst(run_id: str, n: int):
+        for i in range(n):
+            await store.append(
+                task_run_id=run_id, conversation_id="conv-1",
+                type=T.QUESTION_REQUESTED,  # 无投影副作用，隔离并发路径本身
+                payload={"q": f"{run_id}#{i}"},
+            )
+
+    async def burst_all():
+        await asyncio.gather(burst("run-a", 25), burst("run-b", 25))
+
+    asyncio.run(burst_all())
+
+    total = db.read_conn.execute("SELECT count(*) FROM run_events").fetchone()[0]
+    assert total == 2 + 50
+    gseqs = [row[0] for row in db.read_conn.execute(
+        "SELECT global_seq FROM run_events ORDER BY global_seq")]
+    assert gseqs == list(range(1, total + 1)), "global_seq 必须无洞连续"
+    for run_id in ("run-a", "run-b"):
+        seqs = [row[0] for row in db.read_conn.execute(
+            "SELECT seq FROM run_events WHERE task_run_id=? ORDER BY seq", (run_id,))]
+        assert seqs == list(range(1, len(seqs) + 1))
+    pub_seqs = [p.global_seq for p in published]
+    assert pub_seqs == sorted(pub_seqs) and len(pub_seqs) == total, \
+        "发布顺序必须等于提交顺序（global_seq 严格递增）"
+
+    channel.close()
+    db.close()

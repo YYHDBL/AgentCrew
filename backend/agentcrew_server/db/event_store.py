@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import sqlite3
 import uuid
 from datetime import datetime, timezone
@@ -21,6 +22,8 @@ from .projections import apply_projection
 from .write_channel import WriteChannel
 
 Publisher = Callable[[Event], None]
+
+_log = logging.getLogger("agentcrew.db.event_store")
 
 
 def _utc_now() -> str:
@@ -107,5 +110,15 @@ class EventStore:
                 pass  # 事务已不存在（如 BEGIN 即失败）——保持原异常
             raise
         if self._publisher is not None:
-            self._publisher(event)  # 已提交；写通道线程内同步入队（§2 发布顺序）
+            # 已提交；仍在写通道线程内同步回调（§2 发布顺序 = 提交顺序）。
+            # 回调异常必须就地吞掉：若让它带着 locked/busy 字样冒泡，写通道会
+            # 重试整个闭包导致已提交事件被重复追加（外审回稿修复）。
+            try:
+                self._publisher(event)
+            except Exception:
+                _log.exception(
+                    "eventstore.publish 发布回调失败（事件已提交 global_seq=%s，"
+                    "不重试、不重复追加）",
+                    event.global_seq,
+                )
         return event

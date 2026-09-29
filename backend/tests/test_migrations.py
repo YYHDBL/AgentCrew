@@ -99,3 +99,25 @@ def test_snapshot_keeps_last_three(tmp_path):
     remaining = sorted(p.name for p in backups.glob("db-v*.sqlite"))
     assert len(remaining) == 3
     db.close()
+
+
+def test_snapshot_includes_uncheckpointed_wal_data(tmp_path):
+    """外审回稿：升级前快照必须包含 WAL 中已提交未检查点的数据（v1.9 依据）。"""
+    db_path = tmp_path / "old.db"
+    writer = sqlite3.connect(str(db_path), isolation_level=None)
+    writer.execute("PRAGMA journal_mode=WAL")
+    writer.execute("CREATE TABLE legacy_rows (id INTEGER PRIMARY KEY, v TEXT)")
+    writer.execute("BEGIN IMMEDIATE")
+    for i in range(50):
+        writer.execute("INSERT INTO legacy_rows (v) VALUES (?)", (f"row-{i}",))
+    writer.execute("COMMIT")  # 已提交但未 checkpoint：数据在 -wal 里
+    assert (tmp_path / "old.db-wal").stat().st_size > 0
+
+    db = Database(db_path)
+    result = run_migrations(db.write_conn, tmp_path / "backups")
+    assert result.status == "applied"
+    snapshot = sqlite3.connect(result.snapshot_path)
+    assert snapshot.execute("SELECT count(*) FROM legacy_rows").fetchone()[0] == 50
+    snapshot.close()
+    writer.close()
+    db.close()

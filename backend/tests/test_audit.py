@@ -86,6 +86,24 @@ def test_anchor_compare(tmp_path):
     assert not result.ok and result.broken_at_seq == 3
 
 
+def test_corrupt_anchor_file_fails_closed(tmp_path):
+    """外审回稿：损坏的 chain-head.txt ≠ 不存在——不得静默降级为无锚点校验。"""
+    conn = _make_conn(tmp_path)
+    _build_chain(conn)
+    head_path = tmp_path / "chain-head.txt"
+    head_path.write_text("garbage-not-a-pair\n")
+    result = verify_with_anchor(conn, head_path)
+    assert not result.ok and "损坏" in result.reason
+
+    head_path.write_text("notanumber abcdef\n")
+    result = verify_with_anchor(conn, head_path)
+    assert not result.ok and "损坏" in result.reason
+
+    # 真不存在的文件仍按"无锚点"通过（① 已覆盖全部条目）
+    (tmp_path / "absent.txt").unlink(missing_ok=True)
+    assert verify_with_anchor(conn, tmp_path / "absent.txt").ok
+
+
 def test_snapshot_empty_chain_no_file(tmp_path):
     conn = _make_conn(tmp_path)
     head_path = tmp_path / "chain-head.txt"
