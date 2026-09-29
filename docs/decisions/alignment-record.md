@@ -169,6 +169,7 @@
 | 权限确认 / 工具元数据 | `workMate/AionUi`（四选项契约）、`workMate/ZCode/apps/zcode-cli/packages/core/src/tool/`（ToolMetadata + 调度） |
 | 分包纪律 / 文档策略 / "如何做到简单" | `workMate/pi/`（how-pi-works.md、types.ts 契约注释、递进示例） |
 | 审计哈希链 / 教学 | `workMate/learn-workbuddy/s23_audit_sandbox/` |
+| 桌面壳+引擎集成 / 事件流传输 / 记忆治理对照 / 沙盒分层 | `workMate/EasyMint`（借鉴清单：docs/architecture/reference-easymint.md） |
 
 ---
 
