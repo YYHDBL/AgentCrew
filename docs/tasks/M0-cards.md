@@ -51,7 +51,7 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 - **依赖**：C2
 - **交付物**：进程内发布/订阅总线（每会话一个通道 + 全局通配）；Bearer 中间件（校验 `AGENTCREW_TOKEN`，无/错→401）；`GET /api/task-runs/:id/events?from=seq` 与 `GET /api/conversations/:id/stream?from=global_seq`（sse-starlette；from=0 重放历史后转实时；`retry:` 与心跳注释行）
 - **失败状态**：客户端断开（清理订阅不泄漏）；慢消费者（每连接独立队列，溢溢丢帧并标记需 `resync`）；订阅不存在的任务（404 而非空挂）
-- **真实运行验收**：无 token curl → 401；带 token + 种子数据 → 历史补播后无缝转实时（**无遗漏交接**：补播期间持续产生新事件，验证两段之间无丢失无重复——v1.1 交接协议）；断开重连带 `from=<最后global_seq>`（排他）→ 恰好续播；**慢客户端真实测试**：不读 socket 的连接打满每连接队列（1000）→ 收到 `event:resync` 帧（含最后连续游标）→ 连接被服务端终止 → 从该游标重连补齐；**连接上限**：第 33 条 SSE 连接 → 503 SSE_LIMIT；`GET state` 的 at_global_seq 与流消费配合：取快照后从 at_global_seq 续播、≤它的跳过
+- **真实运行验收**：无 token curl → 401；带 token + 种子数据 → 历史补播后无缝转实时（**无遗漏交接**：补播期间持续产生新事件，验证两段之间无丢失无重复——v1.1 交接协议）；断开重连带 `from=<最后global_seq>`（排他）→ 恰好续播；**慢客户端真实测试**：不读 socket 的连接打满每连接队列（1000）→ 收到 `event:resync` 帧（含最后连续游标）→ 连接被服务端终止 → 从该游标重连补齐；**连接上限**：第 33 条 SSE 连接 → 503 SSE_LIMIT；**帧序单调（v1.9）**：双任务并发写事件时 SSE 收到的 global_seq 严格递增（发布顺序=提交顺序；at_global_seq 快照配对的验收在 C7——该接口 C7 才交付）
 
 ### C4 · Provider 薄适配层（GLM 真实接入）
 
@@ -79,7 +79,7 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 - **依赖**：C2、C3
 - **交付物**：`reduce(state, event)` 纯函数（四态 + 等待计数器 + queue_paused，docs 02 §4 v1.4 迁移表）；`can_send/can_queue/can_cancel/can_continue_queue` 真值表函数；**任务创建带材料（v1.4，F001）**：`POST /api/conversations` 接收 import_files/folders（文件复制进任务资料目录、重名自动改名、逐文件回报 error；限制 GET /api/limits）、`GET /conversations/:id/scope`；`POST /api/conversations/:id/instructions`（can_send 直跑 / can_queue 入队 / 等待审批 409）；**排队控制（v1.4，F006）**：`POST .../queue/continue`（仅 queue_paused 时可，队首启动）、`POST .../queue/cancel`（item_ids 或 all；发送记录保留）；`GET .../state`（含 queue_paused 与队列明细）
 - **失败状态**：非法迁移（InvalidTransition，拒绝并返回当前合法动作列表）；并发同会话两条指令（锁序化，第二条必入队）；审批挂起时发指令（409 APPROVAL_PENDING）；queue/continue 在队列空/有待核验/有待审批时（409 带原因码）；材料部分失败（任务仍创建，materials 逐文件报 error）
-- **真实运行验收**（**仅限 C7 已有能力，运行时行为在 C8 验**——v1.1 修订）：reducer 参数化单测覆盖迁移表全行（含 queue_paused 分支）；真实创建带 3 个文件 + 1 个不存在路径的任务→materials 逐文件结果正确、**task_run 停留在 queued（无 runner 属预期）**；再发一条指令→入队可见；queue/cancel 真实取消排队项且 messages 保留发送记录；审批挂起态的 409 用 reducer 真值表驱动 API 返回；**settings 验收落此卡**：GET 脱敏（key 只回尾 4 位）→PATCH 改守门参数→GET 生效、审计链多一条；env 覆盖字段 PATCH→200 + ignored_fields；api_key_clear 真实清槽；文件写失败（只读目录）→500 CONFIG_WRITE_FAILED 且内存不变；client_request_id 重试同值→不产生重复任务/指令
+- **真实运行验收**（**仅限 C7 已有能力，运行时行为在 C8 验**——v1.1 修订）：reducer 参数化单测覆盖迁移表全行（含 queue_paused 分支）；真实创建带 3 个文件 + 1 个不存在路径的任务→materials 逐文件结果正确、**task_run 停留在 queued（无 runner 属预期）**；再发一条指令→入队可见；queue/cancel 真实取消排队项且 messages 保留发送记录；审批挂起态的 409 用 reducer 真值表驱动 API 返回；**settings 验收落此卡**：GET 脱敏（key 只回尾 4 位）→PATCH 改守门参数→GET 生效、审计链多一条；env 覆盖字段 PATCH→200 + ignored_fields；api_key_clear 真实清槽；文件写失败（只读目录）→500 CONFIG_WRITE_FAILED 且内存不变；client_request_id 重试同值→不产生重复任务/指令；**state 快照含 at_global_seq**：取快照→从该游标续播流→≤at_global_seq 的事件被跳过（v1.9 从 C3 移入——接口本卡交付）
 
 ### C8 · ReAct 主循环与 RunManager
 

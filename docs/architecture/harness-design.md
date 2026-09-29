@@ -32,6 +32,7 @@ async def run_task(task, attempt, ctx):
     while True:
         resp = provider.stream(slot=MAIN, messages=ctx.messages, tools=registry.schemas())
         if resp.tool_calls:
+            ctx.append_assistant(resp)                        # v1.9：tool_use 消息先入历史（结果配对的前提）
             results = scheduler.execute(resp.tool_calls)     # §4：闸门/幂等/并发都在这里
             ctx.append_tool_results(results)                  # >32KB 外部化（M1 前即生效）
             continue
@@ -73,7 +74,7 @@ timeout_ms=60_000, max_output_bytes=100_000
 ### 4.3 bash 判定纪律
 
 - 只读判定 = 首词 ∈ 固定白名单（ls/cat/head/tail/grep/**find**/wc/pwd/file/stat/du/diff）**且**不含任何元字符/重定向（`;` `&&` `||` `|` 反引号 `$( )` `>` `<` 换行，一票否决）**且**（v1.7，find 重入）find 的参数不含 `-exec/-execdir/-delete/-ok/-okdir/-fprintf/-fprint/-fls` 任一 token；python/awk/sed 一律非只读
-- **强制层 v1.7：M0 即给 bash 套最小 macOS Seatbelt profile**（用户裁定）——写限制在任务 scope 内、**网络全禁**（http_request 恢复为唯一网络入口的强承诺）、凭据路径禁读；越界 = 内核级拒绝；M2 升级完整 profile（read 范围收紧）
+- **强制层 v1.7：M0 即给 bash 套最小 macOS Seatbelt profile**（用户裁定）——写限制在任务 scope 内、**网络全禁**（http_request 恢复为唯一网络入口的强承诺）、凭据路径禁读；越界 = 内核级拒绝。**M0 边界如实声明（v1.9）：scope 外常规读取在 M0 由判定层约束而非内核强制，读取强制边界 M2 完成**
 - **子进程环境变量白名单（安全关键）**：仅 PATH/HOME/LANG/TZ/TERM；**绝不传 AGENTCREW_TOKEN / API key**——否则 bash 里一句 echo 就能读 token 反打本地接口，权限体系整体击穿
 - 路径判定先 `realpath()`（解析符号链接）再比前缀；合法范围 = 任务 scope（工作区目录 ∪ 任务资料目录 ∪ 授权文件夹），范围外 OUT_OF_SCOPE 直接拒
 - **受保护路径（v1.7）**：即使在 scope 内，工具读写双向硬禁平台内部数据与凭据——agentcrew.db / config.json / chain-head.txt / logs / USER.md / soul.md / MEMORY.md / ~/.ssh 等（"持久化提示词载体与凭据"品类，改一次即绕过判定层；读即泄密）——拒绝码 PROTECTED_PATH

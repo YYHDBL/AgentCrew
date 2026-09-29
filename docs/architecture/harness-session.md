@@ -312,7 +312,7 @@ M0 内置工具 = **五件套**（v1.7：核心四件套 + ask_user 交互原语
 
 **判定纪律（v1.2 收紧）**：
 - bash 只读判定需**同时满足三条**：① 命令首词 ∈ 固定白名单 `ls / cat / head / tail / grep / find / wc / pwd / file / stat / du / diff`；② **不含任何元字符或重定向**（`;` `&&` `||` `|` 反引号 `$( )` `>` `<` 换行）——一票否决；③ **find 的参数否决（v1.7 重入）**：参数中出现 `-exec / -execdir / -delete / -ok / -okdir / -fprintf / -fprint / -fls` 任一 token 即丧失只读资格——固定工具的参数规则可静态判定，解决"找文件要审批"的摩擦且不新增工具。`python`、`awk`、`sed` 等可执行任意代码的一律不算只读
-- **bash 强制层（v1.7，M0 即生效）**：所有 bash 子进程套**最小 macOS Seatbelt profile**（用户裁定）：写操作限制在任务 scope 内、**网络全禁**（内核级——http_request 恢复为唯一网络入口的强承诺）、凭据路径（~/.ssh 等）禁读；M2 升级为完整 profile（含 read 范围收紧）
+- **bash 强制层（v1.7，M0 即生效；v1.9 边界诚实化）**：所有 bash 子进程套**最小 macOS Seatbelt profile**：写限制在任务 scope 内、**网络全禁**（内核级——http_request 恢复为唯一网络入口的强承诺）、凭据路径（~/.ssh 等）禁读。**如实声明：scope 外的常规读取在 M0 仍由判定层约束（白名单/审批），非内核强制——读取强制边界 M2 完成，M0 不宣称"读取已由系统强制"**
 - **bash 子进程环境变量白名单（v1.6，安全必守）**：子进程仅继承 `PATH / HOME / LANG / TZ / TERM`；**绝不传 `AGENTCREW_TOKEN`、模型 API key 或任何凭据类变量**——否则 sidecar 里任何 bash 调用都能读到 token 反向调用接口，权限体系被整体击穿
 - 路径类匹配一律先 `realpath()` 规范化（解析符号链接）再比前缀
 - **路径合法范围 = 任务级 scope（v1.4，F001）**：`工作区数据目录 ∪ 任务资料目录(data/conversations/<id>/materials/) ∪ 用户授权的原位置文件夹(folders_json)`；scope 外路径在判定层直接拒绝（OUT_OF_SCOPE，可读原因展示），不进入审批
