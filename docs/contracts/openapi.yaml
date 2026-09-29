@@ -1,25 +1,34 @@
-# AgentCrew Sidecar API（v0.2-draft——对齐产品 F001–F010 后修订）
-# 维护：后端 Agent。x-phase 标注实现批次（m0 = 当前切片；p3/p4/p5 = 增量池）。交互规格定稿后冻结。
-# 鉴权：所有请求带 Authorization: Bearer <AGENTCREW_TOKEN>（环境变量注入，不经 stdout）。
-# 响应信封（v1.7 统一）：成功 = {"data": ...}；错误 = {"error": {code, message, detail}}。
+# AgentCrew Sidecar API（v0.3-draft——第四轮审查回稿：M0 操作具备可执行 schema）
+# 维护：后端 Agent。x-phase 标注实现批次（m0 = 当前切片；p3/p4/p5 = 增量池）。
+# 鉴权：除 /api/health 外全部 Bearer（AGENTCREW_TOKEN 环境变量注入，不经 stdout）。
+# 信封：成功 JSON = {"data": ...}；错误 = {"error": {code, message, detail}}；
+#       204 与 SSE 流不套信封。游标（from/after_seq）一律排他：返回 seq > 游标。
+# SSE 帧：默认帧 = 事件信封 {global_seq, task_run_id?, seq?, type, payload, ts}；
+#         控制帧 event:resync（data 含最后连续 global_seq，客户端从该游标重连）；
+#         event:shutdown（优雅关闭，客户端保存游标）；event:ping 心跳。
 openapi: 3.1.0
 info:
   title: AgentCrew Sidecar API
-  version: 0.2.1-draft
+  version: 0.3.0-draft
   description: |
-    单用户本地 sidecar。所有端点默认 Bearer 鉴权（除 /api/health）。
-    成功响应统一包裹 {"data": ...}；错误响应统一 {"error": {code, message, detail}}。
+    单用户本地 sidecar。M0 操作带完整请求/响应/错误 schema；
+    p3/p5 操作 schema 随对应切片细化（当前为方向性描述）。
 servers:
-  - { url: "http://127.0.0.1:{port}", variables: { port: { default: "8710" } } }
-security: [ { bearerToken: [] } ]
+  - url: http://127.0.0.1:{port}
+    variables:
+      port: { default: "8710" }
+security:
+  - bearerToken: []
 tags:
   - { name: tasks, description: 任务（会话）与指令 }
   - { name: materials, description: 任务材料与访问范围（F001） }
   - { name: queue, description: 排队：暂停/继续/取消（F006） }
   - { name: approvals, description: 审批（F005） }
+  - { name: questions, description: 向用户提问的回答链（v0.3 新增） }
   - { name: verifications, description: 待核验结果提交（F003） }
   - { name: artifacts, description: 产物（F004） }
   - { name: runs, description: 执行记录与事件（F002/F008） }
+  - { name: settings, description: 后端运行配置 }
   - { name: cron, description: 定时任务（F007，phase p5） }
 
 components:
@@ -28,15 +37,24 @@ components:
   schemas:
     Error:
       type: object
-      required: [ error ]
+      required: [error]
       properties:
         error:
           type: object
-          required: [ code, message ]
+          required: [code, message]
           properties:
-            code: { type: string, examples: [INVALID_PATH, QUEUE_PAUSED, PENDING_VERIFICATION, APPROVAL_STALE, OUT_OF_SCOPE, PROTECTED_PATH] }
+            code: { type: string }
             message: { type: string }
             detail: { type: object, additionalProperties: true }
+    ConversationSummary:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: [string, "null"] }
+        status: { type: string, enum: [active, archived] }
+        agent_name: { type: string }
+        last_activity_at: { type: string, format: date-time }
+        state_badge: { type: string, enum: [idle, running, waiting_approval, waiting_question, interrupted, failed] }
     TaskRunSummary:
       type: object
       properties:
@@ -53,35 +71,119 @@ components:
         state: { type: string, enum: [idle, starting, running, error] }
         waiting_approvals: { type: integer }
         waiting_questions: { type: integer }
-        queue_paused: { type: boolean, description: 用户停止后队列为暂停态（F006） }
-        queue: { type: array, items: { type: object, properties: { id: { type: string }, text: { type: string }, enqueued_at: { type: string } } } }
+        queue_paused: { type: boolean }
+        at_global_seq: { type: integer, description: 快照反映到的事件位置；≤它的 seq 已被吸收，续播跳过（v0.3） }
+        queue:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              text: { type: string }
+              enqueued_at: { type: string, format: date-time }
         can_send: { type: boolean }
         can_queue: { type: boolean }
         can_cancel: { type: boolean }
+        can_continue_queue: { type: boolean }
         current_task_run_id: { type: [string, "null"] }
     Scope:
       type: object
-      description: 任务的材料与文件访问范围（发送前可见，F001）
       properties:
         workspace_dir: { type: string }
-        materials_dir: { type: string, description: "任务资料目录 data/conversations/<id>/materials/" }
-        folders: { type: array, items: { type: object, properties: { path: { type: string }, label: { type: string } } }, description: 原位置使用的文件夹（读写范围，仍受规则与审批约束） }
+        materials_dir: { type: string }
+        folders:
+          type: array
+          items:
+            type: object
+            properties:
+              path: { type: string }
+              access: { type: string, enum: [read, read_write], description: v1.7 起授权界面读写分列 }
     MaterialImportResult:
       type: object
       properties:
         original_path: { type: string }
-        stored_name: { type: string, description: 重名冲突时生成可辨认新名，原文件不动 }
+        stored_name: { type: string }
         size_bytes: { type: integer }
-        error: { type: [string, "null"], description: 不为空表示该文件被拒绝的原因（不存在/不可读/超限） }
+        error: { type: [string, "null"] }
+    ConversationCreateRequest:
+      type: object
+      required: [instruction]
+      properties:
+        agent_id: { type: string }
+        instruction: { type: string, minLength: 1 }
+        client_request_id: { type: string, description: 幂等键——网络重试不产生重复任务（v0.3） }
+        import_files: { type: array, items: { type: string }, maxItems: 20 }
+        folders: { type: array, items: { type: string }, maxItems: 5 }
+    ConversationCreateData:
+      type: object
+      properties:
+        conversation: { $ref: "#/components/schemas/ConversationSummary" }
+        materials: { type: array, items: { $ref: "#/components/schemas/MaterialImportResult" } }
+        scope: { $ref: "#/components/schemas/Scope" }
+        task_run_id: { type: string }
+    ConversationPatchRequest:
+      type: object
+      properties:
+        title: { type: string, minLength: 1 }
+    InstructionRequest:
+      type: object
+      required: [text]
+      properties:
+        text: { type: string, minLength: 1 }
+        client_request_id: { type: string }
+    Message:
+      type: object
+      properties:
+        id: { type: string }
+        role: { type: string, enum: [user, assistant] }
+        content: { type: string }
+        task_run_id: { type: [string, "null"] }
+        created_at: { type: string, format: date-time }
+    QueueCancelRequest:
+      type: object
+      properties:
+        item_ids: { type: array, items: { type: string } }
+        all: { type: boolean }
+    Approval:
+      type: object
+      properties:
+        call_id: { type: string }
+        tool: { type: string }
+        target: { type: string }
+        input_hash: { type: string }
+        risk: { type: string, enum: [low, medium, high] }
+        always_scope_preview: { type: [string, "null"] }
+        requested_at: { type: string, format: date-time }
+    ApprovalDecisionRequest:
+      type: object
+      required: [decision]
+      properties:
+        decision: { type: string, enum: [allow_once, allow_always, reject_once, reject_always] }
+    QuestionPending:
+      type: object
+      properties:
+        request_id: { type: string }
+        question: { type: string }
+        options: { type: array, items: { type: string } }
+        asked_at: { type: string, format: date-time }
+    QuestionAnswerRequest:
+      type: object
+      properties:
+        answer: { type: [string, "null"], description: 用户的回答；null = 用户取消回答（按"拒绝回答"告知模型） }
     PendingVerification:
       type: object
-      description: 待核验的外部调用（F003）
       properties:
         call_id: { type: string }
         tool: { type: string }
         input: { type: object, additionalProperties: true }
         dispatched_at: { type: string, format: date-time }
-        evidence: { type: string, description: 已知证据摘要（dispatch 时间、无终态记录等） }
+        evidence: { type: string }
+    VerificationRequest:
+      type: object
+      required: [verdict]
+      properties:
+        verdict: { type: string, enum: [confirmed_executed, confirmed_not_executed] }
+        note: { type: string }
     Artifact:
       type: object
       properties:
@@ -89,226 +191,525 @@ components:
         task_run_id: { type: string }
         tool_call_id: { type: string }
         name: { type: string }
-        path: { type: string, description: 绝对路径 }
+        path: { type: string }
         ext: { type: string }
         size_bytes: { type: [integer, "null"] }
-        status: { type: string, enum: [generating, ready, failed, missing], description: missing 由探测更新（F004） }
-        created_at: { type: string }
-    Approval:
+        status: { type: string, enum: [generating, ready, failed, missing] }
+        created_at: { type: string, format: date-time }
+    Settings:
       type: object
       properties:
-        call_id: { type: string }
-        tool: { type: string }
-        target: { type: string, description: 目标资源（规范路径/域名/命令） }
-        input_hash: { type: string }
-        risk: { type: string, enum: [low, medium, high] }
-        always_scope_preview: { type: [string, "null"], description: "选择'始终允许'将保存的工具+资源范围（F005）" }
-        requested_at: { type: string }
+        config_version: { type: string }
+        models:
+          type: object
+          properties:
+            main: { $ref: "#/components/schemas/ModelSlot" }
+            aux: { $ref: "#/components/schemas/ModelSlot" }
+        gates:
+          type: object
+          properties:
+            max_steps: { type: integer }
+            stall_seconds: { type: integer }
+            repeat_limit: { type: integer }
+            global_concurrency: { type: integer }
+        limits:
+          type: object
+          properties:
+            max_files: { type: integer }
+            max_file_mb: { type: integer }
+            max_folders: { type: integer }
+    ModelSlot:
+      type: object
+      properties:
+        provider: { type: string }
+        model: { type: string }
+        api_key_configured: { type: boolean }
+        api_key_hint: { type: string, description: 尾 4 位 }
+        effective_source: { type: string, enum: [env, file], description: v1.1：该槽当前生效来源 }
+    SettingsPatchRequest:
+      type: object
+      properties:
+        models:
+          type: object
+          properties:
+            main: { type: object, additionalProperties: true }
+            aux: { type: object, additionalProperties: true }
+        api_key_clear: { type: array, items: { type: string, enum: [main, aux] }, description: 显式清除某槽密钥 }
+        gates: { type: object, additionalProperties: true }
+        limits: { type: object, additionalProperties: true }
+    SettingsPatchData:
+      type: object
+      properties:
+        settings: { $ref: "#/components/schemas/Settings" }
+        ignored_fields: { type: array, items: { type: string }, description: 被环境变量覆盖而未生效的字段 }
+  responses:
+    ErrEnvelope:
+      description: 错误信封
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
 
 paths:
   /api/health:
-    get: { tags: [tasks], security: [], responses: { "200": { description: ok } } }
+    get:
+      tags: [tasks]
+      security: []
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status: { type: string }
   /api/limits:
     get:
       tags: [materials]
-      summary: 材料与导入限制（F001"限制由接口契约给出"）
-      responses: { "200": { description: "max_files=20 / max_file_mb=50 / max_folders=5（默认值，可配置）" } }
-
+      responses:
+        "200":
+          description: 材料与导入限制
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      max_files: { type: integer }
+                      max_file_mb: { type: integer }
+                      max_folders: { type: integer }
   /api/conversations:
     get:
       tags: [tasks]
-      summary: 任务列表（含状态徽标字段）
-      responses: { "200": { description: 列表 } }
+      summary: 任务列表
+      responses:
+        "200":
+          description: 任务列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ConversationSummary" }
     post:
       tags: [tasks, materials]
-      summary: 发送首条指令并创建任务（F001：点击发送才创建；带材料）
+      summary: 发送首条指令并创建任务（F001）
       requestBody:
+        required: true
         content:
           application/json:
-            schema:
-              type: object
-              required: [instruction]
-              properties:
-                agent_id: { type: string }
-                instruction: { type: string, minLength: 1 }
-                import_files: { type: array, items: { type: string }, description: 本地文件绝对路径，复制进任务资料目录（原文件不动；重名自动改名） }
-                folders: { type: array, items: { type: string }, description: 原位置使用的文件夹（进入读写范围） }
+            schema: { $ref: "#/components/schemas/ConversationCreateRequest" }
       responses:
-        "201": { description: "创建成功；data 含 conversation、materials（MaterialImportResult[]，含逐文件拒绝原因）、scope、task_run_id" }
-        "422": { description: "全部材料被拒或指令非法；detail 含逐项原因（部分失败仍创建，见 materials 结果）" }
+        "201":
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: "#/components/schemas/ConversationCreateData" }
+        "422":
+          description: 指令非法或全部材料被拒
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
   /api/conversations/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
     patch:
       tags: [tasks]
       summary: 重命名（保留原始指令与审计）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: 已更新 } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConversationPatchRequest" }
+      responses:
+        "200":
+          description: 已更新
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: "#/components/schemas/ConversationSummary" }
+        "404": { $ref: "#/components/responses/ErrEnvelope" }
     delete:
       tags: [tasks]
       summary: 删除任务
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "204": { description: 已删除 } }
+      responses:
+        "204": { description: 已删除（无信封） }
+        "404": { $ref: "#/components/responses/ErrEnvelope" }
   /api/conversations/{id}/scope:
     get:
       tags: [materials]
-      summary: 当前工作空间、资料目录与文件夹访问范围（F001 发送前后一致展示）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: Scope, content: { application/json: { schema: { $ref: "#/components/schemas/Scope" } } } } }
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: 工作空间/资料目录/文件夹范围
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: "#/components/schemas/Scope" }
   /api/conversations/{id}/instructions:
     post:
       tags: [tasks, queue]
       summary: 后续指令（can_send 直跑 / can_queue 入队 / 等待审批 409）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      requestBody: { content: { application/json: { schema: { type: object, required: [text], properties: { text: { type: string } } } } } }
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InstructionRequest" }
       responses:
-        "202": { description: 已受理（直跑或入队；data 含 queue_position） }
-        "409": { description: "等待审批中不可发送（Error code=APPROVAL_PENDING）" }
+        "202":
+          description: 已受理
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      mode: { type: string, enum: [started, queued] }
+                      queue_position: { type: [integer, "null"] }
+        "409": { $ref: "#/components/responses/ErrEnvelope" }
   /api/conversations/{id}/state:
     get:
       tags: [tasks]
-      summary: FSM 快照（含 queue_paused 与队列明细）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: ConversationState } }
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: FSM 快照（含 at_global_seq 与队列明细）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: "#/components/schemas/ConversationState" }
   /api/conversations/{id}/messages:
     get:
       tags: [runs]
-      summary: 聊天记录投影（分页）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: 分页消息 } }
+      summary: 聊天记录（分页：limit ≤200，before=消息 id 游标）
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, maximum: 200, default: 50 } }
+        - { name: before, in: query, schema: { type: string }, description: 返回该消息 id 之前的记录 }
+      responses:
+        "200":
+          description: 分页消息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/Message" } }
+                      has_more: { type: boolean }
   /api/conversations/{id}/task-runs:
     get:
       tags: [runs]
-      summary: 任务的执行记录列表（含 attempt 边界，F008）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: "TaskRunSummary 数组" } }
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: 执行记录列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/TaskRunSummary" }
   /api/conversations/{id}/stream:
     get:
       tags: [runs]
-      summary: 会话级 SSE 聚合流（from=global_seq 重放）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } }, { name: from, in: query, schema: { type: integer } } ]
-      responses: { "200": { description: text/event-stream } }
-
+      summary: 会话级 SSE（from=排他游标；控制帧 resync/shutdown/ping 见文件头注释）
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: from, in: query, schema: { type: integer, default: 0 } }
+      responses:
+        "200": { description: text/event-stream（无信封） }
+        "503": { $ref: "#/components/responses/ErrEnvelope" }
   /api/conversations/{id}/queue/continue:
     post:
       tags: [queue]
-      summary: 继续处理（F006：停止后队列暂停，用户点继续才启动队首）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
       responses:
-        "202": { description: 队首指令已启动（run.queued→run.started） }
-        "409": { description: "队列为空 / 有待核验（PENDING_VERIFICATION）/ 有待审批（APPROVAL_PENDING）" }
+        "202": { description: "队首已启动（202 无响应体，属有意设计）" }
+        "409": { $ref: "#/components/responses/ErrEnvelope" }
   /api/conversations/{id}/queue/cancel:
     post:
       tags: [queue]
-      summary: 取消排队指令（明确范围；发送记录保留，F006）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      requestBody: { content: { application/json: { schema: { type: object, properties: { item_ids: { type: array, items: { type: string } }, all: { type: boolean } } } } } }
-      responses: { "200": { description: "已取消（data 列出取消项；发送历史保留在 messages，queue.item_cancelled 事件留痕）" } }
-
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/QueueCancelRequest" }
+      responses:
+        "200":
+          description: 已取消（发送记录保留）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      cancelled_ids: { type: array, items: { type: string } }
   /api/conversations/{id}/artifacts:
     get:
       tags: [artifacts]
-      summary: 任务产物列表（可按 run 过滤；缺失状态由探测更新，F004）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } }, { name: task_run_id, in: query, schema: { type: string } } ]
-      responses: { "200": { description: "Artifact 数组", content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Artifact" } } } } } }
-
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: task_run_id, in: query, schema: { type: string } }
+      responses:
+        "200":
+          description: 产物列表（missing 由探测更新）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Artifact" }
   /api/conversations/{id}/pending-verifications:
     get:
       tags: [verifications]
-      summary: 待核验调用清单（F003）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: "PendingVerification 数组" } }
-
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: 待核验清单
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/PendingVerification" }
+  /api/conversations/{id}/questions:
+    get:
+      tags: [questions]
+      summary: 挂起中的提问（刷新后恢复提问卡）
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: 待回答提问列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/QuestionPending" }
+  /api/questions/{requestId}/answer:
+    post:
+      tags: [questions]
+      summary: 提交提问回答（answer=null 表示用户取消，按"拒绝回答"告知模型）
+      parameters:
+        - { name: requestId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/QuestionAnswerRequest" }
+      responses:
+        "200":
+          description: 已记录（question.answered 事件）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      request_id: { type: string }
+                      answered_at: { type: string, format: date-time }
+        "409": { $ref: "#/components/responses/ErrEnvelope" }
   /api/task-runs/{id}/events:
     get:
       tags: [runs]
-      summary: "执行事件：默认 SSE 流（from=任务内 seq）；带 limit 参数时返回 JSON 分页（运行中心回放用，F008）"
+      summary: SSE 流（from=任务内排他 seq）；带 limit 时为 JSON 分页（after_seq 排他，limit ≤500）
       parameters:
         - { name: id, in: path, required: true, schema: { type: string } }
-        - { name: from, in: query, schema: { type: integer } }
-        - { name: limit, in: query, schema: { type: integer, description: 传了即走 JSON 分页 } }
+        - { name: from, in: query, schema: { type: integer, default: 0 } }
         - { name: after_seq, in: query, schema: { type: integer } }
-      responses: { "200": { description: "text/event-stream 或 application/json（items + next_after_seq）" } }
+        - { name: limit, in: query, schema: { type: integer, maximum: 500 } }
+      responses:
+        "200": { description: "text/event-stream，或 JSON：{data:{items:[事件信封], next_after_seq}}" }
   /api/task-runs/{id}/attempts:
     get:
       tags: [runs]
-      summary: 尝试列表（恢复边界可见，F003/F008）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: "attempts[]（kind=initial|resume、outcome、时间）" } }
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: 尝试列表（恢复边界与配置指纹可见）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        attempt_no: { type: integer }
+                        kind: { type: string, enum: [initial, resume] }
+                        outcome: { type: [string, "null"] }
+                        context_fingerprint: { type: object, additionalProperties: true }
+                        resume_reason: { type: [string, "null"] }
+                        started_at: { type: string, format: date-time }
+                        ended_at: { type: [string, "null"], format: date-time }
   /api/task-runs/{id}/approvals:
     get:
       tags: [approvals]
-      summary: 审批列表（status=pending 供界面刷新后恢复审批卡，F005）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } }, { name: status, in: query, schema: { type: string, enum: [pending, resolved] } } ]
-      responses: { "200": { description: "Approval 数组" } }
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [pending, resolved] } }
+      responses:
+        "200":
+          description: 审批列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Approval" }
   /api/task-runs/{id}/cancel:
     post:
       tags: [queue]
-      summary: "停止执行（F006：当前执行进入取消；完成后队列进入暂停态，不自动启动）"
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "202": { description: 取消中 } }
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "202": { description: "取消中（202 无响应体；终态时序见 harness-design §3）" }
   /api/task-runs/{id}/resume:
     post:
       tags: [verifications]
-      summary: 恢复执行（新 attempt；存在 pending_verification 时 409）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
       responses:
-        "202": { description: 恢复中 }
-        "409": { description: "存在待核验调用（PENDING_VERIFICATION，data 含清单）" }
-
+        "202": { description: "恢复中（202 无响应体；新 attempt，绑定新配置版本）" }
+        "409": { $ref: "#/components/responses/ErrEnvelope" }
   /api/tool-approvals/{callId}:
     post:
       tags: [approvals]
-      summary: 审批决定（四选项；绑定 input_hash）
-      parameters: [ { name: callId, in: path, required: true, schema: { type: string } } ]
+      summary: 审批决定——同决定重试幂等返回首次结果；不同决定 → 409 APPROVAL_STALE
+      parameters:
+        - { name: callId, in: path, required: true, schema: { type: string } }
       requestBody:
+        required: true
         content:
           application/json:
-            schema:
-              type: object
-              required: [decision]
-              properties:
-                decision: { type: string, enum: [allow_once, allow_always, reject_once, reject_always] }
+            schema: { $ref: "#/components/schemas/ApprovalDecisionRequest" }
       responses:
-        "200": { description: "已决定（重复提交返回首次决定，幂等）" }
-        "409": { description: "APPROVAL_STALE——请求已处理或 input_hash 不符，界面需刷新请求" }
-
+        "200":
+          description: 已决定（data 含首次决定与时间）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      decision: { type: string }
+                      decided_at: { type: string, format: date-time }
+                      idempotent_replay: { type: boolean }
+        "409": { $ref: "#/components/responses/ErrEnvelope" }
   /api/tool-calls/{callId}/verification:
     post:
       tags: [verifications]
-      summary: 提交核验结果（F003：确认已执行/确认未执行；写事件与审计链）
-      parameters: [ { name: callId, in: path, required: true, schema: { type: string } } ]
+      parameters:
+        - { name: callId, in: path, required: true, schema: { type: string } }
       requestBody:
+        required: true
         content:
           application/json:
-            schema:
-              type: object
-              required: [verdict]
-              properties:
-                verdict: { type: string, enum: [confirmed_executed, confirmed_not_executed] }
-                note: { type: string, description: 证据说明（可选） }
+            schema: { $ref: "#/components/schemas/VerificationRequest" }
       responses:
-        "200": { description: "已记录（confirmed_executed→completed(verified_by_user)；confirmed_not_executed→not_executed，恢复时告知模型需重做）" }
-        "409": { description: 该调用不处于待核验状态 }
-
+        "200":
+          description: "已记录（tool.verification_submitted 事件 + 审计链）"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      call_id: { type: string }
+                      status: { type: string, enum: [completed, not_executed] }
+                      verdict: { type: string }
+        "409": { $ref: "#/components/responses/ErrEnvelope" }
   /api/settings:
     get:
-      tags: [tasks]
-      summary: 后端运行配置（models/gates/limits；api_key 脱敏只回尾 4 位）
-      responses: { "200": { description: settings } }
+      tags: [settings]
+      responses:
+        "200":
+          description: 后端配置（密钥脱敏）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: "#/components/schemas/Settings" }
     patch:
-      tags: [tasks]
-      summary: 更新 gates/limits 即时生效；改 models 重建 provider；变更入审计链
-      requestBody: { content: { application/json: { schema: { type: object } } } }
-      responses: { "200": { description: 已更新 } }
-
+      tags: [settings]
+      summary: 更新配置——仅影响后续执行的配置版本；运行中执行保持绑定版
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SettingsPatchRequest" }
+      responses:
+        "200":
+          description: 已更新
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { $ref: "#/components/schemas/SettingsPatchData" }
+        "500": { $ref: "#/components/responses/ErrEnvelope" }
   /api/cron/jobs:
     get:
       tags: [cron]
-      summary: 定时任务列表（含 next_run、启用状态、创建来源）
-      responses: { "200": { description: "jobs 数组" } }
+      responses:
+        "200": { description: "p5：{data:[job]}（schema 随切片细化）" }
     post:
       tags: [cron]
-      summary: 创建定时任务（自动化页或审批通过后由 agent 路径调用；同一契约）
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -318,32 +719,59 @@ paths:
                 name: { type: string }
                 instruction: { type: string }
                 agent_id: { type: string }
-                schedule: { type: object, description: "{kind: at|every|cron, at_ms|every_ms|expr, tz}" }
-                execution_mode: { type: string, enum: [existing, new_conversation], description: 放入现有任务或每次新任务 }
+                schedule:
+                  type: object
+                  properties:
+                    kind: { type: string, enum: [at, every, cron] }
+                    at_ms: { type: integer }
+                    every_ms: { type: integer }
+                    expr: { type: string }
+                    tz: { type: string }
+                execution_mode: { type: string, enum: [existing, new_conversation] }
                 conversation_id: { type: [string, "null"] }
-                pre_authorized: { type: array, items: { type: object, properties: { tool: { type: string }, pattern: { type: string } } } }
+                pre_authorized:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      tool: { type: string }
+                      pattern: { type: string }
                 created_by: { type: string, enum: [user, agent], default: user }
-      responses: { "201": { description: 已创建 } }
+      responses:
+        "201": { description: "p5：已创建" }
   /api/cron/jobs/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
     patch:
       tags: [cron]
-      summary: 更新/停用
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: 已更新 } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled: { type: boolean }
+                name: { type: string }
+                schedule: { type: object, additionalProperties: true }
+                pre_authorized: { type: array, items: { type: object, additionalProperties: true } }
+      responses:
+        "200": { description: "p5：已更新" }
     delete:
       tags: [cron]
-      summary: 删除
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "204": { description: 已删除 } }
+      responses:
+        "204": { description: "p5：已删除（无信封）" }
   /api/cron/jobs/{id}/run-now:
     post:
       tags: [cron]
-      summary: 手动触发（仍走预授权闸门）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "202": { description: 已触发 } }
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "202": { description: "p5：已触发（仍走预授权闸门）" }
   /api/cron/jobs/{id}/runs:
     get:
       tags: [cron]
-      summary: 运行记录（fired/missed/skipped/failed，可返回对应任务）
-      parameters: [ { name: id, in: path, required: true, schema: { type: string } } ]
-      responses: { "200": { description: "runs 数组" } }
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200": { description: "p5：{data:[run]}（fired/missed/skipped/failed）" }

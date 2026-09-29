@@ -11,8 +11,13 @@
 | run_attempts | 执行尝试（恢复 = 新 attempt） |
 | run_events | **执行过程唯一事实源**（global_seq 全局游标 + 任务内 seq；载荷含全文） |
 | steps / llm_calls / tool_calls / messages | 投影表（tool_calls 含 call_id、副作用三分类、input_hash、pending_verification） |
+| task_materials | 任务导入材料（original_path/stored_name/逐文件 error）——v1.4 |
+| artifacts | 产物投影（generating/ready/failed/missing + 惰性探测）——v1.4 |
 | agent_permission_rules | 员工规则（effect allow/deny + pattern）——M0 建好，M2 全面使用 |
 | audit_log | 审计哈希链（链头周期快照 chain-head.txt）——M0 起步 |
+| schema_migrations | 迁移版本表（v1.1 补录；升级前 db 快照存 backups/） |
+
+**M0 建表合计 13 张**，C2 验收逐表核对以本清单为准。
 
 ## 治理域（M2，定义：governance §1–3）
 

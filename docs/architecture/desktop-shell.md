@@ -56,7 +56,7 @@ Preload：contextBridge 窄 API（原生对话框/通知/打开路径/keepAwake�
 - 订阅：`GET /api/task-runs/:id/events?from=<seq>`（SSE，任务内游标）；会话级聚合流 `GET /api/conversations/:id/stream?from=<global_seq>`（内部任务事件 + FSM 快照 + 通知）——**会话级流使用全局单调游标 `global_seq`（事件表自增主键），跨任务稳定有序（v1.1）**
 - **带鉴权的流式订阅（v1.2）**：原生 EventSource 无法携带 Authorization 头，改用 **fetch 流**；**重连逻辑由前端显式实现**：保存游标 `global_seq` → 断线后带 `from=<global_seq>` 重新发起（指数退避）→ 服务端续播补齐增量；刷新页面 `from=0` 重放恢复 UI（EventSource 自动重连方案废弃）
 - **实现选型（v1.3，不自研 SSE 解析）**：后端 `sse-starlette`；前端 `@microsoft/fetch-event-source`（fetch + 自定义头 + 重连控制，Eigent 同款验证过）
-- 重连后先拉一次 FSM 快照（can_send/can_queue/can_cancel + waiting 计数），再消费增量
+- 重连后先拉一次 FSM 快照（含 `at_global_seq`），再从该游标续播增量（≤at_global_seq 的事件已被快照吸收，跳过——v1.1 配对协议）
 - 通知类（记忆更新、cron 被拒）走会话流 + 桌面通知双通道
 
 ## 5. 前端架构（AI 生成维护）

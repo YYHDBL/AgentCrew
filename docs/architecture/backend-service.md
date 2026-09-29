@@ -1,7 +1,7 @@
 # 后端服务层详设（FastAPI sidecar）
 
-> 维护：后端 Agent ｜ 版本：v1.0（2026-09-30）｜ 上游：[harness-design](./harness-design.md)（引擎）、[desktop-shell](./desktop-shell.md)（进程监管）、[../contracts/openapi.yaml](../contracts/openapi.yaml)（接口契约）
-> 本文收拢**服务层**（非引擎）的设计：启动/关闭、配置、CORS、日志、错误码、并发、数据目录。全部为技术决策（后端 Agent 权限内），无产品分叉。
+> 维护：后端 Agent ｜ 版本：v1.1（2026-09-30，第四轮外审回稿修订）｜ 上游：[harness-design](./harness-design.md)、[desktop-shell](./desktop-shell.md)、[../contracts/openapi.yaml](../contracts/openapi.yaml)
+> 本文收拢**服务层**设计：启动/关闭、写通道、SSE 边界、配置、CORS、日志、错误码、并发、数据目录。全部技术决策。
 
 ---
 
@@ -11,95 +11,116 @@
 读启动参数与环境（--port/--data-dir/--parent-pid, AGENTCREW_TOKEN）
 → 获取 instance.lock（已锁=另一实例在跑，退出码 2）
 → 打开 SQLite（WAL + busy_timeout=5s）
-→ 执行迁移（版本冲突 → 拒绝启动报版本号）
-→ 审计链校验（失败 → 进入【只读诊断模式】：仅挂 /api/health 与诊断端点，
-   业务端点全部 503 + 断点信息；不执行任何 agent/工具操作）
-→ 种子检查（M2：组织/工作空间/小文 幂等 seed）
-→ 启动对账（running→interrupted；dispatched 无终态→核验/待核验，见 harness §8）
+→ 升级前快照（v1.1：目标版本 > 当前版本时，先原子复制 agentcrew.db → backups/db-v<旧>-<时间戳>.sqlite，
+   保留最近 3 份——迁移失败可整目录还原）
+→ 执行迁移（每条迁移单独事务，SQLite DDL 可回滚；版本冲突[目标<当前] → 拒绝启动报两版本号；
+   迁移中途失败 → 该事务回滚 + 进入只读诊断模式，界面提示从 backups/ 还原）
+→ 审计链校验（失败 → 只读诊断模式：仅 /api/health 与诊断端点，业务端点 503 DIAGNOSTIC_MODE）
+→ 种子检查（M2 幂等 seed）
+→ 启动对账（running→interrupted；dispatched 无终态→核验/待核验）
 → 起事件总线 + RunManager + 定时调度（P5）
-→ uvicorn 监听 127.0.0.1:port
-→ stdout 打 AGENTCREW_READY {"port":N}（无 token）
+→ uvicorn 监听 127.0.0.1:port → stdout AGENTCREW_READY {"port":N}
 ```
 
-## 2. 配置体系
+数据库与工件的恢复单位是**整个 data/ 目录**（快照+工件必须同版本成对还原，诊断界面写明）。
+
+## 2. 写通道（v1.1 重写——全部库变更的唯一通道）
+
+**所有数据库变更**（事件追加、投影更新、审批/队列/规则/审计/核验/产物状态/配置持久化）一律经过**同一个串行写通道**：单一写 executor（`asyncio.to_thread` 上的全局写锁）。
+
+- **事件与投影同一事务**：append run_events + 更新对应投影表在一个 SQLite 事务内提交，要么都生效要么都不
+- **提交后才发布**：事务提交成功后才向事件总线/SSE 扇出——订阅者永远看不到未提交的事件
+- **禁止跨外部等待持有事务**：事务内不得等待模型、工具、HTTP、SSE；工具执行 = 先写 prepared（事务一）→ 执行（无事务）→ 写结果（事务二）
+- 读操作走只读连接（WAL 并发读不阻塞写通道）
+
+## 3. SSE 边界（v1.1 新增——补播与实时的交接协议）
+
+- **游标语义**：`from` / `after_seq` 一律**排他**（返回 seq > 游标的事件）；`from=0` 重放全部；事件信封 `{global_seq, ...}` 单调递增
+- **无遗漏交接**（服务端单进程保证）：订阅建立时，SSE 端点**先注册实时监听（带缓冲）→ 再从库读历史至当前已提交 head → 转入实时**；缓冲中 `global_seq ≤ 历史 head` 的帧丢弃——两段之间不存在窗口
+- **FSM 快照配套游标**：`GET /conversations/:id/state` 返回 `at_global_seq`（快照反映到的位置）；客户端规则：先取快照，再从 `at_global_seq` 续播事件，`≤ at_global_seq` 的事件已被快照吸收、直接跳过
+- **慢消费者**：每连接独立队列上限 1000 条；溢出 = **服务端终止该订阅**并发送最后一帧 `event: resync`（data 含最后连续 `global_seq`），客户端从该游标重连补读——不静默丢帧
+- **连接上限**：并发 SSE 连接 ≤ 32（单用户桌面足够）；超限 503
+- 优雅关闭时向所有订阅发 `event: shutdown`（客户端保存游标，见 §7）
+
+## 4. 配置体系（v1.1 版本化重写）
 
 **优先级**：环境变量 > `data/config.json` > 代码默认值。
 
 ```jsonc
-// data/config.json（运行时可改；0600 权限；data/ 不入 git）
-{
-  "models": { "main": {...GLM}, "aux": {...GLM-flash} },   // 含 api_key（单用户本机文件存储，界面只回显尾 4 位）
-  "gates":  { "max_steps": 40, "stall_seconds": 600, "repeat_limit": 3, "global_concurrency": 8 },
-  "limits": { "max_files": 20, "max_file_mb": 50, "max_folders": 5 },
-  "log_level": "info"
-}
+{ "models": {...}, "gates": {...}, "limits": {...}, "log_level": "info" }  // 同 v1.0
 ```
 
-- 桌面端设置页改"关窗行为/数据目录"存 Electron 侧（desktop-shell 范畴）；**模型与守门参数**走后端：`GET /api/settings`（key 脱敏只回尾 4 位）、`PATCH /api/settings`（改 gates/limits 即时生效；改 models 重建 provider 实例）
-- 任何配置变更写审计链（actor=owner）
+- **配置版本化（v1.1）**：每次修改配置生成新 `config_version`；**每个任务与 aux 执行开始时绑定当时的配置版本（不可变快照，记入 attempt 的 context_fingerprint）**；`PATCH /api/settings` 只切换**后续执行**使用的版本——运行中的 main 流与 aux 任务继续用各自绑定版，跑完即止
+- **环境变量覆盖字段**：PATCH 写入被 env 覆盖的字段 → 200 + `ignored_fields` 列表（文件已存但非有效值；GET 返回 `effective_source: env|file`）
+- **密钥语义**：GET 永不返回完整 key（只回尾 4 位 + 是否已配置）；PATCH 中 `api_key` 字段**缺省 = 不变**；清空须显式 `api_key_clear: true`
+- **写入失败**：先写文件（临时+rename），成功后才切换内存生效版本；文件写失败 → 500 CONFIG_WRITE_FAILED，内存配置不变
+- 一切配置变更入审计链（含 config_version）
 
-## 3. CORS 与请求边界
+## 5. CORS 与请求/资源上限（分开定义，v1.1）
 
-- **CORS：allow all origins**——安全性由 Bearer token 承担而非 Origin：token 是显式请求头、无 cookie、无浏览器自动携带，wildcard origin 不构成 CSRF 面；Electron renderer（file:// 或 app:// 源）与 localhost 调试都免配置
-- 请求体上限 60MB（材料 50MB + 余量，超限 413）；SSE 连接数本地场景不设上限（单用户桌面）
+- **CORS allow all origins**：安全由 Bearer 承担（显式头、无 cookie、无浏览器自动携带——无 CSRF 面）；第四轮审查确认保留
+- **请求体上限 60MB**（仅约束 JSON 本体）；**资源上限在服务端执行时另查**：材料导入逐文件 ≤50MB、单任务 ≤20 文件/5 文件夹（超限逐文件拒绝带原因）——传路径不传字节，体积控制必须在复制时强制
+- SSE：连接 ≤32、每连接队列 ≤1000（§3）
 
-## 4. 错误响应信封与错误码表
+## 6. 错误响应信封与错误码表
 
-统一：`{ "error": { "code": "...", "message": "...", "detail": {...} } }`（HTTP 状态码由 code 映射）。
+统一：成功 = `{"data": ...}`；错误 = `{"error": {"code","message","detail"}}`（204 与 SSE 流不套信封）。
 
 | code | HTTP | 场景 |
 |---|---|---|
 | INVALID_PATH / NOT_FOUND | 400/404 | 路径非法 / 资源不存在 |
-| OUT_OF_SCOPE | 403 | 工具目标超出任务 scope（含原因与合法范围） |
+| OUT_OF_SCOPE / PROTECTED_PATH | 403 | 超出任务 scope / 受保护路径 |
 | APPROVAL_PENDING | 409 | 等待审批时发送指令 |
-| APPROVAL_STALE | 409 | 审批已处理或 input_hash 不符 |
-| PENDING_VERIFICATION | 409 | resume/继续队列被待核验调用阻塞（detail 含清单） |
+| APPROVAL_STALE | 409 | 审批已被**不同决定**处理或 input_hash 不符（同决定重试 → 200 幂等返回首次结果，v1.1 明确） |
+| PENDING_VERIFICATION | 409 | resume/继续队列被待核验阻塞（detail 含清单） |
 | QUEUE_EMPTY / QUEUE_PAUSED | 409 | 继续队列时无指令 / 状态不符 |
 | INVALID_TRANSITION | 409 | FSM 非法迁移（detail 返回当前合法动作） |
-| DIAGNOSTIC_MODE | 503 | 只读诊断模式下访问业务端点 |
+| QUESTION_STALE | 409 | 提问已回答/已取消后再次提交 |
+| CONFIG_WRITE_FAILED | 500 | 配置文件写入失败（内存未变） |
+| SSE_LIMIT | 503 | SSE 连接超上限 |
+| DIAGNOSTIC_MODE | 503 | 只读诊断模式 |
 
-新增错误码纪律：先进本表再写实现（与事件枚举同款纪律）。
+新增错误码纪律：先进本表再写实现。
 
-## 5. 日志
+## 7. 日志与优雅关闭
 
-- `data/logs/sidecar.log`：文本格式，`LOG_LEVEL` 可配（默认 info）；**轮转 5MB × 3 份**；token 与 api_key 永不落日志（写入前过滤）
-- 日志（运维）与审计链（司法）边界：log 排查问题可删；audit_log 不可篡改永在
+日志：`data/logs/sidecar.log`，轮转 5MB×3，`LOG_LEVEL` 可配；token/api_key 永不落日志；日志（运维可删）与审计链（司法永在）分界。
 
-## 6. 优雅关闭（SIGTERM/SIGINT）
-
+**优雅关闭（v1.1 定完成条件与上限，总预算 10s）**：
 ```
-停收新请求 → 取消运行中任务（状态留 running，不写终态——下次启动对账为 interrupted，
-诚实优于伪造完成）→ flush 事件与日志 → 写审计链头快照 chain-head.txt → 关 DB（checkpoint WAL）
-→ 释放 instance.lock → 退出码 0
+SIGTERM/SIGINT →
+1) 停止接受新请求与新任务创建；向所有 SSE 订阅发 event:shutdown（客户端保存游标）
+2) 限时取消与收割（≤8s）：取消模型流、杀工具子进程组并 wait、审批等待任务保持 waiting_user
+   （诚实留态，下次启动对账）；运行中任务不写终态
+3) 结束全部 SSE 订阅（≤1s）
+4) 关闭数据库：尝试 PASSIVE checkpoint（结果记日志；被读事务阻塞则跳过——WAL 文件留存，
+   恢复路径本就依赖重放，不为 checkpoint 无限等待）
+5) 写审计链头快照 → 释放 instance.lock → exit 0；超预算强制作业全部放弃按序退出
 ```
 
-强杀（kill -9）路径：什么都不做——启动对账与两级链校验就是为它设计的。
+## 8. 并发与调度
 
-## 7. 并发与调度
+- 业务任务（TaskRun）：全局并发 8（config 可调），超出 FIFO 排队；aux 任务（压缩/提炼/审计/标题）并发 2，前台优先 2 秒让路
+- **客户端幂等（v1.1）**：`POST /conversations` 与 `POST instructions` 接受可选 `client_request_id`——服务端按其唯一去重（网络重试不产生重复任务/重复指令）
+- 乐观锁 `task_runs.version` 用于服务端内部状态迁移的并发保护（不进 API 请求）
 
-- 业务任务（TaskRun）：全局并发 8（config 可调），超出排队 FIFO，跨会话公平
-- **aux 任务**（压缩/提炼/审计/标题）：并发上限 2，队列 FIFO；前台优先——新用户指令到达时 2 秒内取消运行中的 aux fork（hermes 纪律）
-- SQLite 单写者：EventStore 写入经 executor 串行化 + busy_timeout 重试（C2 已定）
-
-## 8. 数据目录布局
+## 9. 数据目录布局
 
 ```
 data/
-  agentcrew.db            # 全部 SQLite 表（WAL）
-  config.json             # §2
-  chain-head.txt          # 审计链头外置快照（每 100 条 + 退出时）
-  instance.lock
+  agentcrew.db            # 全部表（WAL）
+  backups/                # v1.1：升级前 db 快照（保留 3 份）
+  config.json / chain-head.txt / instance.lock
   logs/sidecar.log(.1/.2/.3)
-  conversations/<id>/materials/     # 任务导入材料
-  artifacts/<task_run_id>/          # 大输出工件与产物
-  # M1+：USER.md、workspaces/<id>/MEMORY.md、agents/<id>/soul.md（见 memory-system）
+  conversations/<id>/materials/
+  artifacts/<task_run_id>/
+  # M1+：USER.md、workspaces/<id>/MEMORY.md、agents/<id>/soul.md
 ```
 
-## 9. 备份与保留（M0 口径）
+## 10. 备份与保留
 
-- 备份 = 退出后整目录复制 `data/`（文档写明）；自动备份/归档策略 → M4 打磨期定（对齐纪要 v1.6 已记）
-- API 不做版本化（/api 无版本号）：壳与 sidecar 同包同发，一起升级，无跨版本兼容负担
+- 备份 = 退出后整目录复制 `data/`（db+工件成对）；自动备份/归档策略 → M4；API 不版本化（壳与 sidecar 同发，但 db 迁移独立版本化）
 
-## 10. 与任务卡的映射
+## 11. 与任务卡的映射
 
-C1 增：config.json 加载链（env>file>默认）、CORS 中间件、日志轮转、SIGTERM 优雅关闭；C3 增：错误信封中间件与错误码表落地；C7 增：settings GET/PATCH（脱敏）；C8 增：aux 并发 2 与前台优先。
+C1：config 链/CORS/错误信封/轮转/优雅关闭（**验收仅限 C1 已有能力**）；C2：写通道+同事务投影+升级快照；C3：SSE 边界全套（排他游标/交接/resync/连接与队列上限）+ 慢客户端真实验收；C5：ask_user 全链（含 POST /questions/:id/answer 与取消）；C7：materials+队列 API 级验收（**运行依赖 C8 的行为移至 C8 验收**）；C8：审批/排队/停止的完整交互验收 + 绑定配置版本。

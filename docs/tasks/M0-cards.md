@@ -37,21 +37,21 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 - **依赖**：无
 - **交付物**：`backend/pyproject.toml`（uv 管理，依赖：fastapi、uvicorn、sse-starlette、pydantic、aiosqlite/内置 sqlite3、httpx）；分包 `agentcrew_core/`（events/loop/tools/provider/ports）与 `agentcrew_server/`（api/db/run_manager）；`python -m agentcrew_server --port N --data-dir D --parent-pid P` 入口（读 `AGENTCREW_TOKEN` 环境变量）；**启动序列按 backend-service.md §1**（instance.lock → DB → 迁移 → 审计链校验[断→只读诊断模式] → 对账 → listen → AGENTCREW_READY）；**配置链 env > data/config.json > 默认**；**CORS allow-all**（安全由 Bearer 承担，backend-service §3）；统一错误信封中间件 + 错误码表（§4）；`GET /api/health`；日志轮转 5MB×3（token/key 永不入日志）；**SIGTERM/SIGINT 优雅关闭**（§6：停收→取消任务不写终态→链头快照→checkpoint WAL→exit 0）
 - **失败状态**：端口被占（换端口重试 3 次后报错退出）；data-dir 不可写（明确报错非崩溃）；instance.lock 已锁（退出码 2）；未知异常（捕获→日志→非零退出码）
-- **真实运行验收**：命令行启动→stdout 出现就绪标记→`curl /api/health` 返回 ok→Ctrl-C 干净退出（退出码 0）；日志有内容且**全文搜不到 token**；`curl -H "Origin: http://localhost:5173"` 预检通过（CORS）；PATCH /api/settings 改一个守门参数→GET 生效且审计链多一条；kill -TERM 期间运行中任务状态保持 running（下次启动对账为 interrupted）
+- **真实运行验收**：命令行启动→stdout 出现就绪标记→`curl /api/health` 返回 ok→Ctrl-C 干净退出（退出码 0）；日志有内容且**全文搜不到 token**；`curl -H "Origin: http://localhost:5173"` 预检通过（CORS）；**配置链真实验证**：写 config.json 设 log_level=debug→日志级别生效、同名环境变量覆盖后 file 值被忽略（C1 只验配置加载，settings API 的验收在 C7，SIGTERM 对运行中任务的验收在 C9）
 
 ### C2 · 数据层：建表 + 事件追加 + 投影
 
 - **依赖**：C1
 - **交付物**：SQLite WAL 连接管理；版本化迁移（`schema_migrations` 表）；按 docs 02 §2 建全部 M0 表（含 `run_events.global_seq` 自增主键、`tool_calls.call_id UNIQUE + side_effect_class + input_hash + pending_verification`、**v1.4：conversations.queue_paused/folders_json、task_materials、artifacts 投影表**）；EventStore（追加事件 + 同步更新投影表，单事务）；`agent_permission_rules`、`audit_log`（哈希链字段）表一并建好备用
 - **失败状态**：迁移冲突（版本表检测，拒绝启动并报当前/目标版本）；并发写（WAL + busy_timeout，写失败重试 3 次）；事件 seq 冲突（UNIQUE 兜底，抛出而非覆盖）
-- **真实运行验收**：迁移脚本连跑两次幂等；用 `sqlite3` CLI 逐表 `.schema` 核对与 docs 02 一致；脚本向种子会话追加 3 条事件→查询投影表已同步；重放器从事件重建投影与增量一致
+- **真实运行验收**：迁移脚本连跑两次幂等；**升级前快照（v1.1）**：用旧版本号的真库跑迁移→backups/ 出现快照→迁移成功；目标版本 < 当前→拒绝启动报双版本号；迁移中途失败（构造非法 SQL）→事务回滚+进入只读诊断模式提示从 backups/ 还原；用 `sqlite3` CLI 逐表 `.schema` 核对（含 task_materials/artifacts/agent_permission_rules/audit_log/schema_migrations）；追加 3 条事件→投影同步；重放器重建一致；**事件+投影同事务**：构造投影写入失败→事件也未入库
 
 ### C3 · 事件总线 + SSE + 鉴权
 
 - **依赖**：C2
 - **交付物**：进程内发布/订阅总线（每会话一个通道 + 全局通配）；Bearer 中间件（校验 `AGENTCREW_TOKEN`，无/错→401）；`GET /api/task-runs/:id/events?from=seq` 与 `GET /api/conversations/:id/stream?from=global_seq`（sse-starlette；from=0 重放历史后转实时；`retry:` 与心跳注释行）
 - **失败状态**：客户端断开（清理订阅不泄漏）；慢消费者（每连接独立队列，溢溢丢帧并标记需 `resync`）；订阅不存在的任务（404 而非空挂）
-- **真实运行验收**：无 token curl → 401；带 token + 种子数据（C2 脚本插入）→ 先收到历史事件再收到实时事件；`curl --no-buffer` 全程可读；断开重连带 `from=<最后global_seq>` → 恰好续播无重复无遗漏
+- **真实运行验收**：无 token curl → 401；带 token + 种子数据 → 历史补播后无缝转实时（**无遗漏交接**：补播期间持续产生新事件，验证两段之间无丢失无重复——v1.1 交接协议）；断开重连带 `from=<最后global_seq>`（排他）→ 恰好续播；**慢客户端真实测试**：不读 socket 的连接打满每连接队列（1000）→ 收到 `event:resync` 帧（含最后连续游标）→ 连接被服务端终止 → 从该游标重连补齐；**连接上限**：第 33 条 SSE 连接 → 503 SSE_LIMIT；`GET state` 的 at_global_seq 与流消费配合：取快照后从 at_global_seq 续播、≤它的跳过
 
 ### C4 · Provider 薄适配层（GLM 真实接入）
 
@@ -65,28 +65,28 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 - **依赖**：C1
 - **交付物**：`ToolMetadata` 全字段 + 注册表 + 调度器（destructive 串行 / concurrent_safe·read_only 并行 / 上限 4）；`call_id` 生成与三分类声明（v1.7 语义：verifiable=原子写+内容哈希核验；HTTP 默认 outcome_unknown）；**五件套（v1.7）**：`read_file`（分页读，realpath 规范）、`write_file`（tmp+rename+fsync 原子写；prepared 记内容 sha256；发 artifact.* 事件）、`bash`（白名单+元字符+**find 参数否决** 三重判定；**最小 Seatbelt profile：写限任务 scope、网络全禁、凭据禁读**；超时杀进程组；env 白名单仅 PATH/HOME/LANG/TZ/TERM）、`http_request`（allowed_hosts；外部幂等键随头）、`ask_user`（交互原语，触发 question.requested/answered）；**受保护路径清单**（agentcrew.db/config/chain-head/logs/USER.md/soul.md/MEMORY.md/~/.ssh 等读写硬禁，拒绝码 PROTECTED_PATH）；**路径合法范围判定**：realpath ∈ scope，范围外 OUT_OF_SCOPE；输出 >32KB 落工件留指针
 - **失败状态**：工具超时（杀进程组，error 不崩任务）；非只读判定（走审批）；工件写失败（报错+审计）；scope 外（OUT_OF_SCOPE 含原因）；受保护路径（PROTECTED_PATH）
-- **真实运行验收**：判定参数化单测（白名单×元字符×find 否决×scope×受保护路径五矩阵）；五工具各真实执行一次；**bash 里 `echo $AGENTCREW_TOKEN` 为空**；**`find -name` 正常只读跑通而 `find -exec` 被拒**；**bash 越界写（scope 外路径）与连网（curl）被 Seatbelt 内核级拦截**；读 data/agentcrew.db 被拒（PROTECTED_PATH）；ask_user 真实挂起并经回答恢复；大输出真实外部化
+- **真实运行验收**：判定参数化单测（白名单×元字符×find 否决×scope×受保护路径五矩阵）；五工具各真实执行一次；**bash 里 `echo $AGENTCREW_TOKEN` 为空**；**`find -name` 正常只读跑通而 `find -exec` 被拒**；**bash 越界写（scope 外路径）与连网（curl）被 Seatbelt 内核级拦截**；读 data/agentcrew.db 被拒（PROTECTED_PATH）；ask_user 工具交付（**挂起-回答全链验收在 C8**——依赖循环执行）；大输出真实外部化
 
 ### C6 · 审批闸门（M0 部分）
 
 - **依赖**：C2、C3、C5
 - **交付物**：闸门判定纯函数（元数据分级 → deny/allow 规则（agent_permission_rules）→ ASK；realpath 与域名匹配在 C5 判定函数上）；审批生命周期：`PERMISSION_REQUESTED`（含四选项、`input_hash`、**target 目标资源与 always_scope_preview**，v1.4）→ 挂起工具任务 → `POST /api/tool-approvals/:call_id`（decision 四值）→ `PERMISSION_RESOLVED` → 继续/拒绝；`allow_always` 按预览范围写规则表；每次决定写 audit_log 哈希链；**`GET /api/task-runs/:id/approvals?status=pending`（v1.4：界面刷新后恢复审批卡）**
 - **失败状态**：审批期间用户取消任务（释放挂起，tool 标 cancelled）；重复提交同一审批（幂等返回首次决定）；审批请求携带的 input_hash 与当前调用不一致或已处理（409 APPROVAL_STALE，界面刷新请求）
-- **真实运行验收**：判定矩阵参数化单测；起服务后用种子数据触发一次真实审批流（脚本模拟的任务编排器调用闸门→curl 批准→观察到继续执行的下游事件）；audit_log 三条记录链哈希连续可验；重起进程后 GET pending 审批卡可恢复
+- **真实运行验收**：判定矩阵参数化单测（纯函数）；**进程内直调闸门服务**（调用自家代码非 mock 外部系统）：真实进程里经服务层触发一次闸门→curl 批准→PERMISSION_RESOLVED 落库、审计链追加；同决定重试→200 幂等回首次结果、不同决定→409 APPROVAL_STALE；重起进程后 GET pending 审批卡可恢复；**"真实任务触发审批→界面/接口四决定"的完整交互验收在 C8**（依赖循环）
 
 ### C7 · 会话 FSM 与指令排队
 
 - **依赖**：C2、C3
 - **交付物**：`reduce(state, event)` 纯函数（四态 + 等待计数器 + queue_paused，docs 02 §4 v1.4 迁移表）；`can_send/can_queue/can_cancel/can_continue_queue` 真值表函数；**任务创建带材料（v1.4，F001）**：`POST /api/conversations` 接收 import_files/folders（文件复制进任务资料目录、重名自动改名、逐文件回报 error；限制 GET /api/limits）、`GET /conversations/:id/scope`；`POST /api/conversations/:id/instructions`（can_send 直跑 / can_queue 入队 / 等待审批 409）；**排队控制（v1.4，F006）**：`POST .../queue/continue`（仅 queue_paused 时可，队首启动）、`POST .../queue/cancel`（item_ids 或 all；发送记录保留）；`GET .../state`（含 queue_paused 与队列明细）
 - **失败状态**：非法迁移（InvalidTransition，拒绝并返回当前合法动作列表）；并发同会话两条指令（锁序化，第二条必入队）；审批挂起时发指令（409 APPROVAL_PENDING）；queue/continue 在队列空/有待核验/有待审批时（409 带原因码）；材料部分失败（任务仍创建，materials 逐文件报 error）
-- **真实运行验收**：reducer 参数化单测覆盖迁移表全行（含 queue_paused 分支）；真实创建带 3 个文件 + 1 个不存在路径的任务→2 个导入成功、1 个报原因、任务正常执行；运行中停止任务→队列显示"已暂停"且**不**自动启动→点继续→队首执行→取消剩余排队项→无遗漏启动
+- **真实运行验收**（**仅限 C7 已有能力，运行时行为在 C8 验**——v1.1 修订）：reducer 参数化单测覆盖迁移表全行（含 queue_paused 分支）；真实创建带 3 个文件 + 1 个不存在路径的任务→materials 逐文件结果正确、**task_run 停留在 queued（无 runner 属预期）**；再发一条指令→入队可见；queue/cancel 真实取消排队项且 messages 保留发送记录；审批挂起态的 409 用 reducer 真值表驱动 API 返回；**settings 验收落此卡**：GET 脱敏（key 只回尾 4 位）→PATCH 改守门参数→GET 生效、审计链多一条；env 覆盖字段 PATCH→200 + ignored_fields；api_key_clear 真实清槽；文件写失败（只读目录）→500 CONFIG_WRITE_FAILED 且内存不变；client_request_id 重试同值→不产生重复任务/指令
 
 ### C8 · ReAct 主循环与 RunManager
 
 - **依赖**：C3、C4、C5、C6、C7
 - **交付物**：`run_task` 循环（docs 02 §5：事件发射、工具结果回填、messages 投影、write_file 触发 artifact.* 事件与投影、回合上限 40、token 预算守门、**llm.request_done 载荷含全部 tool_use 块（v1.7）**）；RunManager（每 TaskRun 一个 asyncio 任务、注册表、取消传播到工具与模型流、**每次 attempt 记 context_fingerprint**）；任务终态回写 + 接续规则（v1.4：completed/failed 自动出队[failed 注入护栏提示]；cancelled → queue_paused）；**终态时序契约（v1.7）：模型流关闭 + 所有工具子进程收割 + 待核验落库之后，才发 RUN_COMPLETED/FAILED**
 - **失败状态**：模型连续工具调用死循环（回合上限→RUN_FAILED 带原因）；工具全失败（结果回填让模型自决，不提前终止）；asyncio 任务异常（捕获→RUN_FAILED→错误入事件流）
-- **真实运行验收**：真实 GLM 任务"读取 <真实文件> 并总结内容"→SSE 全程收到 STEP/LLM/TOOL 事件→messages 投影含最终回复；再跑一个多步任务（读两个文件→合并写第三个文件，写操作真实弹审批）→ artifacts 表出现 ready 记录；停止运行中任务→队列不自动启动；回合上限用 2 的小配置真实触发一次
+- **真实运行验收**（v1.1 扩充为完整交互主场）：真实 GLM 任务"读取 <真实文件> 并总结内容"→SSE 全程 STEP/LLM/TOOL 事件→messages 投影含最终回复；多步任务（读两文件→合并写第三个，写操作真实弹审批）→ 四种决定各真实走一次（含 allow_always 后同类放行、reject 后模型继续）→ artifacts 出现 ready 记录；**排队完整链**：运行中发两条指令→停止→暂停不自动跑→继续→队首执行→取消剩余→无遗漏；**ask_user 全链**：真实任务里模型提问→挂起（waiting_questions）→POST answer 回答继续；answer=null 取消按"拒绝回答"告知模型；**配置版本绑定**：任务运行中 PATCH settings→attempts.context_fingerprint 证明本任务保持旧版、下一新任务用新版；停止运行中任务→队列不自动启动；回合上限用 2 的小配置真实触发一次
 
 ### C9 · 中断恢复
 
@@ -135,7 +135,7 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 | 前端订阅：`@microsoft/fetch-event-source` | fetch+自定义头+重连控制，Eigent 生产验证同款 |
 | SQLite 驱动：内置 `sqlite3` + 自管 WAL（同步封装进 executor） | M0 单机单进程写少读多，避免引入 ORM/异步驱动两重新复杂度；投影/DAO 手写（Eigent 同款） |
 | 包管理：`uv` | 当前 Python 生态最快且锁文件干净 |
-| 无 ORM | 表少（≤12）、迁移手写可审计、与 docs 02 表定义一一对应，面试可讲性更强 |
+| 无 ORM | 表 13 张（含 schema_migrations）、迁移手写可审计、与 docs 02/data-model 一一对应，面试可讲性更强 |
 | GLM 走 OpenAI 兼容端点 | 官方兼容层成熟，适配层薄；DeepSeek 同协议（M4 直接加第二个适配器） |
 
 ## 4. 明确不在 M0 的事（防范围蔓延）

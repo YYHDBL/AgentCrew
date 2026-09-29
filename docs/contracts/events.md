@@ -1,6 +1,7 @@
 # 事件契约（全量汇总）
 
-> 维护者：后端 Agent ｜ 权威定义在各详设；新增机制**先加事件类型再实现**（纪律）。SSE 载荷 = `{global_seq, task_run_id?, seq?, type, payload, ts}`。
+> 维护者：后端 Agent ｜ 权威定义在各详设；新增机制**先加事件类型再实现**（纪律）。
+> **SSE 语义（v1.1）**：载荷 = `{global_seq, task_run_id?, seq?, type, payload, ts}`；游标（from/after_seq）**排他**；控制帧：`event:resync`（溢出终止，data 含最后连续 global_seq）、`event:shutdown`（优雅关闭，客户端存游标）、`event:ping` 心跳；FSM 快照带 `at_global_seq` 配对续播。
 
 ## 任务生命周期（harness-session §3）
 `run.queued / run.started / run.completed / run.failed / run.cancelled / run.interrupted / run.resumed`
