@@ -10,6 +10,8 @@
 > **v1.3 修订（M0 拆分前契约修正，2026-09-28）**：SSE 解析用现成库——后端 `sse-starlette`、前端 `@microsoft/fetch-event-source`（Eigent 同款），不自研解析；外部幂等键改由 `(task_run_id, call_id)` 派生——**同任务两次合法相同请求各得各键、绝不合并**，同键仅用于同一次逻辑调用的重试/核验后重执行；**测试禁止 mock 与假测试（用户确认，覆盖此前双层方案）**：真实 GLM、真实文件产物、真实进程中断，自有纯函数的参数化单测不属于 mock。M0 任务卡拆分见 [../tasks/M0-cards.md](../tasks/M0-cards.md)。
 >
 > **v1.6 修订（2026-09-30，用户裁定）**：**定位修订——AgentCrew 是通用 Agent 基座，办公是后续专项优化**；**工具 less-is-more**：M0 核心四件套 read_file/write_file/bash/http_request，设"工具准入纪律"（治理语义或上下文友好度不可替代才准入；禁止 read_word 式碎片工具；grep/glob/edit/list_dir 不设，bash+read 覆盖，专项工具按需后加）；**bash 子进程环境变量白名单**（仅 PATH/HOME/LANG/TZ/TERM，绝不传 AGENTCREW_TOKEN/API key——堵"子进程读 token 反打接口"的击穿孔）；**沙箱提前**：macOS 自带 Seatbelt（sandbox-exec），M2 落地于 bash 工具（从"明确不做"移出；参考 CC/EasyMint 分层——三级闸门即判定层，Seatbelt 为强制层）；补循环稳定性三招 + 环境信息注入 + 流式 tool_call 拼装 + 守门参数总表（docs 02 v1.5/v1.6）。数据保留/归档策略待 M4 打磨期定。
+>
+> **v1.7 修订（2026-09-30，第三轮外部审查回稿）**：四条致命全采纳——① **M0 即给 bash 上最小 macOS Seatbelt profile**（用户裁定 F1=A：写限任务 scope、网络全禁、凭据禁读——http_request 恢复"唯一网络入口"强承诺；M2 升完整 profile）；② **受保护路径品类**（agentcrew.db/config/chain-head/logs/USER.md/soul.md/MEMORY.md/凭据目录——scope 内读写双向硬禁，PROTECTED_PATH）；③ 副作用分类精化（write_file=原子写 tmp+rename+fsync+内容 sha256 核验；HTTP 默认 outcome_unknown，external_idempotency 仅限连接器显式声明；传输重试/中断核验/恢复后新动作三层分写）；④ 事件契约补全（llm.request_done 载荷含全部 tool_use 块；tool_calls 增 not_executed、task_runs 增 waiting_verification 枚举）。建议改采纳：**find 参数否决重入只读白名单**（用户裁定⑥=B：参数含 -exec/-delete 等即否决）；ask_user 交互原语补入 M0 五件套；终态时序契约（流关+子进程收割+待核验落库后才发终态）；attempt 记 context_fingerprint；环境块移 prompt 尾部；失败自动接续注入护栏；产物打开前实检；授权界面读写分列；审计链断言诚实化（真锚点=库外备份 chain-head.txt）。驳回（附理由）：队列项独立性声明（同会话上下文连续已可见失败，护栏提示足够）；内容注入扫描扩大化（不可能靠扫描防注入，防线=强制边界+闸门+人审，姿态已写明）。
 
 ---
 

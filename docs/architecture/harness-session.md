@@ -66,7 +66,8 @@ created_at
 ```
 id TEXT PK, conversation_id FK,
 instruction TEXT,                 -- 用户这条指令原文
-status TEXT CHECK IN (queued, running, waiting_user, interrupted, completed, failed, cancelled),
+status TEXT CHECK IN (queued, running, waiting_user, waiting_verification, interrupted, completed, failed, cancelled),
+-- v1.7：waiting_verification = 对账后存在 pending_verification 调用（查询友好的派生态），
 current_attempt_no INT,
 version INT,                      -- 乐观锁
 cron_job_id TEXT NULL,            -- 定时任务派生时回链
@@ -79,6 +80,8 @@ id TEXT PK, task_run_id FK, attempt_no INT, UNIQUE(task_run_id, attempt_no),
 kind TEXT CHECK IN (initial, resume),     -- 首次 / 恢复
 status TEXT, outcome TEXT NULL,           -- 成功/失败/取消的终态描述
 resume_reason TEXT NULL,                  -- kind=resume 时：崩溃/手动等
+context_fingerprint JSON,                 -- v1.7：本 attempt 实际使用的 system_prompt_hash /
+                                          -- tools_schema_hash / model_config——跨版本恢复可解释
 started_at, ended_at
 ```
 
@@ -107,7 +110,8 @@ id PK, call_id TEXT UNIQUE,        -- 每次调用的唯一身份（v1.1：合�
 task_run_id, step_id, tool_name,
 side_effect_class CHECK IN (verifiable, external_idempotency, outcome_unknown),
 input_hash TEXT,                  -- 完整参数哈希：审批与对账绑定不可变内容
-status CHECK IN (prepared, dispatched, completed, outcome_unknown, pending_verification, failed),
+status CHECK IN (prepared, dispatched, completed, outcome_unknown, pending_verification, not_executed, failed),
+-- v1.7：not_executed = 用户核验"确认未执行"的终态
 risk_level, input JSON, output_summary TEXT, artifact_path TEXT NULL,  -- 大输出外部化指针
 error TEXT NULL,
 prepared_at, dispatched_at, completed_at
@@ -166,7 +170,9 @@ class RunEventType(StrEnum):
 
     # 模型交互
     LLM_REQUEST_STARTED = "llm.request_started"
-    LLM_REQUEST_DONE    = "llm.request_done"      # 含 usage（token/耗时）；payload 有完整回复全文
+    LLM_REQUEST_DONE    = "llm.request_done"      # 含 usage（token/耗时）；payload 携带完整回复全文
+                                                      # 与本次全部 tool_use 块（call_id/tool/input/同批关系）——
+                                                      # 恢复重建对话与结果配对的唯一依据（v1.7 明确）
     LLM_REQUEST_FAILED  = "llm.request_failed"    # 含错误分类、retry_no
 
     # 工具（三态账本，D3 恢复依据）
@@ -244,7 +250,7 @@ class ConversationState:
 | `can_cancel` | state in (starting, running) |
 | `can_continue_queue` | state == idle 且 queue_paused == 1 且队列非空（且无待核验/待审批） |
 
-排队语义（D5，**v1.4 修订**）：`can_send` 时指令立即开跑；`can_queue` 时入 `pending_queue`。终态后的接续规则：**completed/failed → 自动出队**；**cancelled（用户停止）→ 队列暂停**（QUEUE_PAUSED），只有用户点"继续处理"（POST queue/continue → QUEUE_RESUMED）才启动队首；取消排队指令（POST queue/cancel，明确 item_ids 或 all）保留发送记录（messages 与 queue.item_cancelled 事件留痕）。`waiting_approvals > 0` 时 can_send/can_queue 皆否（先处理审批）。
+排队语义（D5，**v1.4 修订**）：`can_send` 时指令立即开跑；`can_queue` 时入 `pending_queue`。终态后的接续规则：**completed/failed → 自动出队**（failed 自动接续时注入护栏提示："上一条指令已失败（附原因摘要），请确认是否仍需要执行本条指令"——同会话上下文连续，模型本可见失败，护栏只是显式化，v1.7）；**cancelled（用户停止）→ 队列暂停**（QUEUE_PAUSED），只有用户点"继续处理"（POST queue/continue → QUEUE_RESUMED）才启动队首；取消排队指令（POST queue/cancel，明确 item_ids 或 all）保留发送记录（messages 与 queue.item_cancelled 事件留痕）。`waiting_approvals > 0` 时 can_send/can_queue 皆否（先处理审批）。
 
 ---
 
@@ -271,11 +277,12 @@ async def run_task(task: TaskRun, attempt: RunAttempt, ctx: RunContext):
 - **循环属于 agent，机制属于 harness**：权限门、幂等、外部化、压缩都是循环里的挂钩点，不改循环结构
 - 回合上限（默认 40）与 token 预算守门，超限走 RUN_FAILED（带原因）
 - 流式文本块经内存总线直推 SSE，**不落库**；LLM_REQUEST_DONE 事件 payload 携带全文
-- **Prompt 组装含环境块（v1.5）**：system prompt 首段注入运行环境事实（当前日期时间、macOS、任务工作目录、资料目录、授权文件夹清单、工作区名）——小文必须知道"自己在哪、今天几号、材料在哪"
+- **Prompt 组装含环境块（v1.5，v1.7 位置修订）**：环境事实（当前日期时间、macOS、任务工作目录、资料目录、授权文件夹清单、工作区名）注入 system prompt **尾部**而非首段——保住静态身份/记忆前缀的缓存与稳定性；日期等动态字段在**每个任务开始时刷新**
 - **循环稳定性三招（v1.5，防呆守门）**：
   1. **重复调用守门**：连续 N=3 次相同 (tool, input_hash) 调用且结果未变 → 中止本轮并注入纠正消息（"你已连续三次得到相同结果，请换思路或汇报障碍"），再犯 → RUN_FAILED(reason=doom_loop)。参考：hermes doom-loop 防护 / ZCode 探针
   2. **停滞看门狗**：每个运行中任务记录 `last_progress_at`（模型 delta / 工具完成 / 审批决定都刷新）；超过停滞阈值（默认 600s，可配）且非等待用户 → 判定卡死，RUN_FAILED(reason=stalled)。**不做累计超时**（长任务合法），只看"最近一次进展"（Eigent 滑动窗口模式）
   3. **输出解析重试**：模型返回的 tool_use 参数不合法（JSON 损坏/schema 不符）→ 请求级局部重试：把解析错误作为 tool_result 回填给模型重说，最多 2 次；仍坏 → RUN_FAILED(reason=unparseable)。**不污染对话历史**（Eigent 同款：重试的原始坏响应用后缀标记保留但可被压缩层清理）
+- **终态时序契约（v1.7）**：模型 delta 只证明连接存活、不证明任务有进展；`RUN_COMPLETED/FAILED` 发出前必须依次确认——① 模型流已关闭；② **所有工具子进程已收割**（杀死并 wait，无孤儿）；③ dispatched 无结果的调用已转 `pending_verification/outcome_unknown` 落库。终态事件是"执行真正结束"的证据，不是"模型说完话"
 - M1 在循环中插入：compact 检查（模型请求前）、工具结果外部化（入上下文前）、记忆提炼 fork（回合结束后）
 
 ---
@@ -299,17 +306,19 @@ class ToolMetadata:
     max_output_bytes: int = 100_000     # 超限外部化（M1）
 ```
 
-M0 内置工具 = **核心四件套**（v1.6，用户裁定 less-is-more + 通用基座定位）：`read_file` / `write_file` / `bash` / `http_request`。
+M0 内置工具 = **五件套**（v1.7：核心四件套 + ask_user 交互原语）：`read_file` / `write_file` / `bash` / `http_request` / `ask_user`。**工具准入纪律（v1.6——什么才有资格成为工具）**适用于**资源类工具**；`ask_user` 是交互原语（向用户提问挂起任务，触发 question.* 事件），不占准入坑位。
 
-**工具准入纪律（v1.6——什么才有资格成为工具）**：bash 是万能工具，专用工具必须满足以下之一才准入——① **承担治理语义**：`http_request` 是网络访问的唯一受治入口（域名白名单/外部幂等键），bash 里的 curl/wget 一律走审批且无域名豁免；② **上下文/投影友好度不可替代**：`read_file` 提供分页读（cat 大文件对模型是灾难）；`write_file` 是 verifiable 类与 **artifacts 产物投影的唯一来源**（bash 重定向写的文件不进产物卡——产物=结构化工具产生，口径见 §2.2）。**不设** grep/glob/edit/list_dir/专项格式工具（read_word 之类碎片化设计明确禁止）——bash 与 read 覆盖，专项工具（Excel/图片/文档）按需在增量片再加。
+**工具准入纪律（续）**：bash 是万能工具，资源类专用工具必须满足以下之一才准入——① **承担治理语义**：`http_request` 是网络访问的唯一受治入口（域名白名单/外部幂等键），bash 里的 curl/wget 一律走审批且无域名豁免；② **上下文/投影友好度不可替代**：`read_file` 提供分页读（cat 大文件对模型是灾难）；`write_file` 是 verifiable 类与 **artifacts 产物投影的唯一来源**（bash 重定向写的文件不进产物卡——产物=结构化工具产生，口径见 §2.2）。**不设** grep/glob/edit/list_dir/专项格式工具（read_word 之类碎片化设计明确禁止）——bash 与 read 覆盖，专项工具（Excel/图片/文档）按需在增量片再加。
 
 **判定纪律（v1.2 收紧）**：
-- bash 只读判定需**同时满足两条**：① 命令首词 ∈ 固定白名单 `ls / cat / head / tail / grep / wc / pwd / file / stat / du / diff`（**v1.2 移除 `find`——其 `-exec` 可执行任意命令**）；② **不含任何元字符或重定向**（`;` `&&` `||` `|` 反引号 `$( )` `>` `<` 换行）——任一命中即丧失只读资格，走审批。`python`、`awk`、`sed` 等可执行任意代码的一律不算只读
+- bash 只读判定需**同时满足三条**：① 命令首词 ∈ 固定白名单 `ls / cat / head / tail / grep / find / wc / pwd / file / stat / du / diff`；② **不含任何元字符或重定向**（`;` `&&` `||` `|` 反引号 `$( )` `>` `<` 换行）——一票否决；③ **find 的参数否决（v1.7 重入）**：参数中出现 `-exec / -execdir / -delete / -ok / -okdir / -fprintf / -fprint / -fls` 任一 token 即丧失只读资格——固定工具的参数规则可静态判定，解决"找文件要审批"的摩擦且不新增工具。`python`、`awk`、`sed` 等可执行任意代码的一律不算只读
+- **bash 强制层（v1.7，M0 即生效）**：所有 bash 子进程套**最小 macOS Seatbelt profile**（用户裁定）：写操作限制在任务 scope 内、**网络全禁**（内核级——http_request 恢复为唯一网络入口的强承诺）、凭据路径（~/.ssh 等）禁读；M2 升级为完整 profile（含 read 范围收紧）
 - **bash 子进程环境变量白名单（v1.6，安全必守）**：子进程仅继承 `PATH / HOME / LANG / TZ / TERM`；**绝不传 `AGENTCREW_TOKEN`、模型 API key 或任何凭据类变量**——否则 sidecar 里任何 bash 调用都能读到 token 反向调用接口，权限体系被整体击穿
 - 路径类匹配一律先 `realpath()` 规范化（解析符号链接）再比前缀
 - **路径合法范围 = 任务级 scope（v1.4，F001）**：`工作区数据目录 ∪ 任务资料目录(data/conversations/<id>/materials/) ∪ 用户授权的原位置文件夹(folders_json)`；scope 外路径在判定层直接拒绝（OUT_OF_SCOPE，可读原因展示），不进入审批
 - `http_request` 目标域名受连接器配置 `allowed_hosts` 约束（M0 默认为空 = 全部需审批）
 - 材料/文件夹只是**提供来源与范围**，不授予任何权限：范围内读写仍走三级闸门（元数据分级 → 规则 → 审批）
+- **受保护路径（v1.7，吸收 EasyMint 品类）**：即使路径落在任务 scope 内，工具（读写双向）也**硬禁**平台内部数据——`data/agentcrew.db`、`data/config.json`、`data/chain-head.txt`、`data/instance.lock`、`data/logs/`、`USER.md`、`soul.md`、`workspaces/*/MEMORY.md`、密钥与凭据目录（~/.ssh、~/.aws 等）——这些是"持久化提示词载体与凭据"：改一次就等于绕过判定层；读它们则把平台机密送进模型上下文。拒绝原因 = PROTECTED_PATH
 
 ### 6.3 守门参数总表（v1.6——散落各处的"刹车"集中一处调）
 
@@ -329,10 +338,15 @@ M0 内置工具 = **核心四件套**（v1.6，用户裁定 less-is-more + 通�
 
 - 排序：destructive → 串行；read_only 或 concurrent_safe → 可并行；默认并发上限 4
 - 每次调用流程：**生成幂等钥匙 → TOOL_PREPARED（落库）→ 权限门（needs_approval 则 PERMISSION_REQUESTED 挂起等待）→ TOOL_DISPATCHED → 执行 → TOOL_COMPLETED/FAILED**
-- **调用身份与副作用三分类（v1.1 修订）**：每次调用有唯一 `call_id`；工具注册时声明 `side_effect_class`：
-  - `verifiable`（可核验，如写文件——存在性/内容可检查）：恢复后自动核验，能确认则补 completed
-  - `external_idempotency`（支持外部幂等键，如带 Idempotency-Key 的 HTTP API）：重试安全
-  - `outcome_unknown`（结果不可核验，如发通知）：崩溃后 → `pending_verification`，**暂停自动重试**，Run Center 标"待核验"，人工确认后才继续（定时任务重试同样遵守）
+- **调用身份与副作用三分类（v1.7 精化）**：每次调用唯一 `call_id`；工具声明 `side_effect_class`，**三层语义分开**：
+  - **同一次调用的传输重试**（provider 网络重试 / 工具超时后由 harness 重发）：复用同 `call_id` 与外部幂等键
+  - **中断调用的核验**：崩溃后 dispatched 无终态 → `verifiable` 自动核验 / 其余 `pending_verification` 挡住任务，未确认前不得有任何后续执行
+  - **模型恢复后发起的新动作**：新 `call_id` 正常过闸门——重复外部效果被核验闸挡住（账本已 completed 的模型看得见；not_executed 的被明确告知需重做；pending_verification 挡在 resume 之前）
+
+  分类判定：
+  - `verifiable`：**仅限具备原子写 + 内容哈希核验的写入**——`write_file` 实现 tmp+rename+fsync 原子写，prepared 时记目标路径与内容 sha256；启动核验 = 文件存在**且哈希一致** → 补 completed，不一致 → pending_verification（"文件存在"不构成完成证据）
+  - `external_idempotency`：**仅当连接器配置显式声明该端点承诺按幂等键去重**才可归此类；默认一切 HTTP 调用归 `outcome_unknown`（发送 Idempotency-Key 头本身不构成任何保证）
+  - `outcome_unknown`（默认外部副作用类）：崩溃后 → `pending_verification`，暂停自动重试与 resume，人工核验（确认已执行→completed(verified_by_user)；确认未执行→not_executed，恢复时告知模型需重做）
   **恢复后的重发语义（v1.2 修订）**：resume 把历史调用及其结果重放进上下文（模型"看得见"已做过什么）；此后**模型新发出的任何调用都是新决定**——新 `call_id`、正常过闸门执行，**绝不因参数相同而自动跳过**（否则两次有意执行会被错误合并）。防重复副作用不靠跳过，靠分类语义：`external_idempotency` 工具的外部幂等键由 `(task_run_id, call_id)` 派生（v1.3 修订）——**同一次逻辑调用**的重试与核验后重执行复用同键（供应商侧去重兜底，命中发 TOOL_SKIPPED_IDEMPOTENT），而**同任务中两次合法的相同请求各有 call_id、各得各键，绝不合并**；`verifiable` 重执行天然安全且事后核验；`outcome_unknown` 反正处于待核验暂停态
 
 ---

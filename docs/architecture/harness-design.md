@@ -1,6 +1,6 @@
 # AgentCrew Agent Harness 设计（送审版）
 
-> 维护：后端 Agent ｜ 版本：v1.0（2026-09-30，汇总自 v1.6 对齐 + 三轮外部审查修订）｜ 状态：**送审**
+> 维护：后端 Agent ｜ 版本：v1.7（2026-09-30，审查回稿修订版）｜ 状态：**已按第三轮外部审查修订**
 > 本文自包含，审者无需先读其他文档；需要深挖时按 §10 的映射去查详设。
 > 项目背景一句话：macOS 桌面端**通用 Agent 基座**（数字员工平台，办公为后续专项），单用户本地运行，Python FastAPI sidecar 单进程 + Electron 壳，全自研 Harness（不用 LangGraph/litellm），模型 GLM 双槽。
 
@@ -39,7 +39,7 @@ async def run_task(task, attempt, ctx):
         emit(RUN_COMPLETED); return
 ```
 
-- **system prompt 首段注入环境事实**：当前日期时间、macOS、任务工作目录、资料目录、授权文件夹清单、工作区名——agent 必须知道"自己在哪、今天几号"，否则瞎编路径
+- **system prompt 尾部注入环境块**（v1.7 位置修订）：日期时间、macOS、工作目录、资料目录、授权文件夹——agent 必须知道"自己在哪、今天几号"；放尾部保住静态身份/记忆前缀的缓存稳定性，动态字段每个任务开始时刷新
 - 挂钩点（不改循环结构）：权限门（工具执行前）、幂等账本（执行前后）、输出外部化（入上下文前）、压缩检查（模型请求前，M1）、记忆提炼 fork（回合结束后，M1）
 - 回合上限 40、token 预算守门（历史预算 80% 触发压缩，硬上限拒绝请求）
 
@@ -48,6 +48,7 @@ async def run_task(task, attempt, ctx):
 1. **重复调用守门**：连续 3 次相同 (tool, input_hash) 且结果相同 → 注入纠偏消息（"你已连续三次得到相同结果，换思路或汇报障碍"）；再犯 → RUN_FAILED(doom_loop)
 2. **停滞看门狗**：每任务记 `last_progress_at`（模型 delta / 工具完成 / 审批决定都刷新）；超 600s 无进展且非等待用户 → RUN_FAILED(stalled)。**不做累计超时**——长任务合法，只看"最近一次进展"（Eigent 教训）
 3. **输出解析重试**：tool_use 参数非法（JSON 坏/schema 不符）→ 错误作为 tool_result 回填让模型重说，上限 2 次 → RUN_FAILED(unparseable)；重试的坏响应保留但可被压缩层清理，不污染长期上下文
+4. **终态时序契约（v1.7）**：模型 delta 只证明连接存活、不证明任务有进展；RUN_COMPLETED/FAILED 发出前必须——① 模型流已关闭；② 所有工具子进程已收割（杀+wait，无孤儿）；③ dispatched 无结果的调用已转待核验落库。**终态事件 = "执行真正结束"的证据，不是"模型说完话"**
 
 ## 4. 工具系统
 
@@ -57,7 +58,7 @@ bash 是万能工具；专用工具必须满足以下之一才准入：
 - **承担治理语义**：`http_request` 是网络唯一受治入口（域名白名单 + 外部幂等键）；bash 里的 curl/wget 走审批且无域名豁免
 - **上下文/投影友好度不可替代**：`read_file` 分页读（cat 大文件对模型是灾难）；`write_file` 是 verifiable 类与 **artifacts 产物投影的唯一来源**
 
-**M0 四件套**：`read_file` / `write_file` / `bash` / `http_request`。**不设** grep/glob/edit/list_dir（bash+read 覆盖）；禁止 read_word 式碎片工具；专项工具按增量片按需加。产物口径：bash 重定向写的文件不进产物卡。
+**M0 五件套**：`read_file` / `write_file` / `bash` / `http_request` / `ask_user`（交互原语：向用户提问挂起任务，触发 question.* 事件——不占资源类准入坑位）。**不设** grep/glob/edit/list_dir（bash+read 覆盖；find 经参数否决重入只读白名单，见 §4.3）；禁止 read_word 式碎片工具；专项工具按增量片按需加。产物口径：bash 重定向写的文件不进产物卡。
 
 ### 4.2 ToolMetadata（声明式安全元数据）
 
@@ -71,16 +72,19 @@ timeout_ms=60_000, max_output_bytes=100_000
 
 ### 4.3 bash 判定纪律
 
-- 只读判定 = 首词 ∈ 固定白名单（ls/cat/head/tail/grep/wc/pwd/file/stat/du/diff；**无 find**——`-exec` 可执行任意命令）**且**不含任何元字符/重定向（`;` `&&` `||` `|` 反引号 `$( )` `>` `<` 换行，一票否决）；python/awk/sed 一律非只读
+- 只读判定 = 首词 ∈ 固定白名单（ls/cat/head/tail/grep/**find**/wc/pwd/file/stat/du/diff）**且**不含任何元字符/重定向（`;` `&&` `||` `|` 反引号 `$( )` `>` `<` 换行，一票否决）**且**（v1.7，find 重入）find 的参数不含 `-exec/-execdir/-delete/-ok/-okdir/-fprintf/-fprint/-fls` 任一 token；python/awk/sed 一律非只读
+- **强制层 v1.7：M0 即给 bash 套最小 macOS Seatbelt profile**（用户裁定）——写限制在任务 scope 内、**网络全禁**（http_request 恢复为唯一网络入口的强承诺）、凭据路径禁读；越界 = 内核级拒绝；M2 升级完整 profile（read 范围收紧）
 - **子进程环境变量白名单（安全关键）**：仅 PATH/HOME/LANG/TZ/TERM；**绝不传 AGENTCREW_TOKEN / API key**——否则 bash 里一句 echo 就能读 token 反打本地接口，权限体系整体击穿
-- 路径判定先 `realpath()`（解析符号链接）再比前缀；合法范围 = 任务 scope（工作区目录 ∪ 任务资料目录 ∪ 授权文件夹），范围外 OUT_OF_SCOPE 直接拒（带原因，不进审批）
+- 路径判定先 `realpath()`（解析符号链接）再比前缀；合法范围 = 任务 scope（工作区目录 ∪ 任务资料目录 ∪ 授权文件夹），范围外 OUT_OF_SCOPE 直接拒
+- **受保护路径（v1.7）**：即使在 scope 内，工具读写双向硬禁平台内部数据与凭据——agentcrew.db / config.json / chain-head.txt / logs / USER.md / soul.md / MEMORY.md / ~/.ssh 等（"持久化提示词载体与凭据"品类，改一次即绕过判定层；读即泄密）——拒绝码 PROTECTED_PATH
+- **内容信任姿态（v1.7 写明）**：文件/网页内容进入上下文不可能靠扫描防住注入（行业未解）；我们的防线 = 强制边界（Seatbelt+scope+受保护路径）+ 三级闸门 + 人审——**内容是数据，不是权限**
 
 ### 4.4 调用身份与副作用分类
 
 - 每次调用唯一 `call_id`；审批与账本绑定完整参数 `input_hash`（参数一变审批作废）
-- 三分类：`verifiable`（写文件——恢复后自动核验）/ `external_idempotency`（外部幂等键由 `(task_run_id, call_id)` 派生：同一次逻辑调用的重试复用同键由供应商去重，**同任务两次合法相同请求各得各键绝不合并**）/ `outcome_unknown`（崩溃后 pending_verification，暂停自动重试待人工核验）
-- 恢复后模型重发同参调用 = **新决定**（新 call_id 正常过闸门），绝不自动跳过（防两次有意执行被错误合并）
-- 并发调度：destructive 串行；read_only/concurrent_safe 并行；上限 4；全局并发任务上限 8
+- **三层语义分开（v1.7 精化）**：① 同一次调用的传输重试（provider 重试/超时重发）复用同 call_id 与外部幂等键；② 中断调用的核验：dispatched 无终态 → verifiable 自动核验 / 其余 pending_verification **挡住任务直到人工核验**；③ 恢复后模型的新动作 = 新 call_id 正常过闸门——重复外部效果被核验闸挡住（账本可见已完成的、明确告知 not_executed 的、pending_verification 挡在 resume 前）
+- 分类判定（v1.7 收紧）：`verifiable` 仅限**原子写 + 内容哈希核验**（write_file = tmp+rename+fsync，prepared 记内容 sha256，核验 = 存在**且哈希一致**，不一致转待核验）；`external_idempotency` **仅当连接器显式声明端点承诺幂等键去重**（默认一切 HTTP 归 outcome_unknown——发键头不构成保证）；`outcome_unknown` 为外部副作用默认类
+- 并发调度：destructive 串行；read_only/concurrent_safe 并行；上限 4；全局并发任务上限 8；每次 attempt 记 context_fingerprint（system_prompt/tools_schema/model 配置哈希——跨版本恢复可解释，v1.7）
 
 ### 4.5 守门参数总表（所有刹车集中一处）
 
@@ -105,7 +109,7 @@ timeout_ms=60_000, max_output_bytes=100_000
 
 ## 6. 沙箱（M2，macOS Seatbelt）
 
-- 分层照 CC/EasyMint：**三级闸门 = 判定层**（拦截前给可读理由）；**Seatbelt = 强力层**——bash 的读写由内核限制在任务 scope、网络仅域名白名单，越界直接系统级拒绝（M2 验收：演示 `bash 尝试写 ~/Documents → 内核拦截`）
+- 分层照 CC/EasyMint：**三级闸门 = 判定层**（拦截前给可读理由）；**Seatbelt = 强制层**——v1.7 起 M0 即上最小 profile（bash：写限 scope 内 + 网络全禁 + 凭据禁读），M2 升级完整 profile（read 范围收紧）；越界 = 内核级拒绝（M0 验收即含"bash 尝试写 scope 外/连网 → 系统拦截"演示）
 - 实现：调系统自带 `sandbox-exec` 生成 profile，零新依赖（CC 的 sandbox-runtime 底层同源）
 - env 白名单（§4.3）独立于沙盒，M0 即生效
 - 判定层与强制层的规则**同源编译**（EasyMint 纪律：两处不一致 = 同一操作两套语义）
@@ -121,23 +125,22 @@ timeout_ms=60_000, max_output_bytes=100_000
 
 ## 8. 事件与存储衔接（Harness 视角）
 
-- 循环各环节发**里程碑事件**（run/step/llm/tool/permission/queue/artifact…约 30 种），append-only 落 `run_events`（global_seq 全局游标 + 任务内 seq）；**流式打字块只走内存不落库**，回复全文在 llm.request_done 载荷
+- 循环各环节发**里程碑事件**（run/step/llm/tool/permission/queue/artifact…约 30 种），append-only 落 `run_events`（global_seq 全局游标 + 任务内 seq）；**流式打字块只走内存不落库**；`llm.request_done` 载荷 = 回复全文 + **本次全部 tool_use 块（call_id/tool/input/同批关系）——恢复重建对话与结果配对的唯一依据（v1.7 明确）**；状态枚举已统一（tool_calls 含 not_executed；task_runs 含 waiting_verification）
 - 事件载荷携带**重建上下文所需全文**（工具输出 ≤32KB 内联、超出落工件且工件随任务存活）；grant/记忆/cron 是业务状态表，不从事件重建
 - 恢复协议：启动对账（running→interrupted；dispatched 无终态：verifiable 自动核验 / 否则 pending_verification 暂停待人工提交"确认已执行/未执行"）；resume = 新 attempt + 账本注入 + 事件全文重建上下文
 - 会话 FSM：四态（idle/starting/running/error）+ 等待计数器；排队：completed/failed 自动接续、用户停止 → 队列暂停
 
-## 9. 已知取舍与弱点（请审者重点攻击）
+## 9. 已知取舍与弱点（v1.7 审查回稿后）
 
-1. bash 只读判定是**白名单+元字符静态规则**，没有 CC/ZCode 的命令解析级静态分析——复合命令一律进审批是兜底，但"误报率高"（体验成本）
-2. 产物 missing 是**查看时惰性探测**（GET 时 stat），不做文件系统监控——外部移走文件后状态滞后
-3. **失败任务自动接续队列**（与完成同样自动跑下一条）——产品默认，可推翻为"失败暂停"
-4. 文件夹授权默认**读写**（写仍过闸门）——默认可推翻为只读
-5. GLM prompt cache 行为未知——设计遵守"追加不重写"，但不做缓存中断检测（等 C4 实测）
-6. read 工具无检索型伴侣（无 grep/glob 工具）——模型用 bash find/grep，大输出靠 32KB 外部化兜底；模型是否会滥用 cat 大文件是实测风险
-7. 无 todo/计划工具——长任务的自我步骤管理目前靠模型自觉
-8. 数据保留/归档策略未定（事件表与工件的长期增长）→ M4
-9. 全局并发 8、停滞 600s、重复 3 次等默认值——拍脑袋初值，待实测校准
-10. system prompt 不做版本化（单机产品；换版导致的缓存失效与行为差异接受）
+**本轮已修复**（对应送审版 §9 编号）：① M0 即上最小 Seatbelt 强制边界 + find 参数否决重入白名单；② 产物"打开"前再次实检文件；③ 失败自动接续注入护栏提示（同会话上下文连续、模型本可见失败，不做逐条独立性声明）；④ 文件夹授权界面**读写分列呈现**（默认双授可关写）；⑤ 环境块移 prompt 尾部 + 每 attempt 记 context_fingerprint（跨版本恢复可解释）；⑨ 终态时序成契约（流关+子进程收割+待核验落库后才发终态）；⑩ 由指纹部分缓解。另：审计链断言诚实化（两级校验防"仅改数据库"的篡改；能写整个 data/ 的攻击面前链条不自卫，**真锚点 = 用户把 chain-head.txt 备份到库外**）；受保护路径品类吸收进主设计。
+
+**仍开放（欢迎继续攻击）**：
+1. GLM prompt cache 行为未知——已保前缀稳定姿态，缓存中断检测等 C4 实测再定
+2. 无 todo/计划工具——长任务自我管理靠模型自觉，ask_user 澄清兜底
+3. 数据保留/归档策略未定——事件与工件随会话存活（删除会话即清理）；隐私口径 = 单用户本机，事件含文件内容被接受 → M4 细化
+4. 守门默认值（并发 8 / 停滞 600s / 重复 3 次）为经验初值，待实测校准
+5. bash 只读静态判定的误报率仍存在——用体验成本换实现简单，接受
+6. system prompt 不做版本化——指纹已记录（回放可解释），但不做自动迁移
 
 ## 10. 映射（深挖入口）
 

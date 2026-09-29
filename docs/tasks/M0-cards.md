@@ -63,9 +63,9 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 ### C5 · 工具注册表与五个内置工具
 
 - **依赖**：C1
-- **交付物**：`ToolMetadata` 全字段 + 注册表 + 调度器（destructive 串行 / concurrent_safe·read_only 并行 / 上限 4）；`call_id` 生成与三分类声明；**核心四件套（v1.6，less-is-more）**：`read_file`（verifiable，分页读，realpath 规范）、`write_file`（verifiable，成功/失败发 `artifact.ready/failed` 事件，**产物投影唯一来源**）、`bash`（白名单+元字符判定→分级；超时杀进程组；**子进程环境变量白名单：仅 PATH/HOME/LANG/TZ/TERM，绝不传 AGENTCREW_TOKEN 与任何 key**）、`http_request`（`allowed_hosts` 约束=网络唯一受治入口；外部幂等键随请求头发送）；不设 grep/glob/edit/list_dir（bash 与 read 覆盖，准入纪律见 docs 02 §6.1）；**路径合法范围判定（v1.4）：realpath ∈ 工作区目录 ∪ 任务资料目录 ∪ folders_json 授权文件夹，范围外直接 OUT_OF_SCOPE 拒绝（带原因，不进审批）**；输出 >32KB 落 `data/artifacts/<task_run_id>/` 工件留指针
-- **失败状态**：工具超时（timeout_ms，杀子进程组，返回 error 结果不崩任务）；命令注入判定为非只读（走审批，不是拒绝）；工件目录写失败（工具报错+审计）；scope 外路径（OUT_OF_SCOPE 错误信息含该路径与合法范围）
-- **真实运行验收**：判定函数参数化单测（白名单×元字符×scope 三矩阵）；四个工具各真实执行一次（真文件真命令真 http 请求一个真实 URL）；**bash 里 `echo $AGENTCREW_TOKEN` 真实输出为空**（env 白名单验证）；scope 外路径真实被拒且错误含原因；大输出真实触发外部化并检查工件文件存在
+- **交付物**：`ToolMetadata` 全字段 + 注册表 + 调度器（destructive 串行 / concurrent_safe·read_only 并行 / 上限 4）；`call_id` 生成与三分类声明（v1.7 语义：verifiable=原子写+内容哈希核验；HTTP 默认 outcome_unknown）；**五件套（v1.7）**：`read_file`（分页读，realpath 规范）、`write_file`（tmp+rename+fsync 原子写；prepared 记内容 sha256；发 artifact.* 事件）、`bash`（白名单+元字符+**find 参数否决** 三重判定；**最小 Seatbelt profile：写限任务 scope、网络全禁、凭据禁读**；超时杀进程组；env 白名单仅 PATH/HOME/LANG/TZ/TERM）、`http_request`（allowed_hosts；外部幂等键随头）、`ask_user`（交互原语，触发 question.requested/answered）；**受保护路径清单**（agentcrew.db/config/chain-head/logs/USER.md/soul.md/MEMORY.md/~/.ssh 等读写硬禁，拒绝码 PROTECTED_PATH）；**路径合法范围判定**：realpath ∈ scope，范围外 OUT_OF_SCOPE；输出 >32KB 落工件留指针
+- **失败状态**：工具超时（杀进程组，error 不崩任务）；非只读判定（走审批）；工件写失败（报错+审计）；scope 外（OUT_OF_SCOPE 含原因）；受保护路径（PROTECTED_PATH）
+- **真实运行验收**：判定参数化单测（白名单×元字符×find 否决×scope×受保护路径五矩阵）；五工具各真实执行一次；**bash 里 `echo $AGENTCREW_TOKEN` 为空**；**`find -name` 正常只读跑通而 `find -exec` 被拒**；**bash 越界写（scope 外路径）与连网（curl）被 Seatbelt 内核级拦截**；读 data/agentcrew.db 被拒（PROTECTED_PATH）；ask_user 真实挂起并经回答恢复；大输出真实外部化
 
 ### C6 · 审批闸门（M0 部分）
 
@@ -84,14 +84,14 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 ### C8 · ReAct 主循环与 RunManager
 
 - **依赖**：C3、C4、C5、C6、C7
-- **交付物**：`run_task` 循环（docs 02 §5：事件发射、工具结果回填、messages 投影、write_file 触发 artifact.* 事件与投影、回合上限 40、token 预算守门）；RunManager（每 TaskRun 一个 asyncio 任务、注册表、取消传播到工具与模型流）；任务终态回写 + **接续规则（v1.4）：completed/failed → 自动出队；cancelled → queue_paused（QUEUE_PAUSED 事件，不自动启动）**
+- **交付物**：`run_task` 循环（docs 02 §5：事件发射、工具结果回填、messages 投影、write_file 触发 artifact.* 事件与投影、回合上限 40、token 预算守门、**llm.request_done 载荷含全部 tool_use 块（v1.7）**）；RunManager（每 TaskRun 一个 asyncio 任务、注册表、取消传播到工具与模型流、**每次 attempt 记 context_fingerprint**）；任务终态回写 + 接续规则（v1.4：completed/failed 自动出队[failed 注入护栏提示]；cancelled → queue_paused）；**终态时序契约（v1.7）：模型流关闭 + 所有工具子进程收割 + 待核验落库之后，才发 RUN_COMPLETED/FAILED**
 - **失败状态**：模型连续工具调用死循环（回合上限→RUN_FAILED 带原因）；工具全失败（结果回填让模型自决，不提前终止）；asyncio 任务异常（捕获→RUN_FAILED→错误入事件流）
 - **真实运行验收**：真实 GLM 任务"读取 <真实文件> 并总结内容"→SSE 全程收到 STEP/LLM/TOOL 事件→messages 投影含最终回复；再跑一个多步任务（读两个文件→合并写第三个文件，写操作真实弹审批）→ artifacts 表出现 ready 记录；停止运行中任务→队列不自动启动；回合上限用 2 的小配置真实触发一次
 
 ### C9 · 中断恢复
 
 - **依赖**：C8
-- **交付物**：启动对账（running/waiting_user→RUN_INTERRUPTED；dispatched 无终态：verifiable 自动核验补齐 / 否则 pending_verification 暂停）；**核验提交（v1.4，F003）**：`GET /conversations/:id/pending-verifications`、`POST /tool-calls/:callId/verification`（confirmed_executed→completed(verified_by_user) / confirmed_not_executed→not_executed；事件 + 审计链；非待核验态 409）；`POST /api/task-runs/:id/resume`（新 attempt、事件全文+工件重建上下文、副作用账本注入 system 提示、**存在待核验 409 并返回清单**）；`POST /api/task-runs/:id/cancel`；`GET /conversations/:id/artifacts`（missing 惰性探测 + artifact.missing_detected）
+- **交付物**：启动对账（running/waiting_user→RUN_INTERRUPTED；dispatched 无终态：verifiable 按**内容哈希核验**（存在且哈希一致→completed；不一致→pending_verification）/ 其余 → pending_verification，任务转 waiting_verification）；核验提交（v1.4/v1.7：GET pending-verifications、POST verification[confirmed_executed→completed(verified_by_user) / confirmed_not_executed→not_executed]；事件+审计链）；`POST /api/task-runs/:id/resume`（新 attempt、事件全文+tool_use 块重建上下文、副作用账本注入、存在待核验 409 带清单）；`POST /api/task-runs/:id/cancel`；`GET /conversations/:id/artifacts`（missing 惰性探测 + **打开前实检**）
 - **失败状态**：重放遇损坏事件行（跳过并显式告警 + 标记任务需人工介入，不静默）；工件文件缺失（重建降级：该工具结果以"工件缺失"占位，任务继续）；resume 时仍有 pending_verification（409 PENDING_VERIFICATION + 清单）
 - **真实运行验收**：真实任务跑到工具调用间隙 `kill -9` 后端→重启→对账为 interrupted→resume→任务完成且**目标文件内容与中断前一致（无重复写入痕迹）**；另跑一个含 `bash sleep` 类调用的任务在 dispatched 后 kill -9→重启→该调用出现在 pending-verifications 清单→resume 被拒（409）→提交"确认未执行"→resume 成功且账本告知模型该调用未发生；全程事件流可查
 
