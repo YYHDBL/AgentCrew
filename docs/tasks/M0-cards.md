@@ -42,7 +42,7 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 ### C2 · 数据层：建表 + 事件追加 + 投影
 
 - **依赖**：C1
-- **交付物**：SQLite WAL 连接管理；版本化迁移（`schema_migrations` 表）；按 docs 02 §2 建全部 M0 表（含 `run_events.global_seq` 自增主键、`tool_calls.call_id UNIQUE + side_effect_class + input_hash + pending_verification`）；EventStore（追加事件 + 同步更新投影表，单事务）；`agent_permission_rules`、`audit_log`（哈希链字段）表一并建好备用
+- **交付物**：SQLite WAL 连接管理；版本化迁移（`schema_migrations` 表）；按 docs 02 §2 建全部 M0 表（含 `run_events.global_seq` 自增主键、`tool_calls.call_id UNIQUE + side_effect_class + input_hash + pending_verification`、**v1.4：conversations.queue_paused/folders_json、task_materials、artifacts 投影表**）；EventStore（追加事件 + 同步更新投影表，单事务）；`agent_permission_rules`、`audit_log`（哈希链字段）表一并建好备用
 - **失败状态**：迁移冲突（版本表检测，拒绝启动并报当前/目标版本）；并发写（WAL + busy_timeout，写失败重试 3 次）；事件 seq 冲突（UNIQUE 兜底，抛出而非覆盖）
 - **真实运行验收**：迁移脚本连跑两次幂等；用 `sqlite3` CLI 逐表 `.schema` 核对与 docs 02 一致；脚本向种子会话追加 3 条事件→查询投影表已同步；重放器从事件重建投影与增量一致
 
@@ -63,37 +63,37 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
 ### C5 · 工具注册表与五个内置工具
 
 - **依赖**：C1
-- **交付物**：`ToolMetadata` 全字段 + 注册表 + 调度器（destructive 串行 / concurrent_safe·read_only 并行 / 上限 4）；`call_id` 生成与三分类声明；五工具：`read_file`（verifiable，realpath 规范）、`write_file`（verifiable）、`list_dir`（read_only）、`bash`（白名单+元字符判定→分级；超时杀进程组）、`http_request`（`allowed_hosts` 约束；外部幂等键随请求头发送）；输出 >32KB 落 `data/artifacts/<task_run_id>/` 工件留指针
-- **失败状态**：工具超时（timeout_ms，杀子进程组，返回 error 结果不崩任务）；命令注入判定为非只读（走审批，不是拒绝）；工件目录写失败（工具报错+审计）
-- **真实运行验收**：判定函数参数化单测（白名单×元字符矩阵）；五个工具各真实执行一次（真文件真命令真 http 请求一个真实 URL）；大输出真实触发外部化并检查工件文件存在
+- **交付物**：`ToolMetadata` 全字段 + 注册表 + 调度器（destructive 串行 / concurrent_safe·read_only 并行 / 上限 4）；`call_id` 生成与三分类声明；五工具：`read_file`（verifiable，realpath 规范）、`write_file`（verifiable，成功/失败发 `artifact.ready/failed` 事件）、`list_dir`（read_only）、`bash`（白名单+元字符判定→分级；超时杀进程组）、`http_request`（`allowed_hosts` 约束；外部幂等键随请求头发送）；**路径合法范围判定（v1.4）：realpath ∈ 工作区目录 ∪ 任务资料目录 ∪ folders_json 授权文件夹，范围外直接 OUT_OF_SCOPE 拒绝（带原因，不进审批）**；输出 >32KB 落 `data/artifacts/<task_run_id>/` 工件留指针
+- **失败状态**：工具超时（timeout_ms，杀子进程组，返回 error 结果不崩任务）；命令注入判定为非只读（走审批，不是拒绝）；工件目录写失败（工具报错+审计）；scope 外路径（OUT_OF_SCOPE 错误信息含该路径与合法范围）
+- **真实运行验收**：判定函数参数化单测（白名单×元字符×scope 三矩阵）；五个工具各真实执行一次（真文件真命令真 http 请求一个真实 URL）；scope 外路径真实被拒且错误含原因；大输出真实触发外部化并检查工件文件存在
 
 ### C6 · 审批闸门（M0 部分）
 
 - **依赖**：C2、C3、C5
-- **交付物**：闸门判定纯函数（元数据分级 → deny/allow 规则（agent_permission_rules）→ ASK；realpath 与域名匹配在 C5 判定函数上）；审批生命周期：`PERMISSION_REQUESTED`（含四选项与 `input_hash`）→ 挂起工具任务 → `POST /api/tool-approvals/:call_id`（decision 四值）→ `PERMISSION_RESOLVED` → 继续/拒绝；`allow_always` 写规则表；每次决定写 audit_log 哈希链
-- **失败状态**：审批期间用户取消任务（释放挂起，tool 标 cancelled）；重复提交同一审批（幂等返回首次决定）；审批请求携带的 input_hash 与当前调用不一致（拒绝，要求重新请求）
-- **真实运行验收**：判定矩阵参数化单测；起服务后用种子数据触发一次真实审批流（脚本模拟的任务编排器调用闸门→curl 批准→观察到继续执行的下游事件）；audit_log 三条记录链哈希连续可验
+- **交付物**：闸门判定纯函数（元数据分级 → deny/allow 规则（agent_permission_rules）→ ASK；realpath 与域名匹配在 C5 判定函数上）；审批生命周期：`PERMISSION_REQUESTED`（含四选项、`input_hash`、**target 目标资源与 always_scope_preview**，v1.4）→ 挂起工具任务 → `POST /api/tool-approvals/:call_id`（decision 四值）→ `PERMISSION_RESOLVED` → 继续/拒绝；`allow_always` 按预览范围写规则表；每次决定写 audit_log 哈希链；**`GET /api/task-runs/:id/approvals?status=pending`（v1.4：界面刷新后恢复审批卡）**
+- **失败状态**：审批期间用户取消任务（释放挂起，tool 标 cancelled）；重复提交同一审批（幂等返回首次决定）；审批请求携带的 input_hash 与当前调用不一致或已处理（409 APPROVAL_STALE，界面刷新请求）
+- **真实运行验收**：判定矩阵参数化单测；起服务后用种子数据触发一次真实审批流（脚本模拟的任务编排器调用闸门→curl 批准→观察到继续执行的下游事件）；audit_log 三条记录链哈希连续可验；重起进程后 GET pending 审批卡可恢复
 
 ### C7 · 会话 FSM 与指令排队
 
 - **依赖**：C2、C3
-- **交付物**：`reduce(state, event)` 纯函数（四态 + 等待计数器，docs 02 §4 迁移表）；`can_send/can_queue/can_cancel` 真值表函数；`POST /api/conversations`、`GET /api/conversations`、`POST /api/conversations/:id/instructions`（can_send 直跑 / can_queue 入队 / 否则 409 + 原因）、`GET .../state`；`pending_queue` 持久化与出队
-- **失败状态**：非法迁移（InvalidTransition，拒绝并返回当前合法动作列表）；并发同会话两条指令（锁序化，第二条必入队）；审批挂起时发指令（409 + waiting_approvals 提示）
-- **真实运行验收**：reducer 参数化单测覆盖迁移表全行；起服务建真实会话连发两条指令→第二条在队列中可见（GET state）；FSM 快照随事件实时变化
+- **交付物**：`reduce(state, event)` 纯函数（四态 + 等待计数器 + queue_paused，docs 02 §4 v1.4 迁移表）；`can_send/can_queue/can_cancel/can_continue_queue` 真值表函数；**任务创建带材料（v1.4，F001）**：`POST /api/conversations` 接收 import_files/folders（文件复制进任务资料目录、重名自动改名、逐文件回报 error；限制 GET /api/limits）、`GET /conversations/:id/scope`；`POST /api/conversations/:id/instructions`（can_send 直跑 / can_queue 入队 / 等待审批 409）；**排队控制（v1.4，F006）**：`POST .../queue/continue`（仅 queue_paused 时可，队首启动）、`POST .../queue/cancel`（item_ids 或 all；发送记录保留）；`GET .../state`（含 queue_paused 与队列明细）
+- **失败状态**：非法迁移（InvalidTransition，拒绝并返回当前合法动作列表）；并发同会话两条指令（锁序化，第二条必入队）；审批挂起时发指令（409 APPROVAL_PENDING）；queue/continue 在队列空/有待核验/有待审批时（409 带原因码）；材料部分失败（任务仍创建，materials 逐文件报 error）
+- **真实运行验收**：reducer 参数化单测覆盖迁移表全行（含 queue_paused 分支）；真实创建带 3 个文件 + 1 个不存在路径的任务→2 个导入成功、1 个报原因、任务正常执行；运行中停止任务→队列显示"已暂停"且**不**自动启动→点继续→队首执行→取消剩余排队项→无遗漏启动
 
 ### C8 · ReAct 主循环与 RunManager
 
 - **依赖**：C3、C4、C5、C6、C7
-- **交付物**：`run_task` 循环（docs 02 §5：事件发射、工具结果回填、messages 投影、回合上限 40、token 预算守门）；RunManager（每 TaskRun 一个 asyncio 任务、注册表、取消传播到工具与模型流）；任务终态回写 + pending_queue 自动出队下一个
+- **交付物**：`run_task` 循环（docs 02 §5：事件发射、工具结果回填、messages 投影、write_file 触发 artifact.* 事件与投影、回合上限 40、token 预算守门）；RunManager（每 TaskRun 一个 asyncio 任务、注册表、取消传播到工具与模型流）；任务终态回写 + **接续规则（v1.4）：completed/failed → 自动出队；cancelled → queue_paused（QUEUE_PAUSED 事件，不自动启动）**
 - **失败状态**：模型连续工具调用死循环（回合上限→RUN_FAILED 带原因）；工具全失败（结果回填让模型自决，不提前终止）；asyncio 任务异常（捕获→RUN_FAILED→错误入事件流）
-- **真实运行验收**：真实 GLM 任务"读取 <真实文件> 并总结内容"→SSE 全程收到 STEP/LLM/TOOL 事件→messages 投影含最终回复；再跑一个多步任务（读两个文件→合并写第三个文件，写操作真实弹审批）；回合上限用 2 的小配置真实触发一次
+- **真实运行验收**：真实 GLM 任务"读取 <真实文件> 并总结内容"→SSE 全程收到 STEP/LLM/TOOL 事件→messages 投影含最终回复；再跑一个多步任务（读两个文件→合并写第三个文件，写操作真实弹审批）→ artifacts 表出现 ready 记录；停止运行中任务→队列不自动启动；回合上限用 2 的小配置真实触发一次
 
 ### C9 · 中断恢复
 
 - **依赖**：C8
-- **交付物**：启动对账（running/waiting_user→RUN_INTERRUPTED；dispatched 无终态：verifiable 自动核验补齐 / 否则 pending_verification 暂停）；`POST /api/task-runs/:id/resume`（新 attempt、事件全文+工件重建上下文、副作用账本注入 system 提示）；`POST /api/task-runs/:id/cancel`
-- **失败状态**：重放遇损坏事件行（跳过并显式告警 + 标记任务需人工介入，不静默）；工件文件缺失（重建降级：该工具结果以"工件缺失"占位，任务继续）；resume 时仍有 pending_verification（拒绝 resume，提示先核验）
-- **真实运行验收**：真实任务跑到工具调用间隙 `kill -9` 后端→重启→对账为 interrupted→resume→任务完成且**目标文件内容与中断前一致（无重复写入痕迹）**；全程事件流可查
+- **交付物**：启动对账（running/waiting_user→RUN_INTERRUPTED；dispatched 无终态：verifiable 自动核验补齐 / 否则 pending_verification 暂停）；**核验提交（v1.4，F003）**：`GET /conversations/:id/pending-verifications`、`POST /tool-calls/:callId/verification`（confirmed_executed→completed(verified_by_user) / confirmed_not_executed→not_executed；事件 + 审计链；非待核验态 409）；`POST /api/task-runs/:id/resume`（新 attempt、事件全文+工件重建上下文、副作用账本注入 system 提示、**存在待核验 409 并返回清单**）；`POST /api/task-runs/:id/cancel`；`GET /conversations/:id/artifacts`（missing 惰性探测 + artifact.missing_detected）
+- **失败状态**：重放遇损坏事件行（跳过并显式告警 + 标记任务需人工介入，不静默）；工件文件缺失（重建降级：该工具结果以"工件缺失"占位，任务继续）；resume 时仍有 pending_verification（409 PENDING_VERIFICATION + 清单）
+- **真实运行验收**：真实任务跑到工具调用间隙 `kill -9` 后端→重启→对账为 interrupted→resume→任务完成且**目标文件内容与中断前一致（无重复写入痕迹）**；另跑一个含 `bash sleep` 类调用的任务在 dispatched 后 kill -9→重启→该调用出现在 pending-verifications 清单→resume 被拒（409）→提交"确认未执行"→resume 成功且账本告知模型该调用未发生；全程事件流可查
 
 ### C10 · Electron 壳与 sidecar 监管
 
@@ -121,7 +121,9 @@ C10 Electron壳（仅依赖 C1）──→ C11 前端聊天页（依赖 C3,C7,C1
   4. 事件流 SQL 核对：单任务事件序列完整（queued→started→…→completed），llm_calls/tool_calls 投影计数与事件一致
   5. 刷新页面→UI 从事件重放恢复
   6. 审计链校验脚本跑通全绿
-  7. 全程截屏存档入验收报告
+  7. **材料链（v1.4）**：新建任务附 3 个真实文件→导入成功、原文件未动、scope 展示一致；附一个不存在路径→逐文件报因
+  8. **排队链（v1.4）**：运行中发两条指令→停止→"已暂停"不自动跑→继续→队首执行→取消剩余→无遗漏
+  9. 全程截屏存档入验收报告
 
 ---
 

@@ -2,6 +2,7 @@
 
 > 模块深潜 #1 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（D1–D5 全部对齐）**
 > 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)。本文档粒度到"可以直接写代码"。
+> **v1.4（2026-09-30，对齐产品 F001–F010）**：新增任务材料与访问范围（task_materials + 任务级 scope 判定）、**排队暂停语义修订**（用户停止 → 队列暂停而非自动顶上；completed/failed 才自动接续——修订 D5 原义）、待核验结果提交（verification API）、产物投影与状态探测（artifacts 表）、审批 pending 列表与 always_scope_preview。接口全量见 [contracts/openapi.yaml](../contracts/openapi.yaml) v0.2。
 
 ---
 
@@ -43,11 +44,22 @@ Conversation（会话，长期容器）
 **conversations**
 ```
 id TEXT PK, workspace_id FK, agent_id FK,
-title TEXT,                       -- 自动生成（aux 模型起标题）
+title TEXT,                       -- 自动生成（aux 从首条指令起标题；重命名保留原指令与审计记录）
 status TEXT,                      -- active / archived
 agent_spec_snapshot JSON,         -- 创建时数字员工配置快照（模型/skill/连接器/权限），后续改员工不影响本会话
-pending_queue JSON,               -- 排队指令 [{id, text, enqueued_at}]
+pending_queue JSON,               -- 排队指令 [{id, text, enqueued_at, state(queued|cancelled)}]
+queue_paused INT DEFAULT 0,       -- v1.4（F006）：用户停止后置 1，队首不自动启动
+folders_json JSON,                -- v1.4（F001）：原位置使用的文件夹授权（进入任务读写范围，仍受规则与审批约束）
 created_at, updated_at
+```
+
+**task_materials**（v1.4，F001：导入的单文件材料）
+```
+id PK, conversation_id FK,
+original_path TEXT,               -- 用户选取的原路径（原文件不动）
+stored_name TEXT,                 -- 存入 data/conversations/<id>/materials/ 的名字；重名自动生成可辨认新名
+size_bytes INT, error TEXT NULL,  -- 拒绝原因（不存在/不可读/超限）——部分失败不阻塞任务创建，逐文件回报
+created_at
 ```
 
 **task_runs**
@@ -109,6 +121,17 @@ content TEXT,                    -- 小文最终回复全文（流式块不落�
 created_at
 ```
 
+**artifacts**（v1.4 投影表，F004：产物状态）
+```
+id PK, conversation_id, task_run_id, tool_call_id,
+path TEXT, name, ext, size_bytes INT NULL,
+status CHECK IN (generating, ready, failed, missing),
+created_at, updated_at
+-- 事件驱动：artifact.created（写前）/ ready（写成功，含 size）/ failed
+-- missing 为惰性探测：GET artifacts 列表时 stat 文件，不存在 → 发 artifact.missing_detected + 更新状态
+-- 口径：模型回复里提到的文件名不构成产物——只有真实工具调用产生的文件才进本表
+```
+
 ---
 
 ### 2.3 持久化契约（v1.2 新增——建表前的事实源分级协议）
@@ -155,10 +178,29 @@ class RunEventType(StrEnum):
     TOOL_PENDING_VERIFICATION = "tool.pending_verification"  # 结果不明，暂停自动重试待人工核验（v1.1）
 
     # 权限与人机交互（喂 D4 的等待计数器）
-    PERMISSION_REQUESTED  = "permission.requested"   # payload: tool_call_id, risk, options 四选项
+    PERMISSION_REQUESTED  = "permission.requested"   # payload: tool_call_id, risk, options 四选项,
+                                                      #        target(目标资源), always_scope_preview("始终允许"将保存的范围, v1.4)
     PERMISSION_RESOLVED   = "permission.resolved"    # payload: decision(allow_once/allow_always/reject_once/reject_always)
     QUESTION_REQUESTED    = "question.requested"     # 向用户提问（挂起任务等回答）
     QUESTION_ANSWERED     = "question.answered"
+
+    # 排队控制（v1.4，F006）
+    QUEUE_PAUSED          = "queue.paused"          # 用户停止当前执行后队列进入暂停，不自动接续
+    QUEUE_RESUMED         = "queue.resumed"         # 用户点"继续处理"，队首启动
+    QUEUE_ITEM_CANCELLED  = "queue.item_cancelled"  # 取消排队指令（payload 含 item_ids；发送记录保留）
+
+    # 核验提交（v1.4，F003）
+    TOOL_VERIFICATION_SUBMITTED = "tool.verification_submitted"  # 用户提交"确认已执行/未执行"，入审计链
+
+    # 产物（v1.4，F004）
+    ARTIFACT_CREATED           = "artifact.created"           # generating
+    ARTIFACT_READY             = "artifact.ready"             # 含 path/size
+    ARTIFACT_FAILED            = "artifact.failed"
+    ARTIFACT_MISSING_DETECTED  = "artifact.missing_detected"  # 探测发现文件缺失，卡片转缺失态
+
+    # 任务材料与元数据（v1.4，F001）
+    MATERIALS_IMPORTED   = "materials.imported"       # payload 逐文件 original_path/stored_name/error
+    CONVERSATION_UPDATED = "conversation.updated"     # 标题生成（aux 从首条指令）等元数据变化
 
     # 上下文管理（M1 起启用，枚举先占位）
     CONTEXT_COMPACTED   = "context.compacted"
@@ -188,7 +230,9 @@ class ConversationState:
 | PERMISSION_REQUESTED | running: waiting_approvals += 1 |
 | PERMISSION_RESOLVED | running: waiting_approvals -= 1 |
 | QUESTION_REQUESTED / ANSWERED | 同上，计数器增减 |
-| RUN_COMPLETED/FAILED/CANCELLED | → idle（若队列非空自动出队下一个 → starting） |
+| RUN_COMPLETED / RUN_FAILED | → idle；**队列非空且未暂停 → 自动出队下一个**（v1.4：失败也自动接续，产品 F006"只有用户主动停止才暂停"） |
+| RUN_CANCELLED（用户停止） | → idle；**队列非空 → queue_paused = 1**（发 QUEUE_PAUSED；不自动启动，等"继续处理"） |
+| QUEUE_RESUMED（用户点继续） | queue_paused = 0 → idle 队首出队 → starting |
 | 致命错误（运行时崩溃） | → error（重启对账后由 INTERRUPTED 收敛） |
 
 **能力真值表（前端直接调用）**
@@ -196,10 +240,11 @@ class ConversationState:
 | 函数 | 条件 |
 |---|---|
 | `can_send` | state == idle |
-| `can_queue` | state == running 且 waiting_approvals == 0 |
+| `can_queue` | state == running 且 waiting_approvals == 0（queue_paused 不影响入队——新指令仍可排入，保持暂停态） |
 | `can_cancel` | state in (starting, running) |
+| `can_continue_queue` | state == idle 且 queue_paused == 1 且队列非空（且无待核验/待审批） |
 
-排队语义（D5）：`can_send` 时指令立即开跑；`can_queue` 时进 `pending_queue`，当前任务终态后自动出队；`waiting_approvals > 0` 时两者皆否（先处理审批）。
+排队语义（D5，**v1.4 修订**）：`can_send` 时指令立即开跑；`can_queue` 时入 `pending_queue`。终态后的接续规则：**completed/failed → 自动出队**；**cancelled（用户停止）→ 队列暂停**（QUEUE_PAUSED），只有用户点"继续处理"（POST queue/continue → QUEUE_RESUMED）才启动队首；取消排队指令（POST queue/cancel，明确 item_ids 或 all）保留发送记录（messages 与 queue.item_cancelled 事件留痕）。`waiting_approvals > 0` 时 can_send/can_queue 皆否（先处理审批）。
 
 ---
 
@@ -254,7 +299,9 @@ M0 内置工具：`read_file` / `write_file` / `list_dir` / `bash` / `http_reque
 **判定纪律（v1.2 收紧）**：
 - bash 只读判定需**同时满足两条**：① 命令首词 ∈ 固定白名单 `ls / cat / head / tail / grep / wc / pwd / file / stat / du / diff`（**v1.2 移除 `find`——其 `-exec` 可执行任意命令**）；② **不含任何元字符或重定向**（`;` `&&` `||` `|` 反引号 `$( )` `>` `<` 换行）——任一命中即丧失只读资格，走审批。`python`、`awk`、`sed` 等可执行任意代码的一律不算只读
 - 路径类匹配一律先 `realpath()` 规范化（解析符号链接）再比前缀
+- **路径合法范围 = 任务级 scope（v1.4，F001）**：`工作区数据目录 ∪ 任务资料目录(data/conversations/<id>/materials/) ∪ 用户授权的原位置文件夹(folders_json)`；scope 外路径在判定层直接拒绝（OUT_OF_SCOPE，可读原因展示），不进入审批
 - `http_request` 目标域名受连接器配置 `allowed_hosts` 约束（M0 默认为空 = 全部需审批）
+- 材料/文件夹只是**提供来源与范围**，不授予任何权限：范围内读写仍走三级闸门（元数据分级 → 规则 → 审批）
 
 ### 6.2 调度与并发规则
 
@@ -275,12 +322,20 @@ M0 内置工具：`read_file` / `write_file` / `list_dir` / `bash` / `http_reque
 2. 全部写 `RUN_INTERRUPTED` 事件，status → interrupted（**不隐式重启任何任务**）
 3. `tool_calls` 中 status = dispatched 但无终态的：`verifiable` 类先自动核验（可确认则补 completed）；无法核验的 → `pending_verification` **暂停任务自动重试**，待人工确认（§6.2 三分类，v1.1 修订）；副作用账本照常注入供模型参考"结果不明"清单
 
-**用户点"恢复"**：
+**用户点"恢复"**（前置：无 `pending_verification` 调用，否则 409 并返回清单——F003）：
 1. 新建 `RunAttempt(kind=resume, resume_reason=...)`
 2. 从 `run_events` 重放重建完整消息上下文（事件载荷含回复全文与工具输出，超限部分读工件——见 §2.3 持久化契约）
 3. 注入两段系统提示：副作用账本（"你已执行：整理了 1-30 号发票写入 half.xlsx；结果不明：调用过 send_mail"）+ 恢复指令（"任务中断于第 31 张，请决定如何继续"）
 4. 幂等钥匙自动拦截重复副作用（§6.2）
 5. 发 `RUN_RESUMED`，进入正常循环
+
+**待核验结果的提交（v1.4，F003）**：
+- `GET /conversations/:id/pending-verifications` → 清单（call_id、工具、参数、dispatched_at、已知证据摘要）
+- `POST /tool-calls/:callId/verification {verdict: confirmed_executed | confirmed_not_executed, note}`：
+  - `confirmed_executed` → tool_calls.status = completed（outcome = verified_by_user）
+  - `confirmed_not_executed` → status = not_executed（账本记"未发生"，恢复时明确告知模型"该调用未执行，需要时应重做"）
+  - 两种决定都发 `tool.verification_submitted` 事件（含 verdict/note/actor）并写审计链；不处于待核验状态返回 409
+- 无法查证 = 不提交，保持待核验（不阻塞其他任务的执行，仅阻塞本任务 resume 与自动重试）
 
 ---
 
@@ -321,21 +376,18 @@ agentcrew/
   docs/
 ```
 
-**纪律**：core 单测不碰网络不碰盘（FauxProvider + 内存 EventStore）；server 只做装配。
+**纪律**：core 的纯函数（reducer/判定/调度计算）参数化单测，不碰网络；core 到外部系统（模型/磁盘）一律经 Port 接口，server 提供真实实现；测试用真实 GLM（v1.3 禁 mock）。
 
-## 10. API 面（M0）
+## 10. API 面
 
-```
-POST /api/conversations                      创建会话（绑数字员工快照）
-GET  /api/conversations                      列表
-GET  /api/conversations/:id/messages         聊天记录（分页）
-POST /api/conversations/:id/instructions     发指令（can_send 直接跑 / can_queue 入队）
-POST /api/task-runs/:id/cancel               取消
-POST /api/task-runs/:id/resume               恢复（D3）
-GET  /api/task-runs/:id/events?from=seq      SSE 事件流（from=0 即重放）
-POST /api/tool-approvals/:id                 审批决定（四选项）
-GET  /api/conversations/:id/state            FSM 快照（can_send/can_queue/can_cancel）
-```
+**全量以 [contracts/openapi.yaml](../contracts/openapi.yaml) v0.2 为准**（含请求/响应/错误码）。v1.4 相对 M0 草案新增：
+
+- 材料与范围：`GET /limits`、`POST /conversations`（带 import_files/folders，响应含逐文件导入结果与 scope）、`GET /conversations/:id/scope`
+- 排队控制：`POST /conversations/:id/queue/continue`、`POST /conversations/:id/queue/cancel`
+- 待核验：`GET /conversations/:id/pending-verifications`、`POST /tool-calls/:callId/verification`
+- 产物：`GET /conversations/:id/artifacts`（含 missing 探测）
+- 审批：`GET /task-runs/:id/approvals?status=pending`（刷新后恢复审批卡）
+- 运行记录：`GET /conversations/:id/task-runs`、`GET /task-runs/:id/attempts`、events 支持 JSON 分页（回放用）
 
 ## 11. 验收与测试
 
@@ -349,4 +401,4 @@ GET  /api/conversations/:id/state            FSM 快照（can_send/can_queue/can
 - 四态 FSM 与计数器：`workMate/AionCore/crates/aionui-session/src/state.rs`、`reducer.rs`
 - 排队语义与恢复即接口：`workMate/AionUi/packages/desktop/src/common/adapter/ipcBridge.ts`（ensureRuntime / queue）
 - 工具元数据与调度：`workMate/ZCode/apps/zcode-cli/packages/core/src/tool/`（types.ts / scheduler.ts）
-- 离线确定性测试：`workMate/learn-workbuddy/mini_workbuddy/providers.py`
+- 事件传输（序列号+快照+环形缓冲）：`workMate/EasyMint`（见 architecture/reference-easymint.md）
