@@ -161,3 +161,51 @@ def test_bad_migration_full_startup_enters_diagnostic_mode(tmp_path):
     finally:
         if proc.poll() is None:
             proc.kill()
+
+
+def test_sigterm_real_signal_path_delivers_shutdown_frame(tmp_path):
+    """外审回稿补强：走真实 cli 进程 + 真实 SIGTERM 信号路径（_GracefulServer
+    的 handle_exit 首行投帧），SSE 连接必须收到 event:shutdown 且退出码 0。"""
+
+    # 预置一个带会话的真实库（用真实迁移建表，服务启动时 up_to_date）
+    from agentcrew_server.db.migrations import run_migrations
+
+    db_path = tmp_path / "agentcrew.db"
+    conn = sqlite3.connect(str(db_path), isolation_level=None)
+    run_migrations(conn, tmp_path / "backups")
+    conn.execute(
+        "INSERT INTO conversations (id, workspace_id, agent_id, created_at, updated_at)"
+        " VALUES ('conv-sig', 'ws', 'agent', '2026-01-01', '2026-01-01')"
+    )
+    conn.close()
+
+    port = _free_port()
+    proc = _spawn_server(
+        ["--port", str(port), "--data-dir", str(tmp_path)],
+        env_extra={"AGENTCREW_TOKEN": TOKEN},
+    )
+    sock = None
+    try:
+        _wait_ready(proc)
+        sock = socket.create_connection(("127.0.0.1", port), timeout=10)
+        sock.sendall(
+            f"GET /api/conversations/conv-sig/stream?from=0 HTTP/1.1\r\n"
+            f"Host: x\r\nAuthorization: Bearer {TOKEN}\r\n\r\n".encode()
+        )
+        time.sleep(1.0)  # 订阅建立并开始等待实时帧
+        proc.send_signal(signal.SIGTERM)
+        sock.settimeout(10)
+        received = b""
+        while b"event: shutdown" not in received:
+            part = sock.recv(65536)
+            if not part:
+                break
+            received += part
+        assert b"event: shutdown" in received, received[-300:]
+        assert b'"reason": "server_shutdown"' in received
+        assert proc.wait(timeout=15) == 0, "SIGTERM 后应优雅退出 0"
+    finally:
+        if sock is not None:
+            sock.close()
+        if proc.poll() is None:
+            proc.kill()

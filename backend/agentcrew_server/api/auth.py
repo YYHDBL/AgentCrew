@@ -17,15 +17,16 @@ _EXEMPT_PATHS = frozenset({"/api/health"})
 class BearerAuthMiddleware:
     def __init__(self, app, token: str):
         self.app = app
-        self._token = token
+        self._expected = f"Bearer {token}".encode("ascii")
 
     async def __call__(self, scope, receive, send) -> None:
         if scope["type"] == "http" and scope["path"].startswith("/api"):
             if scope["path"] not in _EXEMPT_PATHS:
                 headers = dict(scope.get("headers") or [])
-                provided = headers.get(b"authorization", b"").decode("latin-1")
-                expected = f"Bearer {self._token}"
-                if not hmac.compare_digest(provided, expected):
+                # bytes 比较：str 版 compare_digest 仅接受 ASCII，非 ASCII 头
+                # 会抛 TypeError → 500（外审回稿修复）
+                provided = headers.get(b"authorization", b"")
+                if not hmac.compare_digest(provided, self._expected):
                     response = error_response(
                         ErrorCode.UNAUTHORIZED,
                         "缺少或错误的 Bearer 凭证",

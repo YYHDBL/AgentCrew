@@ -2,10 +2,12 @@
 
 协议（backend-service §3 / contracts/events.md v1.1）：
 - 游标 from 排他（返回 seq > 游标）；from=0 重放全部；
-- 无遗漏交接：**先注册实时订阅（带缓冲）→ 再从库读历史至当前已提交 head →
-  转入实时**；缓冲中 global_seq ≤ head 的帧丢弃——两段之间无窗口；
-- 控制帧：event:resync（data 含最后连续游标，慢消费者溢出）、event:shutdown
-  （优雅关闭）；默认帧 = 事件信封 JSON；
+- 无遗漏交接：**先注册实时订阅（带缓冲）→ 取订阅时刻的已提交 head →
+  只读历史到 head 为止（分批流式，不追新事件）→ 转实时**；缓冲中
+  global_seq ≤ head 的帧丢弃——两段之间无窗口（head 上界与分批发送为
+  外审回稿修复）；
+- 控制帧优先级：shutdown（优雅关闭，标志位不依赖队列，队满也能送达）>
+  resync（慢消费者溢出，data 含最后连续游标）；默认帧 = 事件信封 JSON；
 - retry: 建议行在流首发送；心跳注释行由 sse-starlette ping 提供；
 - 订阅不存在的任务/会话 → 404；连接超上限 → 503 SSE_LIMIT；
 - 流不套信封（EnvelopeMiddleware 放行 text/event-stream）。
@@ -20,11 +22,14 @@ import logging
 from fastapi import Query
 from sse_starlette.sse import EventSourceResponse, ServerSentEvent
 
-from ..bus import SHUTDOWN, ConnectionLimitError, EventBus, Subscription, Topic
+from ..bus import ConnectionLimitError, EventBus, Subscription, Topic
 from ..db.queries import (
+    conversation_batch,
     conversation_exists,
-    iter_conversation_events,
     iter_task_events,
+    max_global_seq_for_conversation,
+    max_seq_for_task,
+    task_batch,
     task_run_exists,
 )
 from .errors import ApiError, ErrorCode
@@ -33,6 +38,11 @@ _log = logging.getLogger("agentcrew.api.sse")
 
 RETRY_HINT_MS = 3000
 PING_INTERVAL_SECONDS = 15
+# 说明：uvicorn 忽略应用层的 Connection 头（hop-by-hop 由服务端自管）——
+# SSE 流结束后 socket 进 keep-alive 池、按 timeout_keep_alive（默认 5s）关闭；
+# 对客户端而言"服务端终止订阅"的可见语义 = 响应流在 resync/shutdown 帧后
+# 以 chunked 终止块结束（EventSource/curl 在该时刻退出，无需等 socket FIN）。
+_SSE_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
 
 
 def _retry_hint() -> ServerSentEvent:
@@ -49,18 +59,14 @@ def _resync_frame(last_global_seq: int, extra: dict | None = None) -> ServerSent
     data = {"last_continuous_global_seq": last_global_seq, "reason": "slow_consumer"}
     if extra:
         data.update(extra)
-    return ServerSentEvent(
-        data=json.dumps(data, ensure_ascii=False), event="resync"
-    )
+    return ServerSentEvent(data=json.dumps(data, ensure_ascii=False), event="resync")
 
 
 def _shutdown_frame(head: int, extra: dict | None = None) -> ServerSentEvent:
     data = {"last_continuous_global_seq": head, "reason": "server_shutdown"}
     if extra:
         data.update(extra)
-    return ServerSentEvent(
-        data=json.dumps(data, ensure_ascii=False), event="shutdown"
-    )
+    return ServerSentEvent(data=json.dumps(data, ensure_ascii=False), event="shutdown")
 
 
 def _subscribe_or_503(bus: EventBus, topic: Topic) -> Subscription:
@@ -74,40 +80,49 @@ async def _conversation_stream(
     runtime, sub: Subscription, conversation_id: str, from_seq: int
 ):
     sub.bind_consumer()
-    read_conn = runtime.db.read_conn
+    db = runtime.db
     try:
         yield _retry_hint()
-        head = from_seq
-        # 历史段（订阅已注册，缓冲覆盖读取期间的新提交）
-        history = await asyncio.to_thread(
-            list, iter_conversation_events(
-                read_conn, conversation_id, after_global_seq=from_seq
-            )
+        # head 固定：订阅时刻该会话的已提交上界（新事件走订阅缓冲）。
+        # read_conn 在 to_thread worker 内解析——每线程一条只读连接
+        head = await asyncio.to_thread(
+            _head_global, db, conversation_id
         )
-        for event in history:
-            head = event.global_seq
-            sub.last_sent_global_seq = head
-            yield _data_frame(event)
-        # 实时段：缓冲中 ≤ head 的帧丢弃（无遗漏交接的去重侧）
+        if from_seq >= head:
+            head = from_seq  # 无可补播（或游标超前）：直接进实时
+        sent = from_seq
+        cursor = from_seq
+        while cursor < head:
+            batch = await asyncio.to_thread(
+                _conversation_batch, db, conversation_id,
+                after_global_seq=cursor, up_to_global_seq=head,
+            )
+            if not batch:
+                break
+            for event in batch:
+                cursor = event.global_seq
+                sent = event.global_seq
+                sub.last_sent_global_seq = sent
+                yield _data_frame(event)
         while True:
+            if sub.shutdown_requested:  # 优雅关闭优先于溢出（队满也送达）
+                yield _shutdown_frame(sent)
+                return
             if sub.overflowed:
                 _log.info(
                     "sse.resync 会话流溢出 conversation=%s 游标=%s",
-                    conversation_id, head,
+                    conversation_id, sent,
                 )
-                yield _resync_frame(head)
+                yield _resync_frame(sent)
                 return
             item = sub.take_nowait()
             if item is None:
                 await sub.wait_for_data()
                 continue
-            if item is SHUTDOWN:
-                yield _shutdown_frame(head)
-                return
-            if item.global_seq <= head:
-                continue
-            head = item.global_seq
-            sub.last_sent_global_seq = head
+            if item.global_seq <= sent:
+                continue  # 交接去重：缓冲中 ≤ 补播 head 的帧丢弃
+            sent = item.global_seq
+            sub.last_sent_global_seq = sent
             yield _data_frame(item)
     finally:
         runtime.bus.unsubscribe(sub)
@@ -115,53 +130,54 @@ async def _conversation_stream(
 
 async def _task_stream(runtime, sub: Subscription, task_run_id: str, from_seq: int):
     sub.bind_consumer()
-    read_conn = runtime.db.read_conn
+    db = runtime.db
     try:
         yield _retry_hint()
-        head_global = from_seq
-        head_seq = from_seq
-        history = await asyncio.to_thread(
-            list, iter_task_events(read_conn, task_run_id, after_seq=from_seq)
-        )
-        for event in history:
-            head_global = event.global_seq
-            head_seq = event.seq
-            sub.last_sent_global_seq = head_global
-            yield _data_frame(event)
+        head_seq = await asyncio.to_thread(_head_seq, db, task_run_id)
+        if from_seq >= head_seq:
+            head_seq = from_seq
+        sent_seq = from_seq
+        cursor = from_seq
+        while cursor < head_seq:
+            batch = await asyncio.to_thread(
+                _task_batch, db, task_run_id,
+                after_seq=cursor, up_to_seq=head_seq,
+            )
+            if not batch:
+                break
+            for event in batch:
+                cursor = event.seq
+                sent_seq = event.seq
+                sub.last_sent_global_seq = event.global_seq
+                yield _data_frame(event)
+        sent_global = sub.last_sent_global_seq
         while True:
+            if sub.shutdown_requested:
+                yield _shutdown_frame(
+                    sent_global, extra={"task_run_id": task_run_id, "seq": sent_seq}
+                )
+                return
             if sub.overflowed:
                 _log.info(
-                    "sse.resync 任务流溢出 task=%s 游标 seq=%s", task_run_id, head_seq
+                    "sse.resync 任务流溢出 task=%s 游标 seq=%s", task_run_id, sent_seq
                 )
                 yield _resync_frame(
-                    head_global,
-                    extra={"task_run_id": task_run_id, "seq": head_seq},
+                    sent_global,
+                    extra={"task_run_id": task_run_id, "seq": sent_seq},
                 )
                 return
             item = sub.take_nowait()
             if item is None:
                 await sub.wait_for_data()
                 continue
-            if item is SHUTDOWN:
-                yield _shutdown_frame(
-                    head_global, extra={"task_run_id": task_run_id, "seq": head_seq}
-                )
-                return
-            if item.global_seq <= head_global:
+            if item.global_seq <= sent_global:
                 continue
-            head_global = item.global_seq
-            head_seq = item.seq
-            sub.last_sent_global_seq = head_global
+            sent_global = item.global_seq
+            sent_seq = item.seq
+            sub.last_sent_global_seq = sent_global
             yield _data_frame(item)
     finally:
         runtime.bus.unsubscribe(sub)
-
-
-# 说明：uvicorn 忽略应用层的 Connection 头（hop-by-hop 由服务端自管）——
-# SSE 流结束后 socket 进 keep-alive 池、按 timeout_keep_alive（默认 5s）关闭；
-# 对客户端而言"服务端终止订阅"的可见语义 = 响应流在 resync/shutdown 帧后结束
-# （chunked 终止块），EventSource/curl 均在流结束时刻退出，无需等 socket FIN。
-_SSE_HEADERS = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
 
 
 def install_sse_routes(app, runtime) -> None:
@@ -172,9 +188,7 @@ def install_sse_routes(app, runtime) -> None:
         conversation_id: str,
         from_seq: int = Query(0, alias="from"),
     ):
-        if not await asyncio.to_thread(
-            conversation_exists, runtime.db.read_conn, conversation_id
-        ):
+        if not await asyncio.to_thread(_conversation_exists, runtime.db, conversation_id):
             raise ApiError(ErrorCode.NOT_FOUND, f"会话不存在：{conversation_id}")
         sub = _subscribe_or_503(bus, Topic("conversation", conversation_id))
         return EventSourceResponse(
@@ -190,9 +204,7 @@ def install_sse_routes(app, runtime) -> None:
         after_seq: int | None = Query(None),
         limit: int | None = Query(None, le=500),
     ):
-        if not await asyncio.to_thread(
-            task_run_exists, runtime.db.read_conn, task_run_id
-        ):
+        if not await asyncio.to_thread(_task_run_exists, runtime.db, task_run_id):
             raise ApiError(ErrorCode.NOT_FOUND, f"任务不存在：{task_run_id}")
 
         if after_seq is not None or limit is not None:
@@ -200,8 +212,8 @@ def install_sse_routes(app, runtime) -> None:
             effective_after = after_seq if after_seq is not None else 0
             effective_limit = limit if limit is not None else 500
             events = await asyncio.to_thread(
-                _task_events_page,
-                runtime.db.read_conn, task_run_id, effective_after, effective_limit,
+                _task_events_page, runtime.db, task_run_id,
+                effective_after, effective_limit,
             )
             return {
                 "items": [event.as_frame() for event in events],
@@ -216,10 +228,40 @@ def install_sse_routes(app, runtime) -> None:
         )
 
 
-def _task_events_page(conn, task_run_id: str, after_seq: int, limit: int):
+def _task_events_page(db, task_run_id: str, after_seq: int, limit: int):
     events = []
-    for event in iter_task_events(conn, task_run_id, after_seq=after_seq):
+    for event in iter_task_events(db.read_conn, task_run_id, after_seq=after_seq):
         events.append(event)
         if len(events) >= limit:
             break
     return events
+
+
+def _head_global(db, conversation_id: str) -> int:
+    return max_global_seq_for_conversation(db.read_conn, conversation_id)
+
+
+def _head_seq(db, task_run_id: str) -> int:
+    return max_seq_for_task(db.read_conn, task_run_id)
+
+
+def _conversation_batch(db, conversation_id: str, *, after_global_seq: int,
+                        up_to_global_seq: int):
+    return conversation_batch(
+        db.read_conn, conversation_id,
+        after_global_seq=after_global_seq, up_to_global_seq=up_to_global_seq,
+    )
+
+
+def _task_batch(db, task_run_id: str, *, after_seq: int, up_to_seq: int):
+    return task_batch(
+        db.read_conn, task_run_id, after_seq=after_seq, up_to_seq=up_to_seq,
+    )
+
+
+def _conversation_exists(db, conversation_id: str) -> bool:
+    return conversation_exists(db.read_conn, conversation_id)
+
+
+def _task_run_exists(db, task_run_id: str) -> bool:
+    return task_run_exists(db.read_conn, task_run_id)

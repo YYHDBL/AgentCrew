@@ -308,6 +308,7 @@ def test_slow_consumer_gets_resync_then_catches_up(tmp_path):
         assert "event: resync" in text, "慢消费者应收到 resync 帧"
         _, _, after_resync = text.partition("event: resync")
         assert '"global_seq"' not in after_resync, "resync 后不应再有数据帧（流已终止）"
+        assert b"0\r\n\r\n" in chunks, "响应流应以 chunked 终止块结束（服务端终止的协议级证据）"
 
         lines = text.splitlines()
         data_seqs, resync_data, current_event = [], None, None
@@ -332,6 +333,43 @@ def test_slow_consumer_gets_resync_then_catches_up(tmp_path):
         got = set(data_seqs) | {f["global_seq"] for f in data2}
         expected = set(range(1, 3 + total_live + 1))
         assert got == expected, f"重连后应补齐全部事件（缺 {sorted(expected - got)}）"
+    finally:
+        srv.stop()
+        srv.close()
+
+
+def test_shutdown_wins_over_overflow(tmp_path):
+    """外审回稿修复：队列已满的订阅在优雅关闭时也必须收到 shutdown 帧
+    （标志位优先于溢出 resync），而不是走 resync 分支。"""
+    srv = LiveServer(tmp_path, bus_kwargs={"max_queue": 3})
+    srv.start()
+    srv.append(2)
+    try:
+        raw = socket.socket()
+        raw.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 2048)
+        raw.connect(("127.0.0.1", srv.port))
+        raw.sendall(
+            f"GET /api/conversations/{CONV}/stream?from=0 HTTP/1.1\r\n"
+            f"Host: x\r\nAuthorization: Bearer {TOKEN}\r\n\r\n".encode()
+        )
+        time.sleep(0.3)  # 不读：让队列灌满溢出
+        srv.append(30, pad=600)
+        time.sleep(0.3)
+        srv.bus.shutdown_all()  # 溢出未恢复时触发优雅关闭
+        raw.settimeout(5)
+        chunks = b""
+        try:
+            while True:
+                part = raw.recv(65536)
+                if not part:
+                    break
+                chunks += part
+        except socket.timeout:
+            pass
+        raw.close()
+        text = chunks.decode("utf-8", errors="replace")
+        assert "event: shutdown" in text, f"队满订阅也应收到 shutdown 帧：{text[-200:]}"
+        assert "event: resync" not in text, "shutdown 优先于溢出 resync"
     finally:
         srv.stop()
         srv.close()

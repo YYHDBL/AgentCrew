@@ -87,6 +87,13 @@ async def _parent_watchdog(
             continue  # 进程存在但属其他用户（罕见）：继续观察
 
 
+async def _overflow_sweeper(bus, interval: float = 1.0) -> None:
+    """每秒清理溢出超宽限的死订阅（外审回稿：不依赖新写入触发）。"""
+    while True:
+        await asyncio.sleep(interval)
+        bus.sweep()
+
+
 class _GracefulServer(uvicorn.Server):
     """在 uvicorn 处理退出信号的第一时间投递 SSE shutdown 帧。
 
@@ -158,10 +165,14 @@ async def serve(
 
     server_task = asyncio.create_task(server.serve(), name="uvicorn")
     watchdog = None
+    sweeper = None
     if parent_pid:
         watchdog = asyncio.create_task(
             _parent_watchdog(parent_pid, _schedule_graceful, log), name="parent-watchdog"
         )
+    if bus is not None:
+        # 溢出死订阅的独立计时检查：写入停止（无 publish 可蹭）后也能强断
+        sweeper = asyncio.create_task(_overflow_sweeper(bus), name="bus-overflow-sweeper")
     try:
         while not server.started and not server_task.done():
             await asyncio.sleep(0.05)
@@ -173,6 +184,8 @@ async def serve(
     finally:
         if watchdog is not None:
             watchdog.cancel()
+        if sweeper is not None:
+            sweeper.cancel()
         for sig, handler in installed.items():
             try:
                 signal.signal(sig, handler)

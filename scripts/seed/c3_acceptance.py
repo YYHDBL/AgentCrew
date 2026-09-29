@@ -5,17 +5,19 @@
 来自本进程写通道提交后的发布）；HTTP/SSE 客户端视角全部真实（真 socket）。
 
 场景：
-  A  补播→实时无缝交接（补播进行中持续生产新事件，无丢失无重复）
+  A  补播→实时无缝交接：慢读客户端拖长补播，生产者在补播进行中提交新事件
+     （双侧时间戳证明真重叠），最终帧序连续无丢失无重复
   B  断线重连排他游标续播
-  C  双任务并发写事件 → SSE 帧序 global_seq 严格递增（发布顺序=提交顺序）
+  C  先连 SSE 再双任务并发写 → 实时帧序 global_seq 严格递增（发布=提交顺序）
   D  慢客户端：队列上限 1000 打满 → event:resync（含最后连续游标）→
-     连接被服务端终止 → 从游标重连补齐
+     流终止（chunked 终止块）→ 从游标重连补齐
   E  连接上限：第 33 条 SSE 连接 → 503 SSE_LIMIT；全部断开后订阅归零（不泄漏）
 
 用法：
   cd backend && uv run python ../scripts/seed/c3_acceptance.py \
       --data-dir /tmp/c3-acc [--seed-only]
 --seed-only：只灌历史事件到 data-dir 后退出（供外部 cli server + curl 演示）。
+token 每次运行随机生成（外审回稿：脚本内不落固定字面量）。
 """
 
 from __future__ import annotations
@@ -24,6 +26,7 @@ import argparse
 import asyncio
 import json
 import logging
+import secrets
 import socket
 import sys
 import threading
@@ -45,7 +48,7 @@ from agentcrew_server.db.write_channel import WriteChannel
 from agentcrew_server.runtime import RuntimeState
 
 CONV = "conv-demo"
-TOKEN = "tok-c3-acceptance-123456"
+TOKEN = secrets.token_hex(24)  # 每次运行随机；不落仓库
 
 
 def setup_runtime(data_dir: Path):
@@ -76,12 +79,15 @@ def setup_runtime(data_dir: Path):
 
 
 async def produce(store, n: int, run_id: str = "run-a", *, pad: int = 0,
-                  interval_s: float = 0.0):
+                  interval_s: float = 0.0, commit_log: dict | None = None):
+    """生产 n 条事件；commit_log 记录 global_seq → 提交完成时刻（重叠证据用）。"""
     for i in range(n):
-        await store.append(
+        event = await store.append(
             task_run_id=run_id, conversation_id=CONV, type=T.QUESTION_REQUESTED,
             payload={"q": f"{run_id} 事件 {i}", "pad": "x" * pad},
         )
+        if commit_log is not None:
+            commit_log[event.global_seq] = time.monotonic()
         if interval_s:
             await asyncio.sleep(interval_s)
 
@@ -149,21 +155,72 @@ def check(name: str, cond: bool, evidence: str):
         raise SystemExit(f"场景 {name} 未通过")
 
 
+def paced_sse_reader(port: int, path: str, want: int, read_pause_s: float,
+                     timeout_s: float = 20.0):
+    """慢读客户端（线程内阻塞 socket）：压小接收缓冲 + 每帧间隔 read_pause_s，
+    对服务端产生真实背压（TCP 窗口收缩 → 补播生成器停摆），返回
+    (seq 列表, 每帧到达时刻 dict)。"""
+    raw = socket.create_connection(("127.0.0.1", port), timeout=timeout_s)
+    raw.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 4096)
+    raw.sendall(
+        f"GET {path} HTTP/1.1\r\nHost: x\r\n"
+        f"Authorization: Bearer {TOKEN}\r\n\r\n".encode()
+    )
+    seqs, arrivals = [], {}
+    buf = ""
+    deadline = time.monotonic() + timeout_s
+    try:
+        while len(seqs) < want and time.monotonic() < deadline:
+            part = raw.recv(65536)
+            if not part:
+                break
+            now = time.monotonic()
+            buf += part.decode("utf-8", errors="replace")
+            while "\n\n" in buf or "\r\n\r\n" in buf:
+                sep = "\r\n\r\n" if "\r\n\r\n" in buf else "\n\n"
+                frame, buf = buf.split(sep, 1)
+                for line in frame.splitlines():
+                    if line.startswith("data:"):
+                        try:
+                            gseq = json.loads(line.split(":", 1)[1])["global_seq"]
+                        except (ValueError, KeyError):
+                            continue
+                        if gseq not in arrivals:
+                            arrivals[gseq] = now
+                            seqs.append(gseq)
+            time.sleep(read_pause_s)
+    finally:
+        raw.close()
+    return seqs, arrivals
+
+
 async def scenario_replay_to_live(store, base):
-    print("\n== 场景 A：补播→实时无缝交接（补播期间持续生产）")
-    await produce(store, 30)  # 历史
-    got = asyncio.Event()
+    print("\n== 场景 A：补播→实时无缝交接（慢读客户端 × 补播期间持续生产）")
+    # 历史 ~500KB（500 帧×~1KB）：超出 客户端rcv窗口+服务端sndbuf+asyncio高水位
+    # 的总和，配合慢读必然让补播生成器停摆——补播窗口被真实拉长到秒级
+    await produce(store, 500, pad=800)
+    port = int(base.rsplit(":", 1)[1])
+    commit_log: dict = {}
+    reader_task = asyncio.get_event_loop().run_in_executor(
+        None, paced_sse_reader, port,
+        f"/api/conversations/{CONV}/stream?from=0", 520, 0.03,
+    )
+    await asyncio.sleep(0.05)  # 补播串流进行中（慢读把窗口拉长到 ~0.5s）
 
     async def produce_during_replay():
-        await asyncio.sleep(0.3)  # 客户端正在补播 30 条历史
-        await produce(store, 20, interval_s=0.02)  # 补播期间持续产生新事件
-        got.set()
+        await produce(store, 20, interval_s=0.05, commit_log=commit_log)
 
-    task = asyncio.create_task(produce_during_replay())
-    seqs, controls, _ = await sse_collect(base, f"/api/conversations/{CONV}/stream?from=0", 50)
-    await got.wait()
-    check("A 无丢失无重复", seqs == list(range(1, 51)),
-          f"收到 {len(seqs)} 帧，global_seq {seqs[0]}→{seqs[-1]} 连续无洞；控制帧 {controls}")
+    await asyncio.gather(produce_during_replay(), reader_task)
+    seqs, arrivals = reader_task.result()
+    check("A 无丢失无重复", seqs == list(range(1, 521)),
+          f"收到 {len(seqs)} 帧，global_seq {seqs[0]}→{seqs[-1]} 连续无洞")
+    # 重叠证据：存在实时事件，其提交时刻早于某个历史帧的到达时刻
+    live_commits = [commit_log[s] for s in seqs if s in commit_log]
+    history_arrivals = [arrivals[s] for s in seqs if s not in commit_log]
+    overlap = min(live_commits) < max(history_arrivals)
+    check("A 补播期间生产（真重叠）", overlap,
+          f"首条实时提交 t={min(live_commits):.3f} < 末条历史到达 "
+          f"t={max(history_arrivals):.3f}（生产发生在补播完成之前）")
     return seqs[-1]
 
 
@@ -179,18 +236,28 @@ async def scenario_exclusive_resume(store, base, last_seq):
 
 
 async def scenario_concurrent_monotonic(store, base, last_seq):
-    print("\n== 场景 C：双任务并发写事件 → 帧序严格单调（发布顺序=提交顺序）")
+    print("\n== 场景 C：先连 SSE 再双任务并发写 → 实时帧序严格单调（发布=提交顺序）")
+    collect_task = asyncio.get_event_loop().run_in_executor(
+        None, _collect_in_thread, base,
+        f"/api/conversations/{CONV}/stream?from={last_seq}", 200,
+    )
+    await asyncio.sleep(0.4)  # 订阅建立、进入实时等待
     await asyncio.gather(
         produce(store, 100, "run-a"), produce(store, 100, "run-b")
     )
-    seqs, _, _ = await sse_collect(
-        base, f"/api/conversations/{CONV}/stream?from={last_seq}", 200
-    )
+    seqs = await collect_task
     expected = list(range(last_seq + 1, last_seq + 201))
-    strictly_increasing = all(b - a == 1 for a, b in zip(seqs, seqs[1:]))
-    check("C 帧序单调", seqs == expected and strictly_increasing,
-          f"200 帧全局连续递增 {seqs[0]}→{seqs[-1]}（run-a/run-b 交错提交）")
+    check("C 实时帧序单调", seqs == expected,
+          f"连接先于写入建立；200 帧全局连续递增 {seqs[0]}→{seqs[-1]}"
+          f"（run-a/run-b 交错实时扇出）")
     return seqs[-1]
+
+
+def _collect_in_thread(base: str, path: str, want: int):
+    """线程内慢读收集（帧到达即记，不预设完成时序）。"""
+    port = int(base.rsplit(":", 1)[1])
+    seqs, _ = paced_sse_reader(port, path, want, 0.0)
+    return seqs
 
 
 async def scenario_slow_consumer(store, base, last_seq):
@@ -239,6 +306,8 @@ async def scenario_slow_consumer(store, base, last_seq):
     check("D 收到 resync 帧", "resync" in names,
           f"收到 {len(seqs)} 个数据帧 + 控制帧 {names}；"
           f"resync 游标 = {controls[-1]['last_continuous_global_seq'] if controls else '-'}")
+    check("D 流已终止（chunked 终止块）", b"0\r\n\r\n" in chunks,
+          "resync 之后响应流以终止块结束（服务端终止的协议级证据）")
     cursor = controls[-1]["last_continuous_global_seq"]
     check("D resync 游标=实际送达最后一条", cursor == seqs[-1],
           f"游标 {cursor} == 最后数据帧 {seqs[-1]}")
