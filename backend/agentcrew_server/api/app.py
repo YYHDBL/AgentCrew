@@ -14,8 +14,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from ..runtime import RuntimeState
+from .auth import BearerAuthMiddleware
 from .envelope import EnvelopeMiddleware
 from .errors import ErrorCode, error_response, install_error_handlers
+from .sse import install_sse_routes
 
 # 诊断模式下仍然可用的端点（§1：仅 health 与诊断端点）
 _DIAGNOSTIC_ALLOWED_PATHS = frozenset({"/api/health", "/api/diagnostics"})
@@ -64,8 +66,12 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         openapi_url=None,
     )
     install_error_handlers(app)
+    install_sse_routes(app, runtime)
     app.add_middleware(EnvelopeMiddleware)
     app.add_middleware(DiagnosticGuardMiddleware, runtime=runtime)
+    # Bearer 鉴权（M0-C3）：无/错 token → 401；仅 /api/health 豁免。
+    # 顺序：401 优先于诊断模式 503（认证先于业务状态）
+    app.add_middleware(BearerAuthMiddleware, token=runtime.token)
     # CORS allow-all：安全由 Bearer 承担（显式头、无 cookie、无 CSRF 面）
     # ——backend-service.md §5，第四轮审查确认保留
     app.add_middleware(

@@ -2,13 +2,19 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from .db.audit import snapshot_chain_head
 from .db.database import Database
 from .db.write_channel import WriteChannel
+
+if TYPE_CHECKING:  # 避免运行时循环导入（bus 导入 core.events 而已，防御性）
+    from .bus import EventBus
+    from .db.event_store import EventStore
 
 
 @dataclass
@@ -26,10 +32,17 @@ class RuntimeState:
     db: Database | None = None
     write_channel: WriteChannel | None = None
     diagnostic: DiagnosticInfo | None = field(default=None)
+    token: str = ""
+    bus: "EventBus | None" = None
+    event_store: "EventStore | None" = None
 
     async def shutdown(self) -> None:
-        """优雅关闭（§7 顺序；SSE 关闭/任务取消随 C3/C8 填充）。"""
+        """优雅关闭（§7 顺序；任务取消/不写终态随 C8/C9 填充）。"""
         self.log.info("shutdown.begin 优雅关闭（总预算 10s；停收新请求由 uvicorn 完成）")
+        # 第 3 步：结束全部 SSE 订阅（≤1s）——shutdown 控制帧入队后留出冲刷窗口
+        if self.bus is not None:
+            self.bus.shutdown_all()
+            await asyncio.sleep(0.3)
         if self.write_channel is not None and not self.write_channel.closed:
             self.write_channel.close()
         if self.db is not None and not self.db.closed:

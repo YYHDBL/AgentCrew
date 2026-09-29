@@ -23,9 +23,11 @@ from pathlib import Path
 import uvicorn
 
 from .api.app import create_app
+from .bus import EventBus
 from .config import ConfigError, load_config
 from .db.audit import verify_with_anchor
 from .db.database import Database
+from .db.event_store import EventStore
 from .db.migrations import MigrationFailedError, run_migrations
 from .db.write_channel import WriteChannel
 from .instance_lock import (
@@ -71,7 +73,7 @@ def pick_port(requested: int) -> int | None:
 
 
 async def _parent_watchdog(
-    parent_pid: int, server: uvicorn.Server, log: logging.Logger, interval: float = 2.0
+    parent_pid: int, schedule_graceful, log: logging.Logger, interval: float = 2.0
 ) -> None:
     while True:
         await asyncio.sleep(interval)
@@ -79,13 +81,41 @@ async def _parent_watchdog(
             os.kill(parent_pid, 0)
         except ProcessLookupError:
             log.warning("parent.watchdog 父进程 %s 已退出 → 触发优雅关闭", parent_pid)
-            server.should_exit = True
+            schedule_graceful("parent-exit")
             return
         except PermissionError:
             continue  # 进程存在但属其他用户（罕见）：继续观察
 
 
-async def serve(app, port: int, parent_pid: int | None, log: logging.Logger) -> None:
+class _GracefulServer(uvicorn.Server):
+    """在 uvicorn 处理退出信号的第一时间投递 SSE shutdown 帧。
+
+    顺序是硬约束（§7）：uvicorn 的关闭流程"先等连接结束、后跑 lifespan"——
+    若 shutdown 帧留到 lifespan 才发，SSE 长连接与关闭流程互等，帧永远送
+    不到（实测教训）。挂进 handle_exit 首行使帧先于连接等待入队，SSE 生成
+    器自行 return，连接自然结束。
+    """
+
+    def __init__(self, config: uvicorn.Config, on_exit_signal) -> None:
+        super().__init__(config)
+        self._on_exit_signal = on_exit_signal
+        self._exit_signalled = False
+
+    def handle_exit(self, sig, frame) -> None:
+        if not self._exit_signalled:
+            self._exit_signalled = True
+            try:
+                self._on_exit_signal(f"signal {sig}")
+            except Exception:  # noqa: BLE001 —— 投帧失败不阻断退出
+                logging.getLogger("agentcrew.server").exception(
+                    "shutdown.begin 投递 SSE shutdown 帧失败"
+                )
+        super().handle_exit(sig, frame)
+
+
+async def serve(
+    app, port: int, parent_pid: int | None, log: logging.Logger, bus=None
+) -> None:
     config = uvicorn.Config(
         app,
         host="127.0.0.1",
@@ -95,7 +125,20 @@ async def serve(app, port: int, parent_pid: int | None, log: logging.Logger) -> 
         lifespan="on",
         timeout_graceful_shutdown=8,  # §7 第 2 步预算 ≤8s
     )
-    server = uvicorn.Server(config)
+    loop = asyncio.get_running_loop()
+
+    def _begin_graceful(source: str) -> None:
+        """§7 第 1/3 步：先向全部 SSE 订阅投递 shutdown 帧，再停收。幂等。"""
+        if bus is not None:
+            bus.shutdown_all()
+        server.should_exit = True
+        log.info("shutdown.begin 触发源=%s（SSE shutdown 帧已投递）", source)
+
+    def _schedule_graceful(source: str) -> None:
+        loop.call_soon_threadsafe(_begin_graceful, source)
+
+    server = _GracefulServer(config, _schedule_graceful)
+
     # 信号语义（§7：信号 → 优雅关闭 → exit 0）：uvicorn 0.54 在优雅关闭完成后
     # 会恢复"原 handler"并重抛捕获的信号（默认处置即 128+N 退出）。我们先安装
     # 自己的记录型 handler——uvicorn 会把它当"原 handler"恢复，重抛时被吞掉，
@@ -104,7 +147,7 @@ async def serve(app, port: int, parent_pid: int | None, log: logging.Logger) -> 
 
     def _request_shutdown(signum: int, _frame: object) -> None:
         captured_signals.append(signum)
-        server.should_exit = True
+        _schedule_graceful(f"signal {signum}")
 
     installed: dict[int, object] = {}
     for sig in (signal.SIGINT, signal.SIGTERM):
@@ -117,7 +160,7 @@ async def serve(app, port: int, parent_pid: int | None, log: logging.Logger) -> 
     watchdog = None
     if parent_pid:
         watchdog = asyncio.create_task(
-            _parent_watchdog(parent_pid, server, log), name="parent-watchdog"
+            _parent_watchdog(parent_pid, _schedule_graceful, log), name="parent-watchdog"
         )
     try:
         while not server.started and not server_task.done():
@@ -246,10 +289,16 @@ def main(argv: list[str] | None = None) -> int:
             log.warning("startup.diagnostic 只读诊断模式：%s", diagnostic.reason)
 
         channel = WriteChannel(db.write_conn)
+        # 事件总线 + 常驻 EventStore（M0-C3 起）：发布在写通道线程内、提交之后
+        # 同步入队——发布顺序 = 提交顺序（backend-service §2 v1.9）
+        bus = EventBus()
+        event_store = EventStore(channel, publisher=bus.publish)
         runtime = RuntimeState(
             log=log, data_dir=data_dir, db=db,
             write_channel=channel, diagnostic=diagnostic,
+            token=token, bus=bus, event_store=event_store,
         )
+        log.info("startup.bus 事件总线就绪（队列上限 1000，SSE 连接上限 32）")
         app = create_app(runtime)
 
         port = pick_port(args.port)
@@ -265,7 +314,7 @@ def main(argv: list[str] | None = None) -> int:
             log.warning("startup.port %s 被占，改用 %s", args.port, port)
 
         try:
-            asyncio.run(serve(app, port, args.parent_pid, log))
+            asyncio.run(serve(app, port, args.parent_pid, log, bus=bus))
         except KeyboardInterrupt:
             log.info("shutdown.signal 启动阶段收到中断，退出")
             return 0
