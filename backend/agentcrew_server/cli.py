@@ -336,7 +336,7 @@ def main(argv: list[str] | None = None) -> int:
             questions=questions)
         # 恢复域（M0-C9）：对账在 lifespan 内执行（RunManager 派发之前）
         recovery = RecoveryService(db, event_store, sessions, data_dir,
-                                   data_dir / "chain-head.txt")
+                                   registry=scheduler.registry)
         recovery.wire(run_manager)
         run_manager.wire(recovery)
         runtime = RuntimeState(

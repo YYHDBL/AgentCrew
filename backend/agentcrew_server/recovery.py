@@ -2,19 +2,28 @@
 
 - 启动对账（§7）：扫全部非终态任务（queued/running/waiting_user/
   waiting_verification——C8 外审 F1 附带风险：优雅关闭把名额等待中的
-  queued 任务留下，只扫 running/waiting_user 会永久卡死会话）。无
-  run.interrupted 事件者补发（状态转 interrupted，不隐式重启）；再结清
-  dispatched 无终态调用：ask_user 豁免（§6.2 v1.8，账本停 dispatched），
-  verifiable 且 prepared 带 content_sha256 → 文件存在且哈希一致补
-  tool.completed，否则与其余 outcome_unknown 一律 tool.pending_verification
-  （投影翻任务为 waiting_verification）。顺序必须先 interrupt 后结清——
-  反过来 run.interrupted 会把 waiting_verification 盖回 interrupted。
-- 核验提交（v1.4 F003）：事件 + 审计链单事务；非待核验态 409。
-- resume 校验：待核验存在 409 带清单；重放遇损坏事件行 409 REPLAY_CORRUPT
-  （needs_manual_review——上下文完整性无保证，交人工）；通过后交
-  RunManager.start_resume 发 run.resumed 进循环。
-- artifacts：missing 惰性探测——列表时 stat 真实文件（打开前实检），
-  不存在发 artifact.missing_detected。
+  queued 任务留下，只扫 running/waiting_user 会永久卡死会话）。补中断按
+  **当前收敛状态**判定（C9 外审回稿 F1）：status ∈ queued/running/
+  waiting_user 必补 run.interrupted——resume 成功后状态回 running，二连崩
+  不能因历史已有中断事件而跳过（否则任务停 running、resume 409、队列
+  排不动）；仅 interrupted（已收敛）与 waiting_verification（已有待核验
+  闸挡着）跳过。再结清 dispatched 无终态调用：ask_user 豁免（§6.2 v1.8，
+  账本停 dispatched），read_only 豁免（外审 K4：纯读无副作用可核验，账本
+  占位"结果未记录"即可），其余 verifiable 且 prepared 带 content_sha256 →
+  文件存在且哈希一致补 tool.completed，否则与其余 outcome_unknown 一律
+  tool.pending_verification（投影翻任务为 waiting_verification）。顺序必须
+  先 interrupt 后结清——反过来 run.interrupted 会把 waiting_verification
+  盖回 interrupted。
+- 核验提交（v1.4 F003）：待核验态校验并入 BEGIN IMMEDIATE 事务内（外审
+  回稿 S1：事务外校验的 TOCTOU 窗口会让并发双提交产生矛盾 verdict 双
+  事件）；事件 + 审计链单事务；非待核验态 409。
+- resume 校验：任务行状态与 pending 校验全部在会话锁内重读（外审回稿
+  S2：锁外校验会被已提交的 cancel 无声绕过）；待核验存在 409 带清单；
+  重放遇损坏事件行 409 REPLAY_CORRUPT；通过后交 RunManager.start_resume
+  发 run.resumed 进循环；非 409 路径的重放 warnings 返回调用方可见
+  （外审 K1，不再只进日志）。
+- artifacts：missing 惰性探测——会话锁内 stat 真实文件并去重（外审回稿
+  S1 同类：并发 GET 不重复发 artifact.missing_detected）。
 """
 
 from __future__ import annotations
@@ -31,6 +40,7 @@ from agentcrew_core.events import RunEventType
 from agentcrew_core.recovery import (
     ReplayResult,
     file_hash_matches,
+    question_answers,
     replay_messages,
     side_effect_ledger,
 )
@@ -59,12 +69,12 @@ def _now() -> str:
 class RecoveryService:
     def __init__(self, db: "Database", event_store: "EventStore",
                  sessions: "SessionService", data_dir: Path,
-                 chain_head_path: Path):
+                 registry=None):
         self._db = db
         self._store = event_store
         self._sessions = sessions
         self._data_dir = data_dir
-        self._chain_head_path = chain_head_path
+        self._registry = registry  # 工具注册表（K4：read_only 豁免判定）
         self._run_manager: "RunManager | None" = None  # cli 装配后注回
 
     def wire(self, run_manager: "RunManager") -> None:
@@ -76,10 +86,10 @@ class RecoveryService:
         rows = await asyncio.to_thread(self._non_terminal_tasks)
         summary = {"tasks": len(rows), "interrupted": 0,
                    "auto_completed": 0, "pending_verification": 0}
-        for task_id, conversation_id in rows:
-            has_interrupt = await asyncio.to_thread(
-                self._has_interrupt_event, task_id)
-            if not has_interrupt:
+        for task_id, conversation_id, status in rows:
+            # 外审回稿 F1：按当前收敛状态判定——resume 回 running 后再崩，
+            # 历史里的 run.interrupted 不能作"已收敛"证据（那是上一轮的）
+            if status in ("queued", "running", "waiting_user"):
                 await self._store.append(
                     task_run_id=task_id, conversation_id=conversation_id,
                     type=RunEventType.RUN_INTERRUPTED,
@@ -88,6 +98,7 @@ class RecoveryService:
                 summary["interrupted"] += 1
                 _log.warning("reconcile.interrupted task=%s（重启对账收敛，"
                              "不隐式重启，等待显式 resume）", task_id)
+            # interrupted：已收敛；waiting_verification：待核验闸挡着——均不补
             auto_done, pending = await self._settle_dispatched(
                 task_id, conversation_id)
             summary["auto_completed"] += auto_done
@@ -97,17 +108,11 @@ class RecoveryService:
                       " 转待核验=%s", *summary.values())
         return summary
 
-    def _non_terminal_tasks(self) -> list[tuple[str, str]]:
-        return [(r[0], r[1]) for r in self._db.read_conn.execute(
-            f"SELECT id, conversation_id FROM task_runs"
+    def _non_terminal_tasks(self) -> list[tuple[str, str, str]]:
+        return [(r[0], r[1], r[2]) for r in self._db.read_conn.execute(
+            "SELECT id, conversation_id, status FROM task_runs"
             f" WHERE status IN ({','.join('?' * len(NON_TERMINAL_STATUSES))})"
             f" ORDER BY created_at", NON_TERMINAL_STATUSES).fetchall()]
-
-    def _has_interrupt_event(self, task_run_id: str) -> bool:
-        return self._db.read_conn.execute(
-            "SELECT 1 FROM run_events WHERE task_run_id=?"
-            " AND type='run.interrupted' LIMIT 1", (task_run_id,)
-        ).fetchone() is not None
 
     async def _settle_dispatched(self, task_id: str,
                                  conversation_id: str) -> tuple[int, int]:
@@ -117,6 +122,8 @@ class RecoveryService:
         for call_id, tool_name, effect_class, input_text in rows:
             if tool_name == "ask_user":
                 continue  # §6.2 v1.8 豁免：账本停 dispatched，重放合成占位
+            if self._is_read_only(tool_name):
+                continue  # 外审 K4：纯读无副作用可核验，占位降级即可
             artifact_path: str | None = None
             if effect_class == "verifiable":
                 artifact_path = await asyncio.to_thread(
@@ -147,6 +154,13 @@ class RecoveryService:
             "SELECT call_id, tool_name, side_effect_class, input"
             " FROM tool_calls WHERE task_run_id=? AND status='dispatched'"
             " ORDER BY prepared_at", (task_id,)).fetchall()
+
+    def _is_read_only(self, tool_name: str) -> bool:
+        """工具注册表申报 read_only（K4：缺注册表按非只读保守处理）。"""
+        if self._registry is None:
+            return False
+        tool = self._registry.get(tool_name)
+        return bool(tool is not None and tool.metadata.read_only)
 
     def _verify_write_file(self, task_id: str, conversation_id: str,
                            call_id: str) -> str | None:
@@ -247,25 +261,32 @@ class RecoveryService:
 
     async def submit_verification(self, call_id: str, verdict: str,
                                   note: str | None) -> dict:
-        row = self._db.read_conn.execute(
-            "SELECT tc.task_run_id, tr.conversation_id, tc.status"
-            " FROM tool_calls tc JOIN task_runs tr ON tr.id = tc.task_run_id"
-            " WHERE tc.call_id=?", (call_id,)).fetchone()
-        if row is None:
-            raise SessionError(ErrorCode.NOT_FOUND, f"调用不存在：{call_id}")
-        task_id, conversation_id, status = row
-        if status != "pending_verification":
-            raise SessionError(
-                ErrorCode.INVALID_TRANSITION,
-                f"调用不处于待核验状态（当前 {status}），不能提交核验")
         if verdict not in ("confirmed_executed", "confirmed_not_executed"):
             raise SessionError(ErrorCode.VALIDATION_ERROR,
                                f"非法核验决定：{verdict}")
         events: list = []
 
         def tx(conn) -> None:
+            # 外审回稿 S1：待核验态校验并入 BEGIN IMMEDIATE 事务内——
+            # 事务外校验的 TOCTOU 窗口里并发双提交都会通过，产生矛盾
+            # verdict 双事件 + 审计双写 + 投影 last-wins（对齐 C6 审批
+            # 决定的单事务查重模式）；busy 重试回滚路径必须清空 events，
+            # 否则已回滚事件会被重复发布（外审 K5）
             conn.execute("BEGIN IMMEDIATE")
             try:
+                row = conn.execute(
+                    "SELECT tc.task_run_id, tr.conversation_id, tc.status"
+                    " FROM tool_calls tc JOIN task_runs tr"
+                    " ON tr.id = tc.task_run_id WHERE tc.call_id=?",
+                    (call_id,)).fetchone()
+                if row is None:
+                    raise SessionError(ErrorCode.NOT_FOUND,
+                                       f"调用不存在：{call_id}")
+                task_id, conversation_id, status = row
+                if status != "pending_verification":
+                    raise SessionError(
+                        ErrorCode.INVALID_TRANSITION,
+                        f"调用不处于待核验状态（当前 {status}），不能提交核验")
                 events.append(self._store.append_in_tx(
                     conn, task_run_id=task_id,
                     conversation_id=conversation_id,
@@ -282,6 +303,7 @@ class RecoveryService:
                 )
                 conn.execute("COMMIT")
             except Exception:
+                events.clear()
                 conn.execute("ROLLBACK")
                 raise
             for event in events:
@@ -305,10 +327,14 @@ class RecoveryService:
             read_artifact=self._read_artifact,
         )
         calls = self._db.read_conn.execute(
-            "SELECT tool_name, input, status FROM tool_calls"
+            "SELECT call_id, tool_name, input, status FROM tool_calls"
             " WHERE task_run_id=? ORDER BY prepared_at",
             (task_run_id,)).fetchall()
-        return result, side_effect_ledger([tuple(c) for c in calls])
+        # S4：ask_user 的已答事实与重放共源（question_answers），账本不再
+        # 对"回答已落库、崩溃在等名额窗口"的调用误写"未获回答"
+        return result, side_effect_ledger(
+            [tuple(c) for c in calls],
+            answered=question_answers([tuple(r) for r in rows]))
 
     def _read_artifact(self, path_text: str) -> str | None:
         try:
@@ -317,28 +343,35 @@ class RecoveryService:
             return None
 
     async def resume(self, task_run_id: str,
-                     resume_reason: str | None) -> None:
+                     resume_reason: str | None) -> dict:
         assert self._run_manager is not None, "RunManager 未装配"
-        row = await asyncio.to_thread(self._task_row, task_run_id)
-        if row is None:
+        # 首次读取仅用于定位会话（conversation_id 不变量，无校验语义）；
+        # 行状态与全部前置校验在会话锁内**重读**（外审回稿 S2：锁外校验
+        # 会被已提交的 cancel 无声绕过——cancel 拿锁提交 run.cancelled 后
+        # resume 仍过陈旧状态检查发 run.resumed，投影把已取消任务复活开跑）
+        head = await asyncio.to_thread(self._task_row, task_run_id)
+        if head is None:
             raise SessionError(ErrorCode.NOT_FOUND,
                                f"任务不存在：{task_run_id}")
-        conversation_id, status, attempt_no = row
-        if status not in ("interrupted", "waiting_verification"):
-            raise SessionError(
-                ErrorCode.INVALID_TRANSITION,
-                f"任务状态 {status} 不可恢复（仅 interrupted/"
-                "waiting_verification）")
-        pending = await asyncio.to_thread(
-            self._task_pending_calls, task_run_id)
-        if pending:
-            raise SessionError(
-                ErrorCode.PENDING_VERIFICATION,
-                "存在待核验调用，处理后才能恢复",
-                detail={"pending_verifications": pending})
-        # 会话锁内完成校验→发射（与直发/排队/继续同一串行域，杜绝并发
-        # resume 双发 run.resumed）；FSM 必须 idle（同会话另一任务在跑则拒）
+        conversation_id = head[0]
         async with await self._sessions.lock_for(conversation_id):
+            row = await asyncio.to_thread(self._task_row, task_run_id)
+            if row is None:
+                raise SessionError(ErrorCode.NOT_FOUND,
+                                   f"任务不存在：{task_run_id}")
+            conversation_id, status, attempt_no = row
+            if status not in ("interrupted", "waiting_verification"):
+                raise SessionError(
+                    ErrorCode.INVALID_TRANSITION,
+                    f"任务状态 {status} 不可恢复（仅 interrupted/"
+                    "waiting_verification）")
+            pending = await asyncio.to_thread(
+                self._task_pending_calls, task_run_id)
+            if pending:
+                raise SessionError(
+                    ErrorCode.PENDING_VERIFICATION,
+                    "存在待核验调用，处理后才能恢复",
+                    detail={"pending_verifications": pending})
             fsm = await asyncio.to_thread(
                 self._sessions.sync_fsm, conversation_id)
             if fsm.state != "idle":
@@ -357,6 +390,8 @@ class RecoveryService:
             await self._run_manager.start_resume(
                 task_run_id, conversation_id,
                 resume_reason or "user_requested", attempt_no + 1)
+        # K1：非 409 路径的降级告警（如工件缺失）返回调用方可见
+        return {"warnings": list(result.warnings)}
 
     def _task_row(self, task_run_id: str):
         return self._db.read_conn.execute(
@@ -376,18 +411,21 @@ class RecoveryService:
     async def list_artifacts(self, conversation_id: str,
                              task_run_id: str | None) -> list[dict]:
         self._sessions.conversation_or_404(conversation_id)
-        rows = await asyncio.to_thread(self._artifact_rows, conversation_id,
-                                       task_run_id)
-        for row in rows:
-            if row["status"] in ("ready", "generating") \
-                    and not os.path.exists(row["path"]):
-                await self._store.append(
-                    task_run_id=row["task_run_id"],
-                    conversation_id=conversation_id,
-                    type=RunEventType.ARTIFACT_MISSING_DETECTED,
-                    payload={"artifact_id": row["id"]},
-                )
-                row["status"] = "missing"
+        # 外审回稿 S1 同类：探测+发事件套会话锁，锁内以最新投影去重——
+        # 并发 GET 不再重复发 artifact.missing_detected
+        async with await self._sessions.lock_for(conversation_id):
+            rows = await asyncio.to_thread(self._artifact_rows,
+                                           conversation_id, task_run_id)
+            for row in rows:
+                if row["status"] in ("ready", "generating") \
+                        and not os.path.exists(row["path"]):
+                    await self._store.append(
+                        task_run_id=row["task_run_id"],
+                        conversation_id=conversation_id,
+                        type=RunEventType.ARTIFACT_MISSING_DETECTED,
+                        payload={"artifact_id": row["id"]},
+                    )
+                    row["status"] = "missing"
         return rows
 
     def _artifact_rows(self, conversation_id: str,

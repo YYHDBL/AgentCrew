@@ -332,7 +332,11 @@ class RunManager:
                 for warning in replay.warnings:
                     _log.warning("resume.replay_warning task=%s %s",
                                  task_run_id, warning)
-                messages = replay.messages
+                # S5：与 initial 同口径——同会话已完成任务的（指令, 回复）
+                # 对先入上下文，再拼接本任务重放历史（同任务两次 attempt 的
+                # 上下文集合一致）
+                messages = await asyncio.to_thread(
+                    self._history_messages, conversation_id) + replay.messages
                 system = system + "\n\n" + ledger
             else:
                 attempt_id = uuid.uuid4().hex
@@ -511,15 +515,24 @@ class RunManager:
             " LIMIT 1", (task_run_id,)).fetchone()
 
     def _dispatched_calls(self, task_run_id: str) -> list[str]:
-        """终态前待结清的调用。ask_user 豁免：交互原语无副作用可核验，
-        取消时的已知结局就是"提问未获回答"（账本停 dispatched + 库中
-        未回答状态，C9 按此合成占位 tool_result）——若转待核验会把
-        "停止后继续队列"永久堵死（验证提交 API 属 C9）。"""
-        return [r[0] for r in self._db.read_conn.execute(
-            "SELECT call_id FROM tool_calls"
+        """终态前待结清的调用。豁免两类（无副作用可核验，转待核验只会
+        把"停止后继续队列"永久堵死）：
+        - ask_user：交互原语，取消时的已知结局就是"提问未获回答"（账本
+          停 dispatched + 库中未回答状态，C9 按此合成占位 tool_result）；
+        - read_only 工具（外审 K4）：纯读无副作用，重放按"（中断，执行
+          结果未记录）"占位即可。"""
+        rows = self._db.read_conn.execute(
+            "SELECT call_id, tool_name FROM tool_calls"
             " WHERE task_run_id = ? AND status = 'dispatched'"
             " AND tool_name != 'ask_user'"
-            " ORDER BY prepared_at", (task_run_id,)).fetchall()]
+            " ORDER BY prepared_at", (task_run_id,)).fetchall()
+        out: list[str] = []
+        for call_id, tool_name in rows:
+            tool = self._scheduler.registry.get(tool_name)
+            if tool is not None and tool.metadata.read_only:
+                continue
+            out.append(call_id)
+        return out
 
     async def _watchdog(self, run: _Run, gates: LoopGates) -> None:
         interval = max(1.0, min(5.0, gates.stall_seconds / 10))

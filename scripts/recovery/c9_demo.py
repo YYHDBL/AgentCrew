@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """M0-C9 验收演示（真实 GLM + 真实子进程服务 + 真实 kill -9 + 真实文件）。
 
-两段卡面验收（M0-cards C9）：
+三段卡面验收（M0-cards C9，场景 C 为外审回稿 F1 增补）：
   A 工具调用间隙 kill -9：多步任务（写 a.txt → ask_user 挂起）在
     waiting_user（两次工具调用之间）被 kill -9 → 重启对账 interrupted →
     resume → 回答"继续" → 写 b.txt（审批 allow） → 任务完成；
@@ -11,6 +11,11 @@
     → 出现在 pending-verifications 清单（含证据）→ resume 被拒 409 →
     提交"确认未执行" → resume 成功 → 任务完成且账本告知模型该调用未发生
     （重放占位 + 账本文本；结构断言）
+  C（F1）resume 后二连崩：A 式任务在第一个提问挂起时 kill -9 #1 → 重启对账
+    → resume 成功（模型重新提问）→ 在第二次挂起时 kill -9 #2 → 重启对账必须
+    按当前收敛状态补第二条 run.interrupted（旧实现见历史事件即跳过 → 任务
+    永久停 waiting_user、resume 409、队列排不动）→ 再次 resume → 完成；
+    write_file 仍只 prepared 一次
 
 用法：
   cd backend && uv run python ../scripts/recovery/c9_demo.py [--data-dir /tmp/c9-demo]
@@ -217,6 +222,38 @@ def write_prepared_count(client: httpx.Client, base: str, task_id: str,
         if len(items) < 500:
             break
     return count
+
+
+def all_task_events(client: httpx.Client, base: str,
+                    task_id: str) -> list[dict]:
+    items: list[dict] = []
+    after = 0
+    while True:
+        batch = task_events(client, base, task_id, after_seq=after)
+        if not batch:
+            break
+        items += batch
+        after = batch[-1]["seq"]
+        if len(batch) < 500:
+            break
+    return items
+
+
+def wait_new_question(client: httpx.Client, base: str, conv_id: str,
+                      task_id: str, exclude: set[str],
+                      timeout: float) -> str | None:
+    """等待一个不在 exclude 里的挂起提问；期间放行出现的全部工具审批。"""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        for call_id, tool in unresolved_approvals(client, base, task_id):
+            rr = client.post(f"{base}/api/tool-approvals/{call_id}",
+                             headers=HEADERS, json={"decision": "allow_once"})
+            print(f"   审批 {tool} → allow_once（HTTP {rr.status_code}）")
+        for q in pending_questions(client, base, conv_id):
+            if q["request_id"] not in exclude:
+                return q["request_id"]
+        time.sleep(0.3)
+    return None
 
 
 # ── 场景 A：工具调用间隙 kill -9 → 对账 → resume → 完成且无重复写入 ──
@@ -449,6 +486,100 @@ def scenario_b(data_dir: Path) -> None:
         client.close()
 
 
+# ── 场景 C（F1）：resume 后二连崩 → 对账再补中断 → 再次 resume → 完成 ──
+
+def scenario_c(data_dir: Path) -> None:
+    print("\n=== 场景 C（F1）：resume 成功后再 kill -9 → 二连崩对账 → 再次 resume → 完成 ===")
+    marker = f"C9-F1-{secrets.token_hex(4)}"
+    server = Server(data_dir)
+    server.start()
+    client = httpx.Client(timeout=30.0)
+    try:
+        instruction = (
+            "请严格按顺序完成三步：1) 用 write_file 在工作目录创建 f1.txt，"
+            f"内容为一行：{marker}；2) 用 ask_user 问我“F1 是否继续”；"
+            "3) 我回答“继续”后，告诉我 f1.txt 的完整内容。"
+            "已完成的写入不要重复执行。"
+        )
+        r = client.post(f"{server.base}/api/conversations", headers=HEADERS,
+                        json={"instruction": instruction})
+        r.raise_for_status()
+        created = r.json()["data"]
+        conv_id = created["conversation"]["id"]
+        task_id = created["task_run_id"]
+        print(f"   会话 {conv_id[:12]}… 任务 {task_id[:12]}…（f1.txt 标记 {marker}）")
+
+        # 第一次中断：放行写审批 → 第一个提问挂起（工具调用间隙）即杀
+        qid1 = wait_new_question(client, server.base, conv_id, task_id,
+                                 set(), 120)
+        assert qid1, "第一次提问未在期限内出现（f1.txt 应已写完）"
+        ws = data_dir / "workspaces" / "default"
+        f1_txt = ws / "f1.txt"
+        assert f1_txt.exists() and marker in f1_txt.read_text(encoding="utf-8")
+        server.kill9()  # kill -9 #1：waiting_user
+
+        server.start()
+        status = task_status(client, server.base, conv_id, task_id)
+        check("C1 一崩重启对账为 interrupted", status == "interrupted", status)
+        evs = all_task_events(client, server.base, task_id)
+        n_int = sum(1 for e in evs if e["type"] == "run.interrupted")
+        check("C2 run.interrupted 恰 1 条", n_int == 1, f"{n_int} 条")
+
+        r = client.post(f"{server.base}/api/task-runs/{task_id}/resume",
+                        headers=HEADERS)
+        body = r.json() if r.headers.get("content-type", "").startswith(
+            "application/json") else {}
+        warnings = body.get("data", {}).get("warnings")
+        check("C3 resume #1 202（warnings 清单随响应返回）",
+              r.status_code == 202 and isinstance(warnings, list),
+              f"HTTP {r.status_code} warnings={warnings}")
+
+        # resume #1 真实开跑：等模型重新提问（不回答）→ kill -9 #2
+        qid2 = wait_new_question(client, server.base, conv_id, task_id,
+                                 {qid1}, 120)
+        check("C4 resume 后模型重新提问（resume 尝试真实开跑）", qid2 is not None)
+        assert qid2, "第二次提问未在期限内出现"
+        server.kill9()  # kill -9 #2：resume attempt 的 waiting_user
+
+        server.start()
+        status = task_status(client, server.base, conv_id, task_id)
+        check("C5 二崩重启对账为 interrupted（F1：不再停 waiting_user）",
+              status == "interrupted", status)
+        evs = all_task_events(client, server.base, task_id)
+        n_int = sum(1 for e in evs if e["type"] == "run.interrupted")
+        check("C6 第二条 run.interrupted 已补（F1）", n_int == 2, f"{n_int} 条")
+
+        r = client.post(f"{server.base}/api/task-runs/{task_id}/resume",
+                        headers=HEADERS)
+        check("C7 resume #2 成功（旧实现此处 409，队列永久卡死）",
+              r.status_code == 202, f"HTTP {r.status_code}")
+
+        final = drive_until_terminal(
+            client, server.base, conv_id, task_id, "继续", ["write_file"], 180)
+        check("C8 二连崩后任务完成", final == "completed", final)
+
+        check("C9 f1.txt 内容正确",
+              f1_txt.exists()
+              and marker in f1_txt.read_text(encoding="utf-8"))
+        n = write_prepared_count(client, server.base, task_id, "f1.txt")
+        check("C10 write_file(f1.txt) 仍仅 prepared 一次", n == 1, f"{n} 次")
+
+        atts = client.get(f"{server.base}/api/task-runs/{task_id}/attempts",
+                          headers=HEADERS).json()["data"]
+        resume_atts = [a for a in atts if a["kind"] == "resume"]
+        check("C11 attempts 含 2 次 resume（attempt_no 2→3）",
+              [a["attempt_no"] for a in resume_atts] == [2, 3],
+              f"{[a['attempt_no'] for a in resume_atts]}")
+        evs = all_task_events(client, server.base, task_id)
+        check("C12 run.resumed ×2 / run.interrupted ×2 事件可查",
+              sum(1 for e in evs if e["type"] == "run.resumed") == 2
+              and sum(1 for e in evs if e["type"] == "run.interrupted") == 2)
+        server.stop()
+    finally:
+        server.stop()
+        client.close()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-dir", default="/tmp/agentcrew-c9-demo")
@@ -466,6 +597,7 @@ def main() -> int:
 
     scenario_a(data_dir)
     scenario_b(data_dir)
+    scenario_c(data_dir)
 
     print(f"\n==== C9 验收：{len(PASS)} 通过 / {len(FAIL)} 失败 ====")
     if FAIL:

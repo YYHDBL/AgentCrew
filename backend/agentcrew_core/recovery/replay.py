@@ -3,8 +3,11 @@
 - replay_messages：从 run_events 行重放重建消息上下文。唯一原料是
   llm.request_done 载荷（回复全文 + 全部 tool_use 块 + thinking 签名，
   v1.7）与 tool.* 终态事件；超限输出按 §2.3 读工件（read_artifact 注入，
-  缺失 → "工件缺失"占位降级，任务继续）；
-- side_effect_ledger：副作用账本两段系统提示的文本（§7）；
+  缺失 → "工件缺失"占位降级，任务继续）——判定按 **artifact_path 字段**
+  驱动（不匹配文案：bash/read_file/http_request 指针文案不同，failed 也
+  可能带工件）；
+- side_effect_ledger：副作用账本两段系统提示的文本（§7）；ask_user 的
+  已答/未答事实与重放共用 question_answers（单一事实源）；
 - file_hash_matches：verifiable 类启动核验（文件存在且 sha256 一致）。
 
 rows 是 (seq, type, payload_json_text) 三元组——payload 文本在此解析，
@@ -19,9 +22,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
-# 与 loop.tool_results_message 相同的块结构；本地构造避免 core 内反向依赖
-EXTERNALIZE_MARKER = "[输出超限，已外部化]"
-
 
 @dataclass
 class ReplayResult:
@@ -29,6 +29,26 @@ class ReplayResult:
     warnings: list[str] = field(default_factory=list)
     # 损坏事件行：上下文完整性无保证，调用方须显式处置（不静默）
     needs_manual_review: bool = False
+
+
+def question_answers(rows: list[tuple[int, str, str]]) -> dict[str, str | None]:
+    """question.answered 事实：request_id(=ask_user 的 call_id) → 回答文本。
+
+    重放工具结果与副作用账本共用同一事实源（外审回稿 S4：回答已落库后
+    账本仍写"未获回答"会与重放的真答矛盾）。answer=None = 用户取消回答。
+    """
+    out: dict[str, str | None] = {}
+    for _seq, etype, payload_text in rows:
+        if etype != "question.answered":
+            continue
+        try:
+            p = json.loads(payload_text)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        rid = p.get("request_id")
+        if rid:
+            out[rid] = p.get("answer")
+    return out
 
 
 def _assistant_from_request_done(p: dict) -> dict:
@@ -67,16 +87,21 @@ def replay_messages(
     dispatched: set[str] = set()
     # call_id → (content, is_error)；verification_submitted 晚到时覆盖
     outcomes: dict[str, tuple[str, bool]] = {}
-    # ask_user 的 request_id == call_id；requested 集合 + 已见回答
-    asked: set[str] = set()
-    answers: dict[str, str | None] = {}
-    has_answer: set[str] = set()
+    answers = question_answers(rows)  # ask_user 的已答事实（与账本同源）
+
+    def read_externalized(p: dict) -> str:
+        """§2.3：带 artifact_path 的输出读工件；缺失 → 占位降级（继续）。"""
+        real = reader(p["artifact_path"])
+        if real is None:
+            warn(f"工件缺失：{p['artifact_path']}（该工具输出降级为占位）")
+            return f"（工件缺失：{p['artifact_path']}，输出不可恢复）"
+        return real
 
     def outcome_of(call_id: str, name: str) -> tuple[str, bool]:
         if call_id in outcomes:
             return outcomes[call_id]
         if name == "ask_user":
-            if call_id in has_answer:
+            if call_id in answers:
                 ans = answers[call_id]
                 return (ans if ans is not None else "（用户取消了回答）",
                         ans is None)
@@ -125,7 +150,7 @@ def replay_messages(
             open_calls = [c for c in msg["content"]
                           if c["type"] == "tool_use"]
             continue
-        # tool / question 域：载荷损坏只丢该事件的事实，不判人工介入
+        # tool 域：载荷损坏只丢该事件的事实，不判人工介入
         try:
             p = json.loads(payload_text)
         except (json.JSONDecodeError, TypeError):
@@ -138,20 +163,18 @@ def replay_messages(
             dispatched.add(call_id)
         elif etype in ("tool.completed", "tool.skipped_idempotent"):
             body = p.get("output") or p.get("output_summary") or ""
-            if p.get("artifact_path") and EXTERNALIZE_MARKER in body:
-                # §2.3：超限输出读工件；缺失 → 占位降级（任务继续）
-                real = reader(p["artifact_path"])
-                if real is None:
-                    warn(f"工件缺失：{p['artifact_path']}（该工具输出降级为占位）")
-                    body = f"（工件缺失：{p['artifact_path']}，输出不可恢复）"
-                else:
-                    body = real
+            if p.get("artifact_path"):
+                body = read_externalized(p)
             outcomes[call_id] = (body, False)
         elif etype == "tool.failed":
             err = p.get("error") or "TOOL_FAILED"
-            outcomes[call_id] = (
-                f"错误：{err}" + (f"\n{p['output']}" if p.get("output") else ""),
-                True)
+            if p.get("artifact_path"):
+                body = f"错误：{err}\n" + read_externalized(p)
+            elif p.get("output"):
+                body = f"错误：{err}\n{p['output']}"
+            else:
+                body = f"错误：{err}"
+            outcomes[call_id] = (body, True)
         elif etype == "tool.verification_submitted":
             verdict = p.get("verdict")
             if verdict == "confirmed_executed":
@@ -159,12 +182,6 @@ def replay_messages(
                                      False)
             elif verdict == "confirmed_not_executed":
                 outcomes[call_id] = ("（该调用未执行，需要时应重做）", False)
-        elif etype == "question.requested":
-            asked.add(p.get("request_id"))
-        elif etype == "question.answered":
-            rid = p.get("request_id")
-            has_answer.add(rid)
-            answers[rid] = p.get("answer")
     flush(open_calls)
     return out
 
@@ -178,13 +195,19 @@ RESUME_INSTRUCTION = (
 )
 
 
-def side_effect_ledger(calls: list[tuple[str, str, str]]) -> str:
-    """calls = [(tool_name, input_json_text, status)]，按 prepared_at 序。
+def side_effect_ledger(
+    calls: list[tuple[str, str, str, str]],
+    answered: dict[str, str | None] | None = None,
+) -> str:
+    """calls = [(call_id, tool_name, input_json_text, status)]，按 prepared_at 序。
 
     两段文本：账本（已执行 / 未执行·结果不明）+ 恢复指令（常量）。
-    completed=已执行；not_executed=确认未执行；ask_user 停 dispatched=
-    中断未回答；prepared=未派发。failed 的结果上下文里已有，不进账本。
+    completed=已执行；not_executed=确认未执行；ask_user 停 dispatched 时
+    按 answered（question.answered 事实，与重放同源）写"已获回答"——
+    回答落库后等名额窗口内崩溃不再误报"未获回答"；prepared=未派发。
+    failed 的结果上下文里已有，不进账本。
     """
+    answered = answered or {}
     done: list[str] = []
     unknown: list[str] = []
 
@@ -198,13 +221,21 @@ def side_effect_ledger(calls: list[tuple[str, str, str]]) -> str:
             arg = ""
         return f"{tool}（{arg}）" if arg else tool
 
-    for tool, input_text, status in calls:
+    for call_id, tool, input_text, status in calls:
         if status == "completed":
             done.append(brief(tool, input_text))
         elif status == "not_executed":
             unknown.append(brief(tool, input_text) + "——用户确认未执行，需要时重做")
         elif tool == "ask_user" and status == "dispatched":
-            unknown.append(brief(tool, input_text) + "——中断，未获回答")
+            if call_id in answered:
+                ans = answered[call_id]
+                if ans is None:
+                    unknown.append(brief(tool, input_text) + "——用户取消了回答")
+                else:
+                    unknown.append(brief(tool, input_text)
+                                   + f"——已获回答：{str(ans)[:60]}")
+            else:
+                unknown.append(brief(tool, input_text) + "——中断，未获回答")
         elif status == "prepared":
             unknown.append(brief(tool, input_text) + "——中断，未派发执行")
     lines = ["【中断恢复·副作用账本】"]

@@ -47,8 +47,9 @@ class Assembly:
                                        self.settings)
         self.approvals = ApprovalService(self.db, self.store,
                                          tmp_path / "chain-head.txt")
+        registry = build_default_registry()
         self.approvals.scheduler = ToolScheduler(
-            build_default_registry(), gate=self.approvals.gate)
+            registry, gate=self.approvals.gate)
         self.questions = QuestionService(self.db, self.store)
         self.run_manager = RunManager(
             db=self.db, event_store=self.store, bus=self.bus,
@@ -56,7 +57,7 @@ class Assembly:
             approvals=self.approvals, scheduler=self.approvals.scheduler,
             questions=self.questions)
         self.recovery = RecoveryService(self.db, self.store, self.sessions,
-                                        tmp_path, tmp_path / "chain-head.txt")
+                                        tmp_path, registry=registry)
         self.recovery.wire(self.run_manager)
         self.run_manager.wire(self.recovery)
 

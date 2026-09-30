@@ -656,7 +656,19 @@ paths:
       parameters:
         - { name: id, in: path, required: true, schema: { type: string } }
       responses:
-        "202": { description: "恢复中（202 无响应体；新 attempt，绑定新配置版本）" }
+        "202":
+          description: 恢复中（新 attempt，绑定新配置版本；data.warnings 为重建期降级清单）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      warnings:
+                        type: array
+                        items: { type: string }
         "409": { $ref: "#/components/responses/ErrEnvelope" }
   /api/tool-approvals/{callId}:
     post:

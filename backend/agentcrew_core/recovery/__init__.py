@@ -5,6 +5,7 @@ from .replay import (
     ReplayResult,
     RESUME_INSTRUCTION,
     file_hash_matches,
+    question_answers,
     replay_messages,
     side_effect_ledger,
 )
@@ -13,6 +14,7 @@ __all__ = [
     "ReplayResult",
     "RESUME_INSTRUCTION",
     "file_hash_matches",
+    "question_answers",
     "replay_messages",
     "side_effect_ledger",
 ]

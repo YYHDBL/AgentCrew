@@ -1,9 +1,10 @@
 """中断恢复 API（M0-C9）：pending-verifications / verification / resume /
 artifacts。
 
-契约：docs/contracts/openapi.yaml v0.3——resume 202 无响应体（409 带
-ErrEnvelope）；verification 200 返回 {call_id, status, verdict}；artifacts
-missing 由惰性探测更新。
+契约：docs/contracts/openapi.yaml v0.3——resume 202（data.warnings = 重建
+期降级清单，外审回稿 K1：不再只进日志；409 带 ErrEnvelope）；
+verification 200 返回 {call_id, status, verdict}；artifacts missing 由
+惰性探测更新。
 """
 
 from __future__ import annotations
@@ -11,7 +12,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any
 
-from fastapi import Query, Response
+from fastapi import Query
 from pydantic import BaseModel
 
 from ..sessions import SessionError
@@ -45,10 +46,11 @@ def install_recovery_routes(app, runtime) -> None:
     @app.post("/api/task-runs/{task_run_id}/resume", status_code=202)
     async def resume_task_run(task_run_id: str):
         try:
-            await recovery.resume(task_run_id, resume_reason=None)
+            outcome = await recovery.resume(task_run_id, resume_reason=None)
         except SessionError as e:
             raise ApiError(e.code, str(e), detail=e.detail) from None
-        return Response(status_code=202)  # 契约：202 无响应体
+        # K1：非 409 路径的降级告警（如工件缺失）随 202 返回调用方可见
+        return {"warnings": outcome["warnings"]}
 
     @app.get("/api/conversations/{conversation_id}/artifacts")
     async def list_artifacts(

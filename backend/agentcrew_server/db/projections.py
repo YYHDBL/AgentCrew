@@ -283,7 +283,7 @@ def _tool_completed(conn: sqlite3.Connection, ev: Event) -> None:
 
 def _tool_failed(conn: sqlite3.Connection, ev: Event) -> None:
     _tool_status(conn, ev, "failed", error=ev.payload.get("error"),
-                 finish=True)
+                 artifact_path=ev.payload.get("artifact_path"), finish=True)
 
 
 def _tool_skipped(conn: sqlite3.Connection, ev: Event) -> None:

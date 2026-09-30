@@ -360,6 +360,7 @@ class SessionService:
                     ))
                 conn.execute("COMMIT")
             except Exception:
+                events.clear()  # busy 重试重跑闭包：回滚路径清空防重复发布
                 conn.execute("ROLLBACK")
                 raise
             # COMMIT 成功后、闭包返回前发布（写线程内）——发布顺序 = 提交顺序
@@ -529,6 +530,7 @@ class SessionService:
                         ))
                     conn.execute("COMMIT")
                 except Exception:
+                    events.clear()  # busy 重试：回滚事件不得重复发布
                     conn.execute("ROLLBACK")
                     raise
                 for event in events:  # COMMIT 后、闭包返回前发布（顺序=提交序）
@@ -574,6 +576,7 @@ class SessionService:
                     ))
                     conn.execute("COMMIT")
                 except Exception:
+                    events.clear()  # busy 重试：回滚事件不得重复发布
                     conn.execute("ROLLBACK")
                     raise
                 for event in events:  # COMMIT 后、闭包返回前发布（顺序=提交序）
@@ -646,6 +649,7 @@ class SessionService:
                     ))
                     conn.execute("COMMIT")
                 except Exception:
+                    events.clear()  # busy 重试：回滚事件不得重复发布
                     conn.execute("ROLLBACK")
                     raise
                 # COMMIT 成功后、闭包返回前发布（写线程内）——发布顺序 = 提交顺序

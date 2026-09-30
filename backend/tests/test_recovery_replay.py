@@ -220,21 +220,89 @@ def test_replay_missing_artifact_degrades_with_placeholder():
     assert any("工件缺失" in w for w in r.warnings)
 
 
+def test_replay_read_file_externalized_reads_artifact():
+    """S3：判定按 artifact_path 字段驱动——read_file 的指针文案
+    ("[输出 N 字节超限，已外部化]") 不命中 bash 专属 marker，旧实现
+    退化为指针文本；字段驱动后必须读回工件内容。"""
+    art = "/artifacts/read-1.out"
+    rows = _rows(
+        ("run.queued", {"instruction": "x"}),
+        ("llm.request_done", {"tool_uses": [
+            {"id": "r1", "name": "read_file", "input": {"path": "big.log"}}]}),
+        ("tool.completed", {
+            "call_id": "r1",
+            "output": f"[输出 104876 字节超限，已外部化] {art}",
+            "artifact_path": art}),
+    )
+    r = replay_messages(rows, read_artifact=lambda p: "大文件全文")
+    assert r.messages[2]["content"][0]["content"] == "大文件全文"
+    assert not r.warnings
+
+
+def test_replay_failed_with_artifact_reads_artifact():
+    """S3：tool.failed 带工件指针的分支同样读工件（错误行 + 工件全文）。"""
+    art = "/artifacts/fail-1.out"
+    rows = _rows(
+        ("run.queued", {"instruction": "x"}),
+        ("llm.request_done", {"tool_uses": [
+            {"id": "b9", "name": "bash", "input": {"command": "cat big"}}]}),
+        ("tool.failed", {
+            "call_id": "b9", "error": "EXIT_1",
+            "output": f"[输出超限，已外部化] {art}",
+            "artifact_path": art}),
+    )
+    r = replay_messages(rows, read_artifact=lambda p: "失败的完整输出")
+    body = r.messages[2]["content"][0]["content"]
+    assert body == "错误：EXIT_1\n失败的完整输出", body
+    assert r.messages[2]["content"][0]["is_error"] is True
+
+
+def test_replay_failed_missing_artifact_placeholder():
+    path = "/nonexistent/fail.out"
+    rows = _rows(
+        ("run.queued", {"instruction": "x"}),
+        ("llm.request_done", {"tool_uses": [
+            {"id": "b9", "name": "bash", "input": {}}]}),
+        ("tool.failed", {
+            "call_id": "b9", "error": "EXIT_1",
+            "output": f"[输出超限，已外部化] {path}",
+            "artifact_path": path}),
+    )
+    r = replay_messages(rows, read_artifact=lambda p: None)
+    body = r.messages[2]["content"][0]["content"]
+    assert body.startswith("错误：EXIT_1") and "工件缺失" in body
+    assert any("工件缺失" in w for w in r.warnings)
+
+
 # ── 副作用账本 ─────────────────────────────────────────────────────
 
 def test_ledger_sections():
     text = side_effect_ledger([
-        ("write_file", json.dumps({"path": "half.xlsx", "content": "x"}),
+        ("c1", "write_file", json.dumps({"path": "half.xlsx", "content": "x"}),
          "completed"),
-        ("bash", json.dumps({"command": "sleep 30"}), "not_executed"),
-        ("ask_user", json.dumps({"question": "继续？"}), "dispatched"),
-        ("read_file", json.dumps({"path": "a"}), "failed"),
+        ("c2", "bash", json.dumps({"command": "sleep 30"}), "not_executed"),
+        ("c3", "ask_user", json.dumps({"question": "继续？"}), "dispatched"),
+        ("c4", "read_file", json.dumps({"path": "a"}), "failed"),
     ])
     assert "你已执行：write_file（path=half.xlsx）" in text
     assert "bash（command=sleep 30）——用户确认未执行，需要时重做" in text
     assert "ask_user（question=继续？）——中断，未获回答" in text
     assert "read_file" not in text.replace("read_file（path=a）", ""), \
         "failed 不进账本"
+
+
+def test_ledger_ask_user_answered_fact_matches_replay():
+    """S4：回答已落库（等名额窗口内 kill）时账本不得再写"未获回答"——
+    与重放的真答事实一致（单一事实源）。"""
+    text = side_effect_ledger([
+        ("q1", "ask_user", json.dumps({"question": "继续？"}), "dispatched"),
+        ("q2", "ask_user", json.dumps({"question": "选哪个？"}), "dispatched"),
+    ], answered={"q1": "继续", "q2": None})
+    assert "q1" not in text  # call_id 不泄漏到台账文本
+    assert "ask_user（question=继续？）——已获回答：继续" in text, \
+        "已获回答的事实必须与重放一致"
+    assert "ask_user（question=选哪个？）——用户取消了回答" in text
+    assert "未获回答" not in text
 
 
 # ── verifiable 哈希核验 ────────────────────────────────────────────
