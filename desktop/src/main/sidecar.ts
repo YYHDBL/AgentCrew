@@ -10,6 +10,16 @@ const RESTART_WINDOW_MS = 60_000
 const MAX_RESTARTS = 3
 const CLEANUP_MS = 5_000
 
+export function launchLogPath(): string {
+  return join(app.getPath('userData'), 'sidecar-launch.log')
+}
+
+export function appendLaunchLog(text: string): void {
+  try {
+    appendFileSync(launchLogPath(), text, { mode: 0o600 })
+  } catch { /* 磁盘不可写时无处可记，监管流程继续。 */ }
+}
+
 function signalTree(child: ChildProcessWithoutNullStreams, signal: NodeJS.Signals): void {
   if (!child.pid) return
   try {
@@ -28,7 +38,7 @@ export class Sidecar {
   private timer: NodeJS.Timeout | null = null
   readonly dataDir = join(app.getPath('userData'), 'data')
   readonly logPath = join(this.dataDir, 'logs', 'sidecar.log')
-  readonly launchLogPath = join(app.getPath('userData'), 'sidecar-launch.log')
+  readonly launchLogPath = launchLogPath()
 
   getBackendPort(): number | null { return this.port }
   getToken(): string | null { return this.port === null ? null : this.token }
@@ -93,20 +103,22 @@ export class Sidecar {
       terminate()
     }
     child.stdout.on('data', (chunk: Buffer) => {
+      if (this.port !== null) return // 就绪后由后端自行记录日志，保持管道畅通。
       stdout += chunk.toString('utf8')
       for (;;) {
         const newline = stdout.indexOf('\n')
         if (newline < 0) break
         const line = stdout.slice(0, newline).trim()
         stdout = stdout.slice(newline + 1)
-        if (!line.startsWith('AGENTCREW_READY')) { if (this.port === null) remember(line); continue }
+        if (!line.startsWith('AGENTCREW_READY')) { remember(line); continue }
+        if (actualPort !== null) continue // 已捕获就绪标记，重复前缀行不再判失败。
         const match = READY.exec(line)
-        if (!match || actualPort !== null) { fail('就绪标记格式异常'); return }
+        if (!match) { fail('就绪标记格式异常'); return }
         const parsed = JSON.parse(match[1]) as { port?: unknown }
         if (typeof parsed.port !== 'number' || !Number.isInteger(parsed.port) || parsed.port < requestedPort || parsed.port > requestedPort + 3 || parsed.port > 65535) { fail('就绪端口无效'); return }
         actualPort = parsed.port
       }
-      if (stdout.length > 8192) fail('就绪标记输出过长')
+      if (stdout.length > 8192 && actualPort === null) fail('就绪标记输出过长')
     })
     child.stderr.on('data', (chunk: Buffer) => {
       if (this.port !== null) return // 就绪后由后端自行轮转记录日志。
@@ -155,13 +167,15 @@ export class Sidecar {
 
   private failed(reason: string, output = ''): void {
     if (this.stopping || this.timer) return
-    appendFileSync(this.launchLogPath, `${new Date().toISOString()} ${reason}\n${output}\n`, { mode: 0o600 })
+    appendLaunchLog(`${new Date().toISOString()} ${reason}\n${output}\n`)
     const now = Date.now()
     this.restarts = this.restarts.filter((time) => now - time < RESTART_WINDOW_MS)
     if (this.restarts.length >= MAX_RESTARTS) {
       const window = BrowserWindow.getAllWindows()[0]
-      window.show()
-      window.focus()
+      if (window && !window.isDestroyed()) {
+        window.show()
+        window.focus()
+      }
       dialog.showMessageBoxSync({
         type: 'error', title: '任务服务无法启动', message: '任务服务无法启动，已达到自动重启上限。',
         detail: `${reason}\n${output}\n启动日志：${this.launchLogPath}`, buttons: ['确定']

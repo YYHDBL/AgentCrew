@@ -48,6 +48,14 @@ CONV, RUN, AGENT = "conv-c6", "run-c6", "agent-c6"
 TOKEN = secrets.token_hex(24)
 
 
+def check(ok: bool, label: str):
+    """验收断言（与 c3 同纪律：任何一步失败即非零退出，防止演示带病绿）。"""
+    if not ok:
+        print(f"[FAIL] {label}")
+        raise SystemExit(1)
+    print(f"  ✓ {label}")
+
+
 def setup(data_dir: Path):
     db = Database(data_dir / "agentcrew.db")
     run_migrations(db.write_conn, data_dir / "backups")
@@ -145,8 +153,10 @@ async def main_async(args):
         resp = await client.get(f"{base}/api/task-runs/{RUN}/approvals",
                                 headers=headers)
         cards = resp.json()["data"]
-        print(f"② GET pending → HTTP {resp.status_code}，{len(cards)} 张卡："
-              f"tool={cards[0]['tool']} risk={cards[0]['risk']} "
+        check(resp.status_code == 200 and len(cards) == 1
+              and cards[0]["tool"] == "write_file",
+              f"② GET pending → HTTP {resp.status_code}，{len(cards)} 张卡")
+        print(f"   tool={cards[0]['tool']} risk={cards[0]['risk']} "
               f"preview={cards[0]['always_scope_preview']}")
 
         # ── ③ 批准 → 工具执行 + 落库 + 审计 ──
@@ -155,26 +165,32 @@ async def main_async(args):
         resp = await client.post(f"{base}/api/tool-approvals/{call1}",
                                  headers=headers,
                                  json={"decision": "allow_once"})
-        print(f"③ POST allow_once → HTTP {resp.status_code} "
-              f"data={resp.json()['data']}")
+        check(resp.status_code == 200, f"③ POST allow_once → HTTP {resp.status_code}"
+              f" data={resp.json()['data']}")
         result1 = await asyncio.wait_for(task1, timeout=15)
-        print(f"   工具执行 ok={result1.ok}；文件存在={target1.exists()} "
+        check(result1.ok and target1.exists()
+              and target1.read_text() == "# 报告",
+              f"③ 工具执行 ok={result1.ok}；文件存在={target1.exists()} "
               f"内容={target1.read_text()!r}")
         audit_after = db.read_conn.execute(
             "SELECT count(*) FROM audit_log").fetchone()[0]
-        print(f"   审计链：{audit_before} → {audit_after} 条")
+        check(audit_after > audit_before,
+              f"③ 审计链追加：{audit_before} → {audit_after} 条")
 
         # ── ④ 幂等 / 409 ──
         resp = await client.post(f"{base}/api/tool-approvals/{call1}",
                                  headers=headers,
                                  json={"decision": "allow_once"})
         d = resp.json()["data"]
-        print(f"④ 同决定重试 → HTTP {resp.status_code} "
+        check(resp.status_code == 200 and d["idempotent_replay"] is True,
+              f"④ 同决定重试 → HTTP {resp.status_code} "
               f"idempotent_replay={d['idempotent_replay']}")
         resp = await client.post(f"{base}/api/tool-approvals/{call1}",
                                  headers=headers,
                                  json={"decision": "reject_always"})
-        print(f"   不同决定 → HTTP {resp.status_code} "
+        check(resp.status_code == 409
+              and resp.json()["error"]["code"] == "APPROVAL_STALE",
+              f"④ 不同决定 → HTTP {resp.status_code} "
               f"code={resp.json()['error']['code']}")
 
         # ── ⑤ allow_always → 规则表 + 第二次同类不弹卡 ──
@@ -187,20 +203,23 @@ async def main_async(args):
         resp = await client.post(f"{base}/api/tool-approvals/{call2}",
                                  headers=headers,
                                  json={"decision": "allow_always"})
-        print(f"⑤ allow_always → HTTP {resp.status_code}")
+        check(resp.status_code == 200, f"⑤ allow_always → HTTP {resp.status_code}")
         await asyncio.wait_for(task2, timeout=15)
         rules = db.read_conn.execute(
             "SELECT tool_name, pattern, effect FROM agent_permission_rules"
         ).fetchall()
-        print(f"   规则表追加：{rules}")
-        result3 = await fire_tool(approvals, scope, artifacts, "write_file",
-                                  {"path": str(scope / "auto.txt"),
-                                   "content": "同目录自动放行"})
-        print(f"   同目录第二次写 ok={result3.ok}（不弹卡直接放行）")
+        check(any(r[0] == "write_file" and r[2] == "allow" for r in rules),
+              f"⑤ 规则表追加：{rules}")
+        result_auto = await fire_tool(approvals, scope, artifacts, "write_file",
+                                      {"path": str(scope / "auto.txt"),
+                                       "content": "同目录自动放行"})
+        check(result_auto.ok and (scope / "auto.txt").read_text() == "同目录自动放行",
+              f"⑤ 同目录第二次写 ok={result_auto.ok}（不弹卡直接放行）")
         pending = await client.get(
             f"{base}/api/task-runs/{RUN}/approvals?status=pending",
             headers=headers)
-        print(f"   当前 pending = {len(pending.json()['data'])}（应为 0）")
+        check(len(pending.json()["data"]) == 0,
+              f"⑤ 当前 pending = {len(pending.json()['data'])}（应为 0）")
 
         # ── ⑥ reject → 不执行（用非只读 bash：write_file 已被 ⑤ 的规则放行）──
         target3 = scope / "rejected-by-bash.txt"
@@ -213,7 +232,10 @@ async def main_async(args):
                                  headers=headers,
                                  json={"decision": "reject_once"})
         result3 = await asyncio.wait_for(task3, timeout=15)
-        print(f"⑥ reject_once → 工具 ok={result3.ok} "
+        check(resp.status_code == 200
+              and not result3.ok and result3.error == "PERMISSION_DENIED"
+              and not target3.exists(),
+              f"⑥ reject_once → 工具 ok={result3.ok} "
               f"error={result3.error}；文件存在={target3.exists()}")
 
         # ── ⑦ 审计链校验 ──
@@ -221,7 +243,8 @@ async def main_async(args):
                                     data_dir / "chain-head.txt")
         count = db.read_conn.execute(
             "SELECT count(*) FROM audit_log").fetchone()[0]
-        print(f"⑦ 审计链 {count} 条，校验 ok={verify.ok}"
+        check(verify.ok,
+              f"⑦ 审计链 {count} 条，校验 ok={verify.ok}"
               f"{'（reason=' + str(verify.reason) + '）' if not verify.ok else ''}")
 
     print("\n[全部场景完成]")

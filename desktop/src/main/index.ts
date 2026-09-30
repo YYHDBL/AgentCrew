@@ -1,6 +1,15 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, Notification, powerSaveBlocker, shell, Tray } from 'electron'
 import { isAbsolute, join } from 'node:path'
-import { Sidecar } from './sidecar'
+import { Sidecar, appendLaunchLog } from './sidecar'
+
+process.on('unhandledRejection', (reason) => {
+  appendLaunchLog(`${new Date().toISOString()} unhandledRejection ${String(reason)}\n`)
+})
+process.on('uncaughtException', (error) => {
+  // 未捕获异常后监管状态不可信：记日志后退出（后端由 --parent-pid 看护收尾）。
+  appendLaunchLog(`${new Date().toISOString()} uncaughtException ${error instanceof Error ? error.stack ?? error.message : String(error)}\n`)
+  app.exit(1)
+})
 
 if (!app.requestSingleInstanceLock()) app.quit()
 else {
@@ -88,7 +97,10 @@ app.whenReady().then(() => {
   })
   ipcMain.handle('open-path', async (event, path: unknown) => {
     if (!fromWindow(event) || typeof path !== 'string' || !isAbsolute(path)) throw new Error('文件路径无效')
-    return shell.openPath(path)
+    // 只定位不执行：openPath 会以默认应用启动目标（macOS 上含 .app 包），
+    // 超出最小必要特权面；reveal 在 Finder 里选中，满足"找到产物"的需要。
+    shell.showItemInFolder(path)
+    return ''
   })
   ipcMain.handle('keep-awake', (event, enabled: unknown) => {
     if (!fromWindow(event) || typeof enabled !== 'boolean') throw new Error('休眠设置无效')

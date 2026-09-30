@@ -346,12 +346,6 @@ async def scenario_connection_limit(base):
     for writer in writers:
         writer.close()
     await asyncio.sleep(1.0)
-    count = None
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(
-            f"{base}/api/diagnostics", headers={"Authorization": f"Bearer {TOKEN}"}
-        )
-        count = resp.json()  # 连接数暂未暴露——用日志与重连成功佐证
     # 32 条全部断开后：再开一条应成功（订阅已清理、名额已释放）
     seqs, _, _ = await sse_collect(
         base, f"/api/conversations/{CONV}/stream?from=0", 1, timeout=5
