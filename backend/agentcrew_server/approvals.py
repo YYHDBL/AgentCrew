@@ -1,0 +1,304 @@
+"""审批闸门服务（M0-C6，governance §2.3 三级闸门 / harness-session §6.2）。
+
+事件序列（§6.2）：TOOL_PREPARED（落库）→ [闸门：PERMISSION_REQUESTED →
+挂起等人工决定 → PERMISSION_RESOLVED] → TOOL_DISPATCHED → 执行 →
+TOOL_COMPLETED/FAILED。所有事件经 EventStore 落库（与投影同事务）并扇出
+SSE；每次决定写 audit_log 哈希链；allow_always / reject_always 按
+always_scope_preview 的范围写 agent_permission_rules。
+
+决定提交语义（v1.1）：同决定重试 → 200 幂等返回首次结果；不同决定 →
+409 APPROVAL_STALE；携带的 input_hash 与当前调用不一致 → 409（防"批的是
+A 执行的是 B"）；call_id 无 REQUESTED 记录 → 404。进程重启后 Future 丢失
+但 pending 事件在库——决定仍可提交并落库（执行上下文已随重启消亡，属 C9
+对账域）。
+"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import uuid
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+from agentcrew_core.events import RunEventType
+from agentcrew_core.tools import (
+    ToolInvocation,
+    ToolMetadata,
+    ToolScheduler,
+    WorkContext,
+    always_scope_pattern,
+    approval_target,
+    evaluate_gate,
+)
+from agentcrew_core.tools.gate import PermissionRule
+from agentcrew_core.tools.scheduler import input_hash
+
+from .db.audit import append_audit, snapshot_chain_head
+from .db.database import Database
+from .db.event_store import EventStore
+
+_log = logging.getLogger("agentcrew.approvals")
+
+DECISIONS = ("allow_once", "allow_always", "reject_once", "reject_always")
+
+
+class ApprovalNotFound(LookupError):
+    pass
+
+
+class ApprovalStale(RuntimeError):
+    pass
+
+
+@dataclass
+class _Pending:
+    future: asyncio.Future
+    loop: asyncio.AbstractEventLoop  # future 所属事件循环（跨线程唤醒用）
+    input_hash: str
+    tool_name: str
+    task_run_id: str
+    conversation_id: str
+    agent_id: str
+
+
+def _now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+class ApprovalService:
+    def __init__(self, db: Database, event_store: EventStore,
+                 chain_head_path: Path):
+        self._db = db
+        self._store = event_store
+        self._chain_head_path = chain_head_path
+        self._pending: dict[str, _Pending] = {}
+        self.scheduler: ToolScheduler | None = None  # cli 装配后注入
+
+    # ── 闸门（调度器挂钩，ask 在此挂起）──────────────────────────
+    async def gate(self, invocation: ToolInvocation, meta: ToolMetadata,
+                   readonly_verdict: bool) -> str:
+        # task_run_id 由 run_tool 的调用链经 invocation 侧上下文携带——
+        # 闸门挂钩本身拿不到 WorkContext，改从 pending 上下文注册表按
+        # call_id 取（run_tool 先注册再执行）
+        ctx_info = self._context_for(invocation.call_id)
+        rules = await asyncio.to_thread(self._load_rules, ctx_info.agent_id)
+        result = evaluate_gate(meta, invocation.input, readonly_verdict,
+                               rules, ctx_info.agent_id)
+        if result.action == "allow":
+            return "allow"
+        if result.action == "deny":
+            await self._audit("system", "gate",
+                              f"permission.denied:{result.reason}",
+                              "tool_call", invocation.call_id,
+                              {"pattern": result.matched_pattern})
+            return "deny"
+        # ask：发卡（含四选项/input_hash/target/范围预览）→ 挂起
+        pattern = always_scope_pattern(meta.name, invocation.input)
+        await self._store.append(
+            task_run_id=ctx_info.task_run_id,
+            conversation_id=ctx_info.conversation_id,
+            type=RunEventType.PERMISSION_REQUESTED,
+            payload={
+                "tool_call_id": invocation.call_id,
+                "tool": meta.name,
+                "risk": meta.risk_level,
+                "options": list(DECISIONS),
+                "input_hash": input_hash(invocation.input),
+                "target": approval_target(meta.name, invocation.input),
+                "always_scope_preview": pattern,
+            },
+        )
+        await self._audit("system", "gate", "permission.requested",
+                          "tool_call", invocation.call_id,
+                          {"tool": meta.name})
+        decision = await ctx_info.future
+        return "allow" if decision.startswith("allow") else "deny"
+
+    # ── 决定提交（API 入口）──────────────────────────────────────
+    async def submit(self, call_id: str, decision: str,
+                     client_input_hash: str | None = None) -> dict[str, Any]:
+        if decision not in DECISIONS:
+            raise ApprovalStale(f"非法决定：{decision}")
+        requested = await asyncio.to_thread(self._find_request, call_id)
+        if requested is None:
+            raise ApprovalNotFound(call_id)
+        task_run_id, conversation_id, payload = requested
+        if client_input_hash is not None \
+                and client_input_hash != payload.get("input_hash"):
+            raise ApprovalStale("input_hash 与当前调用不一致（审批卡已过期）")
+        resolved = await asyncio.to_thread(self._find_resolution, call_id)
+        if resolved is not None:
+            first_decision, decided_at = resolved
+            if decision == first_decision:
+                return {"decision": first_decision, "decided_at": decided_at,
+                        "idempotent_replay": True}
+            raise ApprovalStale(
+                f"该审批已按 {first_decision} 处理（重试同决定可幂等返回）")
+        # 首次决定：落 RESOLVED 事件 → 审计 → （可选）写规则 → 唤醒挂起
+        await self._store.append(
+            task_run_id=task_run_id, conversation_id=conversation_id,
+            type=RunEventType.PERMISSION_RESOLVED,
+            payload={"tool_call_id": call_id, "decision": decision},
+        )
+        # decided_at 以库内落库时刻为准（与幂等重放读取同源，微秒级一致）
+        decided_at = (await asyncio.to_thread(
+            self._find_resolution, call_id))[1]
+        await self._audit(
+            "user", "owner", f"permission.resolved:{decision}",
+            "tool_call", call_id, {"target": payload.get("target")},
+        )
+        if decision in ("allow_always", "reject_always"):
+            effect = "allow" if decision == "allow_always" else "deny"
+            pattern = payload.get("always_scope_preview") or ""
+            agent_id = await asyncio.to_thread(
+                self._agent_of_conversation, conversation_id)
+            await asyncio.to_thread(
+                self._write_rule, agent_id, str(payload.get("tool") or ""),
+                pattern, effect)
+        pending = self._pending.pop(call_id, None)
+        if pending is not None and not pending.future.done():
+            # submit 可能跑在另一个事件循环（HTTP 服务线程）——跨线程唤醒
+            # 必须走 call_soon_threadsafe，直接 set_result 不唤醒对方循环
+            pending.loop.call_soon_threadsafe(pending.future.set_result, decision)
+        return {"decision": decision, "decided_at": decided_at,
+                "idempotent_replay": False}
+
+    # ── pending 查询（界面刷新恢复审批卡，v1.4）──────────────────
+    async def list_approvals(self, task_run_id: str, status: str) -> list[dict]:
+        rows = await asyncio.to_thread(self._approval_rows, task_run_id)
+        if status == "pending":
+            return [r for r in rows if r["decision"] is None]
+        return [r for r in rows if r["decision"] is not None]
+
+    def _approval_rows(self, task_run_id: str) -> list[dict]:
+        conn = self._db.read_conn
+        rows = conn.execute(
+            "SELECT payload, created_at FROM run_events"
+            " WHERE task_run_id = ? AND type = 'permission.requested'"
+            " ORDER BY global_seq", (task_run_id,),
+        ).fetchall()
+        out = []
+        for payload_text, requested_at in rows:
+            p = json.loads(payload_text)
+            call_id = p.get("tool_call_id")
+            resolved = self._find_resolution(call_id)
+            out.append({
+                "call_id": call_id, "tool": p.get("tool"),
+                "target": p.get("target"), "input_hash": p.get("input_hash"),
+                "risk": p.get("risk"),
+                "always_scope_preview": p.get("always_scope_preview"),
+                "requested_at": requested_at,
+                "decision": resolved[0] if resolved else None,
+            })
+        return out
+
+    # ── 执行编排（C8 前的进程内直调入口）─────────────────────────
+    async def run_tool(self, *, task_run_id: str, conversation_id: str,
+                       agent_id: str, invocation: ToolInvocation,
+                       ctx: WorkContext) -> Any:
+        """带闸门执行一次工具：事件落库（emit 接 EventStore）+ 三级闸门。"""
+        loop = asyncio.get_running_loop()
+        future: asyncio.Future = loop.create_future()
+        self._pending[invocation.call_id] = _Pending(
+            future=future, loop=loop, input_hash=input_hash(invocation.input),
+            tool_name=invocation.name, task_run_id=task_run_id,
+            conversation_id=conversation_id, agent_id=agent_id,
+        )
+        ctx.emit = self._make_emit(task_run_id, conversation_id)
+        try:
+            assert self.scheduler is not None, "cli 未装配 scheduler"
+            return await self.scheduler.run(invocation, ctx)
+        finally:
+            self._pending.pop(invocation.call_id, None)
+
+    def _context_for(self, call_id: str) -> _Pending:
+        pending = self._pending.get(call_id)
+        if pending is None:
+            raise ApprovalNotFound(f"执行上下文不存在（重启后的孤儿卡）：{call_id}")
+        return pending
+
+    def _make_emit(self, task_run_id: str, conversation_id: str):
+        async def sink(event_type: str, payload: dict) -> None:
+            await self._store.append(
+                task_run_id=task_run_id, conversation_id=conversation_id,
+                type=RunEventType(event_type), payload=payload,
+            )
+        return sink
+
+    # ── 库操作（线程内同步）───────────────────────────────────────
+    def _load_rules(self, agent_id: str) -> list[PermissionRule]:
+        rows = self._db.read_conn.execute(
+            "SELECT agent_id, tool_name, pattern, effect FROM"
+            " agent_permission_rules WHERE agent_id = ? AND revoked_at IS NULL",
+            (agent_id,),
+        ).fetchall()
+        return [PermissionRule(*row) for row in rows]
+
+    def _write_rule(self, agent_id: str, tool_name: str, pattern: str,
+                    effect: str) -> None:
+        def write(conn):
+            conn.execute("BEGIN IMMEDIATE")
+            conn.execute(
+                "INSERT INTO agent_permission_rules (id, agent_id, tool_name,"
+                " pattern, effect, created_by_user_id, created_at)"
+                " VALUES (?, ?, ?, ?, ?, 'owner', ?)",
+                (uuid.uuid4().hex, agent_id, tool_name, pattern, effect, _now()),
+            )
+            conn.execute("COMMIT")
+        # 直接用写连接（本方法在 to_thread 中被调）——与写通道同连接
+        write(self._db.write_conn)
+
+    def _agent_of_conversation(self, conversation_id: str) -> str:
+        row = self._db.read_conn.execute(
+            "SELECT agent_id FROM conversations WHERE id = ?",
+            (conversation_id,),
+        ).fetchone()
+        return row[0] if row else ""
+
+    def _find_request(self, call_id: str):
+        row = self._db.read_conn.execute(
+            "SELECT task_run_id, conversation_id, payload FROM run_events"
+            " WHERE type = 'permission.requested'"
+            " AND json_extract(payload, '$.tool_call_id') = ?"
+            " ORDER BY global_seq DESC LIMIT 1", (call_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return row[0], row[1], json.loads(row[2])
+
+    def _find_resolution(self, call_id: str):
+        row = self._db.read_conn.execute(
+            "SELECT json_extract(payload, '$.decision'), created_at"
+            " FROM run_events WHERE type = 'permission.resolved'"
+            " AND json_extract(payload, '$.tool_call_id') = ?"
+            " ORDER BY global_seq DESC LIMIT 1", (call_id,),
+        ).fetchone()
+        return (row[0], row[1]) if row else None
+
+    # ── 审计链 ────────────────────────────────────────────────────
+    async def _audit(self, actor_type: str, actor_id: str, action: str,
+                     resource_type: str, resource_id: str,
+                     detail: dict) -> None:
+        def write(conn):
+            conn.execute("BEGIN IMMEDIATE")
+            try:
+                seq = append_audit(
+                    conn, ts=_now(), actor_type=actor_type, actor_id=actor_id,
+                    action=action, resource_type=resource_type,
+                    resource_id=resource_id,
+                    detail=json.dumps(detail, ensure_ascii=False, sort_keys=True),
+                )
+                conn.execute("COMMIT")
+                return seq
+            except Exception:
+                conn.execute("ROLLBACK")
+                raise
+        seq = await asyncio.to_thread(write, self._db.write_conn)
+        if seq % 100 == 0:  # 每 100 条快照链头（governance §3）
+            await asyncio.to_thread(
+                snapshot_chain_head, self._db.write_conn, self._chain_head_path)
+        return None

@@ -23,7 +23,7 @@ import re
 import uuid
 
 from .judgment import bash_readonly
-from .metadata import Tool, ToolInvocation, ToolResult, WorkContext
+from .metadata import Tool, ToolInvocation, ToolMetadata, ToolResult, WorkContext
 
 _log = logging.getLogger("agentcrew.tools")
 
@@ -88,10 +88,12 @@ def redact_event_input(name: str, input: dict) -> dict:
 
 
 class ToolScheduler:
-    def __init__(self, registry: ToolRegistry, *, max_concurrency: int = 4):
+    def __init__(self, registry: ToolRegistry, *, max_concurrency: int = 4,
+                 gate=None):
         self._registry = registry
         self._sem = asyncio.Semaphore(max_concurrency)
         self._serial = asyncio.Lock()
+        self._gate = gate  # C6 审批闸门（server 侧注入；None = 无闸门直通）
 
     async def run(self, invocation: ToolInvocation, ctx: WorkContext) -> ToolResult:
         tool = self._registry.get(invocation.name)
@@ -123,6 +125,20 @@ class ToolScheduler:
         # prepared 持久化失败 → 阻断执行（没有账本记录的副作用不可恢复）
         if not await self._emit_strict(ctx, "tool.prepared", prepared_payload):
             return ToolResult(ok=False, error="EVENT_PERSIST_FAILED")
+
+        # 权限闸门（§6.2：prepared 落库 → 权限门 → dispatched → 执行）。
+        # 挂钩内部完成 ask 的挂起等待；deny 时补记 tool.failed 事件。
+        if self._gate is not None:
+            decision = await self._gate(invocation, meta, effective_readonly)
+            if decision != "allow":
+                await self._emit_strict(ctx, "tool.failed", {
+                    "call_id": invocation.call_id,
+                    "error": "PERMISSION_DENIED",
+                    "output_summary": "",
+                })
+                return ToolResult(ok=False, error="PERMISSION_DENIED",
+                                  details={"gate": decision})
+
         if not await self._emit_strict(
                 ctx, "tool.dispatched", {"call_id": invocation.call_id}):
             return ToolResult(ok=False, error="EVENT_PERSIST_FAILED")

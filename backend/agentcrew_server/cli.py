@@ -23,8 +23,10 @@ from pathlib import Path
 import uvicorn
 
 from agentcrew_core.provider.glm_anthropic import DEFAULT_BASE_URL
+from agentcrew_core.tools import ToolScheduler, build_default_registry
 
 from .api.app import create_app
+from .approvals import ApprovalService
 from .bus import EventBus
 from .config import ConfigError, load_config
 from .db.audit import verify_with_anchor
@@ -311,10 +313,15 @@ def main(argv: list[str] | None = None) -> int:
         event_store = EventStore(channel, publisher=bus.publish)
         # Provider 双槽（M0-C4）：main/aux 从配置链构建（ADR-009：Anthropic 端点）
         provider = build_provider(config.values.get("models", {}))
+        # 审批闸门 + 带闸门调度器（M0-C6）：事件经 EventStore 落库并扇出 SSE
+        approvals = ApprovalService(db, event_store, data_dir / "chain-head.txt")
+        scheduler = ToolScheduler(build_default_registry(), gate=approvals.gate)
+        approvals.scheduler = scheduler
         runtime = RuntimeState(
             log=log, data_dir=data_dir, db=db,
             write_channel=channel, diagnostic=diagnostic,
             token=token, bus=bus, event_store=event_store, provider=provider,
+            approvals=approvals, scheduler=scheduler,
         )
         log.info("startup.bus 事件总线就绪（队列上限 1000，SSE 连接上限 32）")
         log.info(

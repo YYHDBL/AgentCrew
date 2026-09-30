@@ -14,7 +14,9 @@ from .db.write_channel import WriteChannel
 
 if TYPE_CHECKING:  # 避免运行时循环导入（bus 导入 core.events 而已，防御性）
     from agentcrew_core.provider import GLMAnthropicProvider
+    from agentcrew_core.tools import ToolScheduler
 
+    from .approvals import ApprovalService
     from .bus import EventBus
     from .db.event_store import EventStore
 
@@ -38,6 +40,8 @@ class RuntimeState:
     bus: "EventBus | None" = None
     event_store: "EventStore | None" = None
     provider: GLMAnthropicProvider | None = None
+    approvals: "ApprovalService | None" = None  # M0-C6 起装配
+    scheduler: "ToolScheduler | None" = None
 
     async def shutdown(self) -> None:
         """优雅关闭（§7 顺序；任务取消/不写终态随 C8/C9 填充）。"""

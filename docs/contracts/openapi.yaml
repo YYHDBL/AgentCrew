@@ -159,6 +159,7 @@ components:
       required: [decision]
       properties:
         decision: { type: string, enum: [allow_once, allow_always, reject_once, reject_always] }
+        input_hash: { type: string, description: 可选——与审批卡绑定的参数哈希，不一致 409 APPROVAL_STALE（v0.3.1 补） }
     QuestionPending:
       type: object
       properties:

@@ -87,6 +87,8 @@ def _maybe_wrap(status: int, content_type: bytes, body: bytes) -> bytes:
         parsed = json.loads(body)
     except ValueError:
         return body
-    if not isinstance(parsed, dict) or "data" in parsed or "error" in parsed:
+    if isinstance(parsed, dict) and ("data" in parsed or "error" in parsed):
+        return body
+    if not isinstance(parsed, (dict, list)):
         return body
     return json.dumps({"data": parsed}, ensure_ascii=False, separators=(",", ":")).encode()

@@ -14,6 +14,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from ..runtime import RuntimeState
+from .approvals import install_approval_routes
 from .auth import BearerAuthMiddleware
 from .envelope import EnvelopeMiddleware
 from .errors import ErrorCode, error_response, install_error_handlers
@@ -67,6 +68,8 @@ def create_app(runtime: RuntimeState) -> FastAPI:
     )
     install_error_handlers(app)
     install_sse_routes(app, runtime)
+    if runtime.approvals is not None:
+        install_approval_routes(app, runtime)
     app.add_middleware(EnvelopeMiddleware)
     app.add_middleware(DiagnosticGuardMiddleware, runtime=runtime)
     # Bearer 鉴权（M0-C3）：无/错 token → 401；仅 /api/health 豁免。

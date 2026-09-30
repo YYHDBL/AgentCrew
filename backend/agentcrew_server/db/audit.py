@@ -131,3 +131,40 @@ def snapshot_chain_head(conn: sqlite3.Connection, path: Path) -> int | None:
     tmp.write_text(f"{row[0]} {row[1]}\n", encoding="utf-8")
     os.replace(tmp, path)
     return int(row[0])
+
+
+SNAPSHOT_EVERY = 100  # 每追加 100 条快照链头（governance §3）
+
+
+def append_audit(
+    conn: sqlite3.Connection,
+    *,
+    ts: str,
+    actor_type: str,
+    actor_id: str,
+    action: str,
+    resource_type: str | None = None,
+    resource_id: str | None = None,
+    detail: str = "{}",
+) -> int:
+    """哈希链追加一条审计记录（在写通道事务内调用）；返回 seq。
+
+    链头快照（每 100 条）由调用方在提交后按需触发——见 chain_head_path 用法。
+    """
+    last = conn.execute(
+        "SELECT seq, hash FROM audit_log ORDER BY seq DESC LIMIT 1"
+    ).fetchone()
+    seq = (last[0] + 1) if last else 1
+    prev_hash = last[1] if last else GENESIS_PREV_HASH
+    row_hash = compute_hash(
+        seq, ts, actor_type, actor_id, action,
+        resource_type, resource_id, detail, prev_hash,
+    )
+    conn.execute(
+        "INSERT INTO audit_log (seq, ts, actor_type, actor_id, action,"
+        " resource_type, resource_id, detail, prev_hash, hash)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (seq, ts, actor_type, actor_id, action,
+         resource_type, resource_id, detail, prev_hash, row_hash),
+    )
+    return seq
