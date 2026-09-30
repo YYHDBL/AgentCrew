@@ -20,6 +20,7 @@ from agentcrew_core.events.reducer import (
     can_send,
     legal_actions,
     reduce,
+    replay,
 )
 
 SEQ = iter(range(1, 10_000))
@@ -98,6 +99,14 @@ def running_fsm(**kw) -> ConversationState:
      lambda s: s.waiting_approvals == 0),
     ("idle", "idle", lambda s: ev(T.QUESTION_ANSWERED),
      lambda s: s.waiting_questions == 0),
+    # 历史任务的决定不清零当前任务的计数（外审回稿：跨任务计数污染——
+    # running_wa1 的当前任务是 run-1，事件锚在别的任务上）
+    ("running_wa1", "running",
+     lambda s: ev(T.PERMISSION_RESOLVED, task_run_id="run-9"),
+     lambda s: s.waiting_approvals == 1),
+    ("running_wq1", "running",
+     lambda s: ev(T.QUESTION_ANSWERED, task_run_id="run-9"),
+     lambda s: s.waiting_questions == 1),
     # FSM 域外事件 no-op
     ("running", "running", lambda s: ev(T.STEP_STARTED), None),
     ("idle", "idle",
@@ -134,6 +143,33 @@ def test_fatal_enters_error_and_interrupted_converges():
     err = apply_fatal(running_fsm())
     assert err.state == "error"
     assert reduce(err, ev(T.RUN_INTERRUPTED)).state == "idle"
+
+
+def test_stale_resolution_does_not_pollute_next_task():
+    """外审回稿：A 等审批→中断→B 等审批，A 的旧决定不清零 B 的计数。
+
+    approvals.submit 对重启前留下的审批卡以**原任务**为锚点落库（C6 已
+    验收语义），该决定经重放到达时 B 正在等审批——修复前会清零 B 的计数
+    使 can_queue 错误变 true。"""
+    events = [
+        ev(T.RUN_QUEUED, task_run_id="run-A"),
+        ev(T.RUN_STARTED, task_run_id="run-A"),
+        ev(T.PERMISSION_REQUESTED, task_run_id="run-A", tool_call_id="c-a"),
+        ev(T.RUN_INTERRUPTED, task_run_id="run-A"),
+        ev(T.RUN_QUEUED, task_run_id="run-B"),
+        ev(T.RUN_STARTED, task_run_id="run-B"),
+        ev(T.PERMISSION_REQUESTED, task_run_id="run-B", tool_call_id="c-b"),
+        ev(T.PERMISSION_RESOLVED, task_run_id="run-A",
+           tool_call_id="c-a", decision="allow_once"),
+    ]
+    s = replay(events)
+    assert s.current_task_run_id == "run-B"
+    assert s.waiting_approvals == 1, "历史任务的决定不得清零 B 的未决计数"
+    assert can_queue(s) is False
+    # B 自己的决定正常清零
+    s2 = reduce(s, ev(T.PERMISSION_RESOLVED, task_run_id="run-B",
+                      tool_call_id="c-b", decision="allow_once"))
+    assert s2.waiting_approvals == 0 and can_queue(s2) is True
 
 
 @pytest.mark.parametrize("event_factory,before", [
@@ -201,6 +237,23 @@ def test_legal_actions_consistent_with_truth_table():
     assert legal_actions(s) == ["cancel"]
     assert legal_actions(queued_fsm(1, queue_paused=True)) == \
         ["send", "continue_queue"]
+
+
+@pytest.mark.parametrize("pv,ua,expected", [
+    (0, 0, True),
+    (1, 0, False),
+    (0, 1, False),
+    (2, 1, False),
+])
+def test_can_continue_queue_db_blockers(pv, ua, expected):
+    """外审回稿真值表扩行：待核验/未决审批是 POST queue/continue 的阻断
+    条件，能力字段必须同样为 False（快照不得宣称可继续而接口必 409）。"""
+    s = queued_fsm(1, queue_paused=True)
+    assert can_continue_queue(
+        s, pending_verifications=pv, unresolved_approvals=ua) is expected
+    # FSM 条件不因参数放宽：未暂停/无队列仍不可继续
+    assert can_continue_queue(queued_fsm(1), pending_verifications=pv,
+                              unresolved_approvals=ua) is False
 
 
 def test_queue_item_positions():

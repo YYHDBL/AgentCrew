@@ -198,3 +198,41 @@ def test_patch_invalid_values_422(tmp_path):
         assert not (tmp_path / "config.json").exists()
         assert service.config.values["gates"]["max_steps"] == 40  # 默认值
     channel.close(); db.close()
+
+
+def test_audit_failure_records_pending_then_backfills(tmp_path):
+    """外审回稿：审计写失败 → 待办落盘 + 响应标注 pending（不再谎报成功）；
+    库恢复后下次变更同一事务按原序补链（v1 待办在前）。真库真故障：
+    DROP TABLE 使 append_audit 真实失败。"""
+    service, db, channel, app = _make_settings(tmp_path)
+    with TestClient(app) as c:
+        ddl = db.read_conn.execute(
+            "SELECT sql FROM sqlite_master WHERE name = 'audit_log'"
+        ).fetchone()[0]
+        db.write_conn.execute("DROP TABLE audit_log")
+
+        resp = c.patch("/api/settings", headers=AUTH,
+                       json={"gates": {"max_steps": 21}})
+        assert resp.status_code == 200
+        data = resp.json()["data"]
+        assert data["audit"] == {"status": "pending"}
+        assert data["settings"]["gates"]["max_steps"] == 21  # 配置已生效
+        assert service.config.values["gates"]["max_steps"] == 21
+        pending_lines = (tmp_path / "audit-pending.jsonl"
+                         ).read_text().strip().splitlines()
+        assert len(pending_lines) == 1
+        record = json.loads(pending_lines[0])
+        assert record["resource_id"] == "1"
+        assert json.loads(record["detail"])["fields"] == ["gates.max_steps"]
+
+        db.write_conn.execute(ddl)  # 库恢复
+        resp2 = c.patch("/api/settings", headers=AUTH,
+                        json={"gates": {"max_steps": 22}})
+        assert resp2.json()["data"]["audit"] == {"status": "ok"}
+        assert not (tmp_path / "audit-pending.jsonl").exists()
+        rows = db.read_conn.execute(
+            "SELECT seq, resource_id FROM audit_log ORDER BY seq").fetchall()
+        assert [tuple(r) for r in rows] == [(1, "1"), (2, "2")]  # 待办 v1 先补
+        assert verify_with_anchor(db.write_conn,
+                                  tmp_path / "chain-head.txt").ok
+    channel.close(); db.close()

@@ -7,10 +7,12 @@
   的配置版本（运行中执行保持绑定版——C8 起 attempt 记 context_fingerprint）；
 - 写序（§4）：先写文件（tmp+rename 原子替换）→ 成功才重载并切换内存生效
   配置；文件写失败 → SettingsWriteFailed（500 CONFIG_WRITE_FAILED），内存
-  不变。审计随后单独入链（哈希链 append-only 无法回滚；审计失败如实告警，
-  文件与内存已是新值——顺序取舍：保证 §4 的用户可见契约先成立）；
-- 一切配置变更入审计链（detail 含 config_version 与变更字段路径，绝不含
-  任何 key 值）。
+  不变。
+- 一切配置变更入审计链（外审回稿：无"用户可见契约豁免"）。跨文件 + 库无法
+  单原子，做**可恢复的审计待办**：审计写失败时把完整审计记录落
+  data/audit-pending.jsonl（响应 audit.status="pending"），下次成功入链时
+  按原序先补待办再入新记录（同一事务），随后清空待办文件；待办连文件都
+  落不了 → audit.status="failed"（如实告警，不谎报 ok）。
 """
 
 from __future__ import annotations
@@ -52,6 +54,10 @@ class SettingsService:
         self._path = data_dir / "config.json"
         self._channel = channel
         self._chain_head_path = chain_head_path
+        self._pending_path = data_dir / "audit-pending.jsonl"
+        # 审计补链串行（外审回稿）：读待办→入链→清待办 必须整体互斥，
+        # 否则并发 PATCH 会把同一待办补两遍
+        self._audit_lock = asyncio.Lock()
         # PATCH 后重载必须走同一环境（测试注入合成 env；缺省 os.environ）
         self._env = env if env is not None else os.environ
 
@@ -129,8 +135,10 @@ class SettingsService:
         # 文件已成新事实：重载生效配置（用构造时的同一环境，覆盖链一致）
         self._config = load_config(self._data_dir, self._env)
         ignored = sorted(p for p in self._config.env_fields if p in touched)
-        await self._audit(new_file["config_version"], touched, cleared)
-        return {"settings": self.get_view(), "ignored_fields": ignored}
+        audit_status = await self._audit(
+            new_file["config_version"], touched, cleared)
+        return {"settings": self.get_view(), "ignored_fields": ignored,
+                "audit": {"status": audit_status}}
 
     def _validate_shape(self, patch: dict[str, Any]) -> list[str]:
         """白名单校验 + 收集本次写入的字段路径（审计与 ignored_fields 共用）。"""
@@ -173,33 +181,69 @@ class SettingsService:
         os.replace(tmp, self._path)
 
     async def _audit(self, config_version: int, touched: list[str],
-                     cleared: list[str]) -> None:
-        detail = json.dumps({
-            "config_version": config_version,
-            "fields": touched,
-            "api_key_cleared": cleared,  # 只记槽名，绝不记 key 值
-        }, ensure_ascii=False, sort_keys=True)
+                     cleared: list[str]) -> str:
+        """一切配置变更入审计链（外审回稿）。返回 "ok" | "pending" | "failed"。
+
+        成功路径：待办（若有）按原序补链 + 本条新记录，同一事务；提交后清
+        待办文件。失败路径：完整记录落 audit-pending.jsonl 待下次补链。"""
+        record = {
+            "ts": _now(), "actor_type": "user", "actor_id": "owner",
+            "action": "settings.updated", "resource_type": "config",
+            "resource_id": str(config_version),
+            "detail": json.dumps({
+                "config_version": config_version,
+                "fields": touched,
+                "api_key_cleared": cleared,  # 只记槽名，绝不记 key 值
+            }, ensure_ascii=False, sort_keys=True),
+        }
 
         def write(conn):
             conn.execute("BEGIN IMMEDIATE")
             try:
-                seq = append_audit(
-                    conn, ts=_now(), actor_type="user", actor_id="owner",
-                    action="settings.updated", resource_type="config",
-                    resource_id=str(config_version), detail=detail,
-                )
+                seq = 0
+                for pending in self._read_pending():
+                    seq = append_audit(conn, **pending)
+                seq = append_audit(conn, **record)
                 conn.execute("COMMIT")
                 return seq
             except Exception:
                 conn.execute("ROLLBACK")
                 raise
 
-        try:
-            seq = await self._channel.execute(write)
-        except Exception:  # noqa: BLE001 —— 文件已是新值；审计失败如实告警不回滚
-            _log.exception(
-                "settings.audit_failed 配置已更新到 v%s 但审计入链失败", config_version)
-            return
+        async with self._audit_lock:
+            try:
+                seq = await self._channel.execute(write)
+            except Exception:  # noqa: BLE001 —— 文件已是新值；如实落待办不谎报
+                _log.exception(
+                    "settings.audit_failed 配置已更新到 v%s 但审计入链失败，"
+                    "已落待办等下次成功时补链", config_version)
+                return self._record_pending(record)
+            self._pending_path.unlink(missing_ok=True)
         if seq % SNAPSHOT_EVERY == 0:
             await self._channel.execute(
                 lambda conn: snapshot_chain_head(conn, self._chain_head_path))
+        return "ok"
+
+    def _read_pending(self) -> list[dict]:
+        if not self._pending_path.exists():
+            return []
+        lines = [ln for ln in
+                 self._pending_path.read_text(encoding="utf-8").splitlines()
+                 if ln.strip()]
+        # 解析失败直接抛出（按审计失败处理再落一次待办）——待办文件由本
+        # 服务单行 JSON 追加，损坏意味着磁盘故障，静默跳过等于丢审计
+        return [json.loads(ln) for ln in lines]
+
+    def _record_pending(self, record: dict) -> str:
+        try:
+            with self._pending_path.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(record, ensure_ascii=False) + "\n")
+                f.flush()
+                os.fsync(f.fileno())
+        except OSError:
+            _log.critical(
+                "settings.audit_pending_unwritable 审计待办 %s 也无法落盘"
+                "（v%s 的审计记录可能丢失）", self._pending_path,
+                record["resource_id"])
+            return "failed"
+        return "pending"

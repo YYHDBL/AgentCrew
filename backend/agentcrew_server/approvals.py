@@ -198,7 +198,6 @@ class ApprovalService:
             raise ApprovalStale(
                 f"该审批已按 {first_decision} 处理（重试同决定可幂等返回）")
         event, audit_seq = outcome["event"], outcome["audit_seq"]
-        self._store.publish(event)  # 提交后扇出（与 append 语义一致）
         if audit_seq % SNAPSHOT_EVERY == 0:  # 每 100 条快照链头（governance §3）
             await self._channel.execute(
                 lambda conn: snapshot_chain_head(conn, self._chain_head_path))
@@ -253,6 +252,10 @@ class ApprovalService:
                                    input_hash=payload.get("input_hash")),
                 )
             conn.execute("COMMIT")
+            # COMMIT 成功后、闭包返回前发布（写线程内）——发布顺序 = 提交顺序
+            # （外审回稿：闭包外发布会让写线程先发布更大 global_seq，SSE 去重
+            # 把后到的较小序号永久丢弃）
+            self._store.publish(event)
             return {"kind": "written", "event": event, "audit_seq": audit_seq}
         except Exception:
             try:

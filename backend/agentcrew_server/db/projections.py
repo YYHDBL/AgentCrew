@@ -34,7 +34,10 @@ C2 固定的 payload 契约（C5-C8 按此发射；新增字段先登记再使�
   artifact.ready    {artifact_id, size_bytes?}
   artifact.failed   {artifact_id, error?}
   artifact.missing_detected {artifact_id}
-  materials.imported {files: [{original_path, stored_name, size_bytes?, error?}]}
+  materials.imported {files: [{original_path, stored_name, size_bytes?, error?}],
+                    folders?: [{path, error?}]}   （folders 逐项结果随事件
+                    持久化，响应/幂等重放从载荷读回——外审回稿；无投影列，
+                    授权目录只进 conversations.folders_json）
   conversation.updated {title?}
   queue.item_enqueued {item_id, text, client_request_id?}   （C7）
   queue.item_cancelled {item_ids: [...]}

@@ -14,6 +14,7 @@ import json
 import logging
 import os
 import stat
+import threading
 from pathlib import Path
 
 import pytest
@@ -543,6 +544,267 @@ def test_conversations_list(asm):
         assert len(rows) == 1
         assert rows[0]["state_badge"] == "running"  # starting → 徽章 running
         assert rows[0]["agent_name"] == "default"
+
+
+# ── 外审回稿回归（C7 第四轮）─────────────────────────────────────
+
+def test_compound_closures_publish_in_write_thread_in_order(asm):
+    """外审回稿致命项：创建/继续队列的复合闭包必须在写通道线程内、COMMIT
+    成功后、闭包返回前发布（对齐 EventStore publisher-in-closure）——闭包外
+    发布存在乱序窗口：写线程先发布更大 global_seq，SSE 去重把后到的较小
+    序号永久丢弃，客户端拿大游标重连也补不回。"""
+    with asm.client() as c:
+        conv_id = _create(asm, c)
+        _enqueue(c, conv_id, "排队项")
+        asyncio.run(_finish_current(asm, conv_id, T.RUN_CANCELLED))
+
+        recorded: list[tuple[int, int]] = []
+        main_thread = threading.get_ident()
+        bus_publish = asm.bus.publish
+
+        def probe(event):
+            recorded.append((event.global_seq, threading.get_ident()))
+            bus_publish(event)  # 真总线照常扇出，仅记录线程与序号
+
+        asm.store.set_publisher(probe)
+
+        async def spam():
+            for _ in range(4):
+                await asm.store.append(
+                    task_run_id=None, conversation_id=conv_id,
+                    type=T.QUEUE_PAUSED, payload={})
+                await asyncio.sleep(0)
+
+        async def scenario():
+            # 继续队列（复合闭包）与连续单事件追加并发；随后再走一次创建
+            await asyncio.gather(asm.sessions.continue_queue(conv_id), spam())
+            await asyncio.gather(
+                asm.sessions.create_conversation(instruction="并发创建"),
+                spam())
+
+        asyncio.run(scenario())
+
+        seqs = [g for g, _ in recorded]
+        assert seqs == sorted(seqs), "发布顺序必须等于提交顺序"
+        assert len(seqs) == len(set(seqs))
+        assert main_thread not in {t for _, t in recorded}, \
+            "复合闭包事件必须在写线程内发布（闭包外发布有乱序窗口）"
+
+
+def test_stale_permission_resolution_keeps_next_task_waiting(asm):
+    """外审回稿：任务 A 等审批被中断后，A 的旧决定不清零任务 B 的未决审批
+    （真实事件链 + state_snapshot + 指令 409 全路径；决定以原任务为锚——
+    与 approvals.submit 的落库方式一致）。"""
+    async def scenario():
+        with asm.client() as c:
+            conv_id = _create(asm, c)
+            task_a = asm.sessions.state_snapshot(conv_id)["current_task_run_id"]
+            await asm.store.append(
+                task_run_id=task_a, conversation_id=conv_id, type=T.RUN_STARTED,
+                payload={"attempt_no": 1, "attempt_id": "att-a", "kind": "initial"})
+            await asm.store.append(
+                task_run_id=task_a, conversation_id=conv_id,
+                type=T.PERMISSION_REQUESTED, payload={"tool_call_id": "call-a"})
+            await asm.store.append(
+                task_run_id=task_a, conversation_id=conv_id,
+                type=T.RUN_INTERRUPTED, payload={})
+            # 重启恢复后新任务 B：直发 → running → 等审批
+            started = await asm.sessions.send_instruction(conv_id, "任务B")
+            task_b = started["task_run_id"]
+            await asm.store.append(
+                task_run_id=task_b, conversation_id=conv_id, type=T.RUN_STARTED,
+                payload={"attempt_no": 1, "attempt_id": "att-b", "kind": "initial"})
+            await asm.store.append(
+                task_run_id=task_b, conversation_id=conv_id,
+                type=T.PERMISSION_REQUESTED, payload={"tool_call_id": "call-b"})
+            # A 的旧决定到达——修复前会清零 B 的计数使 can_queue 错误变 true
+            await asm.store.append(
+                task_run_id=task_a, conversation_id=conv_id,
+                type=T.PERMISSION_RESOLVED,
+                payload={"tool_call_id": "call-a", "decision": "allow_once"})
+            snap = asm.sessions.state_snapshot(conv_id)
+            assert snap["current_task_run_id"] == task_b
+            assert snap["waiting_approvals"] == 1
+            assert snap["can_queue"] is False
+            resp = c.post(f"/api/conversations/{conv_id}/instructions",
+                          headers=AUTH, json={"text": "插话"})
+            assert resp.status_code == 409
+            assert resp.json()["error"]["code"] == "APPROVAL_PENDING"
+            # B 自己的决定正常清零
+            await asm.store.append(
+                task_run_id=task_b, conversation_id=conv_id,
+                type=T.PERMISSION_RESOLVED,
+                payload={"tool_call_id": "call-b", "decision": "allow_once"})
+            snap2 = asm.sessions.state_snapshot(conv_id)
+            assert snap2["waiting_approvals"] == 0 and snap2["can_queue"] is True
+    asyncio.run(scenario())
+
+
+def test_cancelled_queue_item_holds_idempotency_key(asm):
+    """外审回稿：已取消的排队项继续占有幂等键——同键重试返回明确的已取消
+    结果，不重新入队/建任务（修复前查重漏掉已取消项，重试会重新入队）。"""
+    with asm.client() as c:
+        conv_id = _create(asm, c)
+        r1 = c.post(f"/api/conversations/{conv_id}/instructions",
+                    headers=AUTH,
+                    json={"text": "排队后取消", "client_request_id": "cx-1"})
+        assert r1.json()["data"]["mode"] == "queued"
+        state = c.get(f"/api/conversations/{conv_id}/state",
+                      headers=AUTH).json()["data"]
+        item_id = state["queue"][0]["id"]
+        cancel = c.post(f"/api/conversations/{conv_id}/queue/cancel",
+                        headers=AUTH, json={"item_ids": [item_id]})
+        assert cancel.json()["data"]["cancelled_ids"] == [item_id]
+        # 同键重试：明确已取消，不再入队
+        r2 = c.post(f"/api/conversations/{conv_id}/instructions",
+                    headers=AUTH,
+                    json={"text": "排队后取消", "client_request_id": "cx-1"})
+        assert r2.status_code == 202
+        assert r2.json()["data"] == {"mode": "cancelled", "queue_position": None,
+                                     "task_run_id": None}
+        state2 = c.get(f"/api/conversations/{conv_id}/state",
+                       headers=AUTH).json()["data"]
+        assert state2["queue"] == []
+        assert asm.db.read_conn.execute(
+            "SELECT count(*) FROM task_runs WHERE conversation_id = ?",
+            (conv_id,)).fetchone()[0] == 1  # 仍只有首任务，重试未建任务
+        contents = [r[0] for r in asm.db.read_conn.execute(
+            "SELECT content FROM messages WHERE conversation_id = ?"
+            " ORDER BY created_at", (conv_id,)).fetchall()]
+        assert contents.count("排队后取消") == 1  # 无重复发送记录
+
+
+def test_create_conversation_same_key_race_serialized(asm, tmp_path):
+    """外审回稿：并发同键创建——查重+材料导入+创建按幂等键串行，后到者读
+    首次结果（修复前：双份材料目录 + 后到者撞唯一索引 500）。写通道被占住
+    期间两个请求的查重都先于任何 COMMIT 完成，竞争窗口必然打开。"""
+    src = _make_source_files(tmp_path)
+
+    async def scenario():
+        release = threading.Event()
+        blocker = asyncio.ensure_future(asm.channel.execute(
+            lambda _conn: release.wait(5)))  # 占住写线程，压住全部 COMMIT
+        await asyncio.sleep(0)
+
+        async def releaser():
+            await asyncio.sleep(0.2)  # 两个请求都已过查重点后再放行
+            release.set()
+
+        body = {"instruction": "任务Y", "client_request_id": "race-1",
+                "import_files": [str(src[0])]}
+        results = await asyncio.gather(
+            asm.sessions.create_conversation(**body),
+            asm.sessions.create_conversation(**dict(body, instruction="任务Y改")),
+            releaser(),
+        )
+        await blocker
+        assert results[0]["conversation"]["id"] == results[1]["conversation"]["id"]
+        assert asm.db.read_conn.execute(
+            "SELECT count(*) FROM conversations").fetchone()[0] == 1
+        assert asm.db.read_conn.execute(
+            "SELECT count(*) FROM task_runs").fetchone()[0] == 1
+        conv_dirs = list((tmp_path / "conversations").iterdir())
+        assert len(conv_dirs) == 1, "不得留下无归属材料目录"
+    asyncio.run(scenario())
+
+
+def test_folders_per_item_results_persisted_and_returned(asm, tmp_path):
+    """外审回稿：folders 逐项结果完整保存（materials.imported 载荷），
+    创建响应与幂等重试一致返回（修复前算了不存、响应缺 folders 字段）。"""
+    folder = tmp_path / "授权夹"
+    folder.mkdir()
+    missing = tmp_path / "没有这夹"
+    body = {"instruction": "带夹任务", "client_request_id": "fold-1",
+            "folders": [str(folder), str(missing)]}
+    with asm.client() as c:
+        first = c.post("/api/conversations", headers=AUTH,
+                       json=body).json()["data"]
+        assert first["folders"] == [
+            {"path": str(folder), "error": None},
+            {"path": str(missing), "error": f"文件夹不存在：{missing}"},
+        ]
+        retry = c.post("/api/conversations", headers=AUTH,
+                       json=body).json()["data"]
+        assert retry == first  # 幂等重试逐项一致
+        payload = asm.db.read_conn.execute(
+            "SELECT payload FROM run_events WHERE type = 'materials.imported'"
+        ).fetchone()[0]
+        assert json.loads(payload)["folders"] == first["folders"]
+        # 纯 folders（无 import_files）也持久化逐项结果
+        only = c.post("/api/conversations", headers=AUTH,
+                      json={"instruction": "只有夹",
+                            "folders": [str(folder)]}).json()["data"]
+        assert only["folders"] == [{"path": str(folder), "error": None}]
+
+
+def test_can_continue_queue_snapshot_matches_endpoint(asm):
+    """外审回稿：快照 can_continue_queue 与 POST queue/continue 同一判定源
+    ——待核验/未决审批两阻断事实纳入能力字段（修复前宣称 True 而接口必 409）。
+
+    未决审批场景走真实事件路径：任务 A running 中弹卡 → run.interrupted
+    （任务停在非终态，审批仍可决定）→ queue.paused → idle+暂停+有队列。"""
+    with asm.client() as c:
+        conv_id = _create(asm, c)
+        _enqueue(c, conv_id, "后续")
+        task_id = asm.db.read_conn.execute(
+            "SELECT id FROM task_runs WHERE conversation_id = ?"
+            " ORDER BY created_at LIMIT 1", (conv_id,)).fetchone()[0]
+
+        async def setup_paused_with_unresolved_approval():
+            await asm.store.append(
+                task_run_id=task_id, conversation_id=conv_id,
+                type=T.RUN_STARTED,
+                payload={"attempt_no": 1, "attempt_id": "att-1", "kind": "initial"})
+            await asm.store.append(
+                task_run_id=task_id, conversation_id=conv_id,
+                type=T.PERMISSION_REQUESTED, payload={"tool_call_id": "call-y"})
+            await asm.store.append(
+                task_run_id=task_id, conversation_id=conv_id,
+                type=T.RUN_INTERRUPTED, payload={})
+            await asm.store.append(
+                task_run_id=None, conversation_id=conv_id,
+                type=T.QUEUE_PAUSED, payload={})
+        asyncio.run(setup_paused_with_unresolved_approval())
+        state = c.get(f"/api/conversations/{conv_id}/state",
+                      headers=AUTH).json()["data"]
+        assert state["state"] == "idle" and state["queue_paused"] is True
+        assert state["queue"], "前置：暂停 + 有排队项"
+
+        # 阻断事实②：未决审批 → 能力字段 False + 接口 409 APPROVAL_PENDING
+        assert state["can_continue_queue"] is False
+        resp = c.post(f"/api/conversations/{conv_id}/queue/continue",
+                      headers=AUTH)
+        assert resp.status_code == 409
+        assert resp.json()["error"]["code"] == "APPROVAL_PENDING"
+
+        # 叠加阻断事实①：待核验调用 → 仍 False + 409 PENDING_VERIFICATION
+        asm.db.write_conn.execute(
+            "INSERT INTO tool_calls (id, call_id, task_run_id, tool_name,"
+            " side_effect_class, input_hash, status, risk_level, prepared_at)"
+            " VALUES ('tcx','call-x',?, 'bash','outcome_unknown','h',"
+            " 'pending_verification','medium','t')", (task_id,))
+        asm.db.write_conn.commit()
+        state = c.get(f"/api/conversations/{conv_id}/state",
+                      headers=AUTH).json()["data"]
+        assert state["can_continue_queue"] is False
+        resp = c.post(f"/api/conversations/{conv_id}/queue/continue",
+                      headers=AUTH)
+        assert resp.status_code == 409
+        assert resp.json()["error"]["code"] == "PENDING_VERIFICATION"
+        asm.db.write_conn.execute("DELETE FROM tool_calls WHERE call_id='call-x'")
+        asm.db.write_conn.commit()
+
+        # 两个阻断事实都解除 → 能力字段恢复 True 且接口成功
+        asyncio.run(asm.store.append(
+            task_run_id=task_id, conversation_id=conv_id,
+            type=T.PERMISSION_RESOLVED,
+            payload={"tool_call_id": "call-y", "decision": "allow_once"}))
+        state = c.get(f"/api/conversations/{conv_id}/state",
+                      headers=AUTH).json()["data"]
+        assert state["can_continue_queue"] is True
+        resp = c.post(f"/api/conversations/{conv_id}/queue/continue",
+                      headers=AUTH)
+        assert resp.status_code == 202
 
 
 # ── S09：任务工作目录（cwd 与 scope 在会话装配处统一提供）─────────

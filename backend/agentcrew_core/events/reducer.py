@@ -10,10 +10,12 @@ can_cancel / can_continue_queue 前端直接调用。全部无副作用、可参
   run.started           starting → running
   run.resumed           idle → running（恢复 = 新 attempt 直接进循环，§7）
   permission.requested  running: waiting_approvals += 1
-  permission.resolved   running 且计数>0: -= 1；计数=0 时 no-op——对账后
-                        （run.interrupted 已收敛 idle）到达的决定不改变状态，
-                        C6 已验收"重启后决定仍可提交并落库"
-  question.requested / question.answered  同上，计数器增减
+  permission.resolved   running 且计数>0 且事件属于当前任务（task_run_id 一致）:
+                        -= 1；否则 no-op——对账后（run.interrupted 已收敛）
+                        到达的**历史任务**决定不改变状态（C6 已验收"重启后
+                        决定仍可提交并落库"：事件事实照落库，但不得清零后继
+                        任务的未决计数——外审回稿：跨任务计数污染）
+  question.requested / question.answered  同上，计数器增减（同任务校验）
   run.completed / run.failed   starting|running → idle（计数清零）
   run.cancelled         starting|running → idle；队列有 queued 项 →
                         queue_paused = 1（§4：用户停止后不自动接续）
@@ -139,9 +141,11 @@ def reduce(state: ConversationState, event: Event) -> ConversationState:
         return replace(state, waiting_approvals=state.waiting_approvals + 1)
 
     if t == RunEventType.PERMISSION_RESOLVED:
-        if state.state == "running" and state.waiting_approvals > 0:
+        if state.state == "running" and state.waiting_approvals > 0 \
+                and event.task_run_id == state.current_task_run_id:
             return replace(state, waiting_approvals=state.waiting_approvals - 1)
-        return state  # 对账后到达的决定（见模块 docstring）
+        return state  # 对账后到达的决定（见模块 docstring）——历史任务的
+        # 决定只留事件事实，不清零后继任务的未决计数（外审回稿）
 
     if t == RunEventType.QUESTION_REQUESTED:
         if state.state != "running":
@@ -149,7 +153,8 @@ def reduce(state: ConversationState, event: Event) -> ConversationState:
         return replace(state, waiting_questions=state.waiting_questions + 1)
 
     if t == RunEventType.QUESTION_ANSWERED:
-        if state.state == "running" and state.waiting_questions > 0:
+        if state.state == "running" and state.waiting_questions > 0 \
+                and event.task_run_id == state.current_task_run_id:
             return replace(state, waiting_questions=state.waiting_questions - 1)
         return state
 
@@ -212,9 +217,17 @@ def can_cancel(s: ConversationState) -> bool:
     return s.state in ("starting", "running")
 
 
-def can_continue_queue(s: ConversationState) -> bool:
+def can_continue_queue(s: ConversationState, *,
+                       pending_verifications: int = 0,
+                       unresolved_approvals: int = 0) -> bool:
+    """继续队列能力（与 POST queue/continue 同一判定源，外审回稿）。
+
+    FSM 三条件之外还有两个库侧阻断事实（不在事件域，由调用方查实传入）：
+    待核验调用与未决审批——接口对这两者分别 409，能力字段必须同样为 False，
+    否则快照宣称可继续而请求必被拒。缺省 0 = 纯 FSM 视角（前端真值表）。"""
     return (s.state == "idle" and s.queue_paused
-            and bool(s.queued_items))
+            and bool(s.queued_items)
+            and pending_verifications == 0 and unresolved_approvals == 0)
 
 
 _TRUTH_TABLE = (

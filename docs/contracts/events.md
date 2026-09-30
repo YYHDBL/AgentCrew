@@ -25,7 +25,7 @@
 `artifact.created（generating）/ artifact.ready（含 path/size）/ artifact.failed / artifact.missing_detected（探测发现文件缺失，卡片转缺失态）`
 
 ## 材料与任务（v1.4，F001）
-`materials.imported`（payload: 逐文件结果 original_path/stored_name/error，部分失败仍创建任务）/ `conversation.updated`（标题由首条指令生成等元数据变化）
+`materials.imported`（payload: 逐文件结果 original_path/stored_name/error + folders 逐项结果 path/error——外审回稿：逐项结果随事件持久化，创建响应与幂等重放同源读回；部分失败仍创建任务）/ `conversation.updated`（标题由首条指令生成等元数据变化）
 
 ## 上下文（M1，harness-session 占位）
 `context.compacted / tool.result_externalized`

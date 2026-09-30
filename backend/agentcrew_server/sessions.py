@@ -10,6 +10,12 @@
   全部被拒 → 422 不建任务；
 - client_request_id 幂等（backend-service §8）：conversations / task_runs
   上的部分唯一索引 + pending_queue 项内键，网络重试不产生重复任务/指令；
+  创建路径按幂等键串行（查重→材料导入→创建，外审回稿——并发同键请求
+  后到者读首次结果，不再撞唯一索引 500 / 留无归属材料目录）；
+- 复合写闭包（创建/继续队列）的事件发布在写通道线程内、COMMIT 成功后、
+  闭包返回前执行——发布顺序 = 提交顺序（对齐 EventStore 的
+  publisher-in-closure 模式；闭包外发布会让写线程先发布更大 global_seq，
+  SSE 去重把后到的较小序号永久丢弃，外审回稿致命项）；
 - S09（C6 外审移交）：build_work_context 在会话装配处统一提供 cwd 与
   scope——read_file/write_file 相对路径、bash 子进程 cwd 都从这取。
 """
@@ -150,11 +156,18 @@ class SessionService:
         self._locks_guard = asyncio.Lock()
 
     async def _conv_lock(self, conversation_id: str) -> asyncio.Lock:
+        return await self._scoped_lock(f"conv:{conversation_id}")
+
+    async def _idempotency_lock(self, client_request_id: str) -> asyncio.Lock:
+        """创建幂等键串行域（外审回稿：查重+材料导入+创建 全程持锁）。"""
+        return await self._scoped_lock(f"idem:{client_request_id}")
+
+    async def _scoped_lock(self, key: str) -> asyncio.Lock:
         async with self._locks_guard:
-            lock = self._locks.get(conversation_id)
+            lock = self._locks.get(key)
             if lock is None:
                 lock = asyncio.Lock()
-                self._locks[conversation_id] = lock
+                self._locks[key] = lock
             return lock
 
     def _limits(self) -> dict[str, int]:
@@ -266,12 +279,29 @@ class SessionService:
         import_files: list[str] | None = None,
         folders: list[str] | None = None,
     ) -> dict[str, Any]:
-        if client_request_id:
+        if not client_request_id:
+            return await self._create_conversation_once(
+                instruction=instruction, agent_id=agent_id,
+                client_request_id=None, import_files=import_files,
+                folders=folders)
+        # 幂等键串行（外审回稿）：查重在事务外、材料复制在前、插入在后——
+        # 并发同键请求会双份导入且后到者撞唯一索引 500。全程持键锁后，
+        # 后到请求在锁内重读首次结果
+        async with await self._idempotency_lock(client_request_id):
             existing = await asyncio.to_thread(
                 self._find_conversation_by_request_id, client_request_id)
             if existing is not None:
                 return existing  # 网络重试幂等：返回首次结果，不重复建
+            return await self._create_conversation_once(
+                instruction=instruction, agent_id=agent_id,
+                client_request_id=client_request_id,
+                import_files=import_files, folders=folders)
 
+    async def _create_conversation_once(
+        self, *, instruction: str, agent_id: str | None,
+        client_request_id: str | None,
+        import_files: list[str] | None, folders: list[str] | None,
+    ) -> dict[str, Any]:
         conv_id = uuid.uuid4().hex
         task_id = uuid.uuid4().hex
         agent = agent_id or DEFAULT_AGENT_ID
@@ -311,20 +341,24 @@ class SessionService:
                     payload={"instruction": instruction,
                              "client_request_id": client_request_id},
                 ))
-                if import_files:
+                if import_files or folder_results:
+                    # folders 逐项结果随材料事件持久化（外审回稿：算了不存
+                    # 会让响应与幂等重试都拿不回逐项结果）
                     events.append(self._store.append_in_tx(
                         conn, task_run_id=task_id, conversation_id=conv_id,
                         type=RunEventType.MATERIALS_IMPORTED,
-                        payload={"files": file_results},
+                        payload={"files": file_results,
+                                 "folders": folder_results},
                     ))
                 conn.execute("COMMIT")
             except Exception:
                 conn.execute("ROLLBACK")
                 raise
+            # COMMIT 成功后、闭包返回前发布（写线程内）——发布顺序 = 提交顺序
+            for event in events:
+                self._store.publish(event)
 
         await self._channel.execute(tx)
-        for event in events:
-            self._store.publish(event)
         return await asyncio.to_thread(self._conversation_data, conv_id, task_id)
 
     def _conversation_data(self, conv_id: str,
@@ -335,11 +369,19 @@ class SessionService:
             " FROM task_materials WHERE conversation_id = ? ORDER BY created_at",
             (conv_id,),
         ).fetchall()
+        folders_row = self._db.read_conn.execute(
+            "SELECT payload FROM run_events WHERE conversation_id = ?"
+            " AND type = 'materials.imported' ORDER BY global_seq LIMIT 1",
+            (conv_id,),
+        ).fetchone()
+        folder_results = (json.loads(folders_row[0]).get("folders", [])
+                          if folders_row is not None else [])
         return {
             "conversation": self._summary(conv),
             "materials": [
                 {"original_path": m[0], "stored_name": m[1],
                  "size_bytes": m[2], "error": m[3]} for m in materials],
+            "folders": folder_results,
             "scope": self.scope_of(conv),
             "task_run_id": task_run_id,
         }
@@ -411,7 +453,9 @@ class SessionService:
 
     def _instruction_replay(self, conversation_id: str,
                             client_request_id: str) -> dict[str, Any] | None:
-        """同 client_request_id 重试：已建任务 → started；仍在队列 → queued。"""
+        """同 client_request_id 重试：已建任务 → started；仍在队列 → queued；
+        已取消 → 明确的 cancelled 结果（已取消项继续占有幂等键——重试不得
+        把用户取消的指令重新入队，外审回稿）。"""
         task = self._db.read_conn.execute(
             "SELECT id FROM task_runs WHERE conversation_id = ?"
             " AND client_request_id = ? ORDER BY created_at LIMIT 1",
@@ -424,11 +468,15 @@ class SessionService:
         if row is None:
             return None
         for item in json.loads(row["pending_queue"] or "[]"):
-            if item.get("client_request_id") == client_request_id \
-                    and item.get("state") == "queued":
+            if item.get("client_request_id") != client_request_id:
+                continue
+            if item.get("state") == "queued":
                 fsm, _ = self._fsm_sync(conversation_id)
                 return {"mode": "queued",
                         "queue_position": fsm.queued_position(item["id"]),
+                        "task_run_id": None}
+            if item.get("state") == "cancelled":
+                return {"mode": "cancelled", "queue_position": None,
                         "task_run_id": None}
         return None
 
@@ -438,18 +486,37 @@ class SessionService:
         async with await self._conv_lock(conversation_id):
             await asyncio.to_thread(self.conversation_or_404, conversation_id)
             fsm, _ = await asyncio.to_thread(self._fsm_sync, conversation_id)
-            if fsm.state != "idle" or not fsm.queue_paused:
-                raise SessionError(
-                    ErrorCode.QUEUE_PAUSED,
-                    "仅队列暂停且无任务执行时可继续"
-                    "（用户停止后队列进入暂停，等待显式继续）",
-                    detail={"state": fsm.state, "queue_paused": fsm.queue_paused,
-                            "legal_actions": legal_actions(fsm)})
             head = fsm.queued_items[0] if fsm.queued_items else None
-            if head is None:
+            verifications = await asyncio.to_thread(
+                self._pending_verifications, conversation_id)
+            approvals = await asyncio.to_thread(
+                self._unresolved_approvals, conversation_id)
+            # 与 state_snapshot 的 can_continue_queue 同一判定源（外审回稿：
+            # 快照不得宣称可继续而接口必 409）；不成立时按同一输入分解原因码
+            if not can_continue_queue(
+                    fsm, pending_verifications=len(verifications),
+                    unresolved_approvals=len(approvals)):
+                if fsm.state != "idle" or not fsm.queue_paused:
+                    raise SessionError(
+                        ErrorCode.QUEUE_PAUSED,
+                        "仅队列暂停且无任务执行时可继续"
+                        "（用户停止后队列进入暂停，等待显式继续）",
+                        detail={"state": fsm.state,
+                                "queue_paused": fsm.queue_paused,
+                                "legal_actions": legal_actions(fsm)})
+                if head is None:
+                    raise SessionError(
+                        ErrorCode.QUEUE_EMPTY, "队列为空，无可继续的指令",
+                        detail={"legal_actions": legal_actions(fsm)})
+                if verifications:
+                    raise SessionError(
+                        ErrorCode.PENDING_VERIFICATION,
+                        "存在待核验调用，处理后才能继续队列",
+                        detail={"pending_verifications": verifications})
                 raise SessionError(
-                    ErrorCode.QUEUE_EMPTY, "队列为空，无可继续的指令",
-                    detail={"legal_actions": legal_actions(fsm)})
+                    ErrorCode.APPROVAL_PENDING,
+                    "存在未决审批，处理后才能继续队列",
+                    detail={"pending_approvals": approvals})
             head_crid = None
             for item in json.loads(
                     (await asyncio.to_thread(
@@ -458,20 +525,6 @@ class SessionService:
                 if item.get("id") == head.id:
                     head_crid = item.get("client_request_id")
                     break
-            verifications = await asyncio.to_thread(
-                self._pending_verifications, conversation_id)
-            if verifications:
-                raise SessionError(
-                    ErrorCode.PENDING_VERIFICATION,
-                    "存在待核验调用，处理后才能继续队列",
-                    detail={"pending_verifications": verifications})
-            approvals = await asyncio.to_thread(
-                self._unresolved_approvals, conversation_id)
-            if approvals:
-                raise SessionError(
-                    ErrorCode.APPROVAL_PENDING,
-                    "存在未决审批，处理后才能继续队列",
-                    detail={"pending_approvals": approvals})
 
             task_id = uuid.uuid4().hex
             events: list = []
@@ -495,10 +548,11 @@ class SessionService:
                 except Exception:
                     conn.execute("ROLLBACK")
                     raise
+                # COMMIT 成功后、闭包返回前发布（写线程内）——发布顺序 = 提交顺序
+                for event in events:
+                    self._store.publish(event)
 
             await self._channel.execute(tx)
-            for event in events:
-                self._store.publish(event)
 
     def _pending_verifications(self, conversation_id: str) -> list[dict]:
         rows = self._db.read_conn.execute(
@@ -557,6 +611,10 @@ class SessionService:
     def state_snapshot(self, conversation_id: str) -> dict[str, Any]:
         self.conversation_or_404(conversation_id)
         fsm, head = self._fsm_sync(conversation_id)
+        # can_continue_queue 与 POST queue/continue 同一判定源（外审回稿）：
+        # 待核验/未决审批是接口的阻断条件，能力字段必须同样纳入
+        verifications = self._pending_verifications(conversation_id)
+        approvals = self._unresolved_approvals(conversation_id)
         return {
             "state": fsm.state,
             "waiting_approvals": fsm.waiting_approvals,
@@ -567,7 +625,9 @@ class SessionService:
             "can_send": can_send(fsm),
             "can_queue": can_queue(fsm),
             "can_cancel": can_cancel(fsm),
-            "can_continue_queue": can_continue_queue(fsm),
+            "can_continue_queue": can_continue_queue(
+                fsm, pending_verifications=len(verifications),
+                unresolved_approvals=len(approvals)),
             "current_task_run_id": fsm.current_task_run_id,
         }
 
