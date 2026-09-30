@@ -7,6 +7,7 @@ import './styles.css'
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ConfigProvider
+      button={{ autoInsertSpace: false }}
       theme={{
         token: {
           colorPrimary: '#315EB5',

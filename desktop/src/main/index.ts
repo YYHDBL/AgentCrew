@@ -89,6 +89,11 @@ app.whenReady().then(() => {
   const fromWindow = (event: Electron.IpcMainInvokeEvent): boolean => !!window && !window.isDestroyed() && event.sender.id === window.webContents.id && !event.sender.isDestroyed()
   ipcMain.handle('backend-port', (event) => { if (!fromWindow(event)) throw new Error('无效的调用来源'); return sidecar.getBackendPort() })
   ipcMain.handle('backend-token', (event) => { if (!fromWindow(event)) throw new Error('无效的调用来源'); return sidecar.getToken() })
+  ipcMain.handle('select-materials', async (event, kind: unknown) => {
+    if (!fromWindow(event) || (kind !== 'files' && kind !== 'folders')) throw new Error('材料选择参数无效')
+    const result = await dialog.showOpenDialog(window!, { properties: kind === 'files' ? ['openFile', 'multiSelections'] : ['openDirectory', 'multiSelections'] })
+    return result.canceled ? [] : result.filePaths
+  })
   ipcMain.handle('notify', (event, title: unknown, body: unknown) => {
     if (!fromWindow(event) || typeof title !== 'string' || typeof body !== 'string' || title.length > 120 || body.length > 1000) throw new Error('通知参数无效')
     if (!Notification.isSupported()) return false

@@ -1,0 +1,302 @@
+[
+  {
+    "event": "refresh-restored",
+    "conversation": "0f9950a619ef4e1f8d58caf25f3efd24",
+    "state": {
+      "state": "running",
+      "waiting_approvals": 1,
+      "waiting_questions": 0,
+      "queue_paused": false,
+      "at_global_seq": 8,
+      "queue": [],
+      "can_send": false,
+      "can_queue": false,
+      "can_cancel": true,
+      "can_continue_queue": false,
+      "current_task_run_id": "19959bf974f54612a90704c6a7fdd68f"
+    }
+  },
+  {
+    "event": "typing-completed",
+    "initialLength": 42,
+    "finalLength": 272,
+    "reply": "任务已全部完成 ✅ 以下是三个文件的名称与内容：\n\n| 文件名称 | 文件内容 |\n|---|---|\n| `c11-first.txt` | C11 first |\n| `c11-second.txt` | C11 second |\n| `c11-third.txt` | C11 third |\n\n执行过程说明：\n1. **依次创建**：按您的要求，三次 write_file 调用严格按顺序执行（每次等上一次完成后才进行下一次），三个文件均已成功写入当前工作目录。\n2. **逐一读取验证**：三个文件读取结果与写入内容完全一致，无异常。"
+  },
+  {
+    "event": "write-approval-completed",
+    "conversation": "0f9950a619ef4e1f8d58caf25f3efd24",
+    "events": [
+      {
+        "global_seq": 1,
+        "type": "run.queued"
+      },
+      {
+        "global_seq": 2,
+        "type": "run.started"
+      },
+      {
+        "global_seq": 3,
+        "type": "step.started"
+      },
+      {
+        "global_seq": 4,
+        "type": "llm.request_started"
+      },
+      {
+        "global_seq": 5,
+        "type": "llm.request_done"
+      },
+      {
+        "global_seq": 6,
+        "type": "step.completed"
+      },
+      {
+        "global_seq": 7,
+        "type": "tool.prepared"
+      },
+      {
+        "global_seq": 8,
+        "type": "permission.requested"
+      },
+      {
+        "global_seq": 9,
+        "type": "permission.resolved"
+      },
+      {
+        "global_seq": 10,
+        "type": "tool.dispatched"
+      },
+      {
+        "global_seq": 11,
+        "type": "artifact.created"
+      },
+      {
+        "global_seq": 12,
+        "type": "artifact.ready"
+      },
+      {
+        "global_seq": 13,
+        "type": "tool.completed"
+      },
+      {
+        "global_seq": 14,
+        "type": "step.started"
+      },
+      {
+        "global_seq": 15,
+        "type": "llm.request_started"
+      },
+      {
+        "global_seq": 16,
+        "type": "llm.request_done"
+      },
+      {
+        "global_seq": 17,
+        "type": "step.completed"
+      },
+      {
+        "global_seq": 18,
+        "type": "tool.prepared"
+      },
+      {
+        "global_seq": 19,
+        "type": "permission.requested"
+      },
+      {
+        "global_seq": 20,
+        "type": "permission.resolved"
+      },
+      {
+        "global_seq": 21,
+        "type": "tool.dispatched"
+      },
+      {
+        "global_seq": 22,
+        "type": "artifact.created"
+      },
+      {
+        "global_seq": 23,
+        "type": "artifact.ready"
+      },
+      {
+        "global_seq": 24,
+        "type": "tool.completed"
+      },
+      {
+        "global_seq": 25,
+        "type": "step.started"
+      },
+      {
+        "global_seq": 26,
+        "type": "llm.request_started"
+      },
+      {
+        "global_seq": 27,
+        "type": "llm.request_done"
+      },
+      {
+        "global_seq": 28,
+        "type": "step.completed"
+      },
+      {
+        "global_seq": 29,
+        "type": "tool.prepared"
+      },
+      {
+        "global_seq": 30,
+        "type": "tool.dispatched"
+      },
+      {
+        "global_seq": 31,
+        "type": "artifact.created"
+      },
+      {
+        "global_seq": 32,
+        "type": "artifact.ready"
+      },
+      {
+        "global_seq": 33,
+        "type": "tool.completed"
+      },
+      {
+        "global_seq": 34,
+        "type": "step.started"
+      },
+      {
+        "global_seq": 35,
+        "type": "llm.request_started"
+      },
+      {
+        "global_seq": 36,
+        "type": "llm.request_done"
+      },
+      {
+        "global_seq": 37,
+        "type": "step.completed"
+      },
+      {
+        "global_seq": 38,
+        "type": "tool.prepared"
+      },
+      {
+        "global_seq": 39,
+        "type": "tool.prepared"
+      },
+      {
+        "global_seq": 40,
+        "type": "tool.prepared"
+      },
+      {
+        "global_seq": 41,
+        "type": "tool.dispatched"
+      },
+      {
+        "global_seq": 42,
+        "type": "tool.dispatched"
+      },
+      {
+        "global_seq": 43,
+        "type": "tool.dispatched"
+      },
+      {
+        "global_seq": 44,
+        "type": "tool.completed"
+      },
+      {
+        "global_seq": 45,
+        "type": "tool.completed"
+      },
+      {
+        "global_seq": 46,
+        "type": "tool.completed"
+      },
+      {
+        "global_seq": 47,
+        "type": "step.started"
+      },
+      {
+        "global_seq": 48,
+        "type": "llm.request_started"
+      },
+      {
+        "global_seq": 49,
+        "type": "llm.request_done"
+      },
+      {
+        "global_seq": 50,
+        "type": "step.completed"
+      },
+      {
+        "global_seq": 51,
+        "type": "run.completed"
+      }
+    ],
+    "files": [
+      "c11-first.txt",
+      "c11-second.txt",
+      "c11-third.txt"
+    ]
+  },
+  {
+    "event": "completed-history-restored",
+    "characters": 272
+  },
+  {
+    "event": "question-answered",
+    "conversation": "a203661491b04066b6fd161a59205d17"
+  },
+  {
+    "event": "queue-chain-completed",
+    "conversation": "ed231f71208f4f1dbcbf45b61f0f33b7",
+    "state": {
+      "state": "idle",
+      "waiting_approvals": 0,
+      "waiting_questions": 0,
+      "queue_paused": false,
+      "at_global_seq": 98,
+      "queue": [],
+      "can_send": true,
+      "can_queue": false,
+      "can_cancel": false,
+      "can_continue_queue": false,
+      "current_task_run_id": null
+    }
+  },
+  {
+    "event": "sidecar-reconnected",
+    "killedPid": 9274,
+    "oldPort": 53452,
+    "newPort": 54277
+  },
+  {
+    "event": "materials-and-narrow-passed",
+    "materials": [
+      {
+        "original_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/package.json",
+        "stored_name": "package.json",
+        "size_bytes": 903,
+        "error": null
+      },
+      {
+        "original_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c11-1790782059182/不存在的文件.txt",
+        "stored_name": "",
+        "size_bytes": null,
+        "error": "文件不存在：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c11-1790782059182/不存在的文件.txt"
+      }
+    ],
+    "scope": {
+      "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c11-1790782059182/data/workspaces/default",
+      "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c11-1790782059182/data/conversations/1e6aa904c453494eb6122e24b59435f6/materials",
+      "folders": [
+        {
+          "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c11-1790782059182",
+          "access": "read_write"
+        }
+      ]
+    }
+  },
+  {
+    "event": "all-checks-passed",
+    "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c11-1790782059182"
+  }
+]

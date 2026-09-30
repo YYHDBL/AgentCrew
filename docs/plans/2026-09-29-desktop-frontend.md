@@ -1,14 +1,14 @@
 # AgentCrew 桌面前端实施计划
 
-日期：2026-09-29。状态：计划已建立，业务开发尚未开始。基准：主仓库 `c1aa821` 的文档，以及 `desktop-shell` 分支工作树中的 `desktop/` 实现。
+建立日期：2026-09-29；更新日期：2026-09-30。状态：C10、C11 已通过真机验收，C12 未开始。当前基准为 `desktop-shell` 合并的 `main@8180043`；C11 详细实现和契约核对见 [C11 计划](./2026-09-30-c11-chat.md)。
 
 **目标**：让用户在 macOS 上创建真实任务、查看执行、处理审批与提问、控制队列、打开产物和恢复中断，并按产品范围完成其余页面与安装包。
 
 **架构**：Electron main 管理窗口、原生能力和 sidecar 生命周期；preload 暴露按用途限定的接口；React 通过带鉴权的本机 HTTP/SSE 获取真实业务状态。服务端决定权限与合法操作，界面根据快照和事件更新展示。
 
-**技术栈**：沿用 Electron、React 18、Vite、TypeScript、Ant Design 5 和 npm。Zustand、TanStack Query、`@microsoft/fetch-event-source` 按承担实际功能的任务卡加入，所有依赖与锁文件保留在 `desktop/`。
+**技术栈**：沿用 Electron、React 18、Vite、TypeScript、Ant Design 5 和 npm。C11 使用 React state 与 `@microsoft/fetch-event-source`，真实 Electron 验收使用 `playwright-core`；当前状态规模由现有组件管理，后续共享状态需求出现时再评估状态管理依赖。所有依赖与锁文件保留在 `desktop/`。
 
-**执行约定**：一次完成一张可验收的卡，代码、检查记录与截图一起交付。本文规划后续实施，本次不执行业务开发或安装依赖。
+**执行约定**：一次完成一张可验收的卡，代码、检查记录与截图一起交付。C11 完成后提交并推送，停止等待所有者指令。
 
 ## 1. 范围、依据与当前状态
 
@@ -18,7 +18,7 @@
 
 当前 `desktop/` 已有 FE00 的 React 工作台、三处收起与展开、窄窗口、键盘焦点和空白状态，骨架截图见 [宽窗口](../../desktop/evidence/workbench-wide.png) 和 [窄窗口](../../desktop/evidence/workbench-narrow.png)。FE00 已在 `desktop-shell` 分支提交；C10 的桌面进程和真机验收记录见 [M0-C10](../acceptance/M0-C10.md)。
 
-当前 main 负责菜单栏驻留、sidecar 监管、单实例与退出清理，preload 提供窄接口，React 显示真实后端连接状态。任务数据、业务 HTTP/SSE、C11 与 C12 仍按后续卡实现。
+当前 main 负责菜单栏驻留、sidecar 监管、单实例与退出清理，preload 提供窄接口。React 已接入真实会话、HTTP/SSE、聊天、审批、提问与队列；C11 证据见 [M0-C11](../acceptance/M0-C11.md)。C9 核验及恢复执行界面保留在 FE08 与 C12 范围。
 
 产品全部范围保留。M0 完成工作台真实任务链路；记忆、员工管理、治理、运行中心、自动化与安装包依照后端里程碑实施。美化按用户决定放在功能验收之后；可读性、窄窗口和键盘可操作性是每张卡的完成条件。
 
@@ -26,7 +26,7 @@
 
 | 条件 | 可以验证的内容 | 依赖的真实能力 |
 |---|---|---|
-| 当前已交付 C1–C6 与 C10 | Electron 启动 sidecar、就绪、健康检查、监管重启、退出与异常提示；接口核对与纯界面交互 | 真实 Python 入口、数据目录、就绪标记、健康接口与退出行为；业务提交保持不可用 |
+| 当前已交付 C1–C8 与 C10 | Electron 启动与监管、真实任务、材料、审批、提问、队列及会话重连 | 真实 Python 入口、持久化状态、模型配置与执行循环；C11 已完成上述对接 |
 | C3、C7 接口可运行 | 带鉴权查询、任务创建、材料导入、队列和快照订阅 | 真实数据库与服务；C7 尚无 runner 时，任务保持 queued 是实际状态 |
 | C6、C8 执行链可运行 | 实时执行、四种审批、提问回答、停止与排队接续 | 真实模型、工具和事件；前端 FE03–FE07 已满足各自依赖 |
 | C9 恢复可运行 | 产物核验、中断恢复、刷新及重连的完整验收 | 已持久化的真实任务、调用账本与新尝试 |
@@ -39,12 +39,12 @@
 
 | 编号 | 当前缺少的明确约定 | 需要的交付与受影响任务 |
 |---|---|---|
-| K01 | `events.md` 列出事件名称，但没有完整可校验的 payload；执行事件 JSON 分页也只有文字描述 | 给出事件判别联合、步骤/工具/尝试关联、分页响应与错误定义。FE05、FE06、FE08、FE11 依赖 |
-| K02 | C11 要求流式文本，公共契约没有定义文本增量帧、消息身份及重放处理 | 明确真实 delta 的传输、顺序、所属消息和最终文本替换规则；不能用完整回复加打字动画代替真实流式输出。FE05 依赖 |
-| K03 | `at_global_seq` 目前属于 FSM 快照，消息、审批、产物和步骤分别查询 | 明确各投影如何与游标配对、重连时如何避免查询与事件交错导致遗漏或重复。FSM 水位不能直接用来跳过尚未恢复的聊天或工具历史。FE05、FE10 依赖 |
+| K01 | `events.md` 列出事件名称，但没有完整可校验的 payload；详细字段分散在后端投影代码中 | 给出事件判别联合与步骤/工具/尝试关联。C11 按真实字段接入，FE08 与 FE11 扩展时继续核对 |
+| K02 | 当前 C8 会话流没有文本 delta；公共契约缺少增量帧、消息身份及重放规则 | C11 按 D2 使用 `llm.request_done.text` 全文逐字呈现。将来公开 delta 时补充所属消息和最终文本替换规则；delta 保持只在内存传输 |
+| K03 | `at_global_seq` 属于 FSM 快照；声明的 messages 查询尚未注册，完整消息与过程快照缺少统一接口 | C11 先读 state，再重放截至水位的真实会话历史，之后排他续播。后端应明确完整快照或会话历史分页及其水位；FE08 与 FE11 继续核对 |
 | K04 | 发送前缺工作空间与实际可用员工查询、材料范围预检；`folders` 只有路径，没有读写选择字段 | 服务端提供默认对象及范围、预检错误和读写授权语义。M0 默认员工也必须来自真实配置。FE04 依赖 |
-| K05 | Approval 缺关键参数与历史操作者；提交只有 decision，界面所展示内容与服务端失效判定的关联需明确 | 明确不可变调用身份、参数、四决定范围、历史记录和 `APPROVAL_STALE` 语义。核验记录也需目标、尝试、操作者和时间。FE06、FE08 依赖 |
-| K06 | `/api/health` 只有 status；诊断状态、能力可用性、sidecar 地址变更和桌面设置接口未形成完整约定 | 后端明确服务模式与实际可用能力；前端定义 main/preload 的限定接口及状态通知，凭证不写日志或浏览器持久存储。FE03、FE09 依赖 |
+| K05 | 审批契约已提供 input_hash、风险与持续范围；完整调用参数和历史操作者仍缺统一查询约定 | C11 从 tool.prepared 取得参数，决定提交 decision 与 input_hash，过期错误后重新恢复真实状态。FE08 的核验记录仍需目标、尝试、操作者和时间 |
+| K06 | health 与 diagnostics 已实现；桌面设置、运行影响清单与诊断导出仍缺完整约定 | C10 已验证健康、诊断与监管，C11 经 preload 重新取得端口和凭证。FE09 继续等待设置与运行影响接口；凭证不写日志或浏览器持久存储 |
 | K07 | 产物列表有 missing 探测，但打开前实检及原生打开错误没有完整调用约定 | 明确依据 artifact 身份校验并打开文件的流程，处理路径失效、范围与符号链接；不暴露任意路径执行能力。FE08 依赖 |
 | K08 | `ConversationSummary.state_badge` 尚未表达待核验与队列暂停；多数响应属性未声明 required | 明确必需字段、空值和任务列表状态来源。缺失合法动作字段时不能默认为可发送。FE04–FE08 依赖 |
 | K09 | 近期退出影响清单、诊断导出及后续页面 API 尚不完整 | 按 FE09、FE11–FE14 分别补齐；运行中任务、审批与 24 小时内定时任务必须来自真实记录。未满足依赖的页面入口保持隐藏 |
@@ -53,7 +53,7 @@
 
 ## 4. 实现与依赖约定
 
-`App.tsx` 保留页面组合，业务出现时按任务创建 `workbench/`、`api/`、`state/` 等目录，不提前生成空模块。HTTP 查询和写入由 TanStack Query 管理；需要跨组件共享的事件投影由 Zustand 管理；草稿、展开和选中状态优先使用 React 本地状态。同一业务对象不保留多份可独立修改的真值。
+`App.tsx` 保留页面组合，`session.ts` 管理鉴权 HTTP、会话恢复与订阅，`Conversation.tsx` 展示聊天和过程卡。HTTP、事件、草稿、展开和选中状态由 React 管理，同一业务对象不保留多份可独立修改的真值。后续多页面范围根据实际共享需求选择依赖和目录。
 
 M0 类型按现有 C11 任务范围集中维护为 OpenAPI 的 TypeScript 镜像，契约错误必须显式报告；FE11 扩展多页面时执行 desktop-shell 中的 OpenAPI 类型生成要求。生成器使用成熟依赖，不编写 YAML/OpenAPI 解析器。SSE 使用指定库，保留正确的响应状态、控制帧、游标和取消行为。
 
@@ -73,7 +73,7 @@ main/preload 的 IPC 按用途提供并验证调用来源及参数。渲染层�
 
 ### FE01 · 接口与事件对接清单
 
-**依赖**：现有文档；真实接口验证等待对应 C 卡。**状态**：待开始。
+**依赖**：现有文档与 C1–C8。**状态**：C11 范围已核对并真实运行验证；其余契约缺口按本计划和 C11 计划记录。
 
 **交付位置**：本计划 K01–K09 的落实记录；`docs/acceptance/FE01.md`。后端维护者更新 `docs/contracts/openapi.yaml` 与 `events.md`，前端不复制一份独立业务协议。
 
@@ -83,7 +83,7 @@ main/preload 的 IPC 按用途提供并验证调用来源及参数。渲染层�
 
 ### FE02 · 工作台输入与纯界面交互
 
-**依赖**：FE00、F001/UI 规格；可以在后端实现前开发。**状态**：待开始。
+**依赖**：FE00、F001/UI 规格。**状态**：C11 输入、原生选择和草稿范围已完成，键盘与窄窗口检查见 M0-C11。
 
 **主要文件**：修改 `desktop/src/renderer/src/App.tsx`、`styles.css`；新增 `desktop/src/renderer/src/workbench/TaskComposer.tsx`，材料交互出现时增加 `MaterialSelection.tsx`；修改 main/preload 并新增 `desktop/src/shared/desktop-api.ts`，仅提供真实系统文件/文件夹选择接口。
 
@@ -103,7 +103,7 @@ main/preload 的 IPC 按用途提供并验证调用来源及参数。渲染层�
 
 ### FE04 · HTTP、真实任务与材料
 
-**依赖**：FE01/K04/K08、FE02、FE03、C3 鉴权、C7 任务和材料接口。**状态**：等待后端。
+**依赖**：FE01/K04/K08、FE02、FE03、C3 鉴权、C7 任务和材料接口。**状态**：C11 会话创建、列表、材料结果及范围已通过；更完整的预检与员工选择等待接口。
 
 **主要文件**：新增 `desktop/src/renderer/src/api/types.ts`、`client.ts`、`conversations.ts`；新增 `workbench/TaskList.tsx`；修改 `TaskComposer.tsx`、`App.tsx`、`main.tsx` 和 `desktop/package.json`。
 
@@ -113,17 +113,17 @@ main/preload 的 IPC 按用途提供并验证调用来源及参数。渲染层�
 
 ### FE05 · 事件流、任务过程与刷新恢复（C11 部分）
 
-**依赖**：FE01/K01/K02/K03、FE04、C3、C7；执行全链验收需要 C8。**状态**：等待事件协议与服务。
+**依赖**：FE01/K01/K02/K03、FE04、C3、C7、C8。**状态**：C11 会话订阅、过程、刷新及重连已通过，公共事件 schema 和完整快照缺口已记录。
 
 **主要文件**：新增 `desktop/src/renderer/src/api/conversation-stream.ts`、`state/conversation-store.ts`、`state/apply-event.ts`、`workbench/ConversationView.tsx`、`workbench/RunDetails.tsx`；修改 package 与页面组合。
 
-**执行步骤**：按确认的快照协议装载历史和状态，再订阅会话流；正确区分全局 `global_seq` 与任务内 `seq`，游标排他；应用事件后推进本地游标，拒绝重复应用；实现 ping、shutdown、resync、30 秒上限退避和卸载取消；使用真实 delta 展示文本，保存事件用于步骤、工具与最终内容。切换任务终止旧订阅，避免状态串入其他任务。
+**执行步骤**：读取 state 后恢复截至 `at_global_seq` 的历史，再从该游标续播；区分全局 `global_seq` 与任务内 `seq`，游标排他；推进游标并跳过重复事件；处理 ping、shutdown、resync、30 秒上限退避和卸载取消；当前 C8 使用最终文本逐字呈现，保存事件用于步骤与工具卡。切换任务终止旧订阅。
 
 **失败与验收**：全局游标跨任务允许存在数字间隔，不能把非连续数字视为丢包。连接断开保留最后已知内容并标记连接状态；401 不无限重试，503 按错误码区分限流与诊断。真实任务运行时刷新、切换、断流、重启后无重复消息或步骤遗漏；右侧收起仍能看到关键状态。用真实历史验证恢复顺序，纯 reducer 检查使用保存的真实事件；未约定的 payload 明确报契约错误。
 
 ### FE06 · 审批与员工提问
 
-**依赖**：FE01/K05、FE05、C6、C8。**状态**：等待后端执行能力。
+**依赖**：FE01/K05、FE05、C6、C8。**状态**：C11 四种审批按钮与提问回答已实现；允许、总是允许及真实问答已通过，事件驱动关闭操作卡已验证。
 
 **主要文件**：新增 `desktop/src/renderer/src/workbench/ApprovalCard.tsx`、`QuestionCard.tsx`、`api/approvals.ts`、`api/questions.ts`；修改事件投影与正文。
 
@@ -133,7 +133,7 @@ main/preload 的 IPC 按用途提供并验证调用来源及参数。渲染层�
 
 ### FE07 · 队列、停止与继续
 
-**依赖**：FE05、FE06、C7、C8，以及 C9 提供的 cancel API。**状态**：等待真实停止接口与运行循环。
+**依赖**：FE05、FE06、C7、C8 提供的 cancel API 与运行循环。**状态**：C11 排队、停止、暂停、继续和取消剩余完整链已通过。
 
 **主要文件**：新增 `desktop/src/renderer/src/workbench/QueuePanel.tsx`、`api/queue.ts`；修改输入区、状态展示与事件投影。
 
@@ -163,13 +163,13 @@ main/preload 的 IPC 按用途提供并验证调用来源及参数。渲染层�
 
 ### FE10 · M0 贯穿验收与交付（C11/C12）
 
-**依赖**：FE01–FE09 的 M0 范围和后端 C1–C9。**状态**：等待各卡完成。
+**依赖**：C11 范围使用 C1–C8；C12 需要 FE01–FE09 的 M0 范围与 C9。**状态**：C11 已通过，C12 未开始。
 
-**主要文件**：新增 `desktop/tests/workbench.e2e.ts` 与 `desktop/playwright.config.ts`；测试命令加入 `desktop/package.json`；验收记录 `docs/acceptance/FE10.md`，截图存 `docs/acceptance/assets/FE10/`。与后端 C12 共用真实任务及结果证据，不重复声称后端验收完成。
+**主要文件**：C11 使用 `desktop/tests/c11-real.mjs` 与 `c11-native-evidence.mjs`；验收记录为 `docs/acceptance/M0-C11.md`，截图存 `docs/acceptance/assets/C11/`。C12 保留独立的贯穿验收记录。
 
 **执行步骤**：构建后用项目 Electron 二进制启动完整应用；执行 F001–F006 的真实任务链；检查创建、材料、事件、审批、提问、排队、停止、产物、异常退出、核验和恢复；在宽窗口、960×900、760×600 下进行受影响界面的键盘与布局检查；记录真实命令、结果和失败项。
 
-**验收命令**：在 `desktop/` 执行现有 `npm run typecheck`、`npm run build`，以及本卡新增的 `npm run test:e2e`。测试脚本应自行报告缺失的真实后端或凭证，不切换为 mock。测试使用独立数据目录与真实临时文件；真实模型调用产生的费用在运行前说明。纯 reducer 检查按 FE05 范围执行，不用其通过结果代替完整任务验收。
+**验收命令**：在 `desktop/` 执行 `npm run typecheck`、`npm run build` 和 `node tests/c11-real.mjs`。脚本使用独立数据目录、真实 Electron、后端与 GLM；缺少配置直接报告错误。原生材料选择的真实结果由 `c11-native-evidence.mjs` 读取并保存。
 
 **完成条件**：C11 的流式、审批、输入状态、刷新与重连全部实测；C12 的实际文件结果、排队记录、审计和恢复证据可核对。遗留失败明确保持未完成。截图、日志与验收记录不得包含 token、API key 或无关个人文件内容。
 

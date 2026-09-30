@@ -36,7 +36,9 @@ export class Sidecar {
   private stopping = false
   private restarts: number[] = []
   private timer: NodeJS.Timeout | null = null
-  readonly dataDir = join(app.getPath('userData'), 'data')
+  readonly dataDir = !app.isPackaged && !app.commandLine.hasSwitch('user-data-dir')
+    ? resolve(app.getAppPath(), '../backend/data')
+    : join(app.getPath('userData'), 'data')
   readonly logPath = join(this.dataDir, 'logs', 'sidecar.log')
   readonly launchLogPath = launchLogPath()
 

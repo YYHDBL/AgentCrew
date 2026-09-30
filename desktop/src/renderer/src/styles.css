@@ -79,6 +79,25 @@ button:focus-visible, textarea:focus-visible {
 .composer-actions { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .composer-actions > div { display: flex; gap: 8px; }
 .composer .ant-btn { font-size: 13px; }
+.recent-tasks, .details-scroll { overflow: auto; padding: 12px; }
+.recent-tasks button { display: block; width: 100%; text-align: left; padding: 12px; background: white; border: 1px solid #dce3eb; border-radius: 8px; margin-bottom: 8px; overflow-wrap: anywhere; cursor: pointer; }
+.recent-tasks button[aria-current] { border-color: #315eb5; background: #eef3fa; }
+.recent-tasks small { display: block; margin-top: 6px; color: #5b6a7d; }
+.messages { display: flex; flex-direction: column; gap: 16px; padding-top: 24px; }
+.message { padding: 16px; border-radius: 12px; background: #f6f8fb; }
+.message.user { background: #eef3fa; }
+.message-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; margin: 8px 0 0; }
+.process-card { padding: 12px; border: 1px solid #dce3eb; border-radius: 8px; background: white; margin-bottom: 12px; overflow-wrap: anywhere; }
+.process-card h3 { font-size: 14px; margin: 0 0 10px; }
+.process-card p, .process-card pre { font-size: 12px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.process-card textarea { width: 100%; min-height: 72px; }
+.approval { border-color: #b5751e; }
+.file-path { display: block; word-break: break-all; }
+.card-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.queue { max-height: 160px; overflow: auto; padding: 8px; background: #f6f8fb; margin-bottom: 8px; }
+.queue p { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.scope-line { max-height: 130px; overflow: auto; overflow-wrap: anywhere; }
+.composer small { color: #5b6a7d; margin-bottom: 8px; }
 
 @media (max-width: 979px) {
   .navigation { flex-basis: 66px; padding: 24px 6px 12px; align-items: center; }
