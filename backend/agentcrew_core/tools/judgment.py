@@ -71,7 +71,8 @@ def path_is_protected(path: Path, protected: list[Path]) -> bool:
 
 
 def build_protected_paths(data_dir: Path, home: Path | None = None) -> list[Path]:
-    """受保护路径清单（v1.7）：平台内部数据 + 持久化提示词载体 + 凭据目录。"""
+    """受保护路径清单（v1.7 + 外审回稿扩充）：平台内部数据 + 持久化提示词
+    载体 + 常见凭据位置（读写双向硬禁）。"""
     home = home or Path.home()
     candidates = [
         data_dir / "agentcrew.db",
@@ -84,6 +85,12 @@ def build_protected_paths(data_dir: Path, home: Path | None = None) -> list[Path
         data_dir / "soul.md",
         home / ".ssh",
         home / ".aws",
+        home / ".gnupg",
+        home / ".kube",
+        home / ".netrc",
+        home / ".git-credentials",
+        home / ".docker" / "config.json",
+        home / ".config" / "gcloud",
     ]
     # MEMORY.md（当前及未来工作区）——目录可能不存在，按字面列入
     workspaces = data_dir / "workspaces"

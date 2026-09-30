@@ -53,6 +53,9 @@ AskResolver = Callable[[str], Awaitable[str | None]]
 class Tool:
     metadata: ToolMetadata
     execute: ToolExecute
+    # 可选：随 tool.prepared 载荷附加的工具特有字段（如 write_file 的内容
+    # sha256——v1.7 verifiable 类核验依据）；签名为 (input) -> dict
+    prepared_extras: Callable[[dict], dict] | None = None
 
 
 @dataclass

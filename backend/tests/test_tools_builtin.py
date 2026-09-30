@@ -3,6 +3,7 @@
 import asyncio
 import hashlib
 import os
+import socket
 import subprocess
 from pathlib import Path
 
@@ -247,3 +248,113 @@ def test_ask_user_cancel_means_no_answer(scheduler, env):
     _, result = run(_invoke(scheduler, "ask_user", {"question": "在吗"}, env))
     assert result.ok and result.details["cancelled"] is True
     assert "取消" in result.output
+
+
+# ── 外审回稿回归 ──────────────────────────────────────────────────
+
+def test_write_file_prepared_carries_content_sha256(scheduler, env, tmp_path):
+    import hashlib as _h
+    content = "核对内容" * 10
+    inv, result = run(_invoke(scheduler, "write_file",
+                              {"path": str(tmp_path / "ws" / "f.txt"),
+                               "content": content}, env))
+    assert result.ok
+    prepared = next(p for t, p in env.events
+                    if t == "tool.prepared" and p["call_id"] == inv.call_id)
+    assert prepared["content_sha256"] == _h.sha256(content.encode()).hexdigest()
+
+
+def test_bash_protected_path_in_scope_denied_read_and_write(tmp_path):
+    """外审致命项回归：受保护文件即使落在授权 scope 内，bash 也读写双向禁。"""
+    scope = tmp_path  # 整个 tmp 都是 scope，data/ 在其中
+    (scope / "data").mkdir(exist_ok=True)
+    home = tmp_path / "home"
+    (home / ".ssh").mkdir(parents=True)
+    (scope / "data" / "agentcrew.db").write_text("DB")
+    ctx = WorkContext(scope=[scope],
+                      protected=build_protected_paths(scope / "data", home),
+                      artifacts_dir=tmp_path / "art", task_run_id="run-t")
+    scheduler = ToolScheduler(build_default_registry())
+    db = scope / "data" / "agentcrew.db"
+    _, r_write = run(_invoke(scheduler, "bash",
+                             {"command": f"echo hacked > {db}"}, ctx))
+    _, r_read = run(_invoke(scheduler, "bash", {"command": f"cat {db}"}, ctx))
+    assert not r_write.ok and "Operation not permitted" in r_write.details.get("stderr", "")
+    assert not r_read.ok
+    assert db.read_text() == "DB", "受保护文件内容不得被改写"
+    # 同 scope 的普通文件写入不受影响（嵌套 deny 只压保护路径）
+    _, r_ok = run(_invoke(scheduler, "bash",
+                          {"command": f"echo fine > {scope / 'normal.txt'}"}, ctx))
+    assert r_ok.ok and (scope / "normal.txt").exists()
+
+
+def test_bash_outer_cancellation_kills_process_group(scheduler, env):
+    """外审致命项回归：调度层取消（wait_for 更早到期）也不留孤儿进程。"""
+
+    async def scenario():
+        task = asyncio.ensure_future(
+            _invoke(scheduler, "bash",
+                    {"command": "sleep 30", "timeout_ms": 30_000}, env))
+        await asyncio.sleep(0.5)
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
+
+    run(scenario())
+    leftovers = subprocess.run(
+        ["ps", "-eo", "command"], capture_output=True, text=True).stdout
+    assert not [l for l in leftovers.splitlines() if l.strip() == "sleep 30"], \
+        "外层取消后进程组必须被收割"
+
+
+def test_bash_seatbelt_blocks_network_with_local_control(scheduler, env):
+    """内核级网络拒绝的对照证明：本地起真实监听——沙盒外连接成功，
+    沙盒内同一地址被拒（排除 DNS/外网不可用等干扰解释）。"""
+    server = socket.socket()
+    server.bind(("127.0.0.1", 0))
+    server.listen(1)
+    port = server.getsockname()[1]
+    try:
+        control = socket.create_connection(("127.0.0.1", port), timeout=2)
+        control.close()  # 沙盒外：真实连接成功（对照成立）
+        _, result = run(_invoke(
+            scheduler, "bash",
+            {"command": f"curl -s -m 3 -o /dev/null http://127.0.0.1:{port}/",
+             "timeout_ms": 8_000}, env,
+        ))
+        assert not result.ok, "沙盒内连接本地端口应被内核拒绝"
+        assert result.details["exit_code"] != 0
+    finally:
+        server.close()
+
+
+def test_externalization_unavailable_errors(scheduler, env):
+    """artifacts_dir 未配置且输出超 32KB：明确报错，绝不内联塞给上下文。"""
+    env.artifacts_dir = None
+    _, result = run(_invoke(scheduler, "bash", {"command": "seq 1 20000"}, env))
+    assert not result.ok and result.error == "EXTERNALIZATION_UNAVAILABLE"
+    assert len(result.output.encode()) <= 32 * 1024 + 200  # 无超限内容内联
+
+
+def test_http_prepared_event_redacts_credentials(scheduler, env):
+    env.allowed_hosts = ["example.com"]
+    inv, _ = run(_invoke(scheduler, "http_request", {
+        "url": "https://example.com",
+        "headers": {"Authorization": "Bearer top-secret"}}, env))
+    prepared = next(p for t, p in env.events
+                    if t == "tool.prepared" and p["call_id"] == inv.call_id)
+    assert prepared["input"]["headers"]["Authorization"] == "***"
+    assert "top-secret" not in str(env.events), "凭据不得进入任何事件载荷"
+    assert prepared["input_hash"], "完整参数哈希仍保留（审批绑定）"
+
+
+def test_read_file_lazy_paging_on_large_file(scheduler, env, tmp_path):
+    target = tmp_path / "ws" / "big.log"
+    target.write_text("\n".join(f"L{i}" for i in range(1, 5001)))
+    _, result = run(_invoke(scheduler, "read_file",
+                            {"path": str(target), "offset": 4000, "limit": 3}, env))
+    assert result.ok
+    assert result.output.splitlines() == ["L4000", "L4001", "L4002"]
+    assert result.details["total_lines"] == 5000

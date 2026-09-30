@@ -1,8 +1,16 @@
 """工具注册表与调度器（harness-session §6.2）。
 
-调度规则：destructive（或动态判定的非只读 bash）串行；read_only /
-concurrent_safe 并行；并发上限 4。执行前后经 ctx.emit 发 tool.* 事件
-（载荷契约与 C2 projections 对齐；C8 接 EventStore 落库）。
+调度规则（与设计一致）：concurrent_safe（或只读）可并行，其余串行；
+并发上限 4。
+
+外审回稿修复：
+- call_id 由调度器校验（[A-Za-z0-9_-]{1,64}）——C8 起 call_id 来自模型返回的
+  tool_use id，等于外部可控输入，绝不允许携带路径成分；
+- tool.prepared/dispatched 的持久化失败**阻断执行**（fail-closed：没有
+  prepared 记录的副作用在恢复流程里不可见）；completed/failed 记录失败
+  不撤销已发生的副作用，标记 record_failed 交上层（C9 待核验）；
+- 事件中的 input 对凭据类字段脱敏（http_request 的 Authorization/Cookie 等），
+  input_hash 仍按完整参数计算（审批绑定不可变内容）。
 """
 
 from __future__ import annotations
@@ -11,12 +19,20 @@ import asyncio
 import hashlib
 import json
 import logging
+import re
 import uuid
 
 from .judgment import bash_readonly
 from .metadata import Tool, ToolInvocation, ToolResult, WorkContext
 
 _log = logging.getLogger("agentcrew.tools")
+
+_CALL_ID_PATTERN = re.compile(r"[A-Za-z0-9_-]{1,64}")
+
+# 事件载荷中必须脱敏的凭据类请求头（大小写不敏感）
+SENSITIVE_HEADER_KEYS = frozenset(
+    {"authorization", "proxy-authorization", "cookie", "x-api-key"}
+)
 
 
 class ToolRegistry:
@@ -56,6 +72,21 @@ def input_hash(input: dict) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def redact_event_input(name: str, input: dict) -> dict:
+    """事件载荷用的参数副本：http_request 的凭据类请求头值打码。"""
+    if name != "http_request":
+        return input
+    headers = input.get("headers")
+    if not isinstance(headers, dict):
+        return input
+    redacted = dict(input)
+    redacted["headers"] = {
+        k: ("***" if k.lower() in SENSITIVE_HEADER_KEYS else v)
+        for k, v in headers.items()
+    }
+    return redacted
+
+
 class ToolScheduler:
     def __init__(self, registry: ToolRegistry, *, max_concurrency: int = 4):
         self._registry = registry
@@ -67,6 +98,10 @@ class ToolScheduler:
         if tool is None:
             return ToolResult(ok=False, error="UNKNOWN_TOOL",
                               details={"known": self._registry.names()})
+        if not _CALL_ID_PATTERN.fullmatch(invocation.call_id or ""):
+            return ToolResult(ok=False, error="INVALID_CALL_ID",
+                              details={"call_id": invocation.call_id[:40]})
+
         effective_readonly = tool.metadata.read_only
         bash_verdict = ""
         if tool.metadata.name == "bash":
@@ -74,23 +109,33 @@ class ToolScheduler:
                 invocation.input.get("command", "")
             )
         meta = tool.metadata
-        await self._emit(ctx, "tool.prepared", {
+        prepared_payload = {
             "call_id": invocation.call_id, "tool_name": meta.name,
             "side_effect_class": meta.side_effect_class,
             "input_hash": input_hash(invocation.input),
-            "risk_level": meta.risk_level, "input": invocation.input,
+            "risk_level": meta.risk_level,
+            "input": redact_event_input(meta.name, invocation.input),
             "read_only_verdict": effective_readonly,
             "verdict_reason": bash_verdict,
-        })
-        async with self._sem:
-            if not effective_readonly and not meta.read_only:
-                async with self._serial:  # 非只读一律串行
-                    return await self._dispatch(tool, invocation, ctx)
-            return await self._dispatch(tool, invocation, ctx)
+        }
+        if tool.prepared_extras is not None:
+            prepared_payload.update(tool.prepared_extras(invocation.input))
+        # prepared 持久化失败 → 阻断执行（没有账本记录的副作用不可恢复）
+        if not await self._emit_strict(ctx, "tool.prepared", prepared_payload):
+            return ToolResult(ok=False, error="EVENT_PERSIST_FAILED")
+        if not await self._emit_strict(
+                ctx, "tool.dispatched", {"call_id": invocation.call_id}):
+            return ToolResult(ok=False, error="EVENT_PERSIST_FAILED")
 
-    async def _dispatch(self, tool, invocation, ctx) -> ToolResult:
+        serial_needed = not effective_readonly and not meta.concurrent_safe
+        async with self._sem:
+            if serial_needed:
+                async with self._serial:
+                    return await self._execute(tool, invocation, ctx)
+            return await self._execute(tool, invocation, ctx)
+
+    async def _execute(self, tool, invocation, ctx) -> ToolResult:
         meta = tool.metadata
-        await self._emit(ctx, "tool.dispatched", {"call_id": invocation.call_id})
         try:
             result = await asyncio.wait_for(
                 tool.execute(invocation, ctx), timeout=meta.timeout_ms / 1000,
@@ -110,12 +155,20 @@ class ToolScheduler:
             payload["artifact_path"] = result.artifact_path
         if not result.ok:
             payload["error"] = result.error
-        await self._emit(ctx, "tool.completed" if result.ok else "tool.failed", payload)
+        # 副作用已发生，记录失败不可撤销——标记后交上层（C9 待核验）
+        if not await self._emit_strict(ctx, "tool.completed" if result.ok
+                                       else "tool.failed", payload):
+            result.details["record_failed"] = True
         return result
 
-    async def _emit(self, ctx: WorkContext, event_type: str, payload: dict) -> None:
-        if ctx.emit is not None:
-            try:
-                await ctx.emit(event_type, payload)
-            except Exception:  # noqa: BLE001 —— 事件出口故障不阻断工具执行
-                _log.exception("tool.emit_failed %s", event_type)
+    async def _emit_strict(self, ctx: WorkContext, event_type: str,
+                           payload: dict) -> bool:
+        """发出事件；失败返回 False（不吞——调用方决定阻断或标记）。"""
+        if ctx.emit is None:
+            return True
+        try:
+            await ctx.emit(event_type, payload)
+            return True
+        except Exception:  # noqa: BLE001
+            _log.exception("tool.emit_failed %s", event_type)
+            return False
