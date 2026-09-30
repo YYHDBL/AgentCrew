@@ -1,7 +1,9 @@
-"""GLM 适配器纯逻辑单测：错误分类映射 / 退避计算 / 流式状态机拼装。
+"""GLM 适配器纯逻辑单测：错误分类映射 / 退避与重试决策 / 流式状态机。
 
 状态机测试用构造的事件字典序列直接驱动 `_consume`（测自有纯函数）；
 真实网络行为由 scripts/provider/verify.py 的真实 key 脚本验证（ADR-006）。
+外审回稿新增：截断终态错误、参数类型校验、usage 合并、thinking 块签名、
+坏 UTF-8 包裹、统一重试决策矩阵。
 """
 
 import asyncio
@@ -12,10 +14,12 @@ import pytest
 from agentcrew_core.provider.glm_anthropic import (
     GLMAnthropicProvider,
     SlotConfig,
+    _ProviderStreamError,
     backoff_seconds,
     classify_error,
+    should_retry,
 )
-from agentcrew_core.provider.types import ErrorClass
+from agentcrew_core.provider.types import ErrorClass, ProviderError
 
 
 # ── 错误分类（纯函数参数化）───────────────────────────────────────
@@ -53,6 +57,17 @@ def test_backoff_sequence():
     assert [backoff_seconds(i) for i in range(4)] == [1.0, 2.0, 4.0, 8.0]
 
 
+# ── 统一重试决策（外审回稿，纯函数矩阵）──────────────────────────
+
+def test_should_retry_matrix():
+    network = ProviderError(ErrorClass.NETWORK, "x", retryable=True)
+    auth = ProviderError(ErrorClass.AUTH, "x", retryable=False)
+    assert should_retry(network, produced=False, attempt=0) is True
+    assert should_retry(network, produced=False, attempt=3) is False  # 额度用尽
+    assert should_retry(network, produced=True, attempt=0) is False   # 已产出不自动重发
+    assert should_retry(auth, produced=False, attempt=0) is False     # 分类不可重试
+
+
 # ── 流式状态机（构造事件驱动自有代码）────────────────────────────
 
 def _provider() -> GLMAnthropicProvider:
@@ -60,22 +75,28 @@ def _provider() -> GLMAnthropicProvider:
 
 
 def _sse(events: list[dict]):
-    payload = b"".join(
+    return [b"".join(
         b"data: " + json.dumps(e, ensure_ascii=False).encode() + b"\n\n" for e in events
-    )
-    return [payload]
+    )]
 
 
 def _consume(chunks: list[bytes]):
+    """驱动 _consume，返回 (已产出事件, 终态异常或 None)。"""
     async def gen():
         for c in chunks:
             yield c
-    provider = _provider()
-    return asyncio.run(_collect(provider._consume(gen())))
 
+    async def run():
+        events = []
+        provider = _provider()
+        try:
+            async for e in provider._consume(gen()):
+                events.append(e)
+            return events, None
+        except _ProviderStreamError as err:
+            return events, err
 
-async def _collect(agen):
-    return [e async for e in agen]
+    return asyncio.run(run())
 
 
 WEATHER_TOOL_EVENTS = [
@@ -99,7 +120,8 @@ WEATHER_TOOL_EVENTS = [
 
 
 def test_stream_machine_assembles_tool_call():
-    events = _consume(_sse(WEATHER_TOOL_EVENTS))
+    events, terminal = _consume(_sse(WEATHER_TOOL_EVENTS))
+    assert terminal is None
     by_type = {}
     for e in events:
         by_type.setdefault(e.type, []).append(e)
@@ -118,7 +140,7 @@ def test_stream_machine_assembles_tool_call():
 
 
 def test_stream_machine_text_only():
-    events = _consume(_sse([
+    events, terminal = _consume(_sse([
         {"type": "content_block_start", "index": 0, "content_block": {"type": "text", "text": ""}},
         {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "你好"}},
         {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "！"}},
@@ -127,41 +149,115 @@ def test_stream_machine_text_only():
          "usage": {"input_tokens": 5, "output_tokens": 3}},
         {"type": "message_stop"},
     ]))
+    assert terminal is None
     text = "".join(e.text for e in events if e.type == "text_delta")
     assert text == "你好！"
     assert events[-1].type == "done" and events[-1].stop_reason == "end_turn"
 
 
-def test_stream_machine_bad_tool_json_yields_error_not_half_call():
-    events = _consume(_sse([
+def test_stream_machine_thinking_block_carries_signature():
+    events, terminal = _consume(_sse([
+        {"type": "content_block_start", "index": 0,
+         "content_block": {"type": "thinking", "thinking": "", "signature": "sig-head"}},
+        {"type": "content_block_delta", "index": 0, "delta": {"type": "thinking_delta", "thinking": "推理"}},
+        {"type": "content_block_delta", "index": 0, "delta": {"type": "thinking_delta", "thinking": "文本"}},
+        {"type": "content_block_delta", "index": 0, "delta": {"type": "signature_delta", "signature": "sig-tail"}},
+        {"type": "content_block_stop", "index": 0},
+        {"type": "message_delta", "delta": {"stop_reason": "end_turn"},
+         "usage": {"input_tokens": 5, "output_tokens": 3}},
+        {"type": "message_stop"},
+    ]))
+    assert terminal is None
+    block = [e for e in events if e.type == "thinking_block"][0]
+    assert block.text == "推理文本"
+    assert block.signature == "sig-headsig-tail"  # content_block_start 头 + signature_delta 拼装
+
+
+def test_stream_machine_usage_merges_start_and_delta():
+    """Anthropic 规范位置：输入量在 message_start、输出量在 message_delta。"""
+    events, terminal = _consume(_sse([
+        {"type": "message_start",
+         "message": {"usage": {"input_tokens": 100, "cache_read_input_tokens": 7}}},
+        {"type": "content_block_start", "index": 0, "content_block": {"type": "text", "text": ""}},
+        {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "x"}},
+        {"type": "message_delta", "delta": {"stop_reason": "end_turn"},
+         "usage": {"output_tokens": 50}},
+        {"type": "message_stop"},
+    ]))
+    assert terminal is None
+    done = [e for e in events if e.type == "done"][0]
+    assert (done.usage.input_tokens, done.usage.output_tokens) == (100, 50)
+    assert done.usage.cache_read_input_tokens == 7
+
+
+def test_stream_machine_usage_missing_defaults_zero():
+    events, terminal = _consume(_sse([
+        {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "x"}},
+        {"type": "message_delta", "delta": {"stop_reason": "end_turn"}},  # 无 usage
+        {"type": "message_stop"},
+    ]))
+    assert terminal is None
+    done = [e for e in events if e.type == "done"][0]
+    assert (done.usage.input_tokens, done.usage.output_tokens) == (0, 0)
+
+
+def test_truncated_stream_is_terminal_error_not_silence():
+    """外审回稿致命项：HTTP 200 但 EOF 且无 message_stop → 终态错误，绝不静默。"""
+    events, terminal = _consume(_sse([
+        {"type": "content_block_start", "index": 0, "content_block": {"type": "text", "text": ""}},
+        {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "部分"}},
+        {"type": "content_block_stop", "index": 0},
+        # 没有 message_delta / message_stop —— 截断
+    ]))
+    assert terminal is not None
+    assert terminal.error.error_class == ErrorClass.NETWORK
+    assert terminal.error.retryable is True
+    assert not any(e.type == "done" for e in events), "截断流不得发 done"
+
+
+def test_bad_tool_json_is_terminal_error_without_done():
+    events, terminal = _consume(_sse([
         {"type": "content_block_start", "index": 0,
          "content_block": {"type": "tool_use", "id": "c1", "name": "t", "input": {}}},
         {"type": "content_block_delta", "index": 0,
          "delta": {"type": "input_json_delta", "partial_json": "{broken"}},
         {"type": "content_block_stop", "index": 0},
+        {"type": "message_delta", "delta": {"stop_reason": "tool_use"}, "usage": {"input_tokens": 1}},
         {"type": "message_stop"},
     ]))
-    types = [e.type for e in events]
-    assert "tool_call" not in types  # 绝不外发半成品
-    assert "error" in types and "JSON 无效" in events[types.index("error")].error.message
+    assert terminal is not None and "JSON 无效" in terminal.error.message
+    assert not any(e.type == "tool_call" for e in events)  # 绝不外发半成品
+    assert not any(e.type == "done" for e in events), "终态错误后不得再发 done"
 
 
-def test_stream_machine_usage_missing_defaults_zero():
-    events = _consume(_sse([
-        {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "x"}},
-        {"type": "message_delta", "delta": {"stop_reason": "end_turn"}},  # 无 usage
+def test_non_dict_tool_args_rejected():
+    events, terminal = _consume(_sse([
+        {"type": "content_block_start", "index": 0,
+         "content_block": {"type": "tool_use", "id": "c1", "name": "t", "input": {}}},
+        {"type": "content_block_delta", "index": 0,
+         "delta": {"type": "input_json_delta", "partial_json": "[1, 2]"}},
+        {"type": "content_block_stop", "index": 0},
         {"type": "message_stop"},
     ]))
-    usage_events = [e for e in events if e.type == "usage"]
-    done = [e for e in events if e.type == "done"][0]
-    assert done.usage == usage_events[0].usage
-    assert (done.usage.input_tokens, done.usage.output_tokens) == (0, 0)
+    assert terminal is not None
+    assert "必须是 JSON 对象" in terminal.error.message
+    assert not any(e.type == "tool_call" for e in events)
 
 
-def test_stream_machine_inband_error_event():
-    events = _consume(_sse([
+def test_inband_error_event_raises_for_retry_decision():
+    """流内 error 事件 → 内部异常交给外层统一重试决策（外审回稿）。"""
+    events, terminal = _consume(_sse([
         {"type": "error", "error": {"type": "overloaded_error", "message": "上游过载"}},
     ]))
-    error = events[0].error
-    assert events[0].type == "error"
-    assert error.error_class == ErrorClass.NETWORK and error.retryable is True
+    assert terminal is not None
+    assert terminal.error.error_class == ErrorClass.NETWORK
+    assert terminal.error.retryable is True
+    assert events == []
+
+
+def test_non_utf8_stream_wrapped_as_error():
+    chunks = [b"data: \xff\xfe\xfd bad\n\n"]
+    events, terminal = _consume(chunks)
+    assert terminal is not None
+    assert terminal.error.error_class == ErrorClass.UNKNOWN
+    assert "UTF-8" in terminal.error.message

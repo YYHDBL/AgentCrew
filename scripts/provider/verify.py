@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "backend"))
 from agentcrew_core.provider import GLMAnthropicProvider, SlotConfig, StreamEvent
 from agentcrew_server.config import load_config
 from agentcrew_server.providers import build_provider
+from agentcrew_server.secrets import redact, register_secret
 
 WEATHER_TOOL = {
     "name": "get_weather",
@@ -45,11 +46,11 @@ async def drain(events):
     async for event in events:
         collected.append(event)
         if event.type == "text_delta":
-            print(f"  text_delta: {event.text!r}")
+            print(f"  text_delta: {redact(event.text)!r}")
         elif event.type == "thinking_delta":
             pass  # 思考流量大，只计数
         elif event.type == "tool_call_started":
-            print(f"  tool_call_started: {event.tool_name}（进行中，不带参数）")
+            print(f"  tool_call_started: {redact(event.tool_name)}（进行中，不带参数）")
         elif event.type == "tool_call":
             print(f"  tool_call: id={event.tool_call.id} name={event.tool_call.name} "
                   f"input={json.dumps(event.tool_call.input, ensure_ascii=False)}")
@@ -60,10 +61,17 @@ async def drain(events):
         elif event.type == "done":
             print(f"  done: stop_reason={event.stop_reason}")
         elif event.type == "error":
+            # 外审回稿：上游错误文本可能回显请求内容——输出前统一脱敏
             print(f"  error: class={event.error.error_class.value} "
                   f"retryable={event.error.retryable} "
-                  f"status={event.error.status_code} msg={event.error.message}")
+                  f"status={event.error.status_code} msg={redact(event.error.message)}")
     return collected
+
+
+def assert_clean_run(events, label):
+    """每个请求的统一收尾断言：无 error、有 done（外审回稿：脚本不再无条件 PASS）。"""
+    assert not any(e.type == "error" for e in events), f"{label}: 出现 error 事件"
+    assert any(e.type == "done" for e in events), f"{label}: 缺少 done 事件"
 
 
 def counts(events):
@@ -156,17 +164,22 @@ async def cmd_cache(provider, slot):
         events = await drain(provider.stream(
             slot, messages, thinking={"type": "disabled"}, max_tokens=64,
         ))
+        assert_clean_run(events, f"cache 第{i + 1}次")
         usage = [e.usage for e in events if e.type == "usage"][-1]
         print(f"  第{i + 1}次 input={usage.input_tokens} "
               f"cache_read={usage.cache_read_input_tokens}")
-    print("-- thinking 参数对比")
+    print("-- thinking 参数对比（含 thinking_block 签名捕获检查）")
     for mode in ({"type": "disabled"}, {"type": "enabled", "budget_tokens": 512}):
         events = await drain(provider.stream(
             slot, [{"role": "user", "content": "只说：好"}],
             thinking=mode, max_tokens=2048,
         ))
-        n_think = sum(1 for e in events if e.type == "thinking_delta")
-        print(f"  thinking={mode} → thinking_delta 块数={n_think}")
+        assert_clean_run(events, f"thinking={mode}")
+        n_delta = sum(1 for e in events if e.type == "thinking_delta")
+        blocks = [e for e in events if e.type == "thinking_block"]
+        print(f"  thinking={mode} → thinking_delta 块数={n_delta}；"
+              f"thinking_block 完成块={len(blocks)}"
+              + (f"（signature 长度 {len(blocks[0].signature or '')}）" if blocks else ""))
     print("[注] 上游不一致：流式响应下 disabled 仍可能输出 thinking 块"
           "（非流式才生效，curl 双路实测确认）；消费侧将 thinking_delta 视为"
           "可忽略事件即可，多轮回传不带 thinking 块亦被接受（已实测）")
@@ -178,6 +191,8 @@ async def main_async(args):
     data_dir = Path(args.data_dir)
     config = load_config(data_dir)
     models = config.values.get("models", {})
+    for key in config.api_keys():
+        register_secret(key)  # 验证脚本 stdout 的脱敏兜底（与服务端同一套）
     provider = build_provider(models)
     slot = args.slot
     if not models.get(slot, {}).get("api_key"):
