@@ -7,11 +7,13 @@ else {
   let window: BrowserWindow | null = null
   let tray: Tray | null = null
   let quitting = false
+  let exitPending = false
+  let exitReady = false
   let blocker: number | null = null
   let sidecar: Sidecar
 
   const showWindow = (): void => {
-    if (!window) return
+    if (!window || window.isDestroyed()) return
     window.show()
     window.focus()
   }
@@ -37,6 +39,7 @@ function createWindow(): void {
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
   window.webContents.on('will-navigate', (event) => event.preventDefault())
   window.on('close', (event) => { if (!quitting) { event.preventDefault(); window?.hide() } })
+  window.on('closed', () => { window = null })
 
   if (process.env.ELECTRON_RENDERER_URL) {
     void window.loadURL(process.env.ELECTRON_RENDERER_URL)
@@ -74,7 +77,7 @@ app.whenReady().then(() => {
     { label: '退出 AgentCrew', click: quitFromTray }
   ]))
   tray.on('click', showWindow)
-  const fromWindow = (event: Electron.IpcMainInvokeEvent): boolean => event.sender.id === window?.webContents.id && !event.sender.isDestroyed()
+  const fromWindow = (event: Electron.IpcMainInvokeEvent): boolean => !!window && !window.isDestroyed() && event.sender.id === window.webContents.id && !event.sender.isDestroyed()
   ipcMain.handle('backend-port', (event) => { if (!fromWindow(event)) throw new Error('无效的调用来源'); return sidecar.getBackendPort() })
   ipcMain.handle('backend-token', (event) => { if (!fromWindow(event)) throw new Error('无效的调用来源'); return sidecar.getToken() })
   ipcMain.handle('notify', (event, title: unknown, body: unknown) => {
@@ -96,6 +99,23 @@ app.whenReady().then(() => {
   app.on('activate', showWindow)
 })
 
-app.on('before-quit', () => { quitting = true; sidecar?.stop(); if (blocker !== null) powerSaveBlocker.stop(blocker) })
+app.on('before-quit', (event) => {
+  if (exitReady) return
+  event.preventDefault()
+  if (exitPending) return
+  exitPending = true
+  quitting = true
+  void (async () => {
+    if (sidecar && !(await sidecar.stop())) {
+      exitPending = false
+      quitting = false
+      void dialog.showMessageBox({ type: 'error', title: '无法退出 AgentCrew', message: '后端进程未能在清理期限内退出。', detail: `日志：${sidecar.logPath}` })
+      return
+    }
+    if (blocker !== null) powerSaveBlocker.stop(blocker)
+    exitReady = true
+    app.quit()
+  })()
+})
 app.on('window-all-closed', () => { /* 托盘维持应用与后端运行。 */ })
 }

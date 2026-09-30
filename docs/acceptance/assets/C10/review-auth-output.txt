@@ -1,0 +1,8 @@
+$ node tests/c10-auth.mjs before
+{"phase":"before","port":56568,"correct":200,"wrong":401}
+$ kill -KILL 59330
+$ node tests/c10-auth.mjs after
+{"phase":"after","port":56961,"newCredential":200,"oldCredential":401,"rotated":true}
+
+Electron PID 59305；重启前 uv/Python PID 59329/59330；重启后 59430/59431。
+请求目标为 /api/diagnostics，凭证在真实渲染进程中经 window.agentcrew.getToken() 取得。
