@@ -155,6 +155,7 @@ class EventStore:
         conversation_id: str,
         type: RunEventType,
         payload: dict,
+        attempt_no: int | None = None,
     ) -> Event:
         """在**调用方已开启**的写通道事务内追加事件+投影（不 BEGIN/COMMIT、
         不发布）——供需要把事件与更多写入合并为单事务的复合操作使用
@@ -172,7 +173,7 @@ class EventStore:
             " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 event_id, task_run_id, seq, conversation_id,
-                None, None, type.value,
+                None, attempt_no, type.value,
                 json.dumps(payload, ensure_ascii=False, sort_keys=True), ts,
             ),
         )
@@ -180,7 +181,7 @@ class EventStore:
             global_seq=int(cursor.lastrowid), id=event_id,
             task_run_id=task_run_id, seq=seq,
             conversation_id=conversation_id, type=type, payload=payload,
-            attempt_no=None, agent_run_id=None, ts=ts,
+            attempt_no=attempt_no, agent_run_id=None, ts=ts,
         )
         apply_projection(conn, event)
         return event

@@ -87,6 +87,49 @@ def redact_event_input(name: str, input: dict) -> dict:
     return redacted
 
 
+# 参数 schema 校验失败的专用错误码：循环层把它计入解析重试通道
+# （外审回稿：JSON 损坏与 schema 不符共用 ≤2 次重试 → unparseable）
+INVALID_PARAMS = "INVALID_PARAMS"
+
+_TYPES = {"string": str, "integer": int, "number": (int, float),
+          "boolean": bool, "array": list, "object": dict}
+
+
+def _type_name(value) -> str:
+    return type(value).__name__
+
+
+def validate_tool_input(schema: dict, input: dict) -> str | None:
+    """JSON Schema 子集校验（object/required/properties 类型/数组 items）——
+    M0 五件套的参数定义只用到这些；返回错误描述或 None。
+    缺参/类型不符不再交给工具执行（那会烧掉最多 40 回合才自纠），
+    而是走"错误回填重说"通道（harness §5 三招之三）。"""
+    if not isinstance(input, dict):
+        return f"参数必须是 JSON 对象，得到 {_type_name(input)}"
+    props = schema.get("properties") or {}
+    for field in schema.get("required") or []:
+        if field not in input:
+            return f"缺少必填参数 {field}"
+    for key, value in input.items():
+        spec = props.get(key)
+        if not isinstance(spec, dict):
+            continue  # 未声明的附加键不拦（向前兼容）
+        expected = spec.get("type")
+        if expected in _TYPES and not isinstance(value, _TYPES[expected]):
+            # bool 是 int 的子类：布尔值不得冒充 integer/number
+            if isinstance(value, bool) and expected in ("integer", "number"):
+                return f"参数 {key} 需要 {expected}，得到 boolean"
+            return f"参数 {key} 需要 {expected}，得到 {_type_name(value)}"
+        if expected == "array" and isinstance(value, list):
+            items = spec.get("items")
+            if isinstance(items, dict) and "type" in items:
+                want = _TYPES.get(items["type"])
+                if want and any(not isinstance(v, want) for v in value):
+                    return (f"参数 {key} 的数组元素需要 "
+                            f"{items['type']}")
+    return None
+
+
 class ToolScheduler:
     def __init__(self, registry: ToolRegistry, *, max_concurrency: int = 4,
                  gate=None):
@@ -113,6 +156,28 @@ class ToolScheduler:
             call_id=invocation.call_id, name=invocation.name,
             input=json.loads(json.dumps(invocation.input, ensure_ascii=False)),
         )
+
+        # 参数 schema 校验（外审回稿）：不符 → 账本记 prepared→failed
+        # （不派发、不问权限——没有可授权的有效目标），错误码
+        # INVALID_PARAMS 由循环层计入解析重试通道
+        invalid = validate_tool_input(tool.metadata.parameters,
+                                      invocation.input)
+        if invalid is not None:
+            await self._emit_strict(ctx, "tool.prepared", {
+                "call_id": invocation.call_id, "tool_name": tool.metadata.name,
+                "side_effect_class": tool.metadata.side_effect_class,
+                "input_hash": input_hash(invocation.input),
+                "risk_level": tool.metadata.risk_level,
+                "input": redact_event_input(tool.metadata.name,
+                                            invocation.input),
+            })
+            await self._emit_strict(ctx, "tool.failed", {
+                "call_id": invocation.call_id,
+                "error": INVALID_PARAMS,
+                "output_summary": "",
+            })
+            return ToolResult(ok=False, error=INVALID_PARAMS,
+                              details={"message": invalid})
 
         effective_readonly = tool.metadata.read_only
         bash_verdict = ""

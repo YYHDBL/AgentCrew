@@ -482,6 +482,52 @@ class SessionService:
 
     # ── 排队控制（F006）──────────────────────────────────────────
 
+    def _has_queued_items(self, conversation_id: str) -> bool:
+        row = self._db.read_conn.execute(
+            "SELECT pending_queue FROM conversations WHERE id = ?",
+            (conversation_id,)).fetchone()
+        if row is None or not row[0]:
+            return False
+        return any(item.get("state") == "queued"
+                   for item in json.loads(row[0]))
+
+    async def emit_cancel_pair(self, conversation_id: str,
+                               task_run_id: str,
+                               attempt_no: int | None = None) -> None:
+        """用户停止的成对终态：run.cancelled + 队列非空时 queue.paused，
+        会话锁内**单事务**提交+发布（外审回稿修复：两事件分两次提交的
+        异步窗口里，用户点"继续"会被晚到的 paused 再次暂停——与
+        continue_queue 同锁串行 + 同事务相邻 global_seq 消除交错）。
+        attempt_no 透传给 run.cancelled（run_attempts 行随之落终态）。"""
+        async with await self._conv_lock(conversation_id):
+            has_queued = await asyncio.to_thread(
+                self._has_queued_items, conversation_id)
+            events: list = []
+
+            def tx(conn: sqlite3.Connection) -> None:
+                conn.execute("BEGIN IMMEDIATE")
+                try:
+                    events.append(self._store.append_in_tx(
+                        conn, task_run_id=task_run_id,
+                        conversation_id=conversation_id,
+                        type=RunEventType.RUN_CANCELLED, payload={},
+                        attempt_no=attempt_no,
+                    ))
+                    if has_queued:
+                        events.append(self._store.append_in_tx(
+                            conn, task_run_id=None,
+                            conversation_id=conversation_id,
+                            type=RunEventType.QUEUE_PAUSED, payload={},
+                        ))
+                    conn.execute("COMMIT")
+                except Exception:
+                    conn.execute("ROLLBACK")
+                    raise
+                for event in events:  # COMMIT 后、闭包返回前发布（顺序=提交序）
+                    self._store.publish(event)
+
+            await self._channel.execute(tx)
+
     async def auto_dequeue_next(self, conversation_id: str,
                                 before_publish=None) -> str | None:
         """终态自动接续（§4：completed/failed 出队队首；cancelled 已被 reducer

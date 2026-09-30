@@ -15,6 +15,8 @@
     接续）→ 继续（队首执行）→ 取消剩余 → 无遗漏
   G 守门真触发：gates.max_steps=2 → RUN_FAILED(max_steps)；
     gates.token_budget=300 → RUN_FAILED(token_budget)
+  H bash 执行中取消 → 终态前结清（外审回稿·致命②）：dispatched 无结果
+    转 tool.pending_verification（先于 run.cancelled），继续队列 409 阻断
 
 用法：
   cd backend && uv run python ../scripts/loop/c8_demo.py [--data-dir /tmp/c8-demo]
@@ -527,6 +529,65 @@ async def scenario_g(client, base, db, seed: Path):
     check("PATCH 恢复 token_budget", r.status_code == 200)
 
 
+async def scenario_h(client, base, db):
+    """外审回稿·致命②：bash 执行中取消 → 终态前 dispatched 无结果调用
+    转 tool.pending_verification（先于 run.cancelled），继续队列被 409 阻断。"""
+    print("\n── H bash 执行中取消 → 终态前结清（外审致命②）──")
+    r = await client.post(f"{base}/api/conversations", headers=HEADERS, json={
+        "instruction": "请用 bash 工具执行命令 sleep 30，等它执行完毕后"
+                       "直接回复'睡完了'。不要做其他事。",
+    })
+    conv_id = r.json()["data"]["conversation"]["id"]
+    task_id = r.json()["data"]["task_run_id"]
+    # 直接等卡并提交（不走 decide_approvals——它阻塞到任务终态，
+    # 而 bash sleep 30 要跑满 30s，dispatched 早就翻篇）
+    card = None
+    for _ in range(300):
+        card = one(db, "SELECT json_extract(payload,'$.tool_call_id')"
+                       " FROM run_events WHERE task_run_id=?"
+                       "   AND type='permission.requested'", (task_id,))
+        if card:
+            break
+        await asyncio.sleep(0.2)
+    check("bash 审批卡已弹", card is not None)
+    r = await client.post(f"{base}/api/tool-approvals/{card[0]}",
+                          headers=HEADERS, json={"decision": "allow_once"})
+    check("allow_once 提交 200", r.status_code == 200)
+    # 等 bash dispatched（审批放行后进入执行）
+    dispatched_call = None
+    for _ in range(200):
+        dispatched_call = one(db, "SELECT call_id FROM tool_calls"
+                                 " WHERE task_run_id=? AND tool_name='bash'"
+                                 " AND status='dispatched'", (task_id,))
+        if dispatched_call:
+            break
+        await asyncio.sleep(0.1)
+    check("bash 已进入执行（dispatched）", dispatched_call is not None)
+    await client.post(f"{base}/api/conversations/{conv_id}/instructions",
+                      headers=HEADERS, json={"text": "排队指令H"})
+    r = await client.post(f"{base}/api/task-runs/{task_id}/cancel",
+                          headers=HEADERS)
+    check("取消执行中任务 202", r.status_code == 202)
+    status = await wait_terminal(db, task_id, 30)
+    check("任务已取消", status == "cancelled")
+    settled = one(db, "SELECT status FROM tool_calls WHERE call_id=?",
+                  (dispatched_call[0],))[0]
+    check("取消终态前 dispatched 无结果已转待核验",
+          settled == "pending_verification", f"status={settled}")
+    order = one(db, "SELECT (SELECT MAX(global_seq) FROM run_events"
+                    " WHERE type='tool.pending_verification'"
+                    "   AND task_run_id=:t)"
+                    " < (SELECT MAX(global_seq) FROM run_events"
+                    "     WHERE type='run.cancelled' AND task_run_id=:t)",
+                {"t": task_id})[0]
+    check("结清事件先于终态事件（时序契约③）", order == 1)
+    r = await client.post(f"{base}/api/conversations/{conv_id}/queue/continue",
+                          headers=HEADERS)
+    code = r.json()["error"]["code"] if r.status_code != 202 else "OK"
+    check("继续队列被待核验阻断 409", code == "PENDING_VERIFICATION",
+          f"http={r.status_code} code={code}")
+
+
 async def run(client: httpx.AsyncClient, base: str, db, data_dir: Path,
               seed: Path):
     await scenario_a(client, base, db, seed)
@@ -534,6 +595,7 @@ async def run(client: httpx.AsyncClient, base: str, db, data_dir: Path,
     await scenario_c_and_e(client, base, db, data_dir)
     await scenario_d(client, base, db, data_dir)
     await scenario_f(client, base, db)
+    await scenario_h(client, base, db)
     await scenario_g(client, base, db, seed)
     check_result = verify_with_anchor(db.write_conn,
                                       data_dir / "chain-head.txt")

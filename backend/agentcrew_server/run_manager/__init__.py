@@ -47,7 +47,12 @@ from agentcrew_core.provider.glm_anthropic import (
 from agentcrew_core.provider.types import ToolCall
 from agentcrew_core.tools import ToolInvocation, ToolScheduler, WorkContext
 from agentcrew_core.tools.metadata import ToolResult
-from agentcrew_core.tools.scheduler import input_hash, redact_event_input
+from agentcrew_core.tools.scheduler import (
+    INVALID_PARAMS,
+    input_hash,
+    redact_event_input,
+    validate_tool_input,
+)
 
 from ..bus import Subscription, Topic
 
@@ -88,6 +93,9 @@ class _Run:
     last_progress: float = field(default_factory=time.monotonic)
     waiting: int = 0          # 挂起的审批/提问数（>0 时看门狗不计时）
     fail_reason: str | None = None  # 看门狗置 stalled 后再 cancel
+    # 名额持有标记：ask_user 等待期间释放全局名额（欠账#1），终态收尾
+    # 只在持有时释放一次（防双释放）
+    sem_held: bool = False
 
 
 class RunManager:
@@ -226,12 +234,17 @@ class RunManager:
 
     async def _runner(self, task_run_id: str, conversation_id: str) -> None:
         run = self._runs[task_run_id]
-        gates = self._bind_gates()
-        await self._sem.acquire()
         watchdog: asyncio.Task | None = None
         terminal: str | None = None
         fail_reason = ""
         try:
+            # 名额等待纳入取消处理覆盖范围（外审致命①）：等待期被
+            # request_cancel 取消同样走统一终态（run.cancelled 成对落库）
+            await self._sem.acquire()
+            run.sem_held = True
+            # 配置绑定在取得名额之后（外审建议④）：等待期间 PATCH 的
+            # gates/models 一并被本次 attempt 吸收，指纹与行为一致
+            gates = self._bind_gates()
             row = await asyncio.to_thread(
                 self._task_row, task_run_id)
             if row is None or row["status"] != "queued":
@@ -271,6 +284,9 @@ class RunManager:
                 "attempt_no": 1, "attempt_id": attempt_id,
                 "kind": "initial", "context_fingerprint": fingerprint,
             })
+            # 停滞计时从 run.started 重置起（外审建议④）：等名额耗时
+            # 不计入窗口，启动即误判 stalled
+            run.last_progress = time.monotonic()
             watchdog = self._loop.create_task(
                 self._watchdog(run, gates), name=f"watchdog:{task_run_id[:12]}")
 
@@ -284,7 +300,7 @@ class RunManager:
             async def execute(call: ToolCall) -> ToolResult:
                 if call.name == "ask_user":
                     return await self._ask_user_direct(
-                        sink, ctx, call)
+                        run, sink, ctx, call)
                 return await self._approvals.run_tool(
                     task_run_id=task_run_id, conversation_id=conversation_id,
                     agent_id=run.agent_id,
@@ -303,21 +319,26 @@ class RunManager:
             result = await run_task(messages, deps)
             if result.status == "completed":
                 terminal = "completed"
-                await self._emit(task_run_id, conversation_id,
-                                 "run.completed", {
-                                     "final_text": result.final_text,
-                                     "outcome": "completed"})
+                await self._finish(task_run_id, conversation_id,
+                                   "run.completed",
+                                   {"final_text": result.final_text,
+                                    "outcome": "completed"})
             else:
                 terminal = "failed"
                 fail_reason = result.reason
-                await self._emit(task_run_id, conversation_id,
-                                 "run.failed", {"reason": result.reason})
+                await self._finish(task_run_id, conversation_id,
+                                   "run.failed", {"reason": result.reason})
         except asyncio.CancelledError:
             # 终态时序：进入此处时模型流已 aclose、工具批已收割（run_task
-            # 的 finally/TaskGroup 保证）；之后才落终态事件
+            # 的 finally/TaskGroup 保证）；之后才结清并落终态事件
             if self._shutting_down:
                 raise  # §6：优雅关闭不写终态（C9 对账域）
+            # 已接收取消：uncancel 让终态写入的 await 正常执行（否则
+            # 挂起的取消请求会在下一个 await 立即重抛——等待名额期取消
+            # 也走这里，外审致命①）；finally 里显式重抛恢复取消语义
+            asyncio.current_task().uncancel()
             try:
+                await self._settle_dispatched(task_run_id, conversation_id)
                 if run.fail_reason:
                     terminal = "failed"
                     fail_reason = run.fail_reason
@@ -326,16 +347,11 @@ class RunManager:
                                      {"reason": run.fail_reason})
                 else:
                     terminal = "cancelled"
-                    await self._emit(task_run_id, conversation_id,
-                                     "run.cancelled", {})
-                    # 队列非空 → 补发 queue.paused（§4：reducer 语义的
-                    # 持久化投影，C7 约定 run.cancelled + queue.paused 成对）
-                    if await asyncio.to_thread(
-                            self._has_queued_items, conversation_id):
-                        await self._store.append(
-                            task_run_id=None,
-                            conversation_id=conversation_id,
-                            type=RunEventType.QUEUE_PAUSED, payload={})
+                    # 成对终态（run.cancelled + 队列非空时 queue.paused）
+                    # 单事务提交且与 continue_queue 同锁——消除"两事件之间
+                    # 点继续被晚到的 paused 再次暂停"竞态（外审建议⑤）
+                    await self._sessions.emit_cancel_pair(
+                        conversation_id, task_run_id, attempt_no=1)
             finally:
                 raise
         except BaseException as e:  # noqa: BLE001 —— asyncio 任务异常→RUN_FAILED
@@ -343,14 +359,16 @@ class RunManager:
             terminal = "failed"
             fail_reason = f"internal:{type(e).__name__}"
             try:
-                await self._emit(task_run_id, conversation_id, "run.failed",
-                                 {"reason": fail_reason})
+                await self._finish(task_run_id, conversation_id,
+                                   "run.failed", {"reason": fail_reason})
             except Exception:  # noqa: BLE001 —— 终态写入失败如实记录
                 _log.exception("run.final_write_failed task=%s", task_run_id)
         finally:
             if watchdog is not None:
                 watchdog.cancel()
-            self._sem.release()
+            if run.sem_held:
+                self._sem.release()
+                run.sem_held = False
             if terminal == "failed":
                 # v1.4：failed 也自动接续，注入护栏提示（§4）
                 await self._maybe_continue(
@@ -358,6 +376,36 @@ class RunManager:
                     GUARDRAIL_TEXT.format(reason=fail_reason or "unknown"))
             elif terminal == "completed":
                 await self._maybe_continue(conversation_id)
+
+    async def _finish(self, task_run_id: str, conversation_id: str,
+                      event_type: str, payload: dict) -> None:
+        """统一终态出口（外审致命②）：终态事件写入前，先结清本任务
+        dispatched 无结果的调用（含结果事件落库失败的 record_failed——
+        事件没落库，投影行停在 dispatched，同被此扫描覆盖）转
+        tool.pending_verification 落库；终态事件是"执行真正结束"的
+        证据（v1.7 契约③）。进程崩溃后的启动对账归 C9，此处只管
+        运行中任务的终态前结清。"""
+        await self._settle_dispatched(task_run_id, conversation_id)
+        await self._emit(task_run_id, conversation_id, event_type, payload)
+
+    async def _settle_dispatched(self, task_run_id: str,
+                                 conversation_id: str) -> None:
+        rows = await asyncio.to_thread(self._dispatched_calls, task_run_id)
+        for call_id in rows:
+            await self._emit(task_run_id, conversation_id,
+                             "tool.pending_verification",
+                             {"call_id": call_id})
+
+    def _dispatched_calls(self, task_run_id: str) -> list[str]:
+        """终态前待结清的调用。ask_user 豁免：交互原语无副作用可核验，
+        取消时的已知结局就是"提问未获回答"（账本停 dispatched + 库中
+        未回答状态，C9 按此合成占位 tool_result）——若转待核验会把
+        "停止后继续队列"永久堵死（验证提交 API 属 C9）。"""
+        return [r[0] for r in self._db.read_conn.execute(
+            "SELECT call_id FROM tool_calls"
+            " WHERE task_run_id = ? AND status = 'dispatched'"
+            " AND tool_name != 'ask_user'"
+            " ORDER BY prepared_at", (task_run_id,)).fetchall()]
 
     async def _watchdog(self, run: _Run, gates: LoopGates) -> None:
         interval = max(1.0, min(5.0, gates.stall_seconds / 10))
@@ -390,15 +438,31 @@ class RunManager:
 
     # ── ask_user 直通（S07：独立生命周期，不进调度器）──────────────
 
-    async def _ask_user_direct(self, sink, ctx: WorkContext,
+    async def _ask_user_direct(self, run: _Run, sink, ctx: WorkContext,
                                call: ToolCall) -> ToolResult:
-        """ask_user 是交互原语：不走调度器（不占并发名额、无 60s 超时）；
+        """ask_user 是交互原语：不走调度器（无 60s 超时、不占工具 4 名额），
         三态账本事件（prepared/dispatched/completed/failed）照发保持一致。
-        取消时账本停在 dispatched、库中留下未回答状态（question.requested
-        无 answered），属 C9 对账域。"""
+        欠账#1（外审回稿）：等待用户回答前**释放全局并发名额**、收到回答后
+        重新取得（asyncio.Semaphore FIFO 公平）——8 个挂起的提问不再饿死
+        其他任务；等待中取消则名额已还、由终态收尾按 sem_held 跳过释放。
+        取消时账本停在 dispatched、库中留下未回答状态，属 C9 对账域。"""
         tool = self._scheduler.registry.get("ask_user")
         assert tool is not None, "注册表缺 ask_user"
         meta = tool.metadata
+        invalid = validate_tool_input(meta.parameters, call.input)
+        if invalid is not None:
+            await sink("tool.prepared", {
+                "call_id": call.id, "tool_name": meta.name,
+                "side_effect_class": meta.side_effect_class,
+                "input_hash": input_hash(call.input),
+                "risk_level": meta.risk_level,
+                "input": redact_event_input(meta.name, call.input),
+            })
+            await sink("tool.failed", {"call_id": call.id,
+                                       "error": INVALID_PARAMS,
+                                       "output_summary": ""})
+            return ToolResult(ok=False, error=INVALID_PARAMS,
+                              details={"message": invalid})
         await sink("tool.prepared", {
             "call_id": call.id, "tool_name": meta.name,
             "side_effect_class": meta.side_effect_class,
@@ -407,9 +471,16 @@ class RunManager:
             "input": redact_event_input(meta.name, call.input),
         })
         await sink("tool.dispatched", {"call_id": call.id})
-        result = await tool.execute(
-            ToolInvocation(call_id=call.id, name=call.name, input=call.input),
-            ctx)
+        self._sem.release()      # 等用户不占全局名额（欠账#1）
+        run.sem_held = False
+        try:
+            result = await tool.execute(
+                ToolInvocation(call_id=call.id, name=call.name,
+                               input=call.input), ctx)
+        except BaseException:
+            raise  # 取消/异常：名额已还，终态收尾不再重复释放
+        await self._sem.acquire()  # 回答后重取（FIFO 公平）
+        run.sem_held = True
         payload = {"call_id": call.id, "output": result.output or "",
                    "output_summary": (result.output or "")[:2000]}
         if not result.ok:
@@ -457,24 +528,11 @@ class RunManager:
         if run is not None:
             run.task.cancel()  # runner 落 run.cancelled（reducer 置队列暂停）
             return {"status": "cancelling"}
-        # 无 runner（如启动前遗留的 queued 任务）：直接落终态（+ 队列暂停）
-        await self._emit(task_run_id, row["conversation_id"],
-                         "run.cancelled", {})
-        if await asyncio.to_thread(
-                self._has_queued_items, row["conversation_id"]):
-            await self._store.append(
-                task_run_id=None, conversation_id=row["conversation_id"],
-                type=RunEventType.QUEUE_PAUSED, payload={})
+        # 无 runner（如启动前遗留的 queued 任务）：成对终态经会话锁
+        # 单事务落库（含队列非空时的 queue.paused，外审建议⑤）
+        await self._sessions.emit_cancel_pair(row["conversation_id"],
+                                              task_run_id)
         return {"status": "cancelled"}
-
-    def _has_queued_items(self, conversation_id: str) -> bool:
-        row = self._db.read_conn.execute(
-            "SELECT pending_queue FROM conversations WHERE id = ?",
-            (conversation_id,)).fetchone()
-        if row is None or not row[0]:
-            return False
-        return any(item.get("state") == "queued"
-                   for item in json.loads(row[0]))
 
     def run_count(self) -> int:
         return len(self._runs)

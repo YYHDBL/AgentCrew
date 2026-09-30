@@ -26,7 +26,7 @@ from typing import Any, AsyncIterator, Awaitable, Callable, Literal
 
 from ..provider.types import StreamEvent, ToolCall, Usage
 from ..tools.metadata import ToolResult
-from ..tools.scheduler import input_hash
+from ..tools.scheduler import INVALID_PARAMS, input_hash
 
 # ── 守门参数（harness-session §6.3；token 硬上限 C8 起生效，压缩 M1）─────
 
@@ -308,14 +308,23 @@ async def run_task(messages: list[dict], deps: LoopDeps) -> LoopResult:
 
                 tg.create_task(_one())
         corrected_tool: str | None = None
+        invalid_params = 0
         for call, result in zip(calls, results):
             assert result is not None  # TaskGroup 正常退出必已回填
             deps.on_progress()
+            if result.error == INVALID_PARAMS:
+                # 参数 schema 不符（外审回稿）：与流解析错误共用同一条
+                # "错误回填重说"通道与计数——不再烧回合等模型自纠
+                invalid_params += 1
+                continue
             verdict = repeat.observe(call.name, call, result)
             if verdict == "doom":
                 return LoopResult("failed", reason="doom_loop")
             if verdict == "correct":
                 corrected_tool = call.name
+        parse_retries += invalid_params
+        if parse_retries > PARSE_RETRY_LIMIT:
+            return LoopResult("failed", reason="unparseable")
         messages.append(tool_results_message(calls, results))
         if corrected_tool is not None:
             messages.append(user_text_message(

@@ -52,11 +52,17 @@ class Topic:
 
 
 class Subscription:
-    """一个 SSE 连接的订阅状态。入队线程（写通道）与消费协程（事件循环）共用。"""
+    """一个 SSE 连接的订阅状态。入队线程（写通道）与消费协程（事件循环）共用。
 
-    def __init__(self, topic: Topic, maxsize: int):
+    internal=True（进程内常驻订阅，如 RunManager 派发器）：队列无上限，
+    永不置溢出标记、sweep 永不清理——派发事件零丢失是硬要求（外审回稿：
+    旧实现仅绕过连接计数，仍受 1000 上限与 sweep 强断约束）。"""
+
+    def __init__(self, topic: Topic, maxsize: int, *, internal: bool = False):
         self.topic = topic
-        self.queue: queue.Queue = queue.Queue(maxsize=maxsize)
+        # internal 订阅无上限（maxsize=0 = 无界）；SSE 订阅 1000 上限
+        self.queue: queue.Queue = queue.Queue(maxsize=0 if internal else maxsize)
+        self.internal = internal
         self.overflowed = False
         self.overflowed_at: float | None = None  # 首次溢出时刻（不重置）
         self.shutdown_requested = False
@@ -67,7 +73,8 @@ class Subscription:
 
     # ── 写通道线程侧 ──────────────────────────────────────────────
     def offer(self, item: object) -> None:
-        """非阻塞入队；满 = 溢出标记（首次起表，后续失败不重置计时）。"""
+        """非阻塞入队；满 = 溢出标记（首次起表，后续失败不重置计时）。
+        internal 队列无界，永不触发。"""
         try:
             self.queue.put_nowait(item)
         except queue.Full:
@@ -135,8 +142,8 @@ class EventBus:
 
     # ── 订阅管理（事件循环线程）──────────────────────────────────
     def subscribe(self, topic: Topic, *, internal: bool = False) -> Subscription:
-        """internal=True：进程内常驻订阅（C8 RunManager）——不计连接名额，
-        也不参与 SSE 溢出语义，仅消费事件做派发。"""
+        """internal=True：进程内常驻订阅（C8 RunManager）——不计连接名额、
+        队列无界、永不溢出/被清扫（派发零丢失）。"""
         with self._lock:
             if self._closed:
                 raise RuntimeError("事件总线已关闭")
@@ -146,7 +153,7 @@ class EventBus:
                     raise ConnectionLimitError(
                         f"并发 SSE 连接超上限（{self.max_connections}）"
                     )
-            sub = Subscription(topic, maxsize=self.max_queue)
+            sub = Subscription(topic, maxsize=self.max_queue, internal=internal)
             self._subs.append(sub)
             return sub
 
