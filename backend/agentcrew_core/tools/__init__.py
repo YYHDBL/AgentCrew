@@ -1,1 +1,26 @@
-"""ToolMetadata、工具注册表、调度器、幂等钥匙（harness-session.md §6）。M0-C5 填充。"""
+"""工具层（harness-session §6 / ADR-008）：元数据、判定、注册表、调度器、五件套。"""
+
+from .builtin import build_default_registry
+from .judgment import (
+    bash_readonly,
+    build_protected_paths,
+    host_allowed,
+    path_in_scope,
+    path_is_protected,
+)
+from .metadata import (
+    SideEffectClass,
+    Tool,
+    ToolInvocation,
+    ToolMetadata,
+    ToolResult,
+    WorkContext,
+)
+from .scheduler import ToolRegistry, ToolScheduler, input_hash, new_call_id
+
+__all__ = [
+    "build_default_registry", "bash_readonly", "build_protected_paths",
+    "host_allowed", "path_in_scope", "path_is_protected",
+    "SideEffectClass", "Tool", "ToolInvocation", "ToolMetadata", "ToolResult",
+    "WorkContext", "ToolRegistry", "ToolScheduler", "input_hash", "new_call_id",
+]
