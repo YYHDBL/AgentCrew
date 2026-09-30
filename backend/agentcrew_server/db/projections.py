@@ -17,7 +17,9 @@ C2 固定的 payload 契约（C5-C8 按此发射；新增字段先登记再使�
   run.failed        {reason}
   run.cancelled     {}
   run.interrupted   {reason?}
-  run.resumed       {attempt_no, attempt_id, resume_reason}
+  run.resumed       {attempt_no, attempt_id, resume_reason,
+                    context_fingerprint?}   （C9：与 run.started 同源计算，
+                    每次 attempt 都有指纹——v1.7「每次 attempt 记 fingerprint」）
   step.started      {step_id, ordinal, model_slot?}
   step.completed    {step_id, input_tokens?, output_tokens?, latency_ms?}
   llm.request_started {llm_call_id, step_id, model, retry_no?}
@@ -57,8 +59,9 @@ pending_queue JSON / queue_paused 列，queue.item_enqueued 同步写 messages
 因此成为事件派生投影：rebuild 前重置，重放重建（见 _reset_queue_columns）。
 等待计数器与 FSM 仍在内存 reducer（agentcrew_core.events.reducer）。
 task_runs 的 waiting_user 派生随 C8 落地（question.* 事件往返翻转
-running↔waiting_user）；waiting_verification 是 C9 对账的派生态，C2 只实现
-run.* 直接迁移。
+running↔waiting_user）；waiting_verification 由 tool.pending_verification
+事件派生（C9）：非终态任务翻入该态，tool.verification_submitted /
+run.resumed / run.* 终态照常覆盖。
 """
 
 from __future__ import annotations
@@ -291,6 +294,15 @@ def _tool_skipped(conn: sqlite3.Connection, ev: Event) -> None:
 
 def _tool_pending(conn: sqlite3.Connection, ev: Event) -> None:
     _tool_status(conn, ev, "pending_verification")  # 非终态：不填 completed_at
+    # C9：待核验派生态（事件派生，rebuild 稳定）——非终态任务转
+    # waiting_verification（resume 前置校验与清单查询的口径）。终态任务
+    # 不翻（C8 _finish 先结清再落终态，此处只是不覆盖其后到来的终态）
+    conn.execute(
+        "UPDATE task_runs SET status='waiting_verification', updated_at=?"
+        " WHERE id=? AND status IN ('queued', 'running', 'waiting_user',"
+        " 'interrupted')",
+        (ev.ts, ev.task_run_id),
+    )
 
 
 def _tool_verification(conn: sqlite3.Connection, ev: Event) -> None:

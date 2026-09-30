@@ -158,6 +158,14 @@ class SessionService:
     async def _conv_lock(self, conversation_id: str) -> asyncio.Lock:
         return await self._scoped_lock(f"conv:{conversation_id}")
 
+    # C9 恢复域共用件：会话串行域与 FSM 现值（resume 校验与直发/排队/
+    # 继续互斥，同一锁同一状态源）
+    async def lock_for(self, conversation_id: str) -> asyncio.Lock:
+        return await self._conv_lock(conversation_id)
+
+    def sync_fsm(self, conversation_id: str) -> ConversationState:
+        return self._fsm_sync(conversation_id)[0]
+
     async def _idempotency_lock(self, client_request_id: str) -> asyncio.Lock:
         """创建幂等键串行域（外审回稿：查重+材料导入+创建 全程持锁）。"""
         return await self._scoped_lock(f"idem:{client_request_id}")

@@ -1,7 +1,10 @@
-"""RunManager（M0-C8）：每 TaskRun 一个 asyncio 任务、注册表与取消传播。
+"""RunManager（M0-C8/C9）：每 TaskRun 一个 asyncio 任务、注册表与取消传播。
 
 - 启动：订阅总线（internal，不占 SSE 名额）监听 run.queued / run.resumed →
-  派发 runner；全局并发 FIFO（gates.global_concurrency，信号量）；
+  派发 runner（resume 自 C9：_runner 跳过 run.started、上下文由
+  RecoveryService 重放重建 + 副作用账本注入、attempt_no 与回合号跨 attempt
+  续接——steps 唯一键与回合上限都按任务计）；全局并发 FIFO
+  （gates.global_concurrency，信号量）；
 - 配置绑定（v1.7）：每次 attempt 开始时快照 models/gates/system prompt/
   tools schema——运行中 PATCH settings 不影响本任务，下一新任务用新版
   （attempt 记 context_fingerprint；模型槽经独立 Provider 实例绑定，共享
@@ -126,6 +129,7 @@ class RunManager:
         self._questions = questions
         self._runs: dict[str, _Run] = {}
         self._guardrails: dict[str, str] = {}  # task_id → 护栏提示（接续注入）
+        self._recovery = None  # C9：RecoveryService（cli 装配后注回，resume 重建用）
         self._shutting_down = False
         self._loop: asyncio.AbstractEventLoop | None = None
         self._dispatch_sub: Subscription | None = None
@@ -136,6 +140,10 @@ class RunManager:
         self._http = httpx.AsyncClient(timeout=180.0)  # 全部 attempt 共享
 
     # ── 生命周期 ──────────────────────────────────────────────────
+
+    def wire(self, recovery) -> None:
+        """C9：RecoveryService 注回（resume runner 的上下文重建）。"""
+        self._recovery = recovery
 
     async def start(self) -> None:
         self._loop = asyncio.get_running_loop()
@@ -172,7 +180,8 @@ class RunManager:
 
     def _on_event(self, event) -> None:
         if event.type in (RunEventType.RUN_QUEUED, RunEventType.RUN_RESUMED):
-            self._spawn(event.task_run_id, event.conversation_id)
+            self._spawn(event.task_run_id, event.conversation_id,
+                        resume=event.type == RunEventType.RUN_RESUMED)
             return
         run = self._runs.get(event.task_run_id or "")
         if run is None:
@@ -185,11 +194,12 @@ class RunManager:
             run.waiting = max(0, run.waiting - 1)
             run.last_progress = time.monotonic()  # 决定即进展（§5）
 
-    def _spawn(self, task_run_id: str, conversation_id: str) -> None:
+    def _spawn(self, task_run_id: str, conversation_id: str,
+               *, resume: bool = False) -> None:
         if self._shutting_down or task_run_id in self._runs:
             return
         task = self._loop.create_task(
-            self._runner(task_run_id, conversation_id),
+            self._runner(task_run_id, conversation_id, resume=resume),
             name=f"run:{task_run_id[:12]}")
         self._runs[task_run_id] = _Run(
             task_run_id=task_run_id, conversation_id=conversation_id, task=task)
@@ -237,11 +247,47 @@ class RunManager:
             attempt_no=attempt_no,
         )
 
-    async def _runner(self, task_run_id: str, conversation_id: str) -> None:
+    async def _assemble_attempt(self, conversation_id: str, task_run_id: str):
+        """attempt 装配：配置/环境块/工具 schema 在此刻绑定（v1.7 配置
+        快照 + fingerprint）。initial 与 resume 共用（start_resume 发
+        run.resumed 前取同一份指纹）。DB 读取全在线程内。"""
+
+        def build_all():
+            slot = self._bind_slot("main")
+            conv = self._sessions.conversation_or_404(conversation_id)
+            scope = self._sessions.scope_of(conv)
+            folders = [f["path"] for f in
+                       json.loads(conv["folders_json"] or "[]")]
+            tools = self._scheduler.registry.schemas()
+            system = SYSTEM_PROMPT + "\n\n" + env_block(
+                datetime.now(), scope["workspace_dir"],
+                scope["materials_dir"], folders, conv["workspace_id"])
+            return (slot, tools, system, conv["agent_id"],
+                    context_fingerprint(system, tools,
+                                        self._model_config(slot)))
+
+        return await asyncio.to_thread(build_all)
+
+    async def start_resume(self, task_run_id: str, conversation_id: str,
+                           resume_reason: str, attempt_no: int) -> None:
+        """C9：发 run.resumed（含与 run.started 同源的指纹）→ 总线派发
+        resume runner。校验已由 RecoveryService.resume 完成。"""
+        _slot, _tools, _system, _agent, fingerprint = \
+            await self._assemble_attempt(conversation_id, task_run_id)
+        await self._emit(task_run_id, conversation_id, "run.resumed", {
+            "attempt_no": attempt_no,
+            "attempt_id": uuid.uuid4().hex,
+            "resume_reason": resume_reason,
+            "context_fingerprint": fingerprint,
+        }, attempt_no=attempt_no)
+
+    async def _runner(self, task_run_id: str, conversation_id: str,
+                      *, resume: bool = False) -> None:
         run = self._runs[task_run_id]
         watchdog: asyncio.Task | None = None
         terminal: str | None = None
         fail_reason = ""
+        attempt_no = 1
         try:
             # 名额等待纳入取消处理覆盖范围（外审致命①）：等待期被
             # request_cancel 取消同样走统一终态（run.cancelled 成对落库）
@@ -250,20 +296,21 @@ class RunManager:
             # 配置绑定在取得名额之后（外审建议④）：等待期间 PATCH 的
             # gates/models 一并被本次 attempt 吸收，指纹与行为一致
             gates = self._bind_gates()
-            row = await asyncio.to_thread(
-                self._task_row, task_run_id)
-            if row is None or row["status"] != "queued":
-                _log.warning("run.skip task=%s status=%s（非 queued 不启动）",
-                             task_run_id, row["status"] if row else "缺失")
+            expected = "running" if resume else "queued"  # resumed 投影已置 running
+            row = await asyncio.to_thread(self._task_row, task_run_id)
+            if row is None or row["status"] != expected:
+                _log.warning("run.skip task=%s status=%s（非 %s 不启动）",
+                             task_run_id, row["status"] if row else "缺失",
+                             expected)
                 return
             conv = await asyncio.to_thread(
                 self._sessions.conversation_or_404, conversation_id)
             run.agent_id = conv["agent_id"]
 
             # ── attempt 装配：配置/环境块/工具 schema 全部在此刻绑定 ──
-            slot = self._bind_slot("main")
-            provider = GLMAnthropicProvider(
-                {"main": slot}, client=self._http)
+            slot, tools, system, _agent_id, fingerprint = \
+                await self._assemble_attempt(conversation_id, task_run_id)
+            provider = GLMAnthropicProvider({"main": slot}, client=self._http)
             ctx = await asyncio.to_thread(
                 self._sessions.build_work_context, conversation_id,
                 task_run_id)
@@ -272,35 +319,39 @@ class RunManager:
 
             async def sink(event_type: str, payload: dict) -> None:
                 await self._emit(task_run_id, conversation_id,
-                                 event_type, payload)
+                                 event_type, payload, attempt_no=attempt_no)
 
             ctx.emit = sink
-            tools = self._scheduler.registry.schemas()
-            materials_dir = self._sessions.scope_of(conv)["materials_dir"]
-            folders = [f["path"] for f in json.loads(conv["folders_json"] or "[]")]
-            system = SYSTEM_PROMPT + "\n\n" + env_block(
-                datetime.now(), str(ctx.cwd), materials_dir, folders,
-                conv["workspace_id"])
-            fingerprint = context_fingerprint(
-                system, tools, self._model_config(slot))
 
-            attempt_id = uuid.uuid4().hex
-            await self._emit(task_run_id, conversation_id, "run.started", {
-                "attempt_no": 1, "attempt_id": attempt_id,
-                "kind": "initial", "context_fingerprint": fingerprint,
-            })
-            # 停滞计时从 run.started 重置起（外审建议④）：等名额耗时
+            if resume:
+                # C9 §7：attempt 行已由 run.resumed 投影建立，不重发
+                # run.started；上下文从事件重放重建 + 副作用账本注入
+                attempt_no = row["current_attempt_no"] or 2
+                replay, ledger = await asyncio.to_thread(
+                    self._recovery.rebuild_for_resume, task_run_id)
+                for warning in replay.warnings:
+                    _log.warning("resume.replay_warning task=%s %s",
+                                 task_run_id, warning)
+                messages = replay.messages
+                system = system + "\n\n" + ledger
+            else:
+                attempt_id = uuid.uuid4().hex
+                await self._emit(task_run_id, conversation_id, "run.started", {
+                    "attempt_no": 1, "attempt_id": attempt_id,
+                    "kind": "initial", "context_fingerprint": fingerprint,
+                })
+                messages = await asyncio.to_thread(
+                    self._history_messages, conversation_id)
+                instruction = row["instruction"]
+                guardrail = self._guardrails.pop(task_run_id, None)
+                messages.append(user_text_message(
+                    instruction + (f"\n\n{guardrail}" if guardrail else "")))
+
+            # 停滞计时从 attempt 生效重置起（外审建议④）：等名额耗时
             # 不计入窗口，启动即误判 stalled
             run.last_progress = time.monotonic()
             watchdog = self._loop.create_task(
                 self._watchdog(run, gates), name=f"watchdog:{task_run_id[:12]}")
-
-            messages = await asyncio.to_thread(
-                self._history_messages, conversation_id)
-            instruction = row["instruction"]
-            guardrail = self._guardrails.pop(task_run_id, None)
-            messages.append(user_text_message(
-                instruction + (f"\n\n{guardrail}" if guardrail else "")))
 
             async def execute(call: ToolCall) -> ToolResult:
                 if call.name == "ask_user":
@@ -320,6 +371,8 @@ class RunManager:
                 on_progress=lambda: setattr(
                     run, "last_progress", time.monotonic()),
                 gates=gates, model=slot.model,
+                start_ordinal=(await asyncio.to_thread(
+                    self._next_ordinal, task_run_id) if resume else 1),
             )
             result = await run_task(messages, deps)
             if result.status == "completed":
@@ -327,13 +380,14 @@ class RunManager:
                 await self._finish(task_run_id, conversation_id,
                                    "run.completed",
                                    {"final_text": result.final_text,
-                                    "outcome": "completed"}, run=run)
+                                    "outcome": "completed"}, run=run,
+                                   attempt_no=attempt_no)
             else:
                 terminal = "failed"
                 fail_reason = result.reason
                 await self._finish(task_run_id, conversation_id,
                                    "run.failed", {"reason": result.reason},
-                                   run=run)
+                                   run=run, attempt_no=attempt_no)
         except asyncio.CancelledError:
             # 终态时序：进入此处时模型流已 aclose、工具批已收割（run_task
             # 的 finally/TaskGroup 保证）；之后才结清并落终态事件
@@ -362,16 +416,17 @@ class RunManager:
                         fail_reason = run.fail_reason
                         await self._finish(task_run_id, conversation_id,
                                            "run.failed",
-                                           {"reason": run.fail_reason}, run=run)
+                                           {"reason": run.fail_reason}, run=run,
+                                           attempt_no=attempt_no)
                     else:
                         terminal = "cancelled"
                         # 成对终态（run.cancelled + 队列非空时 queue.paused）
                         # 单事务提交且与 continue_queue 同锁——消除"两事件
-                        # 之间点继续被晚到的 paused 再次暂停"竞态（外审建议⑤）；
+                        # 之间点继续被晚到 paused 再次暂停"竞态（外审建议⑤）；
                         # 同样先置闸（本处理器 await 期间再被取消时防重入双发）
                         run.terminal_inflight = True
                         await self._sessions.emit_cancel_pair(
-                            conversation_id, task_run_id, attempt_no=1)
+                            conversation_id, task_run_id, attempt_no=attempt_no)
             finally:
                 raise
         except BaseException as e:  # noqa: BLE001 —— asyncio 任务异常→RUN_FAILED
@@ -383,7 +438,7 @@ class RunManager:
                 if not await self._terminal_event_exists(task_run_id):
                     await self._finish(task_run_id, conversation_id,
                                        "run.failed", {"reason": fail_reason},
-                                       run=run)
+                                       run=run, attempt_no=attempt_no)
                 else:
                     _log.info("run.terminal_already_present task=%s"
                               "（兜底路径不再补发）", task_run_id)
@@ -405,7 +460,8 @@ class RunManager:
 
     async def _finish(self, task_run_id: str, conversation_id: str,
                       event_type: str, payload: dict,
-                      run: "_Run | None" = None) -> None:
+                      run: "_Run | None" = None,
+                      attempt_no: int = 1) -> None:
         """统一终态出口（外审致命②）：终态事件写入前，先结清本任务
         dispatched 无结果的调用（含结果事件落库失败的 record_failed——
         事件没落库，投影行停在 dispatched，同被此扫描覆盖）转
@@ -420,7 +476,8 @@ class RunManager:
         if run is not None:
             run.terminal_inflight = True
         await asyncio.shield(
-            self._emit(task_run_id, conversation_id, event_type, payload))
+            self._emit(task_run_id, conversation_id, event_type, payload,
+                       attempt_no=attempt_no))
 
     async def _settle_dispatched(self, task_run_id: str,
                                  conversation_id: str) -> None:
@@ -549,8 +606,17 @@ class RunManager:
 
     def _task_row(self, task_run_id: str):
         return self._db.read_conn.execute(
-            "SELECT id, conversation_id, instruction, status FROM task_runs"
+            "SELECT id, conversation_id, instruction, status,"
+            " current_attempt_no FROM task_runs"
             " WHERE id = ?", (task_run_id,)).fetchone()
+
+    def _next_ordinal(self, task_run_id: str) -> int:
+        """resume 续接回合号：steps(task_run_id, ordinal) 唯一，且回合
+        上限按任务计（重置 = 预算翻倍）。"""
+        row = self._db.read_conn.execute(
+            "SELECT COALESCE(MAX(ordinal), 0) + 1 FROM steps"
+            " WHERE task_run_id = ?", (task_run_id,)).fetchone()
+        return int(row[0])
 
     def _history_messages(self, conversation_id: str) -> list[dict]:
         """同会话已完成任务的（指令, 最终回复）对——上下文连续（v1.7：模型
@@ -578,15 +644,16 @@ class RunManager:
         row = await asyncio.to_thread(self._task_row, task_run_id)
         if row is None:
             raise LookupError(f"任务不存在：{task_run_id}")
-        if row["status"] in ("completed", "failed", "cancelled",
-                             "interrupted"):
+        if row["status"] in ("completed", "failed", "cancelled"):
             return {"status": row["status"], "already_terminal": True}
         run = self._runs.get(task_run_id)
         if run is not None:
             run.task.cancel()  # runner 落 run.cancelled（reducer 置队列暂停）
             return {"status": "cancelling"}
-        # 无 runner（如启动前遗留的 queued 任务）：成对终态经会话锁
-        # 单事务落库（含队列非空时的 queue.paused，外审建议⑤）
+        # 无 runner：queued（启动前遗留）/ interrupted / waiting_verification
+        # （重启对账后，C9 显式放弃）——成对终态经会话锁单事务落库（含
+        # 队列非空时的 queue.paused，外审建议⑤）；reducer 自 C9 起
+        # run.cancelled 在 idle 下合法（对账后 FSM 已回 idle）
         await self._sessions.emit_cancel_pair(row["conversation_id"],
                                               task_run_id)
         return {"status": "cancelled"}

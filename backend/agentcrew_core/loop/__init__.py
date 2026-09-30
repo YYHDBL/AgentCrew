@@ -186,6 +186,8 @@ class LoopDeps:
     on_progress: Callable[[], None]                    # 停滞看门狗心跳
     gates: LoopGates
     model: str                                         # llm.request_started 用
+    start_ordinal: int = 1  # C9：resume 续接历史回合号（steps 唯一键与
+    #                                           回合上限都按任务计，不得重置）
 
 
 @dataclass(frozen=True)
@@ -199,13 +201,15 @@ async def run_task(messages: list[dict], deps: LoopDeps) -> LoopResult:
     """ReAct 主循环（harness-session §5 骨架）。
 
     messages 由调用方初始化（历史 + 本任务指令），本循环只追加 assistant
-    tool_use / tool_result / 纠偏消息；无 tool_call 的回合即最终回复。"""
+    tool_use / tool_result / 纠偏消息；无 tool_call 的回合即最终回复。
+    回合号从 deps.start_ordinal 起（resume 续接——steps 唯一键与回合上限
+    都按任务计）。"""
     gates = deps.gates
     repeat = RepeatGate(gates.repeat_limit)
     round_resends = 0
     parse_retries = 0
     tokens_used = 0
-    ordinal = 0
+    ordinal = deps.start_ordinal - 1
     while True:
         ordinal += 1
         if ordinal > gates.max_steps:

@@ -36,6 +36,7 @@ from .db.migrations import MigrationFailedError, run_migrations
 from .db.write_channel import WriteChannel
 from .providers import build_provider
 from .questions import QuestionService
+from .recovery import RecoveryService
 from .run_manager import RunManager
 from .sessions import SessionService
 from .settings import SettingsService
@@ -333,6 +334,11 @@ def main(argv: list[str] | None = None) -> int:
             db=db, event_store=event_store, bus=bus, settings=settings,
             sessions=sessions, approvals=approvals, scheduler=scheduler,
             questions=questions)
+        # 恢复域（M0-C9）：对账在 lifespan 内执行（RunManager 派发之前）
+        recovery = RecoveryService(db, event_store, sessions, data_dir,
+                                   data_dir / "chain-head.txt")
+        recovery.wire(run_manager)
+        run_manager.wire(recovery)
         runtime = RuntimeState(
             log=log, data_dir=data_dir, db=db,
             write_channel=channel, diagnostic=diagnostic,
@@ -340,6 +346,7 @@ def main(argv: list[str] | None = None) -> int:
             approvals=approvals, scheduler=scheduler,
             settings=settings, sessions=sessions,
             questions=questions, run_manager=run_manager,
+            recovery=recovery,
         )
         log.info("startup.bus 事件总线就绪（队列上限 1000，SSE 连接上限 32）")
         log.info(
