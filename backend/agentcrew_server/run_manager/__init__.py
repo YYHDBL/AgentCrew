@@ -96,6 +96,11 @@ class _Run:
     # 名额持有标记：ask_user 等待期间释放全局名额（欠账#1），终态收尾
     # 只在持有时释放一次（防双释放）
     sem_held: bool = False
+    # 终态发射闸（外审二轮 F2）：终态写入**提交前**置位——取消落在
+    # _finish 的 await 期间时，取消处理器据此放行在途写入、绝不补发
+    # 第二条终态（双终态会让 replay 在 idle 上抛 InvalidTransition，
+    # 会话 FSM 永久损坏）
+    terminal_inflight: bool = False
 
 
 class RunManager:
@@ -322,12 +327,13 @@ class RunManager:
                 await self._finish(task_run_id, conversation_id,
                                    "run.completed",
                                    {"final_text": result.final_text,
-                                    "outcome": "completed"})
+                                    "outcome": "completed"}, run=run)
             else:
                 terminal = "failed"
                 fail_reason = result.reason
                 await self._finish(task_run_id, conversation_id,
-                                   "run.failed", {"reason": result.reason})
+                                   "run.failed", {"reason": result.reason},
+                                   run=run)
         except asyncio.CancelledError:
             # 终态时序：进入此处时模型流已 aclose、工具批已收割（run_task
             # 的 finally/TaskGroup 保证）；之后才结清并落终态事件
@@ -338,20 +344,34 @@ class RunManager:
             # 也走这里，外审致命①）；finally 里显式重抛恢复取消语义
             asyncio.current_task().uncancel()
             try:
-                await self._settle_dispatched(task_run_id, conversation_id)
-                if run.fail_reason:
-                    terminal = "failed"
-                    fail_reason = run.fail_reason
-                    await self._emit(task_run_id, conversation_id,
-                                     "run.failed",
-                                     {"reason": run.fail_reason})
+                if run.terminal_inflight:
+                    # F2：终态 job 已提交写通道（闭包提交+发布不受协程
+                    # 取消影响）——等待其落库后放行（terminal 保持
+                    # completed/failed，接续语义不受取消影响）；等待超时
+                    # 只告警不发第二条：宁缺终态交 C9 对账收敛，不要双
+                    # 终态把会话 replay 打死
+                    if not await self._await_terminal(task_run_id):
+                        _log.error(
+                            "run.terminal_inflight_timeout task=%s"
+                            "（在途终态未观测到落库，交 C9 对账）", task_run_id)
                 else:
-                    terminal = "cancelled"
-                    # 成对终态（run.cancelled + 队列非空时 queue.paused）
-                    # 单事务提交且与 continue_queue 同锁——消除"两事件之间
-                    # 点继续被晚到的 paused 再次暂停"竞态（外审建议⑤）
-                    await self._sessions.emit_cancel_pair(
-                        conversation_id, task_run_id, attempt_no=1)
+                    await self._settle_dispatched(task_run_id,
+                                                  conversation_id)
+                    if run.fail_reason:
+                        terminal = "failed"
+                        fail_reason = run.fail_reason
+                        await self._finish(task_run_id, conversation_id,
+                                           "run.failed",
+                                           {"reason": run.fail_reason}, run=run)
+                    else:
+                        terminal = "cancelled"
+                        # 成对终态（run.cancelled + 队列非空时 queue.paused）
+                        # 单事务提交且与 continue_queue 同锁——消除"两事件
+                        # 之间点继续被晚到的 paused 再次暂停"竞态（外审建议⑤）；
+                        # 同样先置闸（本处理器 await 期间再被取消时防重入双发）
+                        run.terminal_inflight = True
+                        await self._sessions.emit_cancel_pair(
+                            conversation_id, task_run_id, attempt_no=1)
             finally:
                 raise
         except BaseException as e:  # noqa: BLE001 —— asyncio 任务异常→RUN_FAILED
@@ -359,8 +379,14 @@ class RunManager:
             terminal = "failed"
             fail_reason = f"internal:{type(e).__name__}"
             try:
-                await self._finish(task_run_id, conversation_id,
-                                   "run.failed", {"reason": fail_reason})
+                # F2 防线：兜底补发前查终态事件是否已在库
+                if not await self._terminal_event_exists(task_run_id):
+                    await self._finish(task_run_id, conversation_id,
+                                       "run.failed", {"reason": fail_reason},
+                                       run=run)
+                else:
+                    _log.info("run.terminal_already_present task=%s"
+                              "（兜底路径不再补发）", task_run_id)
             except Exception:  # noqa: BLE001 —— 终态写入失败如实记录
                 _log.exception("run.final_write_failed task=%s", task_run_id)
         finally:
@@ -378,15 +404,23 @@ class RunManager:
                 await self._maybe_continue(conversation_id)
 
     async def _finish(self, task_run_id: str, conversation_id: str,
-                      event_type: str, payload: dict) -> None:
+                      event_type: str, payload: dict,
+                      run: "_Run | None" = None) -> None:
         """统一终态出口（外审致命②）：终态事件写入前，先结清本任务
         dispatched 无结果的调用（含结果事件落库失败的 record_failed——
         事件没落库，投影行停在 dispatched，同被此扫描覆盖）转
         tool.pending_verification 落库；终态事件是"执行真正结束"的
         证据（v1.7 契约③）。进程崩溃后的启动对账归 C9，此处只管
-        运行中任务的终态前结清。"""
+        运行中任务的终态前结清。
+        run.terminal_inflight 在终态 job 提交前置位（F2 闸）；终态 emit
+        套 shield——排队中的写通道 job 会被协程取消连坐（executor
+        future 未开始时可被 cancel），shield 后取消只打断 await、job
+        必然落库，取消处理器等待即得、绝不覆写。"""
         await self._settle_dispatched(task_run_id, conversation_id)
-        await self._emit(task_run_id, conversation_id, event_type, payload)
+        if run is not None:
+            run.terminal_inflight = True
+        await asyncio.shield(
+            self._emit(task_run_id, conversation_id, event_type, payload))
 
     async def _settle_dispatched(self, task_run_id: str,
                                  conversation_id: str) -> None:
@@ -395,6 +429,29 @@ class RunManager:
             await self._emit(task_run_id, conversation_id,
                              "tool.pending_verification",
                              {"call_id": call_id})
+
+    # ── F2 终态发射闸的观测件 ─────────────────────────────────────
+
+    async def _await_terminal(self, task_run_id: str,
+                              timeout: float = 5.0) -> bool:
+        """等待在途终态落库（F2：取消撞终态提交窗口时，job 已提交写通道，
+        串行执行后必然落库）。返回是否观测到；超时=写通道故障，交 C9。"""
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            if await self._terminal_event_exists(task_run_id):
+                return True
+            await asyncio.sleep(0.05)
+        return await self._terminal_event_exists(task_run_id)
+
+    async def _terminal_event_exists(self, task_run_id: str) -> bool:
+        row = await asyncio.to_thread(self._terminal_row, task_run_id)
+        return row is not None
+
+    def _terminal_row(self, task_run_id: str):
+        return self._db.read_conn.execute(
+            "SELECT 1 FROM run_events WHERE task_run_id = ?"
+            " AND type IN ('run.completed', 'run.failed', 'run.cancelled')"
+            " LIMIT 1", (task_run_id,)).fetchone()
 
     def _dispatched_calls(self, task_run_id: str) -> list[str]:
         """终态前待结清的调用。ask_user 豁免：交互原语无副作用可核验，

@@ -260,7 +260,12 @@ async def run_task(messages: list[dict], deps: LoopDeps) -> LoopResult:
                 "llm_call_id": llm_call_id, "step_id": step_id,
                 "error": f"{error.error_class.value}: {error.message}",
                 "retry_no": retry_no})
-            if error.retryable and round_resends < ROUND_RESEND_LIMIT:
+            # 整轮重发仅限"已产出部分输出"（C4 移交前提 + §6.3 上限语义）：
+            # 零产出的可重试错误 = 适配层内部退避 3 次已耗尽，循环层再重发
+            # 一整轮会把最坏请求数放大到 8——按耗尽处理直接失败（外审二轮）
+            produced = bool(text_parts or thinking_blocks or calls)
+            if (error.retryable and produced
+                    and round_resends < ROUND_RESEND_LIMIT):
                 round_resends += 1
                 retry_no += 1
                 continue  # 丢弃部分输出后整轮重发

@@ -1,4 +1,8 @@
-"""ask_user：交互原语，question.* 事件 + 等待回答通道。纯搬移。"""
+"""ask_user：交互原语，question.* 事件 + 等待回答通道。纯搬移。
+
+side_effect_class 申报 verifiable = §6.2 交互原语豁免（v1.8）：无外部
+副作用、不参与核验；中断/取消的已知结局是未获回答（C9 合成占位
+tool_result），账本停 dispatched 不转待核验。"""
 
 from __future__ import annotations
 

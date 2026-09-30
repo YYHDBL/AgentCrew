@@ -252,6 +252,10 @@ components:
       properties:
         settings: { $ref: "#/components/schemas/Settings" }
         ignored_fields: { type: array, items: { type: string }, description: 被环境变量覆盖而未生效的字段 }
+        restart_required:
+          type: array
+          items: { type: string }
+          description: 需重启生效的本次触碰字段（gates.global_concurrency 在进程启动期构造信号量，PATCH 仅落盘——C8 二轮回稿）
         audit:
           type: object
           description: 审计入链状态（外审回稿：一切配置变更入审计链）

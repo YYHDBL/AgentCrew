@@ -36,6 +36,8 @@ _ALLOWED_SLOT_FIELDS = {"provider", "model", "base_url", "api_key", "max_tokens"
 _ALLOWED_GATES = {"max_steps", "stall_seconds", "repeat_limit",
                   "global_concurrency", "token_budget"}
 _ALLOWED_LIMITS = {"max_files", "max_file_mb", "max_folders"}
+# 运行期构造、PATCH 仅落盘待重启的字段（backend-service §4）
+_RESTART_REQUIRED_FIELDS = {"gates.global_concurrency"}
 
 
 class SettingsWriteFailed(RuntimeError):
@@ -137,7 +139,12 @@ class SettingsService:
         ignored = sorted(p for p in self._config.env_fields if p in touched)
         audit_status = await self._audit(
             new_file["config_version"], touched, cleared)
+        # 需重启生效的字段（外审二轮建议4）：信号量在进程启动期构造，
+        # PATCH 该字段只落盘——响应明示，不谎报已生效
+        restart_required = sorted(
+            p for p in touched if p in _RESTART_REQUIRED_FIELDS)
         return {"settings": self.get_view(), "ignored_fields": ignored,
+                "restart_required": restart_required,
                 "audit": {"status": audit_status}}
 
     def _validate_shape(self, patch: dict[str, Any]) -> list[str]:

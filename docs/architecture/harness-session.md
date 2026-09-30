@@ -2,6 +2,7 @@
 
 > 模块深潜 #1 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（D1–D5 全部对齐）**
 > 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)。本文档粒度到"可以直接写代码"。
+> **v1.8（2026-09-30，C8 二轮外审）**：§6.2 补交互原语豁免条款（ask_user 不参与副作用核验，中断结局=未获回答，C9 合成占位）。
 > **v1.4（2026-09-30，对齐产品 F001–F010）**：新增任务材料与访问范围（task_materials + 任务级 scope 判定）、**排队暂停语义修订**（用户停止 → 队列暂停而非自动顶上；completed/failed 才自动接续——修订 D5 原义）、待核验结果提交（verification API）、产物投影与状态探测（artifacts 表）、审批 pending 列表与 always_scope_preview。接口全量见 [contracts/openapi.yaml](../contracts/openapi.yaml) v0.2。
 
 ---
@@ -348,6 +349,7 @@ M0 内置工具 = **五件套**（v1.7：核心四件套 + ask_user 交互原语
   - `verifiable`：**仅限具备原子写 + 内容哈希核验的写入**——`write_file` 实现 tmp+rename+fsync 原子写，prepared 时记目标路径与内容 sha256；启动核验 = 文件存在**且哈希一致** → 补 completed，不一致 → pending_verification（"文件存在"不构成完成证据）
   - `external_idempotency`：**仅当连接器配置显式声明该端点承诺按幂等键去重**才可归此类；默认一切 HTTP 调用归 `outcome_unknown`（发送 Idempotency-Key 头本身不构成任何保证）
   - `outcome_unknown`（默认外部副作用类）：崩溃后 → `pending_verification`，暂停自动重试与 resume，人工核验（确认已执行→completed(verified_by_user)；确认未执行→not_executed，恢复时告知模型需重做）
+  - **交互原语豁免（v1.8，C8 二轮回稿）**：`ask_user` 申报 `verifiable` 但**不参与副作用核验**——它没有外部副作用，"verifiable" 取其字面义（结果可由事件流完全确定，非 outcome_unknown）：question.requested/answered 即完整结局。中断/取消后的已知结局 = **未获回答**：账本停 dispatched、不转 pending_verification（转了会把"停止后继续队列"永久堵死），恢复重建时按未回答合成占位 tool_result（"（中断，未回答）"）告知模型可再问。
   **恢复后的重发语义（v1.2 修订）**：resume 把历史调用及其结果重放进上下文（模型"看得见"已做过什么）；此后**模型新发出的任何调用都是新决定**——新 `call_id`、正常过闸门执行，**绝不因参数相同而自动跳过**（否则两次有意执行会被错误合并）。防重复副作用不靠跳过，靠分类语义：`external_idempotency` 工具的外部幂等键由 `(task_run_id, call_id)` 派生（v1.3 修订）——**同一次逻辑调用**的重试与核验后重执行复用同键（供应商侧去重兜底，命中发 TOOL_SKIPPED_IDEMPOTENT），而**同任务中两次合法的相同请求各有 call_id、各得各键，绝不合并**；`verifiable` 重执行天然安全且事后核验；`outcome_unknown` 反正处于待核验暂停态
 
 ---
