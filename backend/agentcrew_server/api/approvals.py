@@ -35,7 +35,9 @@ def install_approval_routes(app, runtime) -> None:
         task_run_id: str,
         status: str = Query("pending", pattern="^(pending|resolved)$"),
     ):
+        # read_conn 必须在 worker 线程内解析（每线程一条只读连接）——在事件
+        # 循环线程取出再交给 worker 会共享同一条连接（C3 已修过的类，外审 S03）
         if not await asyncio.to_thread(
-                task_run_exists, runtime.db.read_conn, task_run_id):
+                lambda: task_run_exists(runtime.db.read_conn, task_run_id)):
             raise ApiError(ErrorCode.NOT_FOUND, f"任务不存在：{task_run_id}")
         return await service.list_approvals(task_run_id, status)

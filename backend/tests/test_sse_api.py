@@ -255,19 +255,17 @@ def test_connection_limit_503(tmp_path):
 
 
 def test_slow_consumer_gets_resync_then_catches_up(tmp_path):
-    """裸 socket 客户端：压小接收缓冲且不读 → 服务端发送缓冲/asyncio 缓冲
-    相继打满 → 生成器停摆 → 每连接队列溢出 → 收到 event:resync（游标 =
-    实际送达的最后一条）→ 服务端终止连接 → 从游标重连恰好补齐。
-
-    数据量依据：帧 ~800B（payload 填充），需穿透 客户端 rcvbuf(≈4KB) +
-    服务端 sndbuf(≈128KB) + asyncio 高水位(64KB) ≈ 200KB 才能让 send 阻塞。
+    """裸 socket 客户端压小接收缓冲且不读 → 持续发布直到服务端每连接队列
+    **真实溢出**（直接观察订阅 overflowed 标志，不再依赖对内核缓冲大小的
+    估计——Linux 大 sndbuf 下固定 600 条灌不满，外审回稿 S14）→ 收到
+    event:resync（游标 = 实际送达的最后一条）→ 服务端终止连接 →
+    从游标重连恰好补齐。
     """
     srv = LiveServer(
         tmp_path, bus_kwargs={"max_queue": 20, "hard_kill_grace": 30.0}
     )
     srv.start()
     srv.append(3)  # 历史
-    total_live = 600
     try:
         raw = socket.socket()
         raw.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 2048)
@@ -277,8 +275,19 @@ def test_slow_consumer_gets_resync_then_catches_up(tmp_path):
             f"Host: x\r\nAuthorization: Bearer {TOKEN}\r\n\r\n".encode()
         )
         time.sleep(0.3)  # 让历史段与初期帧把内核缓冲灌满、生成器停摆
-        srv.append(total_live, pad=768)  # 远超队列上限 20 → 溢出标记
-        time.sleep(0.5)
+        total_live = 0
+        overflowed = False
+        deadline = time.monotonic() + 20
+        while time.monotonic() < deadline:
+            srv.append(50, pad=768)
+            total_live += 50
+            time.sleep(0.05)
+            if any(getattr(sub, "overflowed", False)
+                   for sub in srv.bus._subs):
+                overflowed = True
+                break
+        assert overflowed, \
+            f"发布 {total_live} 条仍未触发队列溢出——环境无法制造背压，断言无意义"
 
         raw.settimeout(5)
         chunks = b""

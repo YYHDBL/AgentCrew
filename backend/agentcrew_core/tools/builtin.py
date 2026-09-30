@@ -1,18 +1,22 @@
 """五个内置工具（harness-session §6.1 五件套 / ADR-008 / v1.7 语义）。
 
-- read_file：分页读（惰性按行取，不整读大文件），scope/受保护路径硬检；
-- write_file：独占创建 tmp（mkstemp O_EXCL，不跟随预置符号链接）+ fsync +
-  rename 原子写；prepared 附内容 sha256（verifiable 类核验依据）；发
-  artifact.* 事件；
+- read_file：分页读（惰性按行取，拾取字节达硬上限即停扫），scope/受保护
+  路径硬检；
+- write_file：逐组件 O_NOFOLLOW 打开父目录钉住 inode → fd 内独占创建 tmp
+  + fsync + rename 原子替换（检查与写入之间父目录被换符号链接也无法改写
+  落点）；prepared 附内容 sha256（verifiable 类核验依据）；发 artifact.*
+  事件；
 - bash：判定结果只影响调度与审批元数据（闸门在 C6）；执行必套 Seatbelt 最小
   profile（写限 scope / 网络全禁 / 受保护路径**读写双向**禁——subpath 一律
-  realpath）；env 白名单仅 PATH/HOME/LANG/TZ/TERM；超时或被取消都在 finally
-  杀进程组（外审回稿：外层取消不留孤儿）；
-- http_request：allowed_hosts 判定，Idempotency-Key=(task_run_id, call_id) 派生；
+  realpath，含尚不存在的路径；SBPL 字面量经转义）；env 白名单仅
+  PATH/HOME/LANG/TZ/TERM；超时/取消/收尾都杀进程组（含正常退出后的后台
+  子进程）；stdout/stderr 流式限额读取；
+- http_request：allowed_hosts 判定 + 三级闸门授权（approved_calls）放行，
+  Idempotency-Key=(task_run_id, call_id) 派生；流式限额读取；
 - ask_user：交互原语，发 question.* 事件并等待回答通道（挂起全链在 C8）；
 - 输出 >32KB 落工件文件留指针；artifacts_dir 未配置时明确报错不内联（外审
-  回稿）；超 max_output_bytes 硬上限截断并标记（防止超大输出耗尽内存后仍全量
-  进入上下文）。
+  回稿）；超 max_output_bytes 硬上限截断并标记（读取过程中执行限额，不先
+  整读后截断）。
 """
 
 from __future__ import annotations
@@ -20,7 +24,6 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import os
-import tempfile
 from pathlib import Path
 from typing import IO
 
@@ -85,6 +88,9 @@ READ_FILE_SCHEMA = {
 }
 
 
+READ_FILE_MAX_LINES = 10_000  # 单页行数上限（分页参数钳制，外审回稿 S04）
+
+
 async def _read_file(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     raw = inv.input.get("path", "")
     if err := _check_path(ctx, raw):
@@ -93,25 +99,37 @@ async def _read_file(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     if not path.is_file():
         return ToolResult(ok=False, error=f"NOT_FOUND：{path}")
     offset = max(1, int(inv.input.get("offset", 1)))
-    limit = max(1, int(inv.input.get("limit", 200)))
-    # 惰性按行读：只取本页，不整读大文件（外审回稿）
-    from itertools import islice
-
+    limit = min(READ_FILE_MAX_LINES, max(1, int(inv.input.get("limit", 200))))
+    # 惰性按行读：只取本页，不整读大文件；拾取字节达到硬上限即停扫
+    # （不再为统计 total_lines 扫完整个文件，S04）
     total_lines = 0
     picked: list[str] = []
+    picked_bytes = 0
+    scan_truncated = False
     with path.open("r", encoding="utf-8", errors="replace") as fh:
         for total_lines, line in enumerate(fh, start=1):
             if offset <= total_lines < offset + limit:
                 picked.append(line.rstrip("\n"))
+                picked_bytes += len(line.encode("utf-8"))
+                if picked_bytes >= HARD_OUTPUT_LIMIT:
+                    scan_truncated = True
+                    break
     content = "\n".join(picked)
     pointer = await _externalize(ctx, inv.call_id, content)
+    if pointer is None and len(content.encode("utf-8")) > INLINE_OUTPUT_LIMIT \
+            and ctx.artifacts_dir is None:
+        return ToolResult(ok=False, error="EXTERNALIZATION_UNAVAILABLE",
+                          details={"bytes": len(content.encode("utf-8"))})
+    details: dict = {"lines": f"{offset}-{offset - 1 + len(picked)}",
+                     "total_lines": total_lines}
+    if scan_truncated:
+        details["truncated"] = True  # total_lines 是下界（提前停扫）
     return ToolResult(
         ok=True,
         output=content if pointer is None else
         f"[输出 {len(content.encode('utf-8'))} 字节超限，已外部化] {pointer}",
         artifact_path=pointer,
-        details={"lines": f"{offset}-{offset - 1 + len(picked)}",
-                 "total_lines": total_lines},
+        details=details,
     )
 
 
@@ -134,6 +152,22 @@ def _write_file_extras(input: dict) -> dict:
             hashlib.sha256(content.encode("utf-8")).hexdigest()}
 
 
+def _open_dir_nofollow(target: Path) -> int:
+    """逐组件 O_NOFOLLOW 打开 target 的父目录并返回 fd（外审回稿 F08）。
+
+    scope 检查已 realpath（此刻路径上没有符号链接）；此后任何组件被换成
+    符号链接都属于检查与写入之间的篡改——O_NOFOLLOW 直接 ELOOP 拒绝，
+    目录 fd 钉住 inode，等待事件落库期间父目录被替换也无法改写落点。
+    """
+    fd = os.open("/", os.O_RDONLY | os.O_DIRECTORY)
+    for part in target.parent.parts[1:]:
+        nxt = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                      dir_fd=fd)
+        os.close(fd)
+        fd = nxt
+    return fd
+
+
 async def _write_file(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     raw = inv.input.get("path", "")
     content = inv.input.get("content", "")
@@ -148,26 +182,33 @@ async def _write_file(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
             "tool_call_id": inv.call_id, "path": str(target),
             "name": target.name, "ext": target.suffix,
         })
-    # mkstemp 独占创建（O_EXCL）：不跟随预置符号链接、不依赖 call_id 拼名
-    fd, tmp_name = tempfile.mkstemp(
-        dir=target.parent, prefix=f".{target.name}.", suffix=".tmp"
-    )
-    tmp = Path(tmp_name)
+    # 父目录 fd 钉住 inode：目录 fd 内的创建与替换不受父目录被替换成符号
+    # 链接的影响（等待 artifact.created 落库的窗口正是竞态窗口，F08）。
+    # 组件遍历遇符号链接（ELOOP）= 检查后被篡改，如实拒绝
     try:
+        dir_fd = _open_dir_nofollow(target)
+    except OSError as e:
+        return ToolResult(ok=False, error=f"PATH_CHANGED：路径在检查后被替换（{e}）")
+    tmp_name = f".{target.name}.{inv.call_id}.tmp"
+    try:
+        fd = os.open(tmp_name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644,
+                     dir_fd=dir_fd)
         with os.fdopen(fd, "w", encoding="utf-8") as fh:  # type: IO[str]
             fh.write(content)
             fh.flush()
             os.fsync(fh.fileno())
-        os.replace(tmp, target)
-    except BaseException:
-        tmp.unlink(missing_ok=True)
-        raise
-    dir_fd = os.open(target.parent, os.O_RDONLY)
-    try:
+        os.replace(tmp_name, target.name,
+                   src_dir_fd=dir_fd, dst_dir_fd=dir_fd)
         os.fsync(dir_fd)
+        size = os.stat(target.name, dir_fd=dir_fd).st_size
+    except BaseException:
+        try:
+            os.unlink(tmp_name, dir_fd=dir_fd)
+        except OSError:
+            pass
+        raise
     finally:
         os.close(dir_fd)
-    size = target.stat().st_size
     if ctx.emit is not None:
         await ctx.emit("artifact.ready", {
             "artifact_id": inv.call_id, "size_bytes": size,
@@ -191,16 +232,27 @@ BASH_SCHEMA = {
 }
 
 
+def _sbpl_quote(path: str) -> str:
+    """SBPL 字符串字面量转义（外审回稿 S06，macOS 实测）：`\"` 生效（未转义
+    的双引号会让 profile 解析失败，含规则语法的路径名还可能改变生成内容）；
+    反斜杠先转。"""
+    return path.replace("\\", "\\\\").replace('"', '\\"')
+
+
 def seatbelt_profile(scope_realpaths: list[str],
                      deny_realpaths: list[str]) -> str:
     """最小 profile（ADR-008）：读默认放开（读取强制边界 M2），写限 scope，
     网络全禁，受保护路径**读写双向**禁（嵌套 subpath 的 deny 压过外层 allow，
-    实测验证）。SBPL 规则：特定 subpath 覆盖泛化规则。"""
+    实测验证；deny 对尚不存在的路径同样生效——创建即被拒，实测验证）。SBPL
+    规则：特定 subpath 覆盖泛化规则。"""
     rules = ['(version 1)', '(allow default)', '(deny network*)', '(deny file-write*)']
-    rules += [f'(allow file-write* (subpath "{p}"))' for p in scope_realpaths]
+    rules += [f'(allow file-write* (subpath "{_sbpl_quote(p)}"))'
+              for p in scope_realpaths]
     # 双向禁：先禁写（含 scope 内受保护路径），再禁读
-    rules += [f'(deny file-write* (subpath "{p}"))' for p in deny_realpaths]
-    rules += [f'(deny file-read* (subpath "{p}"))' for p in deny_realpaths]
+    rules += [f'(deny file-write* (subpath "{_sbpl_quote(p)}"))'
+              for p in deny_realpaths]
+    rules += [f'(deny file-read* (subpath "{_sbpl_quote(p)}"))'
+              for p in deny_realpaths]
     return "\n".join(rules)
 
 
@@ -208,12 +260,26 @@ def _sandboxed_argv(profile: str, command: str) -> list[str]:
     return ["/usr/bin/sandbox-exec", "-p", profile, "/bin/sh", "-c", command]
 
 
+async def _pump(stream, buf: bytearray, cap: int) -> bool:
+    """流式读取子进程输出到 cap 字节为止（S04）：不再先整读后截断——
+    `yes | head -c 4G` 类命令不会把内存吃满。返回是否触顶。"""
+    while True:
+        chunk = await stream.read(65536)
+        if not chunk:
+            return False
+        room = cap - len(buf)
+        if room <= 0:
+            return True
+        buf.extend(chunk[:room])
+
+
 async def _bash(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     command = inv.input.get("command", "")
     timeout_ms = int(inv.input.get("timeout_ms", 60_000))
     readonly, verdict_reason = bash_readonly(command)
-    protected_real = [str(Path(p).resolve()) for p in ctx.protected
-                      if Path(p).exists()]
+    # 受保护路径全部进 deny 列表（不按 exists() 过滤——尚未创建的
+    # config.json 等同样要挡，内核对不存在路径的 deny 实测生效，F07）
+    protected_real = [str(Path(p).resolve()) for p in ctx.protected]
     profile = seatbelt_profile(
         [str(Path(p).resolve()) for p in ctx.scope], protected_real,
     )
@@ -223,25 +289,42 @@ async def _bash(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
         env=env,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
-        start_new_session=True,  # 独立进程组：超时/取消都可整组击杀
+        start_new_session=True,  # 独立进程组：超时/取消/收尾都可整组击杀
     )
-    try:
-        stdout, stderr = await asyncio.wait_for(
-            proc.communicate(), timeout=timeout_ms / 1000
-        )
-    except BaseException:
-        # 内部超时（TimeoutError）与外部取消（CancelledError）都收割进程组
+
+    def _kill_group() -> None:
         try:
             os.killpg(proc.pid, 9)
         except ProcessLookupError:
             pass
+
+    stdout_buf = bytearray()
+    stderr_buf = bytearray()
+
+    async def _pump_stdout() -> bool:
+        if await _pump(proc.stdout, stdout_buf, HARD_OUTPUT_LIMIT):
+            _kill_group()  # 触顶即杀：写满管道的进程不会自己退出
+            return True
+        return False
+
+    try:
+        await asyncio.wait_for(asyncio.gather(
+            _pump_stdout(),
+            _pump(proc.stderr, stderr_buf, 64 * 1024),
+            proc.wait(),
+        ), timeout=timeout_ms / 1000)
+    except BaseException:
+        # 内部超时（TimeoutError）与外部取消（CancelledError）都收割进程组
+        _kill_group()
         await proc.wait()
         raise
-    out = stdout.decode("utf-8", errors="replace")
-    err_text = stderr.decode("utf-8", errors="replace").strip()
-    truncated = len(out.encode("utf-8")) > HARD_OUTPUT_LIMIT
-    if truncated:
-        out = out[:HARD_OUTPUT_LIMIT]
+    # 正常退出也整组击杀（S05）：`sh -c "srv &"` 的 shell 会先退出，后台
+    # 子进程留在进程组里继续跑——C8 契约是"所有子进程收割后才写任务终态"
+    _kill_group()
+    await proc.wait()
+    truncated = len(stdout_buf) >= HARD_OUTPUT_LIMIT
+    out = stdout_buf.decode("utf-8", errors="replace")
+    err_text = stderr_buf.decode("utf-8", errors="replace").strip()
     pointer = await _externalize(ctx, inv.call_id, out)
     if pointer is None and len(out.encode("utf-8")) > INLINE_OUTPUT_LIMIT \
             and ctx.artifacts_dir is None:
@@ -281,32 +364,44 @@ HTTP_SCHEMA = {
 async def _http_request(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     url = inv.input.get("url", "")
     allowed, reason = host_allowed(url, ctx.allowed_hosts)
-    if not allowed:
+    if not allowed and inv.call_id not in ctx.approved_calls:
+        # allowed_hosts 是预授权清单（M0 默认空 = 全部需审批）；本次调用
+        # 已经三级闸门（人工/规则）授权的，执行器不再硬拒（外审回稿 S02）
         return ToolResult(ok=False, error=f"HOST_NOT_ALLOWED：{reason}")
     method = (inv.input.get("method") or "GET").upper()
     headers = dict(inv.input.get("headers") or {})
     headers.setdefault(  # 外部幂等键由 (task_run_id, call_id) 派生（v1.3）
         "Idempotency-Key", f"{ctx.task_run_id}:{inv.call_id}")
     body = inv.input.get("body")
+    buf = bytearray()
+    truncated = False
     async with httpx.AsyncClient(timeout=HTTP_TIMEOUT_S) as client:
-        resp = await client.request(method, url, headers=headers, content=body)
-    text = resp.text
-    truncated = len(text.encode("utf-8")) > HARD_OUTPUT_LIMIT
-    if truncated:
-        text = text[:HARD_OUTPUT_LIMIT]
+        # 流式读取至硬上限即止（S04）：不先整读再截断
+        async with client.stream(
+            method, url, headers=headers, content=body,
+        ) as resp:
+            status_code = resp.status_code
+            content_type = resp.headers.get("content-type", "")
+            async for chunk in resp.aiter_bytes():
+                room = HARD_OUTPUT_LIMIT - len(buf)
+                if room <= 0:
+                    truncated = True
+                    break
+                buf.extend(chunk[:room])
+    text = bytes(buf).decode("utf-8", errors="replace")
     pointer = await _externalize(ctx, inv.call_id, text)
     if pointer is None and len(text.encode("utf-8")) > INLINE_OUTPUT_LIMIT \
             and ctx.artifacts_dir is None:
         return ToolResult(ok=False, error="EXTERNALIZATION_UNAVAILABLE",
-                          details={"status_code": resp.status_code})
+                          details={"status_code": status_code})
+    ok = 200 <= status_code < 300
     return ToolResult(
-        ok=200 <= resp.status_code < 300,
-        output=(text[:INLINE_OUTPUT_LIMIT] if pointer is None else
+        ok=ok,
+        output=(text if pointer is None else
                 f"[输出超限，已外部化] {pointer}"),
         artifact_path=pointer,
-        error=None if 200 <= resp.status_code < 300 else f"HTTP_{resp.status_code}",
-        details={"status_code": resp.status_code,
-                 "content_type": resp.headers.get("content-type", ""),
+        error=None if ok else f"HTTP_{status_code}",
+        details={"status_code": status_code, "content_type": content_type,
                  **({"truncated": True} if truncated else {})},
     )
 

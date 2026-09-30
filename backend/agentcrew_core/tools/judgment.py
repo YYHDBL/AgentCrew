@@ -14,13 +14,36 @@ BASH_READONLY_WHITELIST = frozenset(
     {"ls", "cat", "head", "tail", "grep", "find", "wc", "pwd", "file", "stat", "du", "diff"}
 )
 
-# 元字符/重定向一票否决（; && || | 反引号 $( ) > < 换行）——宁可误报
-BASH_METACHARS = (";", "&&", "||", "|", "`", "$(", "(", ")", ">", "<", "\n")
+# 元字符/重定向一票否决（; && || | & 反引号 $( ) > < 换行）——宁可误报。
+# 单个 & 必须否决（外审回稿 F06）：`cat x & touch y` 中 touch 会在后台执行，
+# 实测产生写入——若判只读则 Seatbelt scope 内写入绕过人工审批
+BASH_METACHARS = (";", "&&", "||", "|", "&", "`", "$(", "(", ")", ">", "<", "\n")
 
 # find 参数否决（v1.7 重入）：出现任一即丧失只读资格
 FIND_VETO_TOKENS = frozenset(
     {"-exec", "-execdir", "-delete", "-ok", "-okdir", "-fprintf", "-fprint", "-fls"}
 )
+
+
+def _first_word_identity(command_word: str) -> tuple[bool, str]:
+    """首词必须是可信白名单程序本体（外审回稿 F06）：
+    ① 不含路径分隔符（./cat、子目录脚本一律不算）；
+    ② 经 PATH 解析得到绝对路径（找不到的不算）；
+    ③ 解析结果不得落在当前工作目录内（工作区内同名脚本影子化白名单命令
+       的实测绕过路径）。"""
+    import shutil
+
+    if "/" in command_word:
+        return False, f"首词含路径成分：{command_word}"
+    resolved = shutil.which(command_word)
+    if resolved is None:
+        return False, f"PATH 中找不到命令：{command_word}"
+    real = Path(resolved).resolve()
+    try:
+        real.relative_to(Path.cwd().resolve())
+        return False, f"命令解析到工作目录内（影子脚本嫌疑）：{resolved}"
+    except ValueError:
+        return True, ""
 
 
 def bash_readonly(command: str) -> tuple[bool, str]:
@@ -38,9 +61,12 @@ def bash_readonly(command: str) -> tuple[bool, str]:
         return False, f"无法解析：{e}"
     if not tokens:
         return False, "空命令"
-    first = Path(tokens[0]).name
-    if first not in BASH_READONLY_WHITELIST:
+    first = tokens[0]
+    if Path(first).name not in BASH_READONLY_WHITELIST:
         return False, f"首词不在只读白名单：{first}"
+    ok, reason = _first_word_identity(first)
+    if not ok:
+        return False, reason
     if first == "find":
         for token in tokens[1:]:
             if token in FIND_VETO_TOKENS:
@@ -72,10 +98,14 @@ def path_is_protected(path: Path, protected: list[Path]) -> bool:
 
 def build_protected_paths(data_dir: Path, home: Path | None = None) -> list[Path]:
     """受保护路径清单（v1.7 + 外审回稿扩充）：平台内部数据 + 持久化提示词
-    载体 + 常见凭据位置（读写双向硬禁）。"""
+    载体 + 常见凭据位置（读写双向硬禁）。-wal/-shm 是库的活跃内容（WAL 中
+    是已提交页，敏感标记可从 sidecar 文件读出——外审回稿 F07）。"""
     home = home or Path.home()
+    db = data_dir / "agentcrew.db"
     candidates = [
-        data_dir / "agentcrew.db",
+        db,
+        data_dir / "agentcrew.db-wal",
+        data_dir / "agentcrew.db-shm",
         data_dir / "config.json",
         data_dir / "chain-head.txt",
         data_dir / "instance.lock",

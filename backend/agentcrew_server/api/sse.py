@@ -170,7 +170,10 @@ async def _task_stream(runtime, sub: Subscription, task_run_id: str, from_seq: i
             if item is None:
                 await sub.wait_for_data()
                 continue
-            if item.global_seq <= sent_global:
+            # 双重去重（外审回稿 S13）：无补播段（from ≥ head）时 sent_global
+            # 仍是 0，仅按 global_seq 过滤会把 ≤ 游标的旧帧再发一遍——任务
+            # 话题上帧与 seq 一一对应，必须同时按任务内 seq 排他
+            if item.global_seq <= sent_global or item.seq <= sent_seq:
                 continue
             sent_global = item.global_seq
             sent_seq = item.seq

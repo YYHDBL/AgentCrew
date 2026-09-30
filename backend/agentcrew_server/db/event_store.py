@@ -35,6 +35,11 @@ class EventStore:
         self._channel = channel
         self._publisher = publisher
 
+    @property
+    def channel(self) -> WriteChannel:
+        """写通道句柄（审批服务等需要复合单事务写入的调用方使用）。"""
+        return self._channel
+
     def set_publisher(self, publisher: Publisher | None) -> None:
         """C3 注入事件总线扇出（提交后回调）。"""
         self._publisher = publisher
@@ -48,7 +53,10 @@ class EventStore:
         payload: dict,
         attempt_no: int | None = None,
         agent_run_id: str | None = None,
+        extra_writes: Callable[[sqlite3.Connection, Event], None] | None = None,
     ) -> Event:
+        """事件 + 投影（+ 可选 extra_writes 同事务写入，如审计/规则——外审
+        回稿 F03：审批决定相关写入必须与事件原子提交）单事务落库并发布。"""
         return await self._channel.execute(
             lambda conn: self._append_tx(
                 conn,
@@ -58,6 +66,7 @@ class EventStore:
                 payload=payload,
                 attempt_no=attempt_no,
                 agent_run_id=agent_run_id,
+                extra_writes=extra_writes,
             )
         )
 
@@ -71,6 +80,7 @@ class EventStore:
         payload: dict,
         attempt_no: int | None,
         agent_run_id: str | None,
+        extra_writes: Callable[[sqlite3.Connection, Event], None] | None = None,
     ) -> Event:
         event_id = uuid.uuid4().hex
         ts = _utc_now()
@@ -102,6 +112,8 @@ class EventStore:
                 attempt_no=attempt_no, agent_run_id=agent_run_id, ts=ts,
             )
             apply_projection(conn, event)
+            if extra_writes is not None:
+                extra_writes(conn, event)  # 抛异常 → 整体回滚（事件不落库）
             conn.execute("COMMIT")
         except Exception:
             try:
@@ -109,16 +121,59 @@ class EventStore:
             except sqlite3.Error:
                 pass  # 事务已不存在（如 BEGIN 即失败）——保持原异常
             raise
-        if self._publisher is not None:
-            # 已提交；仍在写通道线程内同步回调（§2 发布顺序 = 提交顺序）。
-            # 回调异常必须就地吞掉：若让它带着 locked/busy 字样冒泡，写通道会
-            # 重试整个闭包导致已提交事件被重复追加（外审回稿修复）。
-            try:
-                self._publisher(event)
-            except Exception:
-                _log.exception(
-                    "eventstore.publish 发布回调失败（事件已提交 global_seq=%s，"
-                    "不重试、不重复追加）",
-                    event.global_seq,
-                )
+        self.publish(event)
+        return event
+
+    def publish(self, event: Event) -> None:
+        """提交后发布（供同事务复合写入方在事务成功后调用，语义与 append 一致）。"""
+        if self._publisher is None:
+            return
+        # 已提交；回调异常必须就地吞掉：若让它带着 locked/busy 字样冒泡，写通道会
+        # 重试整个闭包导致已提交事件被重复追加（外审回稿修复）。
+        try:
+            self._publisher(event)
+        except Exception:
+            _log.exception(
+                "eventstore.publish 发布回调失败（事件已提交 global_seq=%s，"
+                "不重试、不重复追加）",
+                event.global_seq,
+            )
+
+    def append_in_tx(
+        self,
+        conn: sqlite3.Connection,
+        *,
+        task_run_id: str,
+        conversation_id: str,
+        type: RunEventType,
+        payload: dict,
+    ) -> Event:
+        """在**调用方已开启**的写通道事务内追加事件+投影（不 BEGIN/COMMIT、
+        不发布）——供需要把事件与更多写入合并为单事务的复合操作使用
+        （外审回稿 F02/F03：审批决定的查重+事件+审计+规则单事务）。
+        提交与发布由调用方负责：COMMIT 后必须调 publish(event)。"""
+        event_id = uuid.uuid4().hex
+        ts = _utc_now()
+        row = conn.execute(
+            "SELECT COALESCE(MAX(seq), 0) + 1 FROM run_events WHERE task_run_id = ?",
+            (task_run_id,),
+        ).fetchone()
+        seq = int(row[0])
+        cursor = conn.execute(
+            "INSERT INTO run_events (id, task_run_id, seq, conversation_id,"
+            " agent_run_id, attempt_no, type, payload, created_at)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                event_id, task_run_id, seq, conversation_id,
+                None, None, type.value,
+                json.dumps(payload, ensure_ascii=False, sort_keys=True), ts,
+            ),
+        )
+        event = Event(
+            global_seq=int(cursor.lastrowid), id=event_id,
+            task_run_id=task_run_id, seq=seq,
+            conversation_id=conversation_id, type=type, payload=payload,
+            attempt_no=None, agent_run_id=None, ts=ts,
+        )
+        apply_projection(conn, event)
         return event

@@ -69,10 +69,17 @@ def test_gate_level2_rules(tmp_path):
     assert r4.action == "ask"
 
 
-def test_rule_matching_bash_prefix():
-    assert rule_matches("bash", {"command": "npm test --watch"}, "npm test")
-    assert not rule_matches("bash", {"command": "npm run dev"}, "npm test")
-    assert not rule_matches("bash", {"command": "rm -rf /"}, "npm")
+def test_rule_matching_bash_exact():
+    """bash 规则 = 完整命令等值（外审回稿 F05 收紧）：追加/变形命令不命中。"""
+    assert rule_matches("bash", {"command": "npm test --watch"}, "npm test --watch")
+    assert not rule_matches("bash", {"command": "npm test --watch --json"},
+                            "npm test --watch")
+    assert not rule_matches("bash", {"command": "npm test --watch; rm -rf x"},
+                            "npm test --watch")
+    assert not rule_matches("bash", {"command": "npmtest --watch"}, "npm test")
+    assert not rule_matches("bash", {"command": "echo okay; rm -rf ./important"},
+                            "echo")
+    assert not rule_matches("bash", {"command": "echoSomething"}, "echo")
 
 
 def test_rule_matching_http_wildcard():
@@ -92,7 +99,8 @@ def test_always_scope_pattern_and_target(tmp_path):
     ws = tmp_path / "ws"
     ws.mkdir()
     assert always_scope_pattern("write_file", {"path": str(ws / "a.txt")}) == str(ws)
-    assert always_scope_pattern("bash", {"command": "npm test --watch"}) == "npm"
+    assert always_scope_pattern(
+        "bash", {"command": "npm test --watch"}) == "npm test --watch"  # F05
     assert always_scope_pattern("http_request",
                                 {"url": "https://api.example.com/v1"}) == "api.example.com"
     assert approval_target("write_file", {"path": str(ws / "a.txt")}) == str(ws / "a.txt")

@@ -69,16 +69,33 @@ class RuntimeState:
             except Exception as e:  # noqa: BLE001 —— checkpoint 失败不阻断关闭序列
                 self.log.warning("shutdown.checkpoint 失败（跳过，WAL 文件留存）：%s", e)
             # 链头快照（governance §3：每次正常退出写 chain-head.txt；空链跳过）
-            try:
-                head_seq = snapshot_chain_head(
-                    self.db.write_conn, self.data_dir / "chain-head.txt"
-                )
-                if head_seq is not None:
-                    self.log.info("shutdown.chain_head 快照至 seq=%s", head_seq)
-                else:
-                    self.log.info("shutdown.chain_head 审计链为空，跳过快照")
-            except Exception as e:  # noqa: BLE001
-                self.log.warning("shutdown.chain_head 快照失败（不阻断退出）：%s", e)
+            # 诊断模式绝不快照（外审回稿 F10）：库已判定不可信，把当前链头写进
+            # 锚点文件等于认可篡改——原锚点被覆盖后校验反而"通过"。
+            # 正常模式快照前先两级校验：链或锚点已失守时快照同样会掩盖篡改。
+            if self.diagnostic is not None:
+                self.log.warning(
+                    "shutdown.chain_head 诊断模式：跳过链头快照（不可信库不得覆盖锚点）")
+            else:
+                try:
+                    from .db.audit import verify_with_anchor
+
+                    check = verify_with_anchor(
+                        self.db.write_conn, self.data_dir / "chain-head.txt")
+                    if not check.ok:
+                        self.log.warning(
+                            "shutdown.chain_head 审计链校验失败（seq=%s %s），"
+                            "跳过快照以防覆盖可信锚点", check.broken_at_seq,
+                            check.reason)
+                    else:
+                        head_seq = snapshot_chain_head(
+                            self.db.write_conn, self.data_dir / "chain-head.txt"
+                        )
+                        if head_seq is not None:
+                            self.log.info("shutdown.chain_head 快照至 seq=%s", head_seq)
+                        else:
+                            self.log.info("shutdown.chain_head 审计链为空，跳过快照")
+                except Exception as e:  # noqa: BLE001
+                    self.log.warning("shutdown.chain_head 快照失败（不阻断退出）：%s", e)
             self.db.close()
             self.log.info("shutdown.db closed")
         self.log.info("shutdown.done")

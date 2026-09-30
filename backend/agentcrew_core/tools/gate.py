@@ -5,9 +5,10 @@ destructive 直接拒；needs_approval 进第 2 闸。
 第 2 闸：员工规则表——deny 命中直接拒；allow 命中视同批准；都不中进第 3 闸。
 第 3 闸：人工审批（ASK，由服务层挂起等待）。
 
-pattern 语义（v1.1）：write_file → 路径前缀（realpath 规范化后匹配）；
-bash → 命令前缀；http_request → 域名（含 *. 通配）。无人值守交集语义是
-M2/cron 域，M0 不实现。
+pattern 语义（v1.1；bash 于外审回稿 F05 收紧）：write_file → 路径前缀
+（realpath 规范化后匹配）；bash → 完整命令等值（前缀会连带放行追加命令，
+实测 `echo` 规则直接放行 `echo ok; rm -rf …`）；http_request → 域名
+（含 *. 通配）。无人值守交集语义是 M2/cron 域，M0 不实现。
 """
 
 from __future__ import annotations
@@ -46,8 +47,10 @@ def rule_matches(tool_name: str, call_input: dict[str, Any], pattern: str) -> bo
         except ValueError:
             return False
     if tool_name == "bash":
-        command = call_input.get("command", "")
-        return command.startswith(pattern)
+        # 精确匹配完整命令（外审回稿 F05 收紧，超越 governance G1 的前缀
+        # 语义）：`echo` 前缀会连带放行 `echo x; rm -rf …` 与 `echoSomething`；
+        # 完整命令等值则任何追加/变形都不可能命中
+        return call_input.get("command", "") == pattern
     if tool_name == "http_request":
         ok, _ = host_allowed(call_input.get("url", ""), [pattern])
         return ok
@@ -101,7 +104,7 @@ def always_scope_pattern(tool_name: str, call_input: dict[str, Any]) -> str:
         target = Path(call_input.get("path", "")).expanduser().resolve()
         return str(target.parent)  # 同目录内后续写放行（G1 演示语义）
     if tool_name == "bash":
-        return (call_input.get("command", "").split() or [""])[0]  # 命令首词前缀
+        return call_input.get("command", "")  # 完整命令（等值匹配，F05 收紧）
     if tool_name == "http_request":
         return urlparse(call_input.get("url", "")).hostname or ""
     return tool_name

@@ -27,7 +27,7 @@ from agentcrew_core.tools.judgment import (
     ("du -sh dir", True),
     ("diff a b", True),
     ("find . -name '*.md'", True),
-    ("/bin/ls /tmp", True),                      # 绝对路径取 basename
+    ("/bin/ls /tmp", False),                     # 含路径成分一律不算（F06：./cat 影子脚本同类）
     # 非白名单首词
     ("python3 script.py", False),
     ("awk '{print $1}'", False),

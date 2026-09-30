@@ -127,10 +127,12 @@ def test_full_chain_allow_once(tmp_path):
         assert "permission.requested" in types and "permission.resolved" in types
         resolved = next(e for e in events if e[0] == "permission.resolved")
         assert resolved[1]["decision"] == "allow_once"
-        # 审计链：requested + resolved 两条追加且链一致
-        count = a.db.read_conn.execute(
-            "SELECT count(*) FROM audit_log").fetchone()[0]
-        assert count == 2
+        # 审计链：requested + resolved + medium 工具完成（S01 覆盖）三条且链一致
+        actions = [r[0] for r in a.db.read_conn.execute(
+            "SELECT action FROM audit_log ORDER BY seq").fetchall()]
+        assert actions == ["permission.requested",
+                           "permission.resolved:allow_once",
+                           "tool.completed"]
         ok = verify_with_anchor(a.db.write_conn, tmp_path / "chain-head.txt")
         assert ok.ok
         a.close()

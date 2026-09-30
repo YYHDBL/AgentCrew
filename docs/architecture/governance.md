@@ -82,7 +82,7 @@ grants(id PK,
    agent_permission_rules(id, agent_id, tool_name, pattern, effect CHECK(allow,deny),
                           created_by_user_id, created_at, revoked_at)
    匹配顺序：deny 命中 → 直接拒（不再问人）→ allow 命中 → 视同批准 → 都不中 → 第 3 闸
-   pattern 语义（v1.1 收紧）：write_file → 路径前缀（**先 realpath() 规范化解析符号链接再匹配**）；bash → 只读白名单前缀（ls/cat/grep 等，**不含 python/awk/sed**，见 docs/02 §6.1）；http_request → 域名通配（`*.example.com`，受连接器 allowed_hosts 约束）
+   pattern 语义（v1.1 收紧）：write_file → 路径前缀（**先 realpath() 规范化解析符号链接再匹配**）；bash → **完整命令等值匹配**（C6 外审回稿 F05 收紧，取代 v1.1 前缀语义——`echo` 前缀会连带放行 `echo x; rm -rf …` 与 `echoSomething`，前缀无法界定追加命令边界）；http_request → 域名通配（`*.example.com`，受连接器 allowed_hosts 约束）
 
 第 3 闸：人工审批（四选项）
    PERMISSION_REQUESTED 挂起（D4 计数器 +1）→ 用户决定（**审批卡绑定该次调用完整参数的 input_hash——批准的是不可变内容，参数一变即失效**，v1.1）：
@@ -100,7 +100,8 @@ grants(id PK,
 audit_log(seq INTEGER PK, ts, actor_type CHECK IN (user, agent, system, curator),
           actor_id, action, resource_type, resource_id, detail JSON,
           prev_hash, hash)
-# hash = sha256(seq | ts | actor | action | resource | detail | prev_hash)，链式向前
+# hash = sha256("v2|" + JSON数组[seq, ts, actor, action, resource, detail, prev_hash])，链式向前
+# （v2，C6 外审回稿 S10：v1 用 "|" 直接拼接存在字段边界歧义——actor_id 含 "|" 时可与相邻字段互换而哈希不变；JSON 数组规范化无歧义）
 ```
 
 **必入链的动作**：审批（请求与四种决定）、三级闸门的所有拒绝、grant 授予/撤销、权限规则的写入与回收、工具执行（risk≥medium 的完成与失败）、角色变更、登录、审计验证本身。

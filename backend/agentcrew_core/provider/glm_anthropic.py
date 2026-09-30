@@ -298,6 +298,16 @@ class GLMAnthropicProvider:
                     if event.get("usage"):
                         delta_usage = _usage(event["usage"])
                 elif etype == "message_stop":
+                    if tools_in_flight or thinking_in_flight:
+                        # 内容块未关闭就终流：工具调用会被静默丢弃（外审回稿
+                        # S15）——归一为错误事件，绝不带 usage/done 假装成功
+                        raise _ProviderStreamError(ProviderError(
+                            ErrorClass.UNKNOWN,
+                            "message_stop 时仍有未关闭的内容块"
+                            f"（tool_use×{len(tools_in_flight)}"
+                            f"/thinking×{len(thinking_in_flight)}）",
+                            retryable=False,
+                        ))
                     final_usage = _merge_usage(start_usage, delta_usage)
                     if delta_usage is None and start_usage is None:
                         _log.warning("provider.usage_missing usage 缺失，记 0（不失败）")

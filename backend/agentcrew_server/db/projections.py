@@ -218,48 +218,56 @@ def _tool_prepared(conn: sqlite3.Connection, ev: Event) -> None:
 
 def _tool_status(conn: sqlite3.Connection, ev: Event, status: str, *,
                  error: str | None = None, output_summary: str | None = None,
-                 artifact_path: str | None = None, finish: bool = True) -> None:
+                 artifact_path: str | None = None, finish: bool = False,
+                 dispatch: bool = False) -> None:
+    """工具状态迁移。只填**实际发生**的阶段时间（外审回稿 S11）：
+    prepared 后被拒（PERMISSION_DENIED）没有 dispatched_at；转
+    pending_verification 也不是完成，不得填 completed_at。"""
+    sets = ["status=?", "error=COALESCE(?, error)",
+            "output_summary=COALESCE(?, output_summary)",
+            "artifact_path=COALESCE(?, artifact_path)"]
+    params: list = [status, error, output_summary, artifact_path]
+    if dispatch:
+        sets.append("dispatched_at=COALESCE(dispatched_at, ?)")
+        params.append(ev.ts)
+    if finish:
+        sets.append("completed_at=?")
+        params.append(ev.ts)
+    params.append(ev.payload["call_id"])
     conn.execute(
-        "UPDATE tool_calls SET status=?, error=COALESCE(?, error),"
-        " output_summary=COALESCE(?, output_summary),"
-        " artifact_path=COALESCE(?, artifact_path),"
-        f"{'completed_at=?,' if finish else ''} dispatched_at=COALESCE(dispatched_at, ?)"
-        " WHERE call_id=?",
-        (
-            status, error, output_summary, artifact_path,
-            *([ev.ts] if finish else []), ev.ts, ev.payload["call_id"],
-        ),
-    )
+        f"UPDATE tool_calls SET {', '.join(sets)} WHERE call_id=?", params)
 
 
 def _tool_dispatched(conn: sqlite3.Connection, ev: Event) -> None:
-    _tool_status(conn, ev, "dispatched", finish=False)
+    _tool_status(conn, ev, "dispatched", dispatch=True)
 
 
 def _tool_completed(conn: sqlite3.Connection, ev: Event) -> None:
     p = ev.payload
     _tool_status(conn, ev, "completed",
                  output_summary=p.get("output_summary"),
-                 artifact_path=p.get("artifact_path"))
+                 artifact_path=p.get("artifact_path"), finish=True)
 
 
 def _tool_failed(conn: sqlite3.Connection, ev: Event) -> None:
-    _tool_status(conn, ev, "failed", error=ev.payload.get("error"))
+    _tool_status(conn, ev, "failed", error=ev.payload.get("error"),
+                 finish=True)
 
 
 def _tool_skipped(conn: sqlite3.Connection, ev: Event) -> None:
     _tool_status(conn, ev, "completed",
-                 output_summary=ev.payload.get("note", "skipped: external idempotency hit"))
+                 output_summary=ev.payload.get("note", "skipped: external idempotency hit"),
+                 finish=True)
 
 
 def _tool_pending(conn: sqlite3.Connection, ev: Event) -> None:
-    _tool_status(conn, ev, "pending_verification")
+    _tool_status(conn, ev, "pending_verification")  # 非终态：不填 completed_at
 
 
 def _tool_verification(conn: sqlite3.Connection, ev: Event) -> None:
     verdict = ev.payload.get("verdict")
     status = "completed" if verdict == "confirmed_executed" else "not_executed"
-    _tool_status(conn, ev, status,
+    _tool_status(conn, ev, status, finish=True,
                  output_summary=f"verified_by_user:{verdict}:{ev.payload.get('note', '')}")
 
 

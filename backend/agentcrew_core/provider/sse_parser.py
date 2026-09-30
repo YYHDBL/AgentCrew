@@ -28,9 +28,12 @@ async def iter_sse_json(chunks: AsyncIterator[bytes]) -> AsyncIterator[dict]:
         payload = "\n".join(data_lines)
         data_lines.clear()
         try:
-            return json.loads(payload)
+            obj = json.loads(payload)
         except json.JSONDecodeError as e:
             raise SSEDecodeError(f"上游 data 非 JSON：{payload[:200]}") from e
+        if not isinstance(obj, dict):  # 合法 JSON 数组/标量不是事件对象（外审 S15）
+            raise SSEDecodeError(f"上游 data 非事件对象：{payload[:200]}")
+        return obj
 
     async for chunk in chunks:
         buffer += chunk

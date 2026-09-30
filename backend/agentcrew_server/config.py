@@ -127,10 +127,45 @@ def apply_env(
     return effective, sorted(applied)
 
 
+def _require_int(cfg: Mapping[str, Any], dotted: str, minimum: int) -> None:
+    value = _get_path(cfg, dotted)
+    if not isinstance(value, int) or isinstance(value, bool) or value < minimum:
+        raise ConfigError(f"{dotted} 需要不小于 {minimum} 的整数，得到 {value!r}")
+
+
+def _require_str(cfg: Mapping[str, Any], dotted: str) -> None:
+    value = _get_path(cfg, dotted)
+    if not isinstance(value, str):
+        raise ConfigError(f"{dotted} 需要字符串，得到 {value!r}")
+
+
 def validate(cfg: Mapping[str, Any]) -> None:
+    """已支持配置点的完整校验（外审回稿 S12）：值非法在加载处明确拒绝
+    （ConfigError），不把裸异常留到装配阶段。未知键不查（向前兼容）。"""
     level = cfg.get("log_level")
     if level not in VALID_LOG_LEVELS:
         raise ConfigError(f"log_level 非法：{level!r}，允许值 {VALID_LOG_LEVELS}")
+    for dotted, minimum in (
+        ("gates.max_steps", 1), ("gates.stall_seconds", 1),
+        ("gates.repeat_limit", 1), ("gates.global_concurrency", 1),
+        ("limits.max_files", 1), ("limits.max_file_mb", 1),
+        ("limits.max_folders", 1),
+    ):
+        _require_int(cfg, dotted, minimum)
+    models = cfg.get("models")
+    if not isinstance(models, Mapping):
+        raise ConfigError(f"models 需要对象，得到 {models!r}")
+    for slot in ("main", "aux"):
+        entry = models.get(slot)
+        if entry is None:
+            continue
+        if not isinstance(entry, Mapping):
+            raise ConfigError(f"models.{slot} 需要对象，得到 {entry!r}")
+        for field in ("provider", "model", "base_url", "api_key"):
+            if field in entry:
+                _require_str(cfg, f"models.{slot}.{field}")
+        if "max_tokens" in entry:
+            _require_int(cfg, f"models.{slot}.max_tokens", 1)
 
 
 class Config:

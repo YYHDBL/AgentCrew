@@ -95,6 +95,10 @@ class ToolScheduler:
         self._serial = asyncio.Lock()
         self._gate = gate  # C6 审批闸门（server 侧注入；None = 无闸门直通）
 
+    @property
+    def registry(self) -> ToolRegistry:
+        return self._registry
+
     async def run(self, invocation: ToolInvocation, ctx: WorkContext) -> ToolResult:
         tool = self._registry.get(invocation.name)
         if tool is None:
@@ -103,6 +107,12 @@ class ToolScheduler:
         if not _CALL_ID_PATTERN.fullmatch(invocation.call_id or ""):
             return ToolResult(ok=False, error="INVALID_CALL_ID",
                               details={"call_id": invocation.call_id[:40]})
+        # 入口即做不可变快照（外审回稿 F04）：审批哈希绑定的是快照，此后
+        # 对原 dict 的任何修改都不影响 prepared/闸门/执行三处的一致性
+        invocation = ToolInvocation(
+            call_id=invocation.call_id, name=invocation.name,
+            input=json.loads(json.dumps(invocation.input, ensure_ascii=False)),
+        )
 
         effective_readonly = tool.metadata.read_only
         bash_verdict = ""
@@ -139,15 +149,21 @@ class ToolScheduler:
                 return ToolResult(ok=False, error="PERMISSION_DENIED",
                                   details={"gate": decision})
 
-        if not await self._emit_strict(
-                ctx, "tool.dispatched", {"call_id": invocation.call_id}):
-            return ToolResult(ok=False, error="EVENT_PERSIST_FAILED")
-
+        # dispatched 紧邻实际执行写入（外审回稿 S08）：取得并发名额与串行锁
+        # 之前不声明 dispatched——否则等待名额期间被取消的调用会被恢复流程
+        # 当成"可能已产生副作用"而要求人工核验
         serial_needed = not effective_readonly and not meta.concurrent_safe
         async with self._sem:
             if serial_needed:
                 async with self._serial:
+                    if not await self._emit_strict(
+                            ctx, "tool.dispatched",
+                            {"call_id": invocation.call_id}):
+                        return ToolResult(ok=False, error="EVENT_PERSIST_FAILED")
                     return await self._execute(tool, invocation, ctx)
+            if not await self._emit_strict(
+                    ctx, "tool.dispatched", {"call_id": invocation.call_id}):
+                return ToolResult(ok=False, error="EVENT_PERSIST_FAILED")
             return await self._execute(tool, invocation, ctx)
 
     async def _execute(self, tool, invocation, ctx) -> ToolResult:
@@ -165,8 +181,14 @@ class ToolScheduler:
                                 details={"message": str(e)[:200]})
         payload = {
             "call_id": invocation.call_id,
-            "output_summary": (result.output or "")[:2000],
+            # §2.3 持久化契约：事件必须携带完整工具输出（≤32KB 内联；超出由
+            # 工具外部化并留 artifact 指针）；details（exit_code/stderr/sha256
+            # 等）一并入事件，否则重建上下文时不可恢复（外审回稿 F09）
+            "output": result.output or "",
+            "output_summary": (result.output or "")[:2000],  # 投影/列表摘要
         }
+        if result.details:
+            payload["details"] = dict(result.details)
         if result.artifact_path:
             payload["artifact_path"] = result.artifact_path
         if not result.ok:

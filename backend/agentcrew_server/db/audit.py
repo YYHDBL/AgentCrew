@@ -1,23 +1,27 @@
 """审计哈希链：校验与链头快照（governance §3）。
 
-- hash = sha256("seq|ts|actor_type|actor_id|action|resource_type|resource_id|detail|prev_hash")
-  —— canonical 串以 | 连接，空值取空串；创世 prev_hash = 64 个 0。
+- hash = sha256("v2|" + JSON 数组 [seq, ts, actor_type, actor_id, action,
+  resource_type, resource_id, detail, prev_hash])（ensure_ascii=False、
+  紧凑分隔符）——v2（外审回稿 S10）：v1 用 "|" 直接拼接存在字段边界歧义
+  （actor_id 含 "|" 时可与相邻字段互换而哈希不变），JSON 数组无歧义；
+  M0 未发布，直接切换不保留 v1 校验，创世 prev_hash = 64 个 0。
 - 写入方（C6 起）必须复用本模块的 compute_hash，保证链式一致。
 - 校验两级：① 内部链全量重算（含 seq 连续性——删行会断链）；
   ② chain-head.txt 锚点比对（覆盖至最近一次快照）。
 - 链头快照：每 100 条及每次正常退出原子写 data/chain-head.txt（tmp+rename）。
-M0-C2 只建表 + 校验 + 退出快照（audit_log 尚无写入方，空链 = 通过）。
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
 GENESIS_PREV_HASH = "0" * 64
+HASH_ALGO_VERSION = "v2"
 
 _CHAIN_COLUMNS = (
     "seq, ts, actor_type, actor_id, action, resource_type, resource_id,"
@@ -30,11 +34,10 @@ def compute_hash(
     resource_type: str | None, resource_id: str | None, detail: str,
     prev_hash: str,
 ) -> str:
-    canonical = "|".join(
-        str(part) for part in (
-            seq, ts, actor_type, actor_id, action,
-            resource_type or "", resource_id or "", detail, prev_hash,
-        )
+    canonical = HASH_ALGO_VERSION + "|" + json.dumps(
+        [seq, ts, actor_type, actor_id, action,
+         resource_type or "", resource_id or "", detail, prev_hash],
+        ensure_ascii=False, separators=(",", ":"),
     )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
