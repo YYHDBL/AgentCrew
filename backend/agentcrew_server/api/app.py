@@ -18,6 +18,7 @@ from .approvals import install_approval_routes
 from .auth import BearerAuthMiddleware
 from .envelope import EnvelopeMiddleware
 from .errors import ErrorCode, error_response, install_error_handlers
+from .runs import install_run_routes
 from .sessions import install_session_routes
 from .settings import install_settings_routes
 from .sse import install_sse_routes
@@ -57,6 +58,8 @@ def create_app(runtime: RuntimeState) -> FastAPI:
     @asynccontextmanager
     async def lifespan(_: FastAPI):
         runtime.log.debug("http.lifespan startup")
+        if runtime.run_manager is not None:
+            await runtime.run_manager.start()  # 总线订阅 + 派发协程（C8）
         yield
         await runtime.shutdown()
 
@@ -76,6 +79,8 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         install_session_routes(app, runtime)
     if runtime.settings is not None:
         install_settings_routes(app, runtime)
+    if runtime.questions is not None and runtime.run_manager is not None:
+        install_run_routes(app, runtime)
     app.add_middleware(EnvelopeMiddleware)
     app.add_middleware(DiagnosticGuardMiddleware, runtime=runtime)
     # Bearer 鉴权（M0-C3）：无/错 token → 401；仅 /api/health 豁免。

@@ -221,6 +221,7 @@ components:
             stall_seconds: { type: integer }
             repeat_limit: { type: integer }
             global_concurrency: { type: integer }
+            token_budget: { type: integer, description: 任务累计 token 硬上限（超限 RUN_FAILED(token_budget)；压缩是 M1）——C8 }
         limits:
           type: object
           properties:

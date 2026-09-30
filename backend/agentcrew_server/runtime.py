@@ -19,6 +19,8 @@ if TYPE_CHECKING:  # 避免运行时循环导入（bus 导入 core.events 而已
     from .approvals import ApprovalService
     from .bus import EventBus
     from .db.event_store import EventStore
+    from .questions import QuestionService
+    from .run_manager import RunManager
     from .sessions import SessionService
     from .settings import SettingsService
 
@@ -46,10 +48,19 @@ class RuntimeState:
     scheduler: "ToolScheduler | None" = None
     settings: "SettingsService | None" = None  # M0-C7 起装配
     sessions: "SessionService | None" = None  # M0-C7 起装配
+    questions: "QuestionService | None" = None  # M0-C8 起装配
+    run_manager: "RunManager | None" = None  # M0-C8 起装配
 
     async def shutdown(self) -> None:
-        """优雅关闭（§7 顺序；任务取消/不写终态随 C8/C9 填充）。"""
+        """优雅关闭（§7 顺序；任务取消不写终态——run_manager.shutdown 在
+        总线停收之前执行，被取消任务不落 run.* 终态，C9 对账收敛）。"""
         self.log.info("shutdown.begin 优雅关闭（总预算 10s；停收新请求由 uvicorn 完成）")
+        if self.run_manager is not None:
+            try:
+                await self.run_manager.shutdown()
+                self.log.info("shutdown.run_manager stopped")
+            except Exception as e:  # noqa: BLE001
+                self.log.warning("shutdown.run_manager 关闭异常：%s", e)
         # 第 3 步：结束全部 SSE 订阅（≤1s）——shutdown 控制帧入队后留出冲刷窗口
         if self.bus is not None:
             self.bus.shutdown_all()

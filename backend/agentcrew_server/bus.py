@@ -134,15 +134,18 @@ class EventBus:
         self._closed = False
 
     # ── 订阅管理（事件循环线程）──────────────────────────────────
-    def subscribe(self, topic: Topic) -> Subscription:
+    def subscribe(self, topic: Topic, *, internal: bool = False) -> Subscription:
+        """internal=True：进程内常驻订阅（C8 RunManager）——不计连接名额，
+        也不参与 SSE 溢出语义，仅消费事件做派发。"""
         with self._lock:
             if self._closed:
                 raise RuntimeError("事件总线已关闭")
-            self.sweep()  # 顺手清理已超宽限的死订阅，释放连接名额
-            if len(self._subs) >= self.max_connections:
-                raise ConnectionLimitError(
-                    f"并发 SSE 连接超上限（{self.max_connections}）"
-                )
+            if not internal:
+                self.sweep()  # 顺手清理已超宽限的死订阅，释放连接名额
+                if len(self._subs) >= self.max_connections:
+                    raise ConnectionLimitError(
+                        f"并发 SSE 连接超上限（{self.max_connections}）"
+                    )
             sub = Subscription(topic, maxsize=self.max_queue)
             self._subs.append(sub)
             return sub

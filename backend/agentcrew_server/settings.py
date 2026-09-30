@@ -34,7 +34,7 @@ _log = logging.getLogger("agentcrew.settings")
 _ALLOWED_TOP_KEYS = {"models", "gates", "limits", "api_key_clear"}
 _ALLOWED_SLOT_FIELDS = {"provider", "model", "base_url", "api_key", "max_tokens"}
 _ALLOWED_GATES = {"max_steps", "stall_seconds", "repeat_limit",
-                  "global_concurrency"}
+                  "global_concurrency", "token_budget"}
 _ALLOWED_LIMITS = {"max_files", "max_file_mb", "max_folders"}
 
 

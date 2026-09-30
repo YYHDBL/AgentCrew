@@ -105,9 +105,10 @@ class ApprovalService:
         # call_id 取（run_tool 先注册再执行）
         ctx_info = self._context_for(invocation.call_id)
         ih = input_hash(invocation.input)
+        cwd = ctx_info.ctx.cwd if ctx_info.ctx is not None else None
         rules = await asyncio.to_thread(self._load_rules, ctx_info.agent_id)
         result = evaluate_gate(meta, invocation.input, readonly_verdict,
-                               rules, ctx_info.agent_id)
+                               rules, ctx_info.agent_id, cwd)
         if result.action == "allow":
             # governance §3：闸门放行（自动/规则命中）全部入审计链
             action = ("permission.rule_allowed" if result.matched_pattern
@@ -130,7 +131,7 @@ class ApprovalService:
             return "deny"
         # ask：发卡（含四选项/input_hash/target/范围预览）→ 挂起。
         # 请求事件与请求审计同事务（governance §2.3"全部进审计链"）
-        pattern = always_scope_pattern(meta.name, invocation.input)
+        pattern = always_scope_pattern(meta.name, invocation.input, cwd)
 
         def _audit_requested(conn, event):
             append_audit(
@@ -151,7 +152,7 @@ class ApprovalService:
                 "risk": meta.risk_level,
                 "options": list(DECISIONS),
                 "input_hash": ih,
-                "target": approval_target(meta.name, invocation.input),
+                "target": approval_target(meta.name, invocation.input, cwd),
                 "always_scope_preview": pattern,
             },
             extra_writes=_audit_requested,

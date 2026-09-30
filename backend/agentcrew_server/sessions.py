@@ -482,6 +482,52 @@ class SessionService:
 
     # ── 排队控制（F006）──────────────────────────────────────────
 
+    async def auto_dequeue_next(self, conversation_id: str,
+                                before_publish=None) -> str | None:
+        """终态自动接续（§4：completed/failed 出队队首；cancelled 已被 reducer
+        置 queue_paused，此处自然不动作）。与 continue_queue 同锁同事务模式；
+        竞态窗口（用户指令抢先直发占用 idle）内重读 FSM 后返回 None。
+        before_publish(task_id) 在事件发布前、写线程内调用——调用方借此刻
+        挂任务级先决信息（RunManager 的护栏提示），杜绝"runner 先取走"竞态。"""
+        async with await self._conv_lock(conversation_id):
+            fsm, _ = await asyncio.to_thread(self._fsm_sync, conversation_id)
+            if fsm.state != "idle" or fsm.queue_paused or not fsm.queued_items:
+                return None
+            head = fsm.queued_items[0]
+            head_crid = None
+            for item in json.loads(
+                    (await asyncio.to_thread(
+                        self._conversation_row, conversation_id))
+                    ["pending_queue"] or "[]"):
+                if item.get("id") == head.id:
+                    head_crid = item.get("client_request_id")
+                    break
+            task_id = uuid.uuid4().hex
+            events: list = []
+
+            def tx(conn: sqlite3.Connection) -> None:
+                conn.execute("BEGIN IMMEDIATE")
+                try:
+                    if before_publish is not None:
+                        before_publish(task_id)
+                    events.append(self._store.append_in_tx(
+                        conn, task_run_id=task_id,
+                        conversation_id=conversation_id,
+                        type=RunEventType.RUN_QUEUED,
+                        payload={"instruction": head.text,
+                                 "queue_item_id": head.id,
+                                 "client_request_id": head_crid},
+                    ))
+                    conn.execute("COMMIT")
+                except Exception:
+                    conn.execute("ROLLBACK")
+                    raise
+                for event in events:  # COMMIT 后、闭包返回前发布（顺序=提交序）
+                    self._store.publish(event)
+
+            await self._channel.execute(tx)
+            return task_id
+
     async def continue_queue(self, conversation_id: str) -> None:
         async with await self._conv_lock(conversation_id):
             await asyncio.to_thread(self.conversation_or_404, conversation_id)

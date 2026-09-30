@@ -10,7 +10,9 @@ C2 固定的 payload 契约（C5-C8 按此发射；新增字段先登记再使�
   run.queued        {instruction, cron_job_id?, client_request_id?, queue_item_id?}
                     —— queue_item_id：从队列出队直发时携带（该指令的消息行
                     已在 queue.item_enqueued 写入，此处不重复写 messages）
-  run.started       {attempt_no, attempt_id, kind="initial"}
+  run.started       {attempt_no, attempt_id, kind="initial", context_fingerprint?}
+                    —— context_fingerprint（C8）：{system_prompt_hash,
+                    tools_schema_hash, model_config}，写入 run_attempts 同名列
   run.completed     {final_text?, outcome?}
   run.failed        {reason}
   run.cancelled     {}
@@ -19,7 +21,11 @@ C2 固定的 payload 契约（C5-C8 按此发射；新增字段先登记再使�
   step.started      {step_id, ordinal, model_slot?}
   step.completed    {step_id, input_tokens?, output_tokens?, latency_ms?}
   llm.request_started {llm_call_id, step_id, model, retry_no?}
-  llm.request_done  {llm_call_id, prompt_tokens?, completion_tokens?, latency_ms?}
+  llm.request_done  {llm_call_id, prompt_tokens?, completion_tokens?, latency_ms?,
+                    text?, tool_uses?: [{id,name,input}],
+                    thinking_blocks?: [{text,signature}], stop_reason?}
+                    —— C8 起携带回复全文 + 本次全部 tool_use 块（含 thinking
+                    块与签名）：C9 恢复重建对话与结果配对的唯一依据（v1.7）
   llm.request_failed {llm_call_id, error, retry_no?}
   tool.prepared     {call_id, tool_call_id?, tool_name, side_effect_class,
                      input_hash, risk_level, input?, step_id?}
@@ -39,6 +45,9 @@ C2 固定的 payload 契约（C5-C8 按此发射；新增字段先登记再使�
                     持久化，响应/幂等重放从载荷读回——外审回稿；无投影列，
                     授权目录只进 conversations.folders_json）
   conversation.updated {title?}
+  question.requested {request_id, question, options?}   （C8：ask_user 全链）
+  question.answered  {request_id, answer}               （answer=null=用户
+                    取消回答，按"拒绝回答"告知模型）
   queue.item_enqueued {item_id, text, client_request_id?}   （C7）
   queue.item_cancelled {item_ids: [...]}
 
@@ -47,8 +56,9 @@ pending_queue JSON / queue_paused 列，queue.item_enqueued 同步写 messages
 用户消息行（排队指令的发送记录——取消时"发送记录保留"的留痕处）。这两列
 因此成为事件派生投影：rebuild 前重置，重放重建（见 _reset_queue_columns）。
 等待计数器与 FSM 仍在内存 reducer（agentcrew_core.events.reducer）。
-task_runs 的 waiting_user / waiting_verification 派生随 C8 的 reducer
-语义落地（依赖其状态互斥规则），C2 只实现 run.* 直接迁移。
+task_runs 的 waiting_user 派生随 C8 落地（question.* 事件往返翻转
+running↔waiting_user）；waiting_verification 是 C9 对账的派生态，C2 只实现
+run.* 直接迁移。
 """
 
 from __future__ import annotations
@@ -105,9 +115,13 @@ def _attempt_started(conn: sqlite3.Connection, ev: Event, kind: str, reason: str
     p = ev.payload
     conn.execute(
         "INSERT INTO run_attempts (id, task_run_id, attempt_no, kind, status,"
-        " resume_reason, started_at) VALUES (?, ?, ?, ?, 'running', ?, ?)",
+        " resume_reason, context_fingerprint, started_at)"
+        " VALUES (?, ?, ?, ?, 'running', ?, ?, ?)",
         (p.get("attempt_id") or f"att-{ev.id}", ev.task_run_id, p["attempt_no"],
-         kind, reason, ev.ts),
+         kind, reason,
+         json.dumps(p["context_fingerprint"], ensure_ascii=False, sort_keys=True)
+         if p.get("context_fingerprint") is not None else None,
+         ev.ts),
     )
     conn.execute(
         "UPDATE task_runs SET status='running', current_attempt_no=?, updated_at=?"
@@ -311,6 +325,26 @@ def _artifact_update(conn: sqlite3.Connection, ev: Event, status: str,
 
 # ── 材料 / 会话元数据 ───────────────────────────────────────────────
 
+def _question_requested(conn: sqlite3.Connection, ev: Event) -> None:
+    """C8：ask_user 挂起 → task_runs 派生态 waiting_user（C9 对账扫描
+    running/waiting_user；回答后翻回）。非 running 态（对账后补答等）不动。"""
+    if ev.task_run_id:
+        conn.execute(
+            "UPDATE task_runs SET status='waiting_user', updated_at=?"
+            " WHERE id=? AND status='running'",
+            (ev.ts, ev.task_run_id),
+        )
+
+
+def _question_answered(conn: sqlite3.Connection, ev: Event) -> None:
+    if ev.task_run_id:
+        conn.execute(
+            "UPDATE task_runs SET status='running', updated_at=?"
+            " WHERE id=? AND status='waiting_user'",
+            (ev.ts, ev.task_run_id),
+        )
+
+
 def _materials_imported(conn: sqlite3.Connection, ev: Event) -> None:
     for i, f in enumerate(ev.payload.get("files", [])):
         conn.execute(
@@ -436,10 +470,11 @@ HANDLERS: dict[RunEventType, Handler] = {
     # 无投影（等待计数器与 FSM 在内存 reducer，C7 起；上下文事件 M1）
     RunEventType.PERMISSION_REQUESTED: _noop,
     RunEventType.PERMISSION_RESOLVED: _noop,
-    RunEventType.QUESTION_REQUESTED: _noop,
-    RunEventType.QUESTION_ANSWERED: _noop,
     RunEventType.CONTEXT_COMPACTED: _noop,
     RunEventType.TOOL_RESULT_EXTERNALIZED: _noop,
+    # C8：question.* 驱动 task_runs 派生态 waiting_user（计数器仍在内存 FSM）
+    RunEventType.QUESTION_REQUESTED: _question_requested,
+    RunEventType.QUESTION_ANSWERED: _question_answered,
 }
 
 
