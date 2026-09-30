@@ -68,13 +68,13 @@ def test_append_sequence_and_projections(tmp_path):
     roles = [row[0] for row in r.execute("SELECT role FROM messages ORDER BY created_at")]
     assert roles == ["user", "assistant"]
     step = r.execute("SELECT status, input_tokens, output_tokens FROM steps").fetchone()
-    assert step == ("completed", 10, 20)
+    assert tuple(step) == ("completed", 10, 20)
     llm = r.execute("SELECT prompt_tokens, completion_tokens FROM llm_calls").fetchone()
-    assert llm == (10, 20)
+    assert tuple(llm) == (10, 20)
     tool = r.execute("SELECT status, tool_name, side_effect_class FROM tool_calls").fetchone()
-    assert tool == ("completed", "read_file", "verifiable")
+    assert tuple(tool) == ("completed", "read_file", "verifiable")
     attempt = r.execute("SELECT kind, status, outcome FROM run_attempts").fetchone()
-    assert attempt == ("initial", "completed", "completed")
+    assert tuple(attempt) == ("initial", "completed", "completed")
 
     channel.close()
     db.close()

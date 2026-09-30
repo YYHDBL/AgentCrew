@@ -89,7 +89,8 @@ started_at, ended_at
 ```
 global_seq INTEGER PRIMARY KEY AUTOINCREMENT,  -- 全局单调游标（会话级 SSE 用，v1.2）
 id TEXT UNIQUE,
-task_run_id FK, seq INT, UNIQUE(task_run_id, seq),   -- seq 会话内单调递增
+task_run_id FK NULL,                  -- 可空：会话域事件（queue.*，F006）无任务锚点（v2 迁移放开，C7）
+seq INT, UNIQUE(task_run_id, seq),    # seq 任务内单调递增（任务事件）；会话域事件 seq 恒 0
 conversation_id FK,                        -- 冗余，方便按会话拉流
 agent_run_id TEXT NULL,                    -- M5 多 Agent 预留位
 attempt_no INT,
@@ -246,7 +247,7 @@ class ConversationState:
 | 函数 | 条件 |
 |---|---|
 | `can_send` | state == idle |
-| `can_queue` | state == running 且 waiting_approvals == 0（queue_paused 不影响入队——新指令仍可排入，保持暂停态） |
+| `can_queue` | state ∈ (starting, running) 且 waiting_approvals == 0（queue_paused 不影响入队——新指令仍可排入，保持暂停态。starting 计入：指令直发后 run.started 落库前，第二条并发指令必入队而非被拒——C7 落地口径） |
 | `can_cancel` | state in (starting, running) |
 | `can_continue_queue` | state == idle 且 queue_paused == 1 且队列非空（且无待核验/待审批） |
 

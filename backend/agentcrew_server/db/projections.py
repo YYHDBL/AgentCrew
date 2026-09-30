@@ -7,7 +7,9 @@
 - handler 只做 SQL upsert，不等待外部系统。
 
 C2 固定的 payload 契约（C5-C8 按此发射；新增字段先登记再使用）：
-  run.queued        {instruction, cron_job_id?}
+  run.queued        {instruction, cron_job_id?, client_request_id?, queue_item_id?}
+                    —— queue_item_id：从队列出队直发时携带（该指令的消息行
+                    已在 queue.item_enqueued 写入，此处不重复写 messages）
   run.started       {attempt_no, attempt_id, kind="initial"}
   run.completed     {final_text?, outcome?}
   run.failed        {reason}
@@ -34,16 +36,21 @@ C2 固定的 payload 契约（C5-C8 按此发射；新增字段先登记再使�
   artifact.missing_detected {artifact_id}
   materials.imported {files: [{original_path, stored_name, size_bytes?, error?}]}
   conversation.updated {title?}
+  queue.item_enqueued {item_id, text, client_request_id?}   （C7）
+  queue.item_cancelled {item_ids: [...]}
 
-无投影事件（等待计数器与 FSM 在内存 reducer，C7；上下文事件 M1）：
-  permission.* / question.* / queue.* / context.compacted /
-  tool.result_externalized —— 注册为显式 no-op。
-task_runs 的 waiting_user / waiting_verification 派生随 C7/C8 的 reducer
+C7 起排队域有投影（此前为 no-op）：queue.* 事件维护 conversations.
+pending_queue JSON / queue_paused 列，queue.item_enqueued 同步写 messages
+用户消息行（排队指令的发送记录——取消时"发送记录保留"的留痕处）。这两列
+因此成为事件派生投影：rebuild 前重置，重放重建（见 _reset_queue_columns）。
+等待计数器与 FSM 仍在内存 reducer（agentcrew_core.events.reducer）。
+task_runs 的 waiting_user / waiting_verification 派生随 C8 的 reducer
 语义落地（依赖其状态互斥规则），C2 只实现 run.* 直接迁移。
 """
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from typing import Callable
 
@@ -74,16 +81,21 @@ def _run_queued(conn: sqlite3.Connection, ev: Event) -> None:
     p = ev.payload
     conn.execute(
         "INSERT INTO task_runs (id, conversation_id, instruction, status, cron_job_id,"
-        " created_at, updated_at) VALUES (?, ?, ?, 'queued', ?, ?, ?)",
+        " client_request_id, created_at, updated_at)"
+        " VALUES (?, ?, ?, 'queued', ?, ?, ?, ?)",
         (ev.task_run_id, ev.conversation_id, p.get("instruction", ""),
-         p.get("cron_job_id"), ev.ts, ev.ts),
+         p.get("cron_job_id"), p.get("client_request_id"), ev.ts, ev.ts),
     )
-    conn.execute(
-        "INSERT INTO messages (id, conversation_id, task_run_id, role, content, created_at)"
-        " VALUES (?, ?, ?, 'user', ?, ?)",
-        (f"msg-{ev.id}", ev.conversation_id, ev.task_run_id,
-         p.get("instruction", ""), ev.ts),
-    )
+    if p.get("queue_item_id") is None:
+        # 直发指令的消息行；队列出队的指令在 queue.item_enqueued 已写
+        conn.execute(
+            "INSERT INTO messages (id, conversation_id, task_run_id, role, content, created_at)"
+            " VALUES (?, ?, ?, 'user', ?, ?)",
+            (f"msg-{ev.id}", ev.conversation_id, ev.task_run_id,
+             p.get("instruction", ""), ev.ts),
+        )
+    else:
+        _queue_run_dequeued(conn, ev)
 
 
 def _attempt_started(conn: sqlite3.Connection, ev: Event, kind: str, reason: str | None) -> None:
@@ -316,6 +328,77 @@ def _conversation_updated(conn: sqlite3.Connection, ev: Event) -> None:
         )
 
 
+# ── 排队控制 → conversations.pending_queue / queue_paused（C7）──────
+
+def _load_queue(conn: sqlite3.Connection, conversation_id: str) -> list[dict]:
+    row = conn.execute(
+        "SELECT pending_queue FROM conversations WHERE id = ?", (conversation_id,)
+    ).fetchone()
+    if row is None:
+        raise ValueError(f"排队事件指向不存在的会话：{conversation_id}")
+    items = json.loads(row[0] or "[]")
+    return items if isinstance(items, list) else []
+
+
+def _save_queue(conn: sqlite3.Connection, conversation_id: str,
+                items: list[dict], ts: str) -> None:
+    conn.execute(
+        "UPDATE conversations SET pending_queue=?, updated_at=? WHERE id=?",
+        (json.dumps(items, ensure_ascii=False), ts, conversation_id),
+    )
+
+
+def _queue_enqueued(conn: sqlite3.Connection, ev: Event) -> None:
+    p = ev.payload
+    items = _load_queue(conn, ev.conversation_id)
+    items.append({
+        "id": p["item_id"], "text": p.get("text", ""), "enqueued_at": ev.ts,
+        "state": "queued", "client_request_id": p.get("client_request_id"),
+    })
+    _save_queue(conn, ev.conversation_id, items, ev.ts)
+    # 发送记录入 messages（取消排队项时记录仍在，F006 留痕口径）
+    conn.execute(
+        "INSERT INTO messages (id, conversation_id, task_run_id, role, content,"
+        " created_at) VALUES (?, ?, NULL, 'user', ?, ?)",
+        (f"msg-{ev.id}", ev.conversation_id, p.get("text", ""), ev.ts),
+    )
+
+
+def _queue_item_cancelled(conn: sqlite3.Connection, ev: Event) -> None:
+    ids = set(ev.payload.get("item_ids", []))
+    items = _load_queue(conn, ev.conversation_id)
+    for item in items:
+        if item.get("id") in ids and item.get("state") == "queued":
+            item["state"] = "cancelled"
+    _save_queue(conn, ev.conversation_id, items, ev.ts)
+
+
+def _queue_run_dequeued(conn: sqlite3.Connection, ev: Event) -> None:
+    """run.queued 从队列出队：排队项标 dequeued（消息行已在入队时写）。"""
+    item_id = ev.payload.get("queue_item_id")
+    if item_id is None:
+        return
+    items = _load_queue(conn, ev.conversation_id)
+    for item in items:
+        if item.get("id") == item_id and item.get("state") == "queued":
+            item["state"] = "dequeued"
+    _save_queue(conn, ev.conversation_id, items, ev.ts)
+
+
+def _queue_paused(conn: sqlite3.Connection, ev: Event) -> None:
+    conn.execute(
+        "UPDATE conversations SET queue_paused=1, updated_at=? WHERE id=?",
+        (ev.ts, ev.conversation_id),
+    )
+
+
+def _queue_resumed(conn: sqlite3.Connection, ev: Event) -> None:
+    conn.execute(
+        "UPDATE conversations SET queue_paused=0, updated_at=? WHERE id=?",
+        (ev.ts, ev.conversation_id),
+    )
+
+
 HANDLERS: dict[RunEventType, Handler] = {
     RunEventType.RUN_QUEUED: _run_queued,
     RunEventType.RUN_STARTED: _run_started,
@@ -342,14 +425,16 @@ HANDLERS: dict[RunEventType, Handler] = {
     RunEventType.ARTIFACT_MISSING_DETECTED: lambda c, e: _artifact_update(c, e, "missing"),
     RunEventType.MATERIALS_IMPORTED: _materials_imported,
     RunEventType.CONVERSATION_UPDATED: _conversation_updated,
-    # 无投影（FSM/计数器在内存 reducer，C7）
+    # 排队域投影（C7）：pending_queue / queue_paused / messages 发送记录
+    RunEventType.QUEUE_ITEM_ENQUEUED: _queue_enqueued,
+    RunEventType.QUEUE_ITEM_CANCELLED: _queue_item_cancelled,
+    RunEventType.QUEUE_PAUSED: _queue_paused,
+    RunEventType.QUEUE_RESUMED: _queue_resumed,
+    # 无投影（等待计数器与 FSM 在内存 reducer，C7 起；上下文事件 M1）
     RunEventType.PERMISSION_REQUESTED: _noop,
     RunEventType.PERMISSION_RESOLVED: _noop,
     RunEventType.QUESTION_REQUESTED: _noop,
     RunEventType.QUESTION_ANSWERED: _noop,
-    RunEventType.QUEUE_PAUSED: _noop,
-    RunEventType.QUEUE_RESUMED: _noop,
-    RunEventType.QUEUE_ITEM_CANCELLED: _noop,
     RunEventType.CONTEXT_COMPACTED: _noop,
     RunEventType.TOOL_RESULT_EXTERNALIZED: _noop,
 }
@@ -379,6 +464,8 @@ def rebuild_projections(conn: sqlite3.Connection) -> int:
     """重放器：擦除全部投影表，按 global_seq 重放 run_events 重建。
 
     返回重放事件数。事务内 defer_foreign_keys——重放结束时父行全部复在。
+    pending_queue / queue_paused 是 queue.* 事件的派生投影（C7）：会话行
+    本身由 API 创建不擦除，但这两列重放前重置，保证重放幂等。
     """
     conn.execute("BEGIN IMMEDIATE")
     previous_factory = conn.row_factory
@@ -386,6 +473,9 @@ def rebuild_projections(conn: sqlite3.Connection) -> int:
         conn.execute("PRAGMA defer_foreign_keys=ON")
         for table in PROJECTION_TABLES:
             conn.execute(f"DELETE FROM {table}")
+        conn.execute(
+            "UPDATE conversations SET pending_queue='[]', queue_paused=0"
+        )
         conn.row_factory = sqlite3.Row  # _row_to_event 按列名取值
         count = 0
         for row in conn.execute(

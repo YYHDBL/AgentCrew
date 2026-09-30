@@ -118,7 +118,7 @@ class ToolScheduler:
         bash_verdict = ""
         if tool.metadata.name == "bash":
             effective_readonly, bash_verdict = bash_readonly(
-                invocation.input.get("command", "")
+                invocation.input.get("command", ""), ctx.cwd,
             )
         meta = tool.metadata
         prepared_payload = {

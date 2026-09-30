@@ -19,6 +19,8 @@ if TYPE_CHECKING:  # 避免运行时循环导入（bus 导入 core.events 而已
     from .approvals import ApprovalService
     from .bus import EventBus
     from .db.event_store import EventStore
+    from .sessions import SessionService
+    from .settings import SettingsService
 
 
 @dataclass
@@ -42,6 +44,8 @@ class RuntimeState:
     provider: GLMAnthropicProvider | None = None
     approvals: "ApprovalService | None" = None  # M0-C6 起装配
     scheduler: "ToolScheduler | None" = None
+    settings: "SettingsService | None" = None  # M0-C7 起装配
+    sessions: "SessionService | None" = None  # M0-C7 起装配
 
     async def shutdown(self) -> None:
         """优雅关闭（§7 顺序；任务取消/不写终态随 C8/C9 填充）。"""

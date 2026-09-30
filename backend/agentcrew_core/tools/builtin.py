@@ -41,8 +41,16 @@ HTTP_TIMEOUT_S = 30.0
 
 # ── 公共：路径硬检与输出外部化 ───────────────────────────────────
 
-def _check_path(ctx: WorkContext, raw: str) -> str | None:
+def _resolve_input_path(ctx: WorkContext, raw: str) -> Path:
+    """工具入参路径统一解析（S09）：相对路径以任务工作目录为基。"""
     path = Path(raw).expanduser()
+    if not path.is_absolute() and ctx.cwd is not None:
+        path = Path(ctx.cwd) / path
+    return path
+
+
+def _check_path(ctx: WorkContext, raw: str) -> str | None:
+    path = _resolve_input_path(ctx, raw)
     if path_is_protected(path, ctx.protected):
         return f"PROTECTED_PATH：{path.resolve()}"
     if not path_in_scope(path, ctx.scope):
@@ -95,7 +103,7 @@ async def _read_file(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     raw = inv.input.get("path", "")
     if err := _check_path(ctx, raw):
         return ToolResult(ok=False, error=err)
-    path = Path(raw).expanduser().resolve()
+    path = _resolve_input_path(ctx, raw).resolve()
     if not path.is_file():
         return ToolResult(ok=False, error=f"NOT_FOUND：{path}")
     offset = max(1, int(inv.input.get("offset", 1)))
@@ -173,7 +181,7 @@ async def _write_file(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     content = inv.input.get("content", "")
     if err := _check_path(ctx, raw):
         return ToolResult(ok=False, error=err)
-    target = Path(raw).expanduser().resolve()
+    target = _resolve_input_path(ctx, raw).resolve()
     target.parent.mkdir(parents=True, exist_ok=True)
     sha256 = _write_file_extras(inv.input)["content_sha256"]
     if ctx.emit is not None:  # 生成中 → 写入 → ready（§2.2 artifacts 投影口径）
@@ -276,7 +284,7 @@ async def _pump(stream, buf: bytearray, cap: int) -> bool:
 async def _bash(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     command = inv.input.get("command", "")
     timeout_ms = int(inv.input.get("timeout_ms", 60_000))
-    readonly, verdict_reason = bash_readonly(command)
+    readonly, verdict_reason = bash_readonly(command, ctx.cwd)
     # 受保护路径全部进 deny 列表（不按 exists() 过滤——尚未创建的
     # config.json 等同样要挡，内核对不存在路径的 deny 实测生效，F07）
     protected_real = [str(Path(p).resolve()) for p in ctx.protected]
@@ -287,6 +295,7 @@ async def _bash(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     proc = await asyncio.create_subprocess_exec(
         *_sandboxed_argv(profile, command),
         env=env,
+        cwd=str(ctx.cwd) if ctx.cwd is not None else None,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
         start_new_session=True,  # 独立进程组：超时/取消/收尾都可整组击杀

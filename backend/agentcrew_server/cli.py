@@ -35,6 +35,8 @@ from .db.event_store import EventStore
 from .db.migrations import MigrationFailedError, run_migrations
 from .db.write_channel import WriteChannel
 from .providers import build_provider
+from .sessions import SessionService
+from .settings import SettingsService
 from .instance_lock import (
     DataDirNotWritable,
     InstanceLock,
@@ -317,11 +319,17 @@ def main(argv: list[str] | None = None) -> int:
         approvals = ApprovalService(db, event_store, data_dir / "chain-head.txt")
         scheduler = ToolScheduler(build_default_registry(), gate=approvals.gate)
         approvals.scheduler = scheduler
+        # 配置 API + 会话装配（M0-C7）：settings 是 config 的运行时持有者，
+        # PATCH 成功后 sessions 读到的 limits 即为新值
+        settings = SettingsService(config, data_dir, channel,
+                                   data_dir / "chain-head.txt")
+        sessions = SessionService(db, event_store, data_dir, settings)
         runtime = RuntimeState(
             log=log, data_dir=data_dir, db=db,
             write_channel=channel, diagnostic=diagnostic,
             token=token, bus=bus, event_store=event_store, provider=provider,
             approvals=approvals, scheduler=scheduler,
+            settings=settings, sessions=sessions,
         )
         log.info("startup.bus 事件总线就绪（队列上限 1000，SSE 连接上限 32）")
         log.info(

@@ -7,7 +7,7 @@
 `run.queued / run.started / run.completed / run.failed / run.cancelled / run.interrupted / run.resumed`
 
 ## 排队控制（v1.4，F006）
-`queue.paused`（用户停止后队列进入暂停，不自动接续）/ `queue.resumed`（用户点继续，队首启动）/ `queue.item_cancelled`（取消排队指令，payload 含 item_ids，发送记录保留）
+`queue.paused`（用户停止后队列进入暂停，不自动接续）/ `queue.resumed`（用户点继续，队首启动）/ `queue.item_enqueued`（payload: item_id/text/client_request_id?——入队即写 messages 发送记录，C7 落地补位）/ `queue.item_cancelled`（取消排队指令，payload 含 item_ids，发送记录保留）。queue.* 是**会话域**事件：task_run_id 可空（无任务锚点，帧中省略 task_run_id/seq）。
 
 ## 回合与模型（harness-session §3）
 `step.started / step.completed / llm.request_started / llm.request_done（含全文+usage）/ llm.request_failed（含错误分类、retry_no）`

@@ -119,6 +119,14 @@ components:
       properties:
         conversation: { $ref: "#/components/schemas/ConversationSummary" }
         materials: { type: array, items: { $ref: "#/components/schemas/MaterialImportResult" } }
+        folders:
+          type: array
+          description: 授权文件夹逐项结果（不存在/超限逐项报 error；C7 落地补充）
+          items:
+            type: object
+            properties:
+              path: { type: string }
+              error: { type: [string, "null"] }
         scope: { $ref: "#/components/schemas/Scope" }
         task_run_id: { type: string }
     ConversationPatchRequest:
@@ -404,6 +412,7 @@ paths:
                     properties:
                       mode: { type: string, enum: [started, queued] }
                       queue_position: { type: [integer, "null"] }
+                      task_run_id: { type: [string, "null"], description: started 时为直发新建的任务；C7 落地补充 }
         "409": { $ref: "#/components/responses/ErrEnvelope" }
   /api/conversations/{id}/state:
     get:

@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .schema_v1 import V1_STATEMENTS
+from .schema_v2 import V2_STATEMENTS
 
 _SNAPSHOT_KEEP = 3
 _BUSY_RETRIES = 3
@@ -31,6 +32,7 @@ class Migration:
 
 MIGRATIONS: tuple[Migration, ...] = (
     Migration(version=1, name="M0 初始建表", statements=V1_STATEMENTS),
+    Migration(version=2, name="C7 客户端幂等键", statements=V2_STATEMENTS),
 )
 
 

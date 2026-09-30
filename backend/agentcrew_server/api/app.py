@@ -18,6 +18,8 @@ from .approvals import install_approval_routes
 from .auth import BearerAuthMiddleware
 from .envelope import EnvelopeMiddleware
 from .errors import ErrorCode, error_response, install_error_handlers
+from .sessions import install_session_routes
+from .settings import install_settings_routes
 from .sse import install_sse_routes
 
 # 诊断模式下仍然可用的端点（§1：仅 health 与诊断端点）
@@ -70,6 +72,10 @@ def create_app(runtime: RuntimeState) -> FastAPI:
     install_sse_routes(app, runtime)
     if runtime.approvals is not None:
         install_approval_routes(app, runtime)
+    if runtime.sessions is not None:
+        install_session_routes(app, runtime)
+    if runtime.settings is not None:
+        install_settings_routes(app, runtime)
     app.add_middleware(EnvelopeMiddleware)
     app.add_middleware(DiagnosticGuardMiddleware, runtime=runtime)
     # Bearer 鉴权（M0-C3）：无/错 token → 401；仅 /api/health 豁免。

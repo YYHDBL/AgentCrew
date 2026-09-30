@@ -241,7 +241,7 @@ def test_f05_allow_always_bash_does_not_cover_appended_commands(tmp_path):
         assert (await asyncio.wait_for(t1, timeout=10)).ok
         rules = a.db.read_conn.execute(
             "SELECT pattern FROM agent_permission_rules").fetchall()
-        assert rules == [("echo hi",)]  # pattern = 完整命令，非首词
+        assert [tuple(r) for r in rules] == [("echo hi",)]  # pattern = 完整命令，非首词
         # 追加命令：不命中规则 → 重新弹卡
         _, t2 = _start_tool(a, tmp_path, "bash",
                             {"command": "echo okay; touch pwned"})

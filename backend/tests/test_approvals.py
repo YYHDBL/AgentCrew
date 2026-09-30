@@ -225,7 +225,7 @@ def test_allow_always_writes_rule_and_second_call_skips_gate(tmp_path):
         rules = a.db.read_conn.execute(
             "SELECT tool_name, pattern, effect FROM agent_permission_rules"
         ).fetchall()
-        assert rules == [("write_file", str(ws), "allow")]
+        assert [tuple(r) for r in rules] == [("write_file", str(ws), "allow")]
         # 同目录第二次写：不弹卡直接放行
         t2 = await a.approvals.run_tool(
             task_run_id=RUN, conversation_id=CONV, agent_id=AGENT,

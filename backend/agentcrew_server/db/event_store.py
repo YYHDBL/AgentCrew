@@ -47,7 +47,7 @@ class EventStore:
     async def append(
         self,
         *,
-        task_run_id: str,
+        task_run_id: str | None,
         conversation_id: str,
         type: RunEventType,
         payload: dict,
@@ -56,7 +56,9 @@ class EventStore:
         extra_writes: Callable[[sqlite3.Connection, Event], None] | None = None,
     ) -> Event:
         """事件 + 投影（+ 可选 extra_writes 同事务写入，如审计/规则——外审
-        回稿 F03：审批决定相关写入必须与事件原子提交）单事务落库并发布。"""
+        回稿 F03：审批决定相关写入必须与事件原子提交）单事务落库并发布。
+        task_run_id=None 为会话域事件（queue.*，v2 起 run_events 放开可空），
+        此时 seq 无意义恒 0。"""
         return await self._channel.execute(
             lambda conn: self._append_tx(
                 conn,
@@ -70,11 +72,21 @@ class EventStore:
             )
         )
 
+    @staticmethod
+    def _next_seq(conn: sqlite3.Connection, task_run_id: str | None) -> int:
+        if task_run_id is None:
+            return 0  # 会话域事件：seq 属任务内游标，无任务即无 seq
+        row = conn.execute(
+            "SELECT COALESCE(MAX(seq), 0) + 1 FROM run_events WHERE task_run_id = ?",
+            (task_run_id,),
+        ).fetchone()
+        return int(row[0])
+
     def _append_tx(
         self,
         conn: sqlite3.Connection,
         *,
-        task_run_id: str,
+        task_run_id: str | None,
         conversation_id: str,
         type: RunEventType,
         payload: dict,
@@ -90,11 +102,7 @@ class EventStore:
             # 投影创建（事件先插、投影后建），提交时父行已存在；坏引用同样在
             # COMMIT 处如实失败（走下面的回滚路径）
             conn.execute("PRAGMA defer_foreign_keys=ON")
-            row = conn.execute(
-                "SELECT COALESCE(MAX(seq), 0) + 1 FROM run_events WHERE task_run_id = ?",
-                (task_run_id,),
-            ).fetchone()
-            seq = int(row[0])
+            seq = self._next_seq(conn, task_run_id)
             cursor = conn.execute(
                 "INSERT INTO run_events (id, task_run_id, seq, conversation_id,"
                 " agent_run_id, attempt_no, type, payload, created_at)"
@@ -143,7 +151,7 @@ class EventStore:
         self,
         conn: sqlite3.Connection,
         *,
-        task_run_id: str,
+        task_run_id: str | None,
         conversation_id: str,
         type: RunEventType,
         payload: dict,
@@ -154,11 +162,10 @@ class EventStore:
         提交与发布由调用方负责：COMMIT 后必须调 publish(event)。"""
         event_id = uuid.uuid4().hex
         ts = _utc_now()
-        row = conn.execute(
-            "SELECT COALESCE(MAX(seq), 0) + 1 FROM run_events WHERE task_run_id = ?",
-            (task_run_id,),
-        ).fetchone()
-        seq = int(row[0])
+        # FK 延迟到 COMMIT 检查：RUN_QUEUED 的 task_runs 父行可能由本事务内
+        # 的投影稍后创建（调用方复合事务里事件先插、投影后建）
+        conn.execute("PRAGMA defer_foreign_keys=ON")
+        seq = self._next_seq(conn, task_run_id)
         cursor = conn.execute(
             "INSERT INTO run_events (id, task_run_id, seq, conversation_id,"
             " agent_run_id, attempt_no, type, payload, created_at)"
