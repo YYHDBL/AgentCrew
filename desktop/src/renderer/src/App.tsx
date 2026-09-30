@@ -10,6 +10,7 @@ export default function App(): JSX.Element {
   const [detailsOpen, setDetailsOpen] = useState(true)
   const [narrow, setNarrow] = useState(() => window.innerWidth < 1100)
   const [narrowPanel, setNarrowPanel] = useState<NarrowPanel>(null)
+  const [connection, setConnection] = useState<'connecting' | 'connected' | 'reconnecting'>('connecting')
   const sidebarButton = useRef<HTMLButtonElement>(null)
   const sidebarCloseButton = useRef<HTMLButtonElement>(null)
   const taskButton = useRef<HTMLButtonElement>(null)
@@ -25,6 +26,28 @@ export default function App(): JSX.Element {
     const updateWidth = (): void => setNarrow(window.innerWidth < 1100)
     window.addEventListener('resize', updateWidth)
     return () => window.removeEventListener('resize', updateWidth)
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    let connectedOnce = false
+    let timer: ReturnType<typeof setTimeout>
+    const check = async (): Promise<void> => {
+      try {
+        const [port, token] = await Promise.all([window.agentcrew.getBackendPort(), window.agentcrew.getToken()])
+        if (!port || !token) throw new Error('任务服务尚未就绪')
+        const response = await fetch(`http://127.0.0.1:${port}/api/health`, {
+          headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(1500)
+        })
+        if (!response.ok || (await response.json() as { data?: { status?: string } }).data?.status !== 'ok') throw new Error('健康检查失败')
+        if (active) { connectedOnce = true; setConnection('connected') }
+      } catch {
+        if (active) setConnection(connectedOnce ? 'reconnecting' : 'connecting')
+      }
+      if (active) timer = setTimeout(() => void check(), 1000)
+    }
+    void check()
+    return () => { active = false; clearTimeout(timer) }
   }, [])
 
   useEffect(() => {
@@ -143,7 +166,7 @@ export default function App(): JSX.Element {
           <div className="content-scroll">
             <div className="task-heading">
               <h1>给数字员工交代一项工作</h1>
-              <span className="connection-label">任务服务尚未接入</span>
+              <span className="connection-label" role="status">{connection === 'connected' ? '任务服务已连接' : connection === 'reconnecting' ? '任务服务正在重新连接' : '正在连接任务服务'}</span>
             </div>
             <div className="notice" role="status">
               工作台布局已就绪。任务创建与执行将在接入本地服务后开放。

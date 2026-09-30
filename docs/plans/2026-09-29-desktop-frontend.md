@@ -16,9 +16,9 @@
 
 接口依据为 [OpenAPI](../contracts/openapi.yaml)、[事件契约](../contracts/events.md)、[后端服务层](../architecture/backend-service.md) 与 [Harness/Session](../architecture/harness-session.md)。桌面进程依据为 [desktop-shell](../architecture/desktop-shell.md)。`contracts/`、后端架构与后端任务卡由其维护者修改；前端在本计划记录需要补充的内容。
 
-当前 `desktop/` 已有 main、空 preload、React 工作台、三处收起与展开、窄窗口、键盘焦点和空白状态。此前已运行 Electron 并完成类型检查与构建，截图见 [宽窗口](../../desktop/evidence/workbench-wide.png) 和 [窄窗口](../../desktop/evidence/workbench-narrow.png)。本次规划没有重新执行应用验收。现有代码仍在独立工作树，尚未提交；后续实施开始前应将骨架整理为独立提交，保证评审与变更归属清楚。
+当前 `desktop/` 已有 FE00 的 React 工作台、三处收起与展开、窄窗口、键盘焦点和空白状态，骨架截图见 [宽窗口](../../desktop/evidence/workbench-wide.png) 和 [窄窗口](../../desktop/evidence/workbench-narrow.png)。FE00 已在 `desktop-shell` 分支提交；C10 的桌面进程和真机验收记录见 [M0-C10](../acceptance/M0-C10.md)。
 
-当前 main 的关窗行为是退出应用，尚无菜单栏驻留、sidecar、HTTP/SSE、任务数据或原生业务接口。**骨架完成不代表 C10、C11 或 C12 完成。**
+当前 main 负责菜单栏驻留、sidecar 监管、单实例与退出清理，preload 提供窄接口，React 显示真实后端连接状态。任务数据、业务 HTTP/SSE、C11 与 C12 仍按后续卡实现。
 
 产品全部范围保留。M0 完成工作台真实任务链路；记忆、员工管理、治理、运行中心、自动化与安装包依照后端里程碑实施。美化按用户决定放在功能验收之后；可读性、窄窗口和键盘可操作性是每张卡的完成条件。
 
@@ -26,8 +26,7 @@
 
 | 条件 | 可以验证的内容 | 依赖的真实能力 |
 |---|---|---|
-| 现在，尚无服务代码 | 接口核对、本地草稿与材料选择交互、布局与键盘操作 | 已有桌面工程；业务提交保持不可用 |
-| C1 服务可启动 | Electron 启动 sidecar、就绪、健康检查、退出与异常提示 | 真实 Python 入口、数据目录、就绪标记、健康接口与退出行为 |
+| 当前已交付 C1–C6 与 C10 | Electron 启动 sidecar、就绪、健康检查、监管重启、退出与异常提示；接口核对与纯界面交互 | 真实 Python 入口、数据目录、就绪标记、健康接口与退出行为；业务提交保持不可用 |
 | C3、C7 接口可运行 | 带鉴权查询、任务创建、材料导入、队列和快照订阅 | 真实数据库与服务；C7 尚无 runner 时，任务保持 queued 是实际状态 |
 | C6、C8 执行链可运行 | 实时执行、四种审批、提问回答、停止与排队接续 | 真实模型、工具和事件；前端 FE03–FE07 已满足各自依赖 |
 | C9 恢复可运行 | 产物核验、中断恢复、刷新及重连的完整验收 | 已持久化的真实任务、调用账本与新尝试 |
@@ -94,7 +93,7 @@ main/preload 的 IPC 按用途提供并验证调用来源及参数。渲染层�
 
 ### FE03 · sidecar 启动、进程监管与连接信息（C10 部分）
 
-**依赖**：C1、FE01/K06。**状态**：等待真实后端入口。
+**依赖**：C1、FE01/K06。**状态**：C10 范围已通过真机验收，见 `docs/acceptance/M0-C10.md`；后续业务事件恢复仍按 FE05 验收。
 
 **主要文件**：修改 `desktop/src/main/index.ts`、`src/preload/index.ts`、`src/shared/desktop-api.ts`；新增 `desktop/src/main/sidecar.ts`；需要生命周期验证时新增 `desktop/tests/sidecar.spec.ts`。
 
@@ -154,7 +153,7 @@ main/preload 的 IPC 按用途提供并验证调用来源及参数。渲染层�
 
 ### FE09 · 菜单栏驻留、退出与设置（C10 剩余范围）
 
-**依赖**：FE01/K06/K09、FE03；运行影响验收需要 C8/C9，完整定时影响验收依赖 FE14。**状态**：等待服务状态与退出约定。
+**依赖**：FE01/K06/K09、FE03；运行影响验收需要 C8/C9，完整定时影响验收依赖 FE14。**状态**：C10 的托盘、单实例与显式退出警告已通过；设置页和真实运行影响清单等待后端能力。
 
 **主要文件**：新增 `desktop/src/main/lifecycle.ts`、`desktop/src/renderer/src/settings/DesktopSettings.tsx`；修改 main/preload、共享类型和导航。
 

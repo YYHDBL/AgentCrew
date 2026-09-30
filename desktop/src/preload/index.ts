@@ -1,2 +1,9 @@
-// 当前工作台只使用渲染层状态，暂无需要暴露的原生操作。
-export {}
+import { contextBridge, ipcRenderer } from 'electron'
+
+contextBridge.exposeInMainWorld('agentcrew', {
+  getBackendPort: (): Promise<number | null> => ipcRenderer.invoke('backend-port'),
+  getToken: (): Promise<string | null> => ipcRenderer.invoke('backend-token'),
+  notify: (title: string, body: string): Promise<boolean> => ipcRenderer.invoke('notify', title, body),
+  openPath: (path: string): Promise<string> => ipcRenderer.invoke('open-path', path),
+  setKeepAwake: (enabled: boolean): Promise<void> => ipcRenderer.invoke('keep-awake', enabled)
+})
