@@ -119,6 +119,14 @@ components:
       properties:
         conversation: { $ref: "#/components/schemas/ConversationSummary" }
         materials: { type: array, items: { $ref: "#/components/schemas/MaterialImportResult" } }
+        folders:
+          type: array
+          description: 授权文件夹逐项结果（不存在/超限逐项报 error；C7 落地补充）
+          items:
+            type: object
+            properties:
+              path: { type: string }
+              error: { type: [string, "null"] }
         scope: { $ref: "#/components/schemas/Scope" }
         task_run_id: { type: string }
     ConversationPatchRequest:
@@ -213,6 +221,7 @@ components:
             stall_seconds: { type: integer }
             repeat_limit: { type: integer }
             global_concurrency: { type: integer }
+            token_budget: { type: integer, description: 任务累计 token 硬上限（超限 RUN_FAILED(token_budget)；压缩是 M1）——C8 }
         limits:
           type: object
           properties:
@@ -243,6 +252,15 @@ components:
       properties:
         settings: { $ref: "#/components/schemas/Settings" }
         ignored_fields: { type: array, items: { type: string }, description: 被环境变量覆盖而未生效的字段 }
+        restart_required:
+          type: array
+          items: { type: string }
+          description: 需重启生效的本次触碰字段（gates.global_concurrency 在进程启动期构造信号量，PATCH 仅落盘——C8 二轮回稿）
+        audit:
+          type: object
+          description: 审计入链状态（外审回稿：一切配置变更入审计链）
+          properties:
+            status: { type: string, enum: [ok, pending, failed], description: pending = 审计写失败已落待办文件待补链；failed = 待办也无法落盘 }
   responses:
     ErrEnvelope:
       description: 错误信封
@@ -402,8 +420,9 @@ paths:
                   data:
                     type: object
                     properties:
-                      mode: { type: string, enum: [started, queued] }
+                      mode: { type: string, enum: [started, queued, cancelled], description: cancelled = 该 client_request_id 对应指令已被用户取消，重试不再入队（外审回稿） }
                       queue_position: { type: [integer, "null"] }
+                      task_run_id: { type: [string, "null"], description: started 时为直发新建的任务；C7 落地补充 }
         "409": { $ref: "#/components/responses/ErrEnvelope" }
   /api/conversations/{id}/state:
     get:

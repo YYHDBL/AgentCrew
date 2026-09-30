@@ -105,9 +105,10 @@ class ApprovalService:
         # call_id 取（run_tool 先注册再执行）
         ctx_info = self._context_for(invocation.call_id)
         ih = input_hash(invocation.input)
+        cwd = ctx_info.ctx.cwd if ctx_info.ctx is not None else None
         rules = await asyncio.to_thread(self._load_rules, ctx_info.agent_id)
         result = evaluate_gate(meta, invocation.input, readonly_verdict,
-                               rules, ctx_info.agent_id)
+                               rules, ctx_info.agent_id, cwd)
         if result.action == "allow":
             # governance §3：闸门放行（自动/规则命中）全部入审计链
             action = ("permission.rule_allowed" if result.matched_pattern
@@ -130,7 +131,7 @@ class ApprovalService:
             return "deny"
         # ask：发卡（含四选项/input_hash/target/范围预览）→ 挂起。
         # 请求事件与请求审计同事务（governance §2.3"全部进审计链"）
-        pattern = always_scope_pattern(meta.name, invocation.input)
+        pattern = always_scope_pattern(meta.name, invocation.input, cwd)
 
         def _audit_requested(conn, event):
             append_audit(
@@ -151,7 +152,7 @@ class ApprovalService:
                 "risk": meta.risk_level,
                 "options": list(DECISIONS),
                 "input_hash": ih,
-                "target": approval_target(meta.name, invocation.input),
+                "target": approval_target(meta.name, invocation.input, cwd),
                 "always_scope_preview": pattern,
             },
             extra_writes=_audit_requested,
@@ -198,7 +199,6 @@ class ApprovalService:
             raise ApprovalStale(
                 f"该审批已按 {first_decision} 处理（重试同决定可幂等返回）")
         event, audit_seq = outcome["event"], outcome["audit_seq"]
-        self._store.publish(event)  # 提交后扇出（与 append 语义一致）
         if audit_seq % SNAPSHOT_EVERY == 0:  # 每 100 条快照链头（governance §3）
             await self._channel.execute(
                 lambda conn: snapshot_chain_head(conn, self._chain_head_path))
@@ -253,6 +253,10 @@ class ApprovalService:
                                    input_hash=payload.get("input_hash")),
                 )
             conn.execute("COMMIT")
+            # COMMIT 成功后、闭包返回前发布（写线程内）——发布顺序 = 提交顺序
+            # （外审回稿：闭包外发布会让写线程先发布更大 global_seq，SSE 去重
+            # 把后到的较小序号永久丢弃）
+            self._store.publish(event)
             return {"kind": "written", "event": event, "audit_seq": audit_seq}
         except Exception:
             try:

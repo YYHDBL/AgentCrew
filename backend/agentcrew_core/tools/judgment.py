@@ -25,12 +25,13 @@ FIND_VETO_TOKENS = frozenset(
 )
 
 
-def _first_word_identity(command_word: str) -> tuple[bool, str]:
+def _first_word_identity(command_word: str, cwd: Path | None) -> tuple[bool, str]:
     """首词必须是可信白名单程序本体（外审回稿 F06）：
     ① 不含路径分隔符（./cat、子目录脚本一律不算）；
     ② 经 PATH 解析得到绝对路径（找不到的不算）；
-    ③ 解析结果不得落在当前工作目录内（工作区内同名脚本影子化白名单命令
-       的实测绕过路径）。"""
+    ③ 解析结果不得落在 bash 的当前工作目录内（工作区内同名脚本影子化
+       白名单命令的实测绕过路径）。cwd 由 WorkContext 提供（S09）：任务
+       工作目录就是子进程的落点，检查须以它为基准。"""
     import shutil
 
     if "/" in command_word:
@@ -39,14 +40,15 @@ def _first_word_identity(command_word: str) -> tuple[bool, str]:
     if resolved is None:
         return False, f"PATH 中找不到命令：{command_word}"
     real = Path(resolved).resolve()
+    base = Path(cwd).resolve() if cwd is not None else Path.cwd().resolve()
     try:
-        real.relative_to(Path.cwd().resolve())
+        real.relative_to(base)
         return False, f"命令解析到工作目录内（影子脚本嫌疑）：{resolved}"
     except ValueError:
         return True, ""
 
 
-def bash_readonly(command: str) -> tuple[bool, str]:
+def bash_readonly(command: str, cwd: Path | None = None) -> tuple[bool, str]:
     """只读判定 = 首词白名单 × 无元字符 × find 参数否决。返回 (是否只读, 原因)。"""
     if not command or not command.strip():
         return False, "空命令"
@@ -64,7 +66,7 @@ def bash_readonly(command: str) -> tuple[bool, str]:
     first = tokens[0]
     if Path(first).name not in BASH_READONLY_WHITELIST:
         return False, f"首词不在只读白名单：{first}"
-    ok, reason = _first_word_identity(first)
+    ok, reason = _first_word_identity(first, cwd)
     if not ok:
         return False, reason
     if first == "find":

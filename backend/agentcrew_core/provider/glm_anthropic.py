@@ -166,6 +166,7 @@ class GLMAnthropicProvider:
         *,
         thinking: dict[str, Any] | None = None,
         max_tokens: int | None = None,
+        system: str | None = None,
     ) -> AsyncIterator[StreamEvent]:
         cfg = self._slots[slot]
         body: dict[str, Any] = {
@@ -174,6 +175,8 @@ class GLMAnthropicProvider:
             "stream": True,
             "messages": messages,
         }
+        if system is not None:
+            body["system"] = system  # C8：环境块注入 system 尾部（v1.7）
         if tools:
             body["tools"] = tools
         if thinking is not None:

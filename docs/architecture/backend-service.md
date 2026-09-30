@@ -54,6 +54,7 @@
 
 - **配置版本化（v1.1）**：每次修改配置生成新 `config_version`；**每个任务与 aux 执行开始时绑定当时的配置版本（不可变快照，记入 attempt 的 context_fingerprint）**；`PATCH /api/settings` 只切换**后续执行**使用的版本——运行中的 main 流与 aux 任务继续用各自绑定版，跑完即止
 - **环境变量覆盖字段**：PATCH 写入被 env 覆盖的字段 → 200 + `ignored_fields` 列表（文件已存但非有效值；GET 返回 `effective_source: env|file`）
+- **需重启生效字段（C8 二轮回稿）**：`gates.global_concurrency`（全局并发信号量在进程启动期构造）——PATCH 该字段正常落盘与版本化，响应带 `restart_required: ["gates.global_concurrency"]` 明示重启后生效；GET 始终显示当前生效值
 - **密钥语义**：GET 永不返回完整 key（只回尾 4 位 + 是否已配置）；PATCH 中 `api_key` 字段**缺省 = 不变**；清空须显式 `api_key_clear: true`
 - **写入失败**：先写文件（临时+rename），成功后才切换内存生效版本；文件写失败 → 500 CONFIG_WRITE_FAILED，内存配置不变
 - 一切配置变更入审计链（含 config_version）

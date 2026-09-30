@@ -24,6 +24,7 @@ DEFAULTS: dict[str, Any] = {
         "stall_seconds": 600,
         "repeat_limit": 3,
         "global_concurrency": 8,
+        "token_budget": 2_000_000,  # C8：任务累计 token 硬上限（压缩是 M1）
     },
     "limits": {
         "max_files": 20,
@@ -45,6 +46,7 @@ _ENV_FIELDS: tuple[tuple[str, str], ...] = (
     ("AGENTCREW_GATES__STALL_SECONDS", "gates.stall_seconds"),
     ("AGENTCREW_GATES__REPEAT_LIMIT", "gates.repeat_limit"),
     ("AGENTCREW_GATES__GLOBAL_CONCURRENCY", "gates.global_concurrency"),
+    ("AGENTCREW_GATES__TOKEN_BUDGET", "gates.token_budget"),
     ("AGENTCREW_LIMITS__MAX_FILES", "limits.max_files"),
     ("AGENTCREW_LIMITS__MAX_FILE_MB", "limits.max_file_mb"),
     ("AGENTCREW_LIMITS__MAX_FOLDERS", "limits.max_folders"),
@@ -148,6 +150,7 @@ def validate(cfg: Mapping[str, Any]) -> None:
     for dotted, minimum in (
         ("gates.max_steps", 1), ("gates.stall_seconds", 1),
         ("gates.repeat_limit", 1), ("gates.global_concurrency", 1),
+        ("gates.token_budget", 1),
         ("limits.max_files", 1), ("limits.max_file_mb", 1),
         ("limits.max_folders", 1),
     ):

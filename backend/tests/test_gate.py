@@ -105,3 +105,19 @@ def test_always_scope_pattern_and_target(tmp_path):
                                 {"url": "https://api.example.com/v1"}) == "api.example.com"
     assert approval_target("write_file", {"path": str(ws / "a.txt")}) == str(ws / "a.txt")
     assert approval_target("bash", {"command": "echo hi"}) == "echo hi"
+
+
+def test_write_rule_matches_relative_path_against_task_cwd(tmp_path):
+    """C8 修复回归：相对路径的审批 target / 规则匹配以任务 cwd 为基准——
+    否则 allow_always 落的目录规则指向进程 cwd，盖不住真实写入落点。"""
+    ws = tmp_path / "ws"
+    (ws / "批1").mkdir(parents=True)
+    # 规则 = 任务 cwd 下的 批1 目录；调用是相对路径
+    assert rule_matches("write_file", {"path": "批1/b.md"},
+                        str(ws / "批1"), cwd=ws)
+    assert not rule_matches("write_file", {"path": "批2/c.md"},
+                            str(ws / "批1"), cwd=ws)
+    assert approval_target("write_file", {"path": "批1/a.md"}, cwd=ws) == \
+        str(ws / "批1" / "a.md")
+    assert always_scope_pattern("write_file", {"path": "批1/a.md"}, cwd=ws) == \
+        str(ws / "批1")

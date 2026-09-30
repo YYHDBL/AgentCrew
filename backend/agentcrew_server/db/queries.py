@@ -114,3 +114,46 @@ def task_run_exists(conn: sqlite3.Connection, task_run_id: str) -> bool:
     return conn.execute(
         "SELECT 1 FROM task_runs WHERE id = ?", (task_run_id,)
     ).fetchone() is not None
+
+
+# FSM 域事件（reducer 非空迁移的全部类型；其余类型对 FSM 是 no-op，不必拉取）
+FSM_EVENT_TYPES: tuple[str, ...] = tuple(
+    t.value for t in (
+        RunEventType.RUN_QUEUED, RunEventType.RUN_STARTED, RunEventType.RUN_RESUMED,
+        RunEventType.RUN_COMPLETED, RunEventType.RUN_FAILED, RunEventType.RUN_CANCELLED,
+        RunEventType.RUN_INTERRUPTED,
+        RunEventType.PERMISSION_REQUESTED, RunEventType.PERMISSION_RESOLVED,
+        RunEventType.QUESTION_REQUESTED, RunEventType.QUESTION_ANSWERED,
+        RunEventType.QUEUE_PAUSED, RunEventType.QUEUE_RESUMED,
+        RunEventType.QUEUE_ITEM_ENQUEUED, RunEventType.QUEUE_ITEM_CANCELLED,
+    )
+)
+
+
+def fsm_snapshot(conn: sqlite3.Connection, conversation_id: str) -> tuple[list[Event], int]:
+    """FSM 重放事件 + 会话全局 head，单读事务保证两者同一快照。
+
+    at_global_seq 必须与重放到的位置一致（backend-service §3 快照配对续播）：
+    分开两条语句各自取证会看到不同 head——续播游标与快照状态错位会漏帧或重帧。
+    """
+    placeholders = ",".join("?" for _ in FSM_EVENT_TYPES)
+    conn.execute("BEGIN")  # 只读事务：两条语句同一一致性视图
+    try:
+        events = [
+            _row_to_event(row)
+            for row in conn.execute(
+                f"SELECT {_COLS} FROM run_events WHERE conversation_id = ?"
+                f" AND type IN ({placeholders}) ORDER BY global_seq",
+                (conversation_id, *FSM_EVENT_TYPES),
+            ).fetchall()
+        ]
+        head = conn.execute(
+            "SELECT COALESCE(MAX(global_seq), 0) FROM run_events"
+            " WHERE conversation_id = ?",
+            (conversation_id,),
+        ).fetchone()[0]
+        conn.execute("COMMIT")
+    except Exception:
+        conn.execute("ROLLBACK")
+        raise
+    return events, int(head)

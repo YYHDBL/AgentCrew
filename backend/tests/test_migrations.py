@@ -36,11 +36,11 @@ def test_fresh_apply_creates_all_13_tables(tmp_path):
     db = _make_db(tmp_path)
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "applied"
-    assert result.applied_versions == [1]
+    assert result.applied_versions == [1, 2]
     assert result.snapshot_path and Path(result.snapshot_path).exists()
     assert _EXPECTED_TABLES <= _tables(db)
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 1
+    assert version == 2
     db.close()
 
 
@@ -64,7 +64,7 @@ def test_downgrade_refused_with_both_versions(tmp_path):
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "conflict"
     assert isinstance(result.error, MigrationConflictError)
-    assert "v9" in str(result.error) and "v1" in str(result.error)
+    assert "v9" in str(result.error) and "v2" in str(result.error)
     db.close()
 
 
@@ -72,7 +72,7 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
     db = _make_db(tmp_path)
     run_migrations(db.write_conn, tmp_path / "backups")
     bad = Migration(
-        version=2,
+        version=3,
         name="故意非法",
         statements=("CREATE TABLE should_not_exist (id TEXT",),  # 语法错误
     )
@@ -81,9 +81,9 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
     )
     with pytest.raises(MigrationFailedError):
         run_migrations(db.write_conn, tmp_path / "backups")
-    # 该迁移事务整体回滚：版本停在 1、坏表不存在、v1 表完好
+    # 该迁移事务整体回滚：版本停在 2、坏表不存在、既有表完好
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 1
+    assert version == 2
     assert "should_not_exist" not in _tables(db)
     assert "conversations" in _tables(db)
     db.close()
@@ -120,4 +120,56 @@ def test_snapshot_includes_uncheckpointed_wal_data(tmp_path):
     assert snapshot.execute("SELECT count(*) FROM legacy_rows").fetchone()[0] == 50
     snapshot.close()
     writer.close()
+    db.close()
+
+
+def test_v2_upgrade_preserves_events_and_global_seq(tmp_path):
+    """v1 库升级 v2：run_events 表重建（task_run_id 放开可空）后
+    global_seq 保持原值——SSE 游标/at_global_seq 不漂移；旧事件可继续追加。"""
+    import json as _json
+
+    db = _make_db(tmp_path)
+    conn = db.write_conn
+    # 先停在 v1
+    import agentcrew_server.db.migrations as m
+    v1_only = tuple(x for x in m.MIGRATIONS if x.version == 1)
+    saved = m.MIGRATIONS
+    try:
+        m.MIGRATIONS = v1_only
+        m.run_migrations(conn, tmp_path / "backups")
+    finally:
+        m.MIGRATIONS = saved
+    conn.execute(
+        "INSERT INTO conversations (id, workspace_id, agent_id, created_at,"
+        " updated_at) VALUES ('c1', 'ws', 'a', 't', 't')")
+    conn.execute(
+        "INSERT INTO task_runs (id, conversation_id, instruction, status,"
+        " created_at, updated_at) VALUES ('r1', 'c1', 'i', 'queued', 't', 't')")
+    for i in range(1, 4):
+        conn.execute(
+            "INSERT INTO run_events (id, task_run_id, seq, conversation_id,"
+            " type, payload, created_at) VALUES (?, 'r1', ?, 'c1',"
+            " 'step.started', '{}', 't')", (f"e{i}", i))
+    before = conn.execute(
+        "SELECT global_seq, id FROM run_events ORDER BY global_seq").fetchall()
+    assert [r[0] for r in before] == [1, 2, 3]
+
+    result = m.run_migrations(conn, tmp_path / "backups")
+    assert result.status == "applied" and result.applied_versions == [2]
+    after = conn.execute(
+        "SELECT global_seq, id, task_run_id FROM run_events"
+        " ORDER BY global_seq").fetchall()
+    assert [tuple(r) for r in after] == [(1, "e1", "r1"), (2, "e2", "r1"), (3, "e3", "r1")]
+    # 升级后新事件继续追加且 AUTOINCREMENT 不回退
+    conn.execute(
+        "INSERT INTO run_events (id, task_run_id, seq, conversation_id,"
+        " type, payload, created_at) VALUES ('e4', NULL, NULL, 'c1',"
+        " 'queue.paused', '{}', 't')")
+    row = conn.execute(
+        "SELECT global_seq FROM run_events WHERE id = 'e4'").fetchone()
+    assert row[0] == 4
+    # 会话域事件（task NULL）与任务事件在同一查询中共存
+    rows = conn.execute(
+        "SELECT id, task_run_id FROM run_events ORDER BY global_seq").fetchall()
+    assert rows[3] == ("e4", None)
     db.close()

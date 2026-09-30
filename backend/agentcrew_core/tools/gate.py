@@ -37,9 +37,20 @@ class GateResult:
     matched_pattern: str | None = None  # 第 2 闸命中时的规则 pattern
 
 
-def rule_matches(tool_name: str, call_input: dict[str, Any], pattern: str) -> bool:
+def _write_target(call_input: dict[str, Any], cwd) -> Path:
+    """write_file 的判定基准路径：相对路径以任务 cwd 解析（S09 同源；
+    C8 修复：否则审批 target/规则 pattern 会落在进程 cwd 上，与实际写入
+    落点错位——allow_always 落的目录规则永远盖不住后续同类写入）。"""
+    path = Path(call_input.get("path", "")).expanduser()
+    if not path.is_absolute() and cwd is not None:
+        path = Path(cwd) / path
+    return path.resolve()
+
+
+def rule_matches(tool_name: str, call_input: dict[str, Any], pattern: str,
+                 cwd=None) -> bool:
     if tool_name == "write_file":
-        target = Path(call_input.get("path", "")).expanduser().resolve()
+        target = _write_target(call_input, cwd)
         root = Path(pattern).expanduser().resolve()
         try:
             target.relative_to(root)
@@ -63,6 +74,7 @@ def evaluate_gate(
     bash_readonly_verdict: bool,
     rules: list[PermissionRule],
     agent_id: str = "",
+    cwd=None,
 ) -> GateResult:
     # 第 1 闸：元数据分级
     if meta.name == "bash" and bash_readonly_verdict:
@@ -77,19 +89,22 @@ def evaluate_gate(
     mine = [r for r in rules
             if r.agent_id == agent_id and r.tool_name == meta.name]
     for rule in mine:
-        if rule.effect == "deny" and rule_matches(meta.name, call_input, rule.pattern):
+        if rule.effect == "deny" and rule_matches(
+                meta.name, call_input, rule.pattern, cwd):
             return GateResult("deny", f"deny 规则命中：{rule.pattern}", rule.pattern)
     for rule in mine:
-        if rule.effect == "allow" and rule_matches(meta.name, call_input, rule.pattern):
+        if rule.effect == "allow" and rule_matches(
+                meta.name, call_input, rule.pattern, cwd):
             return GateResult("allow", f"allow 规则命中：{rule.pattern}", rule.pattern)
     # 第 3 闸：人工审批
     return GateResult("ask", "无规则命中，需人工审批")
 
 
-def approval_target(tool_name: str, call_input: dict[str, Any]) -> str:
-    """审批卡上的目标资源展示（v1.4 target 字段）。"""
+def approval_target(tool_name: str, call_input: dict[str, Any],
+                    cwd=None) -> str:
+    """审批卡上的目标资源展示（v1.4 target 字段；相对路径按任务 cwd）。"""
     if tool_name == "write_file":
-        return str(Path(call_input.get("path", "")).expanduser().resolve())
+        return str(_write_target(call_input, cwd))
     if tool_name == "bash":
         return call_input.get("command", "")[:120]
     if tool_name == "http_request":
@@ -97,12 +112,12 @@ def approval_target(tool_name: str, call_input: dict[str, Any]) -> str:
     return tool_name
 
 
-def always_scope_pattern(tool_name: str, call_input: dict[str, Any]) -> str:
+def always_scope_pattern(tool_name: str, call_input: dict[str, Any],
+                         cwd=None) -> str:
     """allow_always / reject_always 落规则的 pattern（G1：工具+资源范围）——
     也就是审批卡上 always_scope_preview 展示给用户看的内容。"""
     if tool_name == "write_file":
-        target = Path(call_input.get("path", "")).expanduser().resolve()
-        return str(target.parent)  # 同目录内后续写放行（G1 演示语义）
+        return str(_write_target(call_input, cwd).parent)  # 同目录内后续写放行
     if tool_name == "bash":
         return call_input.get("command", "")  # 完整命令（等值匹配，F05 收紧）
     if tool_name == "http_request":

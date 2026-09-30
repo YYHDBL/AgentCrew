@@ -35,6 +35,10 @@ from .db.event_store import EventStore
 from .db.migrations import MigrationFailedError, run_migrations
 from .db.write_channel import WriteChannel
 from .providers import build_provider
+from .questions import QuestionService
+from .run_manager import RunManager
+from .sessions import SessionService
+from .settings import SettingsService
 from .instance_lock import (
     DataDirNotWritable,
     InstanceLock,
@@ -317,11 +321,25 @@ def main(argv: list[str] | None = None) -> int:
         approvals = ApprovalService(db, event_store, data_dir / "chain-head.txt")
         scheduler = ToolScheduler(build_default_registry(), gate=approvals.gate)
         approvals.scheduler = scheduler
+        # 配置 API + 会话装配（M0-C7）：settings 是 config 的运行时持有者，
+        # PATCH 成功后 sessions 读到的 limits 即为新值
+        settings = SettingsService(config, data_dir, channel,
+                                   data_dir / "chain-head.txt")
+        sessions = SessionService(db, event_store, data_dir, settings)
+        # 提问回答链 + RunManager（M0-C8）：run.queued → runner 派发，
+        # attempt 配置绑定与取消传播见 run_manager 模块头
+        questions = QuestionService(db, event_store)
+        run_manager = RunManager(
+            db=db, event_store=event_store, bus=bus, settings=settings,
+            sessions=sessions, approvals=approvals, scheduler=scheduler,
+            questions=questions)
         runtime = RuntimeState(
             log=log, data_dir=data_dir, db=db,
             write_channel=channel, diagnostic=diagnostic,
             token=token, bus=bus, event_store=event_store, provider=provider,
             approvals=approvals, scheduler=scheduler,
+            settings=settings, sessions=sessions,
+            questions=questions, run_manager=run_manager,
         )
         log.info("startup.bus 事件总线就绪（队列上限 1000，SSE 连接上限 32）")
         log.info(

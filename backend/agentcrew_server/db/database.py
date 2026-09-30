@@ -47,6 +47,8 @@ class Database:
                 str(self.path), timeout=self.busy_timeout_ms / 1000,
                 isolation_level=None, check_same_thread=False,
             )
+            # Row：列名与下标双访问（既有代码用下标，全部兼容）
+            conn.row_factory = sqlite3.Row
             conn.execute(f"PRAGMA busy_timeout={self.busy_timeout_ms}")
             conn.execute("PRAGMA foreign_keys=ON")
             conn.execute("PRAGMA query_only=ON")

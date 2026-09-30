@@ -44,9 +44,11 @@ class RunEventType(StrEnum):
     QUESTION_REQUESTED = "question.requested"
     QUESTION_ANSWERED = "question.answered"
 
-    # 排队控制
+    # 排队控制（v1.4，F006；item_enqueued 为 C7 落地补位——入队是事实，
+    # 队列内容必须可由事件重放重建，纪律"新增机制先加事件类型"）
     QUEUE_PAUSED = "queue.paused"
     QUEUE_RESUMED = "queue.resumed"
+    QUEUE_ITEM_ENQUEUED = "queue.item_enqueued"
     QUEUE_ITEM_CANCELLED = "queue.item_cancelled"
 
     # 核验提交
@@ -69,11 +71,14 @@ class RunEventType(StrEnum):
 
 @dataclass(frozen=True)
 class Event:
-    """已落库事件的内存信封（SSE 帧与投影共用形状，contracts/events.md v1.1）。"""
+    """已落库事件的内存信封（SSE 帧与投影共用形状，contracts/events.md v1.1）。
+
+    task_run_id 可空：会话域事件（queue.*，F006）没有任务锚点——此时 seq
+    无意义恒 0，帧里也不携带（契约 `task_run_id?`/`seq?` 为可选键）。"""
 
     global_seq: int
     id: str
-    task_run_id: str
+    task_run_id: str | None
     seq: int
     conversation_id: str
     type: RunEventType
@@ -85,12 +90,13 @@ class Event:
     def as_frame(self) -> dict[str, Any]:
         frame: dict[str, Any] = {
             "global_seq": self.global_seq,
-            "task_run_id": self.task_run_id,
-            "seq": self.seq,
             "type": self.type.value,
             "payload": self.payload,
             "ts": self.ts,
         }
+        if self.task_run_id is not None:
+            frame["task_run_id"] = self.task_run_id
+            frame["seq"] = self.seq
         if self.attempt_no is not None:
             frame["attempt_no"] = self.attempt_no
         return frame

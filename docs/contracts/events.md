@@ -7,7 +7,7 @@
 `run.queued / run.started / run.completed / run.failed / run.cancelled / run.interrupted / run.resumed`
 
 ## 排队控制（v1.4，F006）
-`queue.paused`（用户停止后队列进入暂停，不自动接续）/ `queue.resumed`（用户点继续，队首启动）/ `queue.item_cancelled`（取消排队指令，payload 含 item_ids，发送记录保留）
+`queue.paused`（用户停止后队列进入暂停，不自动接续）/ `queue.resumed`（用户点继续，队首启动）/ `queue.item_enqueued`（payload: item_id/text/client_request_id?——入队即写 messages 发送记录，C7 落地补位）/ `queue.item_cancelled`（取消排队指令，payload 含 item_ids，发送记录保留）。queue.* 是**会话域**事件：task_run_id 可空（无任务锚点，帧中省略 task_run_id/seq）。
 
 ## 回合与模型（harness-session §3）
 `step.started / step.completed / llm.request_started / llm.request_done（含全文+usage）/ llm.request_failed（含错误分类、retry_no）`
@@ -25,7 +25,7 @@
 `artifact.created（generating）/ artifact.ready（含 path/size）/ artifact.failed / artifact.missing_detected（探测发现文件缺失，卡片转缺失态）`
 
 ## 材料与任务（v1.4，F001）
-`materials.imported`（payload: 逐文件结果 original_path/stored_name/error，部分失败仍创建任务）/ `conversation.updated`（标题由首条指令生成等元数据变化）
+`materials.imported`（payload: 逐文件结果 original_path/stored_name/error + folders 逐项结果 path/error——外审回稿：逐项结果随事件持久化，创建响应与幂等重放同源读回；部分失败仍创建任务）/ `conversation.updated`（标题由首条指令生成等元数据变化）
 
 ## 上下文（M1，harness-session 占位）
 `context.compacted / tool.result_externalized`
