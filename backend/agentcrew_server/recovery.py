@@ -124,7 +124,7 @@ class RecoveryService:
                 continue  # §6.2 v1.8 豁免：账本停 dispatched，重放合成占位
             if self._is_read_only(tool_name):
                 continue  # 外审 K4：纯读无副作用可核验，占位降级即可
-            if tool_name == "memory_write":
+            if tool_name in {"memory_write", "skill_patch"}:
                 change = self._db.read_conn.execute("SELECT status,result FROM memory_changes WHERE change_id=?", (call_id,)).fetchone()
                 if change is not None and change[0] == "committed":
                     result = json.loads(change[1])

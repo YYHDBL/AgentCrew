@@ -12,6 +12,7 @@ from agentcrew_server.db.event_store import EventStore
 from agentcrew_server.db.migrations import run_migrations
 from agentcrew_server.db.write_channel import WriteChannel
 from agentcrew_server.memory.store import MemoryIdentity, MemoryStore
+from agentcrew_server.memory.skills import MemorySkills
 
 
 async def main():
@@ -38,8 +39,13 @@ async def main():
             os.kill(os.getpid(), signal.SIGSTOP)
 
     threading.setprofile(observe)
-    await store.change(MemoryIdentity("ws", "agent"), "user", "owner", change_id="sigkill-change", expected_revision=0,
-        basis="真实 SIGKILL 验收", operations=[{"action": "add", "text": "SIGKILL 后恰好提交一次"}])
+    if len(sys.argv) > 3 and sys.argv[3] == "skill":
+        await MemorySkills(store).change(MemoryIdentity("ws", "agent"), "真实恢复流程", action="create", change_id="sigkill-change",
+            expected_revision=0, basis="真实 SIGKILL 验收", description="核对完整正文和支撑文件", text="# 完整恢复流程\n核验文件与账本",
+            files={"references/procedure.md": "核对原始来源", "templates/checklist.md": "完整核验清单"})
+    else:
+        await store.change(MemoryIdentity("ws", "agent"), "user", "owner", change_id="sigkill-change", expected_revision=0,
+            basis="真实 SIGKILL 验收", operations=[{"action": "add", "text": "SIGKILL 后恰好提交一次"}])
     raise RuntimeError("验收边界未被观察到")
 
 

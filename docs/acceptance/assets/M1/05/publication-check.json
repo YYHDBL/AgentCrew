@@ -1,0 +1,36 @@
+{
+  "files": [
+    {
+      "file": "aux-validation.json",
+      "sha256": "fa022d0484b3b7d7a1a897ad8c902ffe7057b67565ca132340761b9fc18f7487",
+      "bytes": 14756
+    },
+    {
+      "file": "backend-tests.txt",
+      "sha256": "d1374601250874fc543dfdf285dd8fea7e16a3fc87240c41a018a3ba2916bdc8",
+      "bytes": 1117
+    },
+    {
+      "file": "http-model.json",
+      "sha256": "64680452d2c7bac98676318762979f77ebebe72ce2385cafbd7aee4788df203a",
+      "bytes": 543530
+    },
+    {
+      "file": "openapi.txt",
+      "sha256": "6682792bf87a47f66a5d044d2c89e78949ba201c7f6784b5311af287f52fcb31",
+      "bytes": 42
+    },
+    {
+      "file": "sigkill.json",
+      "sha256": "85c47e4981d03b13c43bc876b6a06c7592cd0ad38ea4b71619e624c09d770bc3",
+      "bytes": 21384
+    },
+    {
+      "file": "skill-tests.txt",
+      "sha256": "a25e2b6355475168ff5a9dba6deec605584711d5c63de8ddc3da4644c93f6a5e",
+      "bytes": 179
+    }
+  ],
+  "credential_matches": 0,
+  "checked_config_credentials": 2
+}

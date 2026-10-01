@@ -36,11 +36,11 @@ def test_fresh_apply_creates_all_13_tables(tmp_path):
     db = _make_db(tmp_path)
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "applied"
-    assert result.applied_versions == [1, 2, 3, 4, 5]
+    assert result.applied_versions == [1, 2, 3, 4, 5, 6]
     assert result.snapshot_path and Path(result.snapshot_path).exists()
     assert _EXPECTED_TABLES <= _tables(db)
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 5
+    assert version == 6
     db.close()
 
 
@@ -64,7 +64,7 @@ def test_downgrade_refused_with_both_versions(tmp_path):
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "conflict"
     assert isinstance(result.error, MigrationConflictError)
-    assert "v9" in str(result.error) and "v5" in str(result.error)
+    assert "v9" in str(result.error) and "v6" in str(result.error)
     db.close()
 
 
@@ -72,7 +72,7 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
     db = _make_db(tmp_path)
     run_migrations(db.write_conn, tmp_path / "backups")
     bad = Migration(
-        version=6,
+        version=7,
         name="故意非法",
         statements=("CREATE TABLE should_not_exist (id TEXT",),  # 语法错误
     )
@@ -83,7 +83,7 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
         run_migrations(db.write_conn, tmp_path / "backups")
     # 该迁移事务整体撤销：既有版本及业务表保持完整。
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 5
+    assert version == 6
     assert "should_not_exist" not in _tables(db)
     assert "conversations" in _tables(db)
     db.close()
@@ -155,7 +155,7 @@ def test_upgrade_preserves_events_and_global_seq(tmp_path):
     assert [r[0] for r in before] == [1, 2, 3]
 
     result = m.run_migrations(conn, tmp_path / "backups")
-    assert result.status == "applied" and result.applied_versions == [2, 3, 4, 5]
+    assert result.status == "applied" and result.applied_versions == [2, 3, 4, 5, 6]
     after = conn.execute(
         "SELECT global_seq, id, task_run_id FROM run_events"
         " ORDER BY global_seq").fetchall()

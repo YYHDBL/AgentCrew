@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from agentcrew_core.events import RunEventType
-from agentcrew_core.memory import QUOTAS, context_entries, failure, render_entries, sha256, transform
+from agentcrew_core.memory import QUOTAS, contains_credentials, context_entries, failure, material_risk, render_entries, sha256, transform
 from agentcrew_core.tools.builtin.write_file import _open_dir_nofollow
 
 from ..db.audit import SNAPSHOT_EVERY, append_audit, snapshot_chain_head
@@ -52,7 +52,9 @@ class MemoryStore:
         self.settings = settings
         self._locks: dict[tuple[str, str], asyncio.Lock] = {}
 
-    def quota(self, store_type: str) -> int:
+    def quota(self, store_type: str) -> int | None:
+        if store_type == "skill":
+            return None
         configured = self.settings.config.values["memory"] if self.settings else {}
         return configured.get(f"{store_type}_quota", QUOTAS[store_type])
 
@@ -65,12 +67,18 @@ class MemoryStore:
             return self.data_dir / "workspaces" / store_id / "MEMORY.md"
         if store_type == "soul":
             return self.data_dir / "agents" / store_id / "soul.md"
+        if store_type == "skill":
+            return self.data_dir / "skills" / store_id / "SKILL.md"
         raise ValueError("库类型或身份无效")
 
     def _authorize(self, identity: MemoryIdentity, store_type: str, store_id: str) -> dict | None:
         if any(not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value) for value in (identity.workspace_id, identity.agent_id)):
             return failure("OUT_OF_SCOPE", "工作区和员工身份包含非法路径字符")
         expected = {"user": "owner", "workspace": identity.workspace_id, "soul": identity.agent_id}
+        if store_type == "skill":
+            skill = self.db.read_conn.execute("SELECT workspace_id,agent_id FROM memory_skills WHERE id=?", (store_id,)).fetchone()
+            if skill and tuple(skill) == (identity.workspace_id, identity.agent_id):
+                expected["skill"] = store_id
         if store_type not in expected or store_id != expected[store_type]:
             return failure("OUT_OF_SCOPE", "记忆库不属于当前执行范围")
         if identity.actor_type == "user":
@@ -114,6 +122,8 @@ class MemoryStore:
         if self._pending(store_type, store_id):
             return failure("STORE_RECOVERING", "记忆库存在未完成写入意图")
         path = self.path(store_type, store_id)
+        if path.is_symlink() or any(parent.is_symlink() for parent in path.parents):
+            return failure("OUT_OF_SCOPE", "记忆路径不能使用符号链接")
         text = self._file_text(path)
         metadata = self._file_text(path.with_suffix(".meta.json"))
         row = self.db.read_conn.execute("SELECT * FROM memory_stores WHERE store_type=? AND store_id=?", (store_type, store_id)).fetchone()
@@ -125,7 +135,16 @@ class MemoryStore:
                     "text_sha256": None, "metadata_sha256": None}
         if text is None or metadata is None or sha256(text.encode()) != row["text_sha256"] or sha256(metadata.encode()) != row["metadata_sha256"]:
             return failure("EXTERNAL_MODIFICATION", "文件与持久化版本的校验值不一致")
-        return {**dict(row), "metadata": json.loads(metadata)}
+        value = {**dict(row), "metadata": json.loads(metadata)}
+        if store_type == "skill":
+            for relative, digest in value["metadata"].get("files", {}).items():
+                target = path.parent / relative
+                if target.is_symlink() or any(parent.is_symlink() for parent in target.parents):
+                    return failure("OUT_OF_SCOPE", "Skill 支撑文件不能使用符号链接", file=relative)
+                content = self._file_text(target)
+                if content is None or sha256(content.encode()) != digest:
+                    return failure("EXTERNAL_MODIFICATION", "Skill 支撑文件与持久化校验值不一致", file=relative)
+        return value
 
     async def read(self, identity: MemoryIdentity, store_type: str, store_id: str) -> dict:
         denied = await asyncio.to_thread(self._authorize, identity, store_type, store_id)
@@ -190,21 +209,24 @@ class MemoryStore:
 
     async def change(self, identity: MemoryIdentity, store_type: str, store_id: str, *,
                      change_id: str, expected_revision: int, basis: str,
-                     operations: list[dict] | None = None, restored_ledger_id: int | None = None) -> dict:
-        denied = await asyncio.to_thread(self._authorize, identity, store_type, store_id)
+                     operations: list[dict] | None = None, restored_ledger_id: int | None = None,
+                     skill: dict | None = None, support_files: dict | None = None,
+                     request_context: dict | None = None) -> dict:
+        denied = await asyncio.to_thread(self._authorize, identity, "workspace" if skill and expected_revision == 0 else store_type,
+                                        identity.workspace_id if skill and expected_revision == 0 else store_id)
         if denied:
             return denied
         if not isinstance(change_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", change_id) or type(expected_revision) is not int or expected_revision < 0 or not isinstance(basis, str) or not basis.strip():
             return failure("VALIDATION_ERROR", "change_id、预期修订及依据必须有效")
         if not operations and not restored_ledger_id:
             return failure("VALIDATION_ERROR", "缺少记忆修改动作")
-        request_hash = sha256(canonical({"identity": asdict(identity), "store_type": store_type, "store_id": store_id,
-            "expected_revision": expected_revision, "basis": basis, "operations": operations, "restored_ledger_id": restored_ledger_id}).encode())
+        request_hash = self.request_hash(identity, store_type, store_id, expected_revision, basis, operations=operations,
+            restored_ledger_id=restored_ledger_id, skill=skill, support_files=support_files, request_context=request_context)
         async with self._locks.setdefault((store_type, store_id), asyncio.Lock()):
             replayed = await asyncio.to_thread(self._replayed, change_id, request_hash)
             if replayed is not None:
                 return replayed
-            supplied = canonical({"operations": operations, "basis": basis})
+            supplied = canonical({"operations": operations, "basis": basis, "skill": skill, "support_files": support_files})
             if any(secret in supplied for secret in known_secrets()):
                 return await self._record_failure(identity, change_id, request_hash,
                     failure("CREDENTIAL_REJECTED", "记忆正文或依据包含已登记凭据"))
@@ -220,29 +242,56 @@ class MemoryStore:
                 return await self._record_failure(identity, change_id, request_hash, failure("REVISION_CONFLICT", "预期修订已经陈旧", current_revision=before["revision"]))
             now = datetime.now(timezone.utc).isoformat()
             restored_files = []
+            metadata_updates = skill
             if restored_ledger_id:
                 row = self.db.read_conn.execute("SELECT store_type,store_id,before_metadata,before_files FROM memory_ledger WHERE id=?", (restored_ledger_id,)).fetchone()
                 if row is None or tuple(row[:2]) != (store_type, store_id):
                     return await self._record_failure(identity, change_id, request_hash, failure("NOT_FOUND", "该库的账本记录不存在"))
-                entries = json.loads(row[2])["entries"]
+                restored_metadata = json.loads(row[2])
+                entries = restored_metadata["entries"]
+                metadata_updates = {k: v for k, v in restored_metadata.items() if k not in {"entries", "revision"}}
                 restored_files = json.loads(row[3])
             else:
-                entries = transform(before["metadata"]["entries"], operations, identity.source(change_id), basis, now)
+                entries = transform(before["metadata"]["entries"], operations, identity.source(change_id), basis, now,
+                                    whole_document=store_type == "skill")
             if isinstance(entries, dict):
                 return await self._record_failure(identity, change_id, request_hash, entries)
+            if store_type == "skill" and not restored_ledger_id and skill:
+                materials = dict(before["metadata"].get("files", {}))
+                materials = {relative: self._file_text(self.path(store_type, store_id).parent / relative) for relative in materials}
+                materials.update(support_files or {})
+                combined = "\n".join([skill["name"], skill["description"], *materials, *[v for v in materials.values() if v is not None]])
+                if contains_credentials(combined) or any(secret in combined for secret in known_secrets()):
+                    return await self._record_failure(identity, change_id, request_hash, failure("CREDENTIAL_REJECTED", "Skill 描述或支撑文件包含凭据"))
+                if material_risk(combined):
+                    entries[0].update(needs_review=True, approved_by=None, approved_at=None)
             text = render_entries(entries)
             quota = self.quota(store_type)
-            if len(text) > quota:
+            if quota is not None and len(text) > quota:
                 visible = context_entries(before["metadata"]["entries"]) if identity.actor_type == "agent" else before["metadata"]["entries"]
                 return await self._record_failure(identity, change_id, request_hash, failure("QUOTA_EXCEEDED", "记忆配额不足，请整合条目", current_entries=visible, used_characters=len(before["text"]), quota=quota, available_characters=max(0, quota-len(before["text"]))))
             action = "rollback" if restored_ledger_id else operations[0]["action"] if len(operations) == 1 else "batch"
             action = {"add": "create", "edit": "update"}.get(action, action)
-            plan = await asyncio.to_thread(self._plan, identity, before, entries, text, basis, now, change_id, restored_ledger_id, action, restored_files)
+            plan = await asyncio.to_thread(self._plan, identity, before, entries, text, basis, now, change_id, restored_ledger_id, action, restored_files,
+                                           metadata_updates, support_files)
             task = asyncio.create_task(self._prepare_and_finish(change_id, request_hash, plan))
             try:
                 return await asyncio.shield(task)
             finally:
                 await task
+
+    @staticmethod
+    def request_hash(identity, store_type, store_id, expected_revision, basis, *, operations=None,
+                     restored_ledger_id=None, skill=None, support_files=None, request_context=None):
+        request = {"identity": asdict(identity), "store_type": store_type, "store_id": store_id,
+                   "expected_revision": expected_revision, "basis": basis}
+        if request_context is not None:
+            request["request_context"] = request_context
+        else:
+            request.update(operations=operations, restored_ledger_id=restored_ledger_id)
+            if skill is not None or support_files is not None:
+                request.update(skill=skill, support_files=support_files)
+        return sha256(canonical(request).encode())
 
     async def _prepare_and_finish(self, change_id, request_hash, plan):
         prepared = await self.events.channel.execute(lambda conn: self._prepare_tx(conn, change_id, request_hash, plan))
@@ -250,11 +299,34 @@ class MemoryStore:
             return prepared
         return await self._finish_change(change_id, plan)
 
-    def _plan(self, identity, before, entries, text, basis, now, change_id, restored_id, action, restored_files):
+    def _plan(self, identity, before, entries, text, basis, now, change_id, restored_id, action, restored_files,
+              metadata_updates=None, support_files=None):
         store_type, store_id = before["store_type"], before["store_id"]
-        metadata = {"revision": before["revision"] + 1, "entries": entries}
+        metadata = {**(metadata_updates or {})} if restored_id else {**before["metadata"], **(metadata_updates or {})}
+        metadata.update(revision=before["revision"] + 1, entries=entries)
         path = self.path(store_type, store_id)
         files = []
+        if store_type == "skill":
+            if restored_id and "name" not in metadata:
+                metadata.update(name=before["metadata"]["name"], description=before["metadata"]["description"])
+            manifest = dict(metadata.get("files", {}))
+            if restored_id:
+                for relative in before["metadata"].get("files", {}):
+                    if relative not in manifest:
+                        content = self._file_text(path.parent / relative)
+                        files.append({"path": str((path.parent / relative).relative_to(self.data_dir)), "before": content, "after": None})
+            for relative, content in (support_files or {}).items():
+                previous = self._file_text(path.parent / relative)
+                files.append({"path": str((path.parent / relative).relative_to(self.data_dir)), "before": previous, "after": content})
+                if content is None:
+                    manifest.pop(relative, None)
+                else:
+                    manifest[relative] = sha256(content.encode())
+            metadata["files"] = manifest
+            for relative in manifest:
+                if relative not in (support_files or {}):
+                    content = self._file_text(path.parent / relative)
+                    files.append({"path": str((path.parent / relative).relative_to(self.data_dir)), "before": content, "after": content})
         for target, content in ((path, text), (path.with_suffix(".meta.json"), canonical(metadata))):
             previous = (before["text"] if target == path else canonical(before["metadata"])) if before["revision"] else None
             files.append({"path": str(target.relative_to(self.data_dir)), "before": previous, "after": content})
@@ -263,7 +335,12 @@ class MemoryStore:
             if entry["state"] == "archived" and old.get(entry["entry_id"], {}).get("state") != "archived":
                 root = (self.data_dir / "agents" / identity.agent_id / "archive" if identity.actor_type == "agent" else self.data_dir / "archive") / store_type / store_id / entry["entry_id"]
                 archive_meta = {**entry, "original_path": str(path.relative_to(self.data_dir)), "store_type": store_type, "store_id": store_id}
-                for target, content in ((root / "entry.md", entry["text"]), (root / "entry.meta.json", canonical(archive_meta))):
+                archived_files = []
+                if store_type == "skill":
+                    archive_meta["skill_metadata"] = metadata
+                    archive_meta["original_files"] = {relative: str((path.parent / relative).relative_to(self.data_dir)) for relative in metadata["files"]}
+                    archived_files = [(root / relative, self._file_text(path.parent / relative)) for relative in metadata["files"]]
+                for target, content in [(root / "entry.md", entry["text"]), (root / "entry.meta.json", canonical(archive_meta)), *archived_files]:
                     relative = str(target.relative_to(self.data_dir))
                     tracked = self.db.read_conn.execute("SELECT json_extract(f.value,'$.content') FROM memory_ledger l,json_each(l.after_files) f WHERE json_extract(f.value,'$.path')=? ORDER BY l.global_seq DESC LIMIT 1", (relative,)).fetchone()
                     files.append({"path": relative, "before": tracked[0] if tracked else None, "after": content})
@@ -293,6 +370,14 @@ class MemoryStore:
             row = conn.execute("SELECT revision FROM memory_stores WHERE store_type=? AND store_id=?", (plan["store_type"], plan["store_id"])).fetchone()
             if (row[0] if row else 0) != plan["before"]["revision"]:
                 return failure("REVISION_CONFLICT", "准备意图时修订发生变化")
+            if plan["store_type"] == "skill" and plan["before"]["revision"] == 0:
+                metadata, actor = plan["after_metadata"], plan["identity"]
+                existing = conn.execute("SELECT id FROM memory_skills WHERE workspace_id=? AND agent_id=? AND name=?",
+                    (actor["workspace_id"], actor["agent_id"], metadata["name"])).fetchone()
+                if existing:
+                    return failure("REVISION_CONFLICT", "创建目标已经存在")
+                conn.execute("INSERT INTO memory_skills VALUES(?,?,?,?,?,?)", (plan["store_id"], actor["workspace_id"], actor["agent_id"],
+                    metadata["name"], metadata["description"], plan["created_at"]))
             plan["ledger_id"] = conn.execute("SELECT COALESCE(MAX(id),0)+1 FROM (SELECT id FROM memory_ledger UNION ALL SELECT json_extract(plan,'$.ledger_id') AS id FROM memory_changes)").fetchone()[0]
             conn.execute("INSERT INTO memory_changes(change_id,input_hash,store_type,store_id,expected_revision,plan,status,created_at) VALUES(?,?,?,?,?,?,'prepared',?)", (change_id, request_hash, plan["store_type"], plan["store_id"], plan["before"]["revision"], canonical(plan), plan["created_at"]))
 
@@ -369,6 +454,10 @@ class MemoryStore:
             old = {e["entry_id"]: e["state"] for e in plan["before"]["metadata"]["entries"]}
             archived = any(e["state"] == "archived" and old.get(e["entry_id"]) != "archived" for e in plan["after_metadata"]["entries"])
             event_type = RunEventType.MEMORY_ARCHIVED if archived else RunEventType.MEMORY_UPDATED
+            if kind == "skill" and not archived:
+                event_type = RunEventType.SKILL_PATCHED
+            if kind == "skill":
+                conn.execute("UPDATE memory_skills SET name=?,description=? WHERE id=?", (plan["after_metadata"]["name"], plan["after_metadata"]["description"], store_id))
             prior = {e["entry_id"]: e for e in plan["before"]["metadata"]["entries"]}
             changed = [e for e in plan["after_metadata"]["entries"] if prior.get(e["entry_id"]) != e]
             single = changed[0] if len(changed) == 1 else None
@@ -378,6 +467,9 @@ class MemoryStore:
                 "summary": redact(single["text"] if single else f"记忆库完成 {plan['action']}，修改 {len(changed)} 条记忆")[:200],
                 "source_task_run_id": plan["identity"]["task_run_id"], "job_id": plan["identity"]["job_id"],
                 "scope": {"owner_id": "owner", "workspace_id": plan["identity"]["workspace_id"], "agent_id": plan["identity"]["agent_id"]}}
+            if kind == "skill":
+                payload.update(name=plan["after_metadata"]["name"], description=plan["after_metadata"]["description"],
+                               files=sorted(plan["after_metadata"].get("files", {})))
             if archived:
                 payload["archive_path"] = str(Path(next(f["path"] for f in plan["files"] if f["path"].endswith("/entry.md"))).parent)
             event = self.events.append_in_tx(conn, task_run_id=None, conversation_id=plan["identity"]["conversation_id"], type=event_type, payload=payload)

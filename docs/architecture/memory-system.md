@@ -118,6 +118,10 @@ data/
 
 - **三级渐进披露**：system prompt 常驻**只有索引**（名字 + ≤60 字符描述——超限部分永远不被路由）；`skill_view(name)` 载全文；`skill_view(name, file=references/…)` 载支撑文件
 - **AI 自写/自改**：`skill_patch` 工具（create/patch/edit），**read-before-write 强制**。前台本用户回合先通过 skill_view 读取正文和修订；后台使用白名单内 skill_patch 的 read 动作，记录同一作业、用户回合、Skill 和读取修订。新建先读取同范围同名称目标的不存在状态，写入时仍需校验未被并发创建。变更使用 append-only 账本。
+
+Skill 由服务按首次创建 change_id 分配稳定标识，目录为 `data/skills/<id>/`，正文与业务 metadata 使用 SKILL.md 和 SKILL.meta.json。支撑文件限定在 references、templates、assets、scripts；完整文件正文和 SHA 随业务修订进入账本。patch 要求 old_text 在当前正文恰好匹配一次，edit 替换完整正文，files 中 null 删除文件。先校验本回合读取修订及当前修订，再计算修改，准备事务继续核对修订。原始请求绑定幂等身份，失败创建也保持相同结果；恢复首次创建前状态时清空正文与支撑材料，保留服务身份并追加新修订，后续读取该修订后可以重新编辑。
+
+索引冻结名称和不超过60字符的描述，正文读取保持实时；支撑文件读取不替代正文读取。只有完整正文读取增加使用次数，相同 call_id 与 entry_id 去重。名称、描述、正文、依据、支撑文件路径及正文接受凭据、审核和投毒检查，管理读取保留原材料。通用文件工具及 bash 保护整个 skills 目录，Skill 修改与恢复使用受控服务及串行事务。
 - **反熵增**（写进提示词）：skill 是"类级指令库"不是事件日志——必须可泛化 + 一句机理；禁止 PR 号/日期/一次性细节；同一教训只留一条；宁可扩展已有 skill 不建重复
 - 遗忘同 §7；版本与授权（grant）归治理模块（docs/04）
 - `/learn` 等价物：用户在会话里说"把这个流程存成技能"→ 走提炼 fork 的 skill 分支

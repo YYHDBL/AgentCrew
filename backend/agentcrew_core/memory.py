@@ -88,6 +88,14 @@ def sha256(content: bytes) -> str:
     return hashlib.sha256(content).hexdigest()
 
 
+def material_risk(text: str) -> bool:
+    return bool(_HIGH_RISK.search(text))
+
+
+def contains_credentials(text: str) -> bool:
+    return bool(_CREDENTIAL.search(text))
+
+
 def parse_entries(text: str) -> list[str]:
     """根据 Markdown 顶层段落的行映射分隔，保留代码块和正文空格。"""
     text = text.replace("\r\n", "\n").replace("\r", "\n")
@@ -117,7 +125,7 @@ def render_entries(entries: list[dict]) -> str:
 
 
 def transform(entries: list[dict], operations: list[dict], source: dict,
-              basis: str, now: str) -> list[dict] | dict:
+              basis: str, now: str, *, whole_document: bool = False) -> list[dict] | dict:
     working = copy.deepcopy(entries)
     for op in operations:
         action = op.get("action")
@@ -135,9 +143,9 @@ def transform(entries: list[dict], operations: list[dict], source: dict,
             item = matched[0]
         if action in {"add", "edit"}:
             text = op.get("text")
-            if not isinstance(text, str) or not text.strip() or len(parse_entries(text)) != 1:
+            if not isinstance(text, str) or not text.strip() or (not whole_document and len(parse_entries(text)) != 1):
                 return failure("VALIDATION_ERROR", "正文必须包含一个非空 Markdown 条目")
-            text = parse_entries(text)[0]
+            text = text.replace("\r\n", "\n").replace("\r", "\n") if whole_document else parse_entries(text)[0]
             if _CREDENTIAL.search(text):
                 return failure("CREDENTIAL_REJECTED", "记忆正文包含凭据")
             item.update(text=text, entry_hash=entry_hash(text), source=source,
@@ -173,3 +181,17 @@ def transform(entries: list[dict], operations: list[dict], source: dict,
         if len({e["entry_hash"] for e in working}) != len(working):
             return failure("ENTRY_HASH_CONFLICT", "同库条目的首行哈希冲突")
     return working
+
+
+def skill_content(entries, *, action, text, old_text, new_text, source, basis, now):
+    """Skill 整篇修改与唯一文本替换共用条目身份和风险计算。"""
+    if action == "patch":
+        if not entries or not isinstance(old_text, str) or not old_text or not isinstance(new_text, str):
+            return failure("VALIDATION_ERROR", "patch 必须提供非空 old_text 和 new_text")
+        if entries[0]["text"].count(old_text) != 1:
+            return failure("PATCH_CONFLICT", "替换目标必须在当前正文中恰好出现一次")
+        text = entries[0]["text"].replace(old_text, new_text, 1)
+    operation = {"action": "edit" if entries else "add", "text": text}
+    if entries:
+        operation["entry_hash"] = entries[0]["entry_hash"]
+    return transform(entries, [operation], source, basis, now, whole_document=True)

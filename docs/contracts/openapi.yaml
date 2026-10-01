@@ -337,7 +337,7 @@ components:
         conversation_id: { type: [string, "null"] }
         description: { type: string, maxLength: 60 }
         name: { type: string, minLength: 1 }
-        files: { type: object, additionalProperties: { type: string }, description: Skill 相对路径到正文，服务校验目录边界 }
+        files: { type: object, additionalProperties: { type: [string, "null"] }, description: Skill 相对路径到正文，null 删除；服务校验目录边界 }
         review_decision: { type: string, enum: [approve, reject] }
     MemoryChange:
       type: object
@@ -371,11 +371,18 @@ components:
         after_text: { type: [string, "null"] }
         before_metadata: { type: object, additionalProperties: true }
         after_metadata: { type: object, additionalProperties: true }
-        before_files: { type: object, additionalProperties: { type: string } }
-        after_files: { type: object, additionalProperties: { type: string } }
+        before_files: { type: array, items: { $ref: "#/components/schemas/MemoryLedgerFile" } }
+        after_files: { type: array, items: { $ref: "#/components/schemas/MemoryLedgerFile" } }
         restored_ledger_id: { type: [integer, "null"] }
         source: { $ref: "#/components/schemas/MemorySource" }
         created_at: { type: string, format: date-time }
+    MemoryLedgerFile:
+      type: object
+      required: [path, content, sha256]
+      properties:
+        path: { type: string }
+        content: { type: [string, "null"] }
+        sha256: { type: [string, "null"], pattern: "^[a-f0-9]{64}$" }
     MemoryJob:
       type: object
       required: [id, kind, status, conversation_id, task_run_id, trigger_global_seq, model, config_version, usage, error, created_at, finished_at, approvals]

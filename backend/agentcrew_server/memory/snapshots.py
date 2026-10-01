@@ -13,6 +13,7 @@ from agentcrew_core.loop import LoopDeps, LoopGates, run_task, user_text_message
 from agentcrew_core.memory import context_entries, failure, parse_entries, sha256, snapshot_prompt
 
 from .store import MemoryIdentity, MemoryStore, canonical
+from .skills import MemorySkills
 
 
 class MemorySnapshotError(RuntimeError):
@@ -32,6 +33,7 @@ class MemorySnapshots:
         self.store = store
         self.db = store.db
         self.events = store.events
+        self.skills = MemorySkills(store)
         self._conversations: dict[str, asyncio.Lock] = {}
         self._agents: dict[str, asyncio.Lock] = {}
 
@@ -88,10 +90,13 @@ class MemorySnapshots:
                     value = require(await asyncio.to_thread(self.store._load, kind, store_id))
                     stores.append({**value, "used_characters": len(value["text"]), "quota": self.store.quota(kind),
                                    "injected_entries": context_entries(value["metadata"]["entries"])})
+                skill_index = require(await self.skills.index(identity))["items"]
+                skill_prompt = "\n\n【Skill 索引；正文按需使用 skill_view 读取；流程保存和修改使用 skill_patch】\n" + "\n".join(
+                    canonical({"name": item["name"], "description": item["description"]}) for item in skill_index)
                 body = {"snapshot_id": uuid.uuid4().hex, "conversation_id": conversation_id,
                         "scope": {"owner_id": "owner", "workspace_id": identity.workspace_id, "agent_id": identity.agent_id},
-                        "stores": stores, "skill_index": [], "skill_index_sha256": sha256(b"[]"),
-                        "system_block": snapshot_prompt(stores), "created_at": datetime.now(timezone.utc).isoformat()}
+                        "stores": stores, "skill_index": skill_index, "skill_index_sha256": sha256(canonical(skill_index).encode()),
+                        "system_block": snapshot_prompt(stores) + skill_prompt, "created_at": datetime.now(timezone.utc).isoformat()}
                 content = canonical(body)
                 row = {"conversation_id": conversation_id, "snapshot_id": body["snapshot_id"], **body["scope"],
                        "body": content, "sha256": sha256(content.encode()), "status": "prepared", "created_at": body["created_at"]}

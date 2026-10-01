@@ -77,3 +77,4 @@ class WorkContext:
     approved_calls: set[str] = field(default_factory=set)
     memory_writer: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
     memory_search: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
+    memory_skills: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None

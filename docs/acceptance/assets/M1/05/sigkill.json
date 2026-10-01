@@ -1,0 +1,346 @@
+[
+  {
+    "boundary": "prepared",
+    "process_exit": -9,
+    "recovery_count": 2,
+    "queries": [
+      {
+        "sql": "SELECT change_id,status,result FROM memory_changes",
+        "rows": [
+          {
+            "change_id": "sigkill-change",
+            "status": "committed",
+            "result": "{\"change_id\":\"sigkill-change\",\"entry_hash\":\"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\",\"entry_id\":\"b1234dd3eecb4381bda84c8a08125017\",\"global_seq\":1,\"idempotent_replay\":false,\"ledger_id\":1,\"revision\":1,\"store_id\":\"93177081d3ec520ab6e8542ec0ae61be\",\"store_type\":\"skill\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT id,change_id,revision,audit_seq,global_seq,after_files FROM memory_ledger",
+        "rows": [
+          {
+            "id": 1,
+            "change_id": "sigkill-change",
+            "revision": 1,
+            "audit_seq": 1,
+            "global_seq": 1,
+            "after_files": "[{\"content\":\"核对原始来源\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/references/procedure.md\",\"sha256\":\"6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882\"},{\"content\":\"完整核验清单\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/templates/checklist.md\",\"sha256\":\"310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93\"},{\"content\":\"# 完整恢复流程\\n核验文件与账本\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.md\",\"sha256\":\"6b8b3e817d0034793b10d64583755973fd7e0192b921980a99d90145242455e3\"},{\"content\":\"{\\\"description\\\":\\\"核对完整正文和支撑文件\\\",\\\"entries\\\":[{\\\"approved_at\\\":null,\\\"approved_by\\\":null,\\\"basis\\\":\\\"真实 SIGKILL 验收\\\",\\\"created_at\\\":\\\"2026-10-01T14:32:53.650616+00:00\\\",\\\"entry_hash\\\":\\\"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\\\",\\\"entry_id\\\":\\\"b1234dd3eecb4381bda84c8a08125017\\\",\\\"hits\\\":0,\\\"last_hit_at\\\":null,\\\"needs_review\\\":false,\\\"source\\\":{\\\"actor_id\\\":\\\"owner\\\",\\\"actor_type\\\":\\\"user\\\",\\\"manual_edit_id\\\":\\\"sigkill-change\\\"},\\\"state\\\":\\\"active\\\",\\\"text\\\":\\\"# 完整恢复流程\\\\n核验文件与账本\\\"}],\\\"files\\\":{\\\"references/procedure.md\\\":\\\"6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882\\\",\\\"templates/checklist.md\\\":\\\"310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93\\\"},\\\"name\\\":\\\"真实恢复流程\\\",\\\"revision\\\":1}\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.meta.json\",\"sha256\":\"8ff3f4dbb6595f0245319211462ccf0fb7f6ffc436a7f1c5ba24b59e638659c6\"}]"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT global_seq,type,payload FROM run_events",
+        "rows": [
+          {
+            "global_seq": 1,
+            "type": "skill.patched",
+            "payload": "{\"action\": \"create\", \"change_id\": \"sigkill-change\", \"description\": \"核对完整正文和支撑文件\", \"entry_hash\": \"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\", \"entry_id\": \"b1234dd3eecb4381bda84c8a08125017\", \"files\": [\"references/procedure.md\", \"templates/checklist.md\"], \"job_id\": null, \"ledger_id\": 1, \"name\": \"真实恢复流程\", \"revision\": 1, \"scope\": {\"agent_id\": \"agent\", \"owner_id\": \"owner\", \"workspace_id\": \"ws\"}, \"source\": {\"actor_id\": \"owner\", \"actor_type\": \"user\", \"manual_edit_id\": \"sigkill-change\"}, \"source_task_run_id\": null, \"store_id\": \"93177081d3ec520ab6e8542ec0ae61be\", \"store_type\": \"skill\", \"summary\": \"# 完整恢复流程\\n核验文件与账本\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT seq,action,hash FROM audit_log",
+        "rows": [
+          {
+            "seq": 1,
+            "action": "skill.patched",
+            "hash": "addf78183cdcf4fc9e5b4e0c4c0d776ea80a51c956ac9e0335d1a10f59c1a5cf"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT * FROM memory_skills",
+        "rows": [
+          {
+            "id": "93177081d3ec520ab6e8542ec0ae61be",
+            "workspace_id": "ws",
+            "agent_id": "agent",
+            "name": "真实恢复流程",
+            "description": "核对完整正文和支撑文件",
+            "created_at": "2026-10-01T14:32:53.650616+00:00"
+          }
+        ]
+      }
+    ],
+    "audit_verified": true,
+    "files": [
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.md",
+        "sha256": "6b8b3e817d0034793b10d64583755973fd7e0192b921980a99d90145242455e3",
+        "mtime_ns": 1790865173658754722
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.meta.json",
+        "sha256": "8ff3f4dbb6595f0245319211462ccf0fb7f6ffc436a7f1c5ba24b59e638659c6",
+        "mtime_ns": 1790865173659261301
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/references/procedure.md",
+        "sha256": "6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882",
+        "mtime_ns": 1790865173657533817
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/templates/checklist.md",
+        "sha256": "310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93",
+        "mtime_ns": 1790865173658218477
+      }
+    ]
+  },
+  {
+    "boundary": "first_file",
+    "process_exit": -9,
+    "recovery_count": 2,
+    "queries": [
+      {
+        "sql": "SELECT change_id,status,result FROM memory_changes",
+        "rows": [
+          {
+            "change_id": "sigkill-change",
+            "status": "committed",
+            "result": "{\"change_id\":\"sigkill-change\",\"entry_hash\":\"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\",\"entry_id\":\"631ca60b65a34c388668e6725a85c59e\",\"global_seq\":1,\"idempotent_replay\":false,\"ledger_id\":1,\"revision\":1,\"store_id\":\"93177081d3ec520ab6e8542ec0ae61be\",\"store_type\":\"skill\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT id,change_id,revision,audit_seq,global_seq,after_files FROM memory_ledger",
+        "rows": [
+          {
+            "id": 1,
+            "change_id": "sigkill-change",
+            "revision": 1,
+            "audit_seq": 1,
+            "global_seq": 1,
+            "after_files": "[{\"content\":\"核对原始来源\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/references/procedure.md\",\"sha256\":\"6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882\"},{\"content\":\"完整核验清单\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/templates/checklist.md\",\"sha256\":\"310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93\"},{\"content\":\"# 完整恢复流程\\n核验文件与账本\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.md\",\"sha256\":\"6b8b3e817d0034793b10d64583755973fd7e0192b921980a99d90145242455e3\"},{\"content\":\"{\\\"description\\\":\\\"核对完整正文和支撑文件\\\",\\\"entries\\\":[{\\\"approved_at\\\":null,\\\"approved_by\\\":null,\\\"basis\\\":\\\"真实 SIGKILL 验收\\\",\\\"created_at\\\":\\\"2026-10-01T14:32:53.791160+00:00\\\",\\\"entry_hash\\\":\\\"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\\\",\\\"entry_id\\\":\\\"631ca60b65a34c388668e6725a85c59e\\\",\\\"hits\\\":0,\\\"last_hit_at\\\":null,\\\"needs_review\\\":false,\\\"source\\\":{\\\"actor_id\\\":\\\"owner\\\",\\\"actor_type\\\":\\\"user\\\",\\\"manual_edit_id\\\":\\\"sigkill-change\\\"},\\\"state\\\":\\\"active\\\",\\\"text\\\":\\\"# 完整恢复流程\\\\n核验文件与账本\\\"}],\\\"files\\\":{\\\"references/procedure.md\\\":\\\"6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882\\\",\\\"templates/checklist.md\\\":\\\"310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93\\\"},\\\"name\\\":\\\"真实恢复流程\\\",\\\"revision\\\":1}\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.meta.json\",\"sha256\":\"6f549ecab1a8f206c99ce1d08132c8ad4bc28337a1726bcf6caf2f50b2e59e38\"}]"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT global_seq,type,payload FROM run_events",
+        "rows": [
+          {
+            "global_seq": 1,
+            "type": "skill.patched",
+            "payload": "{\"action\": \"create\", \"change_id\": \"sigkill-change\", \"description\": \"核对完整正文和支撑文件\", \"entry_hash\": \"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\", \"entry_id\": \"631ca60b65a34c388668e6725a85c59e\", \"files\": [\"references/procedure.md\", \"templates/checklist.md\"], \"job_id\": null, \"ledger_id\": 1, \"name\": \"真实恢复流程\", \"revision\": 1, \"scope\": {\"agent_id\": \"agent\", \"owner_id\": \"owner\", \"workspace_id\": \"ws\"}, \"source\": {\"actor_id\": \"owner\", \"actor_type\": \"user\", \"manual_edit_id\": \"sigkill-change\"}, \"source_task_run_id\": null, \"store_id\": \"93177081d3ec520ab6e8542ec0ae61be\", \"store_type\": \"skill\", \"summary\": \"# 完整恢复流程\\n核验文件与账本\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT seq,action,hash FROM audit_log",
+        "rows": [
+          {
+            "seq": 1,
+            "action": "skill.patched",
+            "hash": "e1ec86e8b5f6de67447c009cbda8b4b12f14c1868bbd679bfdcaa7d8de338c8b"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT * FROM memory_skills",
+        "rows": [
+          {
+            "id": "93177081d3ec520ab6e8542ec0ae61be",
+            "workspace_id": "ws",
+            "agent_id": "agent",
+            "name": "真实恢复流程",
+            "description": "核对完整正文和支撑文件",
+            "created_at": "2026-10-01T14:32:53.791160+00:00"
+          }
+        ]
+      }
+    ],
+    "audit_verified": true,
+    "files": [
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.md",
+        "sha256": "6b8b3e817d0034793b10d64583755973fd7e0192b921980a99d90145242455e3",
+        "mtime_ns": 1790865173802211747
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.meta.json",
+        "sha256": "6f549ecab1a8f206c99ce1d08132c8ad4bc28337a1726bcf6caf2f50b2e59e38",
+        "mtime_ns": 1790865173802766534
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/references/procedure.md",
+        "sha256": "6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882",
+        "mtime_ns": 1790865173795309935
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/templates/checklist.md",
+        "sha256": "310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93",
+        "mtime_ns": 1790865173801644002
+      }
+    ]
+  },
+  {
+    "boundary": "files_replaced",
+    "process_exit": -9,
+    "recovery_count": 2,
+    "queries": [
+      {
+        "sql": "SELECT change_id,status,result FROM memory_changes",
+        "rows": [
+          {
+            "change_id": "sigkill-change",
+            "status": "committed",
+            "result": "{\"change_id\":\"sigkill-change\",\"entry_hash\":\"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\",\"entry_id\":\"fe5be8374c544749ad09e3547250d645\",\"global_seq\":1,\"idempotent_replay\":false,\"ledger_id\":1,\"revision\":1,\"store_id\":\"93177081d3ec520ab6e8542ec0ae61be\",\"store_type\":\"skill\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT id,change_id,revision,audit_seq,global_seq,after_files FROM memory_ledger",
+        "rows": [
+          {
+            "id": 1,
+            "change_id": "sigkill-change",
+            "revision": 1,
+            "audit_seq": 1,
+            "global_seq": 1,
+            "after_files": "[{\"content\":\"核对原始来源\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/references/procedure.md\",\"sha256\":\"6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882\"},{\"content\":\"完整核验清单\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/templates/checklist.md\",\"sha256\":\"310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93\"},{\"content\":\"# 完整恢复流程\\n核验文件与账本\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.md\",\"sha256\":\"6b8b3e817d0034793b10d64583755973fd7e0192b921980a99d90145242455e3\"},{\"content\":\"{\\\"description\\\":\\\"核对完整正文和支撑文件\\\",\\\"entries\\\":[{\\\"approved_at\\\":null,\\\"approved_by\\\":null,\\\"basis\\\":\\\"真实 SIGKILL 验收\\\",\\\"created_at\\\":\\\"2026-10-01T14:32:53.938915+00:00\\\",\\\"entry_hash\\\":\\\"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\\\",\\\"entry_id\\\":\\\"fe5be8374c544749ad09e3547250d645\\\",\\\"hits\\\":0,\\\"last_hit_at\\\":null,\\\"needs_review\\\":false,\\\"source\\\":{\\\"actor_id\\\":\\\"owner\\\",\\\"actor_type\\\":\\\"user\\\",\\\"manual_edit_id\\\":\\\"sigkill-change\\\"},\\\"state\\\":\\\"active\\\",\\\"text\\\":\\\"# 完整恢复流程\\\\n核验文件与账本\\\"}],\\\"files\\\":{\\\"references/procedure.md\\\":\\\"6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882\\\",\\\"templates/checklist.md\\\":\\\"310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93\\\"},\\\"name\\\":\\\"真实恢复流程\\\",\\\"revision\\\":1}\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.meta.json\",\"sha256\":\"756a7f9ce472f82c3e928973cc4bba452843e8ff8a2056a5162cc75570bdac7e\"}]"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT global_seq,type,payload FROM run_events",
+        "rows": [
+          {
+            "global_seq": 1,
+            "type": "skill.patched",
+            "payload": "{\"action\": \"create\", \"change_id\": \"sigkill-change\", \"description\": \"核对完整正文和支撑文件\", \"entry_hash\": \"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\", \"entry_id\": \"fe5be8374c544749ad09e3547250d645\", \"files\": [\"references/procedure.md\", \"templates/checklist.md\"], \"job_id\": null, \"ledger_id\": 1, \"name\": \"真实恢复流程\", \"revision\": 1, \"scope\": {\"agent_id\": \"agent\", \"owner_id\": \"owner\", \"workspace_id\": \"ws\"}, \"source\": {\"actor_id\": \"owner\", \"actor_type\": \"user\", \"manual_edit_id\": \"sigkill-change\"}, \"source_task_run_id\": null, \"store_id\": \"93177081d3ec520ab6e8542ec0ae61be\", \"store_type\": \"skill\", \"summary\": \"# 完整恢复流程\\n核验文件与账本\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT seq,action,hash FROM audit_log",
+        "rows": [
+          {
+            "seq": 1,
+            "action": "skill.patched",
+            "hash": "4bc8bae96f88bb7178a898f9089c1e2c9e9d9c899a2f4f130bded743ca8643cd"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT * FROM memory_skills",
+        "rows": [
+          {
+            "id": "93177081d3ec520ab6e8542ec0ae61be",
+            "workspace_id": "ws",
+            "agent_id": "agent",
+            "name": "真实恢复流程",
+            "description": "核对完整正文和支撑文件",
+            "created_at": "2026-10-01T14:32:53.938915+00:00"
+          }
+        ]
+      }
+    ],
+    "audit_verified": true,
+    "files": [
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.md",
+        "sha256": "6b8b3e817d0034793b10d64583755973fd7e0192b921980a99d90145242455e3",
+        "mtime_ns": 1790865173944396158
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.meta.json",
+        "sha256": "756a7f9ce472f82c3e928973cc4bba452843e8ff8a2056a5162cc75570bdac7e",
+        "mtime_ns": 1790865173945334025
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/references/procedure.md",
+        "sha256": "6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882",
+        "mtime_ns": 1790865173942745132
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/templates/checklist.md",
+        "sha256": "310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93",
+        "mtime_ns": 1790865173943686498
+      }
+    ]
+  },
+  {
+    "boundary": "committed",
+    "process_exit": -9,
+    "recovery_count": 2,
+    "queries": [
+      {
+        "sql": "SELECT change_id,status,result FROM memory_changes",
+        "rows": [
+          {
+            "change_id": "sigkill-change",
+            "status": "committed",
+            "result": "{\"change_id\":\"sigkill-change\",\"entry_hash\":\"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\",\"entry_id\":\"ff1212d922f5452eb6ba35ba5f988e4d\",\"global_seq\":1,\"idempotent_replay\":false,\"ledger_id\":1,\"revision\":1,\"store_id\":\"93177081d3ec520ab6e8542ec0ae61be\",\"store_type\":\"skill\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT id,change_id,revision,audit_seq,global_seq,after_files FROM memory_ledger",
+        "rows": [
+          {
+            "id": 1,
+            "change_id": "sigkill-change",
+            "revision": 1,
+            "audit_seq": 1,
+            "global_seq": 1,
+            "after_files": "[{\"content\":\"核对原始来源\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/references/procedure.md\",\"sha256\":\"6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882\"},{\"content\":\"完整核验清单\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/templates/checklist.md\",\"sha256\":\"310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93\"},{\"content\":\"# 完整恢复流程\\n核验文件与账本\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.md\",\"sha256\":\"6b8b3e817d0034793b10d64583755973fd7e0192b921980a99d90145242455e3\"},{\"content\":\"{\\\"description\\\":\\\"核对完整正文和支撑文件\\\",\\\"entries\\\":[{\\\"approved_at\\\":null,\\\"approved_by\\\":null,\\\"basis\\\":\\\"真实 SIGKILL 验收\\\",\\\"created_at\\\":\\\"2026-10-01T14:32:54.088463+00:00\\\",\\\"entry_hash\\\":\\\"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\\\",\\\"entry_id\\\":\\\"ff1212d922f5452eb6ba35ba5f988e4d\\\",\\\"hits\\\":0,\\\"last_hit_at\\\":null,\\\"needs_review\\\":false,\\\"source\\\":{\\\"actor_id\\\":\\\"owner\\\",\\\"actor_type\\\":\\\"user\\\",\\\"manual_edit_id\\\":\\\"sigkill-change\\\"},\\\"state\\\":\\\"active\\\",\\\"text\\\":\\\"# 完整恢复流程\\\\n核验文件与账本\\\"}],\\\"files\\\":{\\\"references/procedure.md\\\":\\\"6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882\\\",\\\"templates/checklist.md\\\":\\\"310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93\\\"},\\\"name\\\":\\\"真实恢复流程\\\",\\\"revision\\\":1}\",\"path\":\"skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.meta.json\",\"sha256\":\"731b7701b9f450434f99da37beebbd2594e9e7aed001ee4f5279e78e65525615\"}]"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT global_seq,type,payload FROM run_events",
+        "rows": [
+          {
+            "global_seq": 1,
+            "type": "skill.patched",
+            "payload": "{\"action\": \"create\", \"change_id\": \"sigkill-change\", \"description\": \"核对完整正文和支撑文件\", \"entry_hash\": \"4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707\", \"entry_id\": \"ff1212d922f5452eb6ba35ba5f988e4d\", \"files\": [\"references/procedure.md\", \"templates/checklist.md\"], \"job_id\": null, \"ledger_id\": 1, \"name\": \"真实恢复流程\", \"revision\": 1, \"scope\": {\"agent_id\": \"agent\", \"owner_id\": \"owner\", \"workspace_id\": \"ws\"}, \"source\": {\"actor_id\": \"owner\", \"actor_type\": \"user\", \"manual_edit_id\": \"sigkill-change\"}, \"source_task_run_id\": null, \"store_id\": \"93177081d3ec520ab6e8542ec0ae61be\", \"store_type\": \"skill\", \"summary\": \"# 完整恢复流程\\n核验文件与账本\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT seq,action,hash FROM audit_log",
+        "rows": [
+          {
+            "seq": 1,
+            "action": "skill.patched",
+            "hash": "30dd87942e25571c889938e9d6342c9c0f8ee28b1250b47894b6d26f62d555db"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT * FROM memory_skills",
+        "rows": [
+          {
+            "id": "93177081d3ec520ab6e8542ec0ae61be",
+            "workspace_id": "ws",
+            "agent_id": "agent",
+            "name": "真实恢复流程",
+            "description": "核对完整正文和支撑文件",
+            "created_at": "2026-10-01T14:32:54.088463+00:00"
+          }
+        ]
+      }
+    ],
+    "audit_verified": true,
+    "files": [
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.md",
+        "sha256": "6b8b3e817d0034793b10d64583755973fd7e0192b921980a99d90145242455e3",
+        "mtime_ns": 1790865174094291917
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/SKILL.meta.json",
+        "sha256": "731b7701b9f450434f99da37beebbd2594e9e7aed001ee4f5279e78e65525615",
+        "mtime_ns": 1790865174095137326
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/references/procedure.md",
+        "sha256": "6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882",
+        "mtime_ns": 1790865174092632724
+      },
+      {
+        "path": "skills/93177081d3ec520ab6e8542ec0ae61be/templates/checklist.md",
+        "sha256": "310c768bb9bfcbde2fa5edf79de4ce2f07fd0d16deb0b4200409dd927fd13e93",
+        "mtime_ns": 1790865174093468841
+      }
+    ]
+  }
+]

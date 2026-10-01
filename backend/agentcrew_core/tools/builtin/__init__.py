@@ -26,6 +26,8 @@ from .http_request import HTTP_SCHEMA, _http_request
 from .read_file import READ_FILE_SCHEMA, _read_file
 from .memory_write import MEMORY_WRITE_SCHEMA, _memory_write
 from .session_search import SESSION_SEARCH_SCHEMA, _session_search
+from .skill_view import SKILL_VIEW_SCHEMA, _skill_view
+from .skill_patch import SKILL_PATCH_SCHEMA, _skill_patch
 from .seatbelt import seatbelt_profile
 from .write_file import WRITE_FILE_SCHEMA, _write_file, _write_file_extras
 from .write_file import _open_dir_nofollow  # noqa: F401 —— 测试引用面
@@ -84,6 +86,16 @@ def build_default_registry():
               risk_level="low", needs_approval=False, concurrent_safe=True,
               side_effect_class="verifiable"),
         _session_search,
+    ))
+    registry.register(Tool(
+        _meta("skill_view", "按名称读取实时 Skill 正文与修订；不存在时返回创建目标状态。file 仅读取已登记支撑文件。正文读取记录使用；支撑文件读取不替代正文读取。",
+              SKILL_VIEW_SCHEMA, read_only=True, destructive=False, risk_level="low", needs_approval=False,
+              concurrent_safe=True, side_effect_class="verifiable"), _skill_view,
+    ))
+    registry.register(Tool(
+        _meta("skill_patch", "创建或修改可泛化的流程和机理。先在本用户回合 skill_view 或 action=read 读取目标正文/不存在状态；写入提供读到的 expected_revision 和真实 basis。create 提供 description（最多60字符）及全文 text；edit 替换全文；patch 用唯一 old_text/new_text 替换。files 维护 references/templates/assets/scripts 内的支撑文件，null 删除。允许判断无须保存；用户明确要求保存流程时执行受控保存。",
+              SKILL_PATCH_SCHEMA, read_only=False, destructive=False, risk_level="medium", needs_approval=False,
+              concurrent_safe=False, side_effect_class="verifiable"), _skill_patch,
     ))
     registry.register(Tool(
         _meta("ask_user", "向用户提问并等待回答（用于澄清任务，答案会回到对话）",

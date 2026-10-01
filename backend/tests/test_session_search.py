@@ -167,7 +167,9 @@ def test_registry_tool_has_real_task_scope(services):
 def test_v4_upgrade_indexes_real_existing_history_and_memory(tmp_path):
     db = Database(tmp_path / "upgrade.db")
     _bootstrap_version_table(db.write_conn)
-    for migration in MIGRATIONS[:-1]:
+    for migration in MIGRATIONS:
+        if migration.version > 4:
+            break
         _apply_migration(db.write_conn, migration)
     channel = WriteChannel(db.write_conn)
     store = MemoryStore(db, EventStore(channel), tmp_path)
@@ -175,7 +177,7 @@ def test_v4_upgrade_indexes_real_existing_history_and_memory(tmp_path):
         message_id, _task = history(store, "升级之前保存的报销单和发票")
         asyncio.run(memory(store, "升级之前保存的报销单核查流程"))
         result = run_migrations(db.write_conn, tmp_path / "backups")
-        assert result.applied_versions == [5]
+        assert result.applied_versions == [5, 6]
         search = MemorySearch(store)
         hits = asyncio.run(search.search(MemoryIdentity("ws", "agent"), "报销单"))
         assert {h["kind"] for h in hits["items"]} == {"message", "memory"}

@@ -43,6 +43,7 @@ from .settings import SettingsService
 from .memory.store import MemoryStore
 from .memory.snapshots import MemorySnapshots
 from .memory.search import MemorySearch
+from .memory.skills import MemorySkills
 from .instance_lock import (
     DataDirNotWritable,
     InstanceLock,
@@ -333,13 +334,14 @@ def main(argv: list[str] | None = None) -> int:
         memory = MemoryStore(db, event_store, data_dir, settings)
         snapshots = MemorySnapshots(memory)
         memory_search = MemorySearch(memory)
+        memory_skills = MemorySkills(memory)
         # 提问回答链 + RunManager（M0-C8）：run.queued → runner 派发，
         # attempt 配置绑定与取消传播见 run_manager 模块头
         questions = QuestionService(db, event_store)
         run_manager = RunManager(
             db=db, event_store=event_store, bus=bus, settings=settings,
             sessions=sessions, approvals=approvals, scheduler=scheduler,
-            questions=questions, memory=memory, snapshots=snapshots, memory_search=memory_search)
+            questions=questions, memory=memory, snapshots=snapshots, memory_search=memory_search, memory_skills=memory_skills)
         # 恢复域（M0-C9）：对账在 lifespan 内执行（RunManager 派发之前）
         recovery = RecoveryService(db, event_store, sessions, data_dir,
                                    registry=scheduler.registry)
