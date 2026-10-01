@@ -2,6 +2,12 @@
 
 > 每个领域一个目录、一个负责者。**跨领域决策必须落 ADR（decisions/）**，别人才知道你定了什么。契约（contracts/）由后端维护，其他角色只读引用。
 
+## 主仓库与提交目标
+
+主仓库为 [YYHDBL/AgentCrew](https://github.com/YYHDBL/AgentCrew)，`origin` 使用 `https://github.com/YYHDBL/AgentCrew.git`。后续实施分支、提交推送和 Pull Request 统一使用该仓库；主分支为 `main`，桌面开发分支为 `desktop-shell`。合并主分支需要所有者授权，保留 `legacy-mycodeagent` 历史分支。
+
+`archive` 指向 `YYHDBL/AgentCrew-dev-archive`，用于查询原开发历史；只有所有者明确指定时才向归档仓库提交。
+
 ## 分工与目录所有权
 
 | 目录 | 领域 | 负责 | 说明 |
@@ -23,6 +29,8 @@
 [M1 Memory 实施任务卡](./tasks/M1-cards.md) 将 Memory 详设拆分为 13 张卡，明确实施依赖、后端与前端职责、文件范围和真实验收条件；功能实施等待 M0 收口确认。
 
 [M2 安全与治理实施任务卡](./tasks/M2-cards.md) 将资源、角色、授权、连接器、规则、完整沙盒、恢复和审计拆分为 13 张卡，包含参考源码与七项治理验收映射；功能实施等待 M1 收口确认。
+
+[M2 执行提示词](./tasks/M2-agent-prompt.md) 可交给实施 Agent，包含主仓库要求、前置检查、实施顺序、真实验收及提交规则。
 
 [M3 监控回放与自动化实施任务卡](./tasks/M3-cards.md) 拆分为 15 张卡，覆盖运行中心、定时任务、轨迹审查、技能固化、员工与管理页面、通知及桌面生命周期；功能实施等待 M2 收口确认。
 
