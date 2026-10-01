@@ -1,0 +1,45 @@
+{
+  "credential_matches": 0,
+  "files": [
+    {
+      "path": "docs/acceptance/assets/M1/03/backend-tests.txt",
+      "sha256": "623e0cc290b8fb3f9946cc8f999bdc2cb21d55a57b3a9a88238aa6be411f4d63",
+      "bytes": 1117
+    },
+    {
+      "path": "docs/acceptance/assets/M1/03/generation-constraints.json",
+      "sha256": "fbb3a880e3e0dfe37abb44be126553e0138e72e08a79f32be2e881a238135e49",
+      "bytes": 4529
+    },
+    {
+      "path": "docs/acceptance/assets/M1/03/http-model 2.json",
+      "sha256": "3997beab0474ee3702f9ae877148d4625fc6244f8da6fac30a563fb4b403b4ad",
+      "bytes": 128911
+    },
+    {
+      "path": "docs/acceptance/assets/M1/03/http-model.json",
+      "sha256": "12958a430c069416294bda71f1b64a3bfc05027489ac656a53851024b285396f",
+      "bytes": 164821
+    },
+    {
+      "path": "docs/acceptance/assets/M1/03/openapi.txt",
+      "sha256": "6682792bf87a47f66a5d044d2c89e78949ba201c7f6784b5311af287f52fcb31",
+      "bytes": 42
+    },
+    {
+      "path": "docs/acceptance/assets/M1/03/sigkill.json",
+      "sha256": "29c2431d9c7a6da26fa02ec7fab07ecc2326840f5ae1e4403bf5f377b7cd71a6",
+      "bytes": 29587
+    },
+    {
+      "path": "docs/acceptance/assets/M1/03/snapshot-tests.txt",
+      "sha256": "710cc2a388bedd6bea703e11dee26460ad7955ed21b2d7ffefac2055b72006cd",
+      "bytes": 99
+    },
+    {
+      "path": "docs/acceptance/assets/M1/03/sse-tests.txt",
+      "sha256": "d5367c5b7fb0684bc7e2296b5a973ecc0b0d13e3da301a4f6a8bad01352de3a5",
+      "bytes": 109
+    }
+  ]
+}

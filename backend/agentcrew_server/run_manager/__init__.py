@@ -34,6 +34,7 @@ from typing import TYPE_CHECKING, Any
 import httpx
 
 from agentcrew_core.events import RunEventType
+from agentcrew_core.memory import sha256
 from agentcrew_core.loop import (
     LoopDeps,
     LoopGates,
@@ -55,6 +56,7 @@ from agentcrew_core.tools.scheduler import (
 
 from ..bus import Subscription, Topic
 from ..providers import ConfiguredProvider, bind_slot
+from ..memory.snapshots import MemorySnapshotError
 
 if TYPE_CHECKING:
     from .approvals import ApprovalService
@@ -116,6 +118,7 @@ class RunManager:
         scheduler: "ToolScheduler",
         questions: "QuestionService",
         memory=None,
+        snapshots=None,
     ):
         self._db = db
         self._store = event_store
@@ -126,6 +129,7 @@ class RunManager:
         self._scheduler = scheduler
         self._questions = questions
         self._memory = memory
+        self._snapshots = snapshots
         self._runs: dict[str, _Run] = {}
         self._guardrails: dict[str, str] = {}  # task_id → 护栏提示（接续注入）
         self._recovery = None  # C9：RecoveryService（cli 装配后注回，resume 重建用）
@@ -261,7 +265,17 @@ class RunManager:
                     context_fingerprint(system, tools,
                                         self._model_config(slot)))
 
-        return await asyncio.to_thread(build_all)
+        slot, tools, system, agent, fingerprint = await asyncio.to_thread(build_all)
+        if self._snapshots is not None:
+            aux = self._bind_slot("aux")
+            snapshot = await self._snapshots.ensure(conversation_id, task_run_id,
+                provider=ConfiguredProvider({"aux": aux}, client=self._http, session_id=conversation_id),
+                aux_model=aux.model, default_role=SYSTEM_PROMPT)
+            system += "\n\n" + snapshot["system_block"]
+            fingerprint = context_fingerprint(system, tools, self._model_config(slot))
+            fingerprint.update(memory_snapshot_id=snapshot["snapshot_id"], memory_snapshot_sha256=snapshot["sha256"],
+                               memory_block_sha256=sha256(snapshot["system_block"].encode()))
+        return slot, tools, system, agent, fingerprint
 
     async def start_resume(self, task_run_id: str, conversation_id: str,
                            resume_reason: str, attempt_no: int) -> None:
@@ -431,6 +445,11 @@ class RunManager:
                             conversation_id, task_run_id, attempt_no=attempt_no)
             finally:
                 raise
+        except MemorySnapshotError as error:
+            terminal = "failed"
+            fail_reason = error.result["error"]
+            await self._finish(task_run_id, conversation_id, "run.failed",
+                {"reason": fail_reason, "error": error.result}, run=run, attempt_no=attempt_no)
         except BaseException as e:  # noqa: BLE001 —— asyncio 任务异常→RUN_FAILED
             _log.exception("run.crash task=%s", task_run_id)
             terminal = "failed"

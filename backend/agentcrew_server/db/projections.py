@@ -486,6 +486,7 @@ HANDLERS: dict[RunEventType, Handler] = {
     RunEventType.TOOL_RESULT_EXTERNALIZED: _noop,
     RunEventType.MEMORY_UPDATED: _noop,
     RunEventType.MEMORY_ARCHIVED: _noop,
+    RunEventType.MEMORY_SNAPSHOT_CREATED: _noop,
     # C8：question.* 驱动 task_runs 派生态 waiting_user（计数器仍在内存 FSM）
     RunEventType.QUESTION_REQUESTED: _question_requested,
     RunEventType.QUESTION_ANSWERED: _question_answered,

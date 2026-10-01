@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from agentcrew_core.events import RunEventType
-from agentcrew_core.memory import QUOTAS, failure, render_entries, sha256, transform
+from agentcrew_core.memory import QUOTAS, context_entries, failure, render_entries, sha256, transform
 from agentcrew_core.tools.builtin.write_file import _open_dir_nofollow
 
 from ..db.audit import SNAPSHOT_EVERY, append_audit, snapshot_chain_head
@@ -137,8 +137,17 @@ class MemoryStore:
             value = await asyncio.to_thread(self._load, store_type, store_id)
         if "error" in value:
             return value
+        entries = value["metadata"]["entries"]
+        usage = {r["entry_id"]: dict(r) for r in self.db.read_conn.execute(
+            "SELECT u.* FROM memory_usage u JOIN memory_entries e ON e.entry_id=u.entry_id WHERE e.store_type=? AND e.store_id=?", (store_type, store_id))}
+        entries = [{**e, **{k: usage[e["entry_id"]][k] for k in ("hits", "last_hit_at")}}
+                   if e["entry_id"] in usage else dict(e) for e in entries]
+        if identity.actor_type == "agent":
+            entries = context_entries(entries)
+            value = {**value, "text": render_entries(entries)}
+        entries = [{**e, "reviewed_by": e.get("approved_by"), "reviewed_at": e.get("approved_at")} for e in entries]
         watermark = self.db.read_conn.execute("SELECT COALESCE(MAX(global_seq),0) FROM run_events").fetchone()[0]
-        return {**value, "entries": value["metadata"]["entries"],
+        return {**value, "metadata": {**value["metadata"], "entries": entries}, "entries": entries,
                 "sha256": value["text_sha256"] or sha256(b""),
                 "metadata_sha256": value["metadata_sha256"] or sha256(canonical(value["metadata"]).encode()),
                 "used_characters": len(value["text"]), "quota": self.quota(store_type), "at_global_seq": watermark}
@@ -223,7 +232,8 @@ class MemoryStore:
             text = render_entries(entries)
             quota = self.quota(store_type)
             if len(text) > quota:
-                return await self._record_failure(identity, change_id, request_hash, failure("QUOTA_EXCEEDED", "记忆配额不足，请整合条目", current_entries=before["metadata"]["entries"], used_characters=len(before["text"]), quota=quota, available_characters=max(0, quota-len(before["text"]))))
+                visible = context_entries(before["metadata"]["entries"]) if identity.actor_type == "agent" else before["metadata"]["entries"]
+                return await self._record_failure(identity, change_id, request_hash, failure("QUOTA_EXCEEDED", "记忆配额不足，请整合条目", current_entries=visible, used_characters=len(before["text"]), quota=quota, available_characters=max(0, quota-len(before["text"]))))
             action = "rollback" if restored_ledger_id else operations[0]["action"] if len(operations) == 1 else "batch"
             action = {"add": "create", "edit": "update"}.get(action, action)
             plan = await asyncio.to_thread(self._plan, identity, before, entries, text, basis, now, change_id, restored_ledger_id, action, restored_files)
@@ -391,6 +401,15 @@ class MemoryStore:
             async with self._locks.setdefault((plan["store_type"], plan["store_id"]), asyncio.Lock()):
                 results.append(await self._finish_change(row[0], plan))
         return results
+
+    async def record_hits(self, entry_ids: list[str]) -> None:
+        """显式检索使用单独统计，冻结快照及业务修订均保持不变。"""
+        now = datetime.now(timezone.utc).isoformat()
+        def tx(conn):
+            with conn:
+                conn.executemany("INSERT INTO memory_usage VALUES(?,1,?) ON CONFLICT(entry_id) DO UPDATE SET hits=hits+1,last_hit_at=excluded.last_hit_at",
+                                 [(entry_id, now) for entry_id in set(entry_ids)])
+        await self.events.channel.execute(tx)
 
     async def run_tool(self, invocation, context) -> dict:
         row = self.db.read_conn.execute("SELECT workspace_id,agent_id,conversation_id FROM task_runs JOIN conversations ON conversations.id=task_runs.conversation_id WHERE task_runs.id=?", (context.task_run_id,)).fetchone()

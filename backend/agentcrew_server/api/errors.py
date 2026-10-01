@@ -17,6 +17,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from ..memory.snapshots import MemorySnapshotError
 
 log = logging.getLogger("agentcrew.api.errors")
 
@@ -109,6 +110,12 @@ def error_response(
 
 
 def install_error_handlers(app) -> None:
+    @app.exception_handler(MemorySnapshotError)
+    async def _memory_snapshot_error(_: Request, exc: MemorySnapshotError) -> JSONResponse:
+        value = exc.result
+        return JSONResponse({"error": {"code": value["error"], "message": value["message"], "detail": value.get("details", {})}},
+                            status_code=409 if value["error"].startswith("SNAPSHOT_") else 503 if value["error"] == "SOUL_GENERATION_UNAVAILABLE" else 422)
+
     @app.exception_handler(ApiError)
     async def _api_error(_: Request, exc: ApiError) -> JSONResponse:
         return error_response(exc.code, exc.message, detail=exc.detail, status=exc.status)

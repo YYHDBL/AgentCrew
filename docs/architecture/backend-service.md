@@ -88,6 +88,8 @@
 | INTERNAL_ERROR | 500 | 未捕获异常统一信封（v1.2 补） |
 | SSE_LIMIT | 503 | SSE 连接超上限 |
 | DIAGNOSTIC_MODE | 503 | 只读诊断模式 |
+| SNAPSHOT_MISSING / SNAPSHOT_CHECKSUM_MISMATCH / SNAPSHOT_IDENTITY_MISMATCH | 409 | 冻结快照文件丢失、校验失败或恢复身份变化；保持既有快照 |
+| SOUL_GENERATION_UNAVAILABLE / SOUL_ROLE_MISSING / SOUL_GENERATION_FAILED / SOUL_TOOL_FORBIDDEN | 503/422 | 初始 soul 缺少真实模型或岗位、生成结果超出约束、非法调用工具 |
 
 新增错误码纪律：先进本表再写实现。
 

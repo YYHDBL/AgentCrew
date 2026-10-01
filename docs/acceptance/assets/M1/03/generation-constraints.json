@@ -1,0 +1,132 @@
+[
+  {
+    "data_directory": "data/m1-snapshot-validation-01",
+    "queries": [
+      {
+        "sql": "SELECT id,task_run_id,status,length(result) AS characters,error FROM memory_soul_generations",
+        "rows": [
+          {
+            "id": "f8d32c4650af47e9be3eab988bf43bd2",
+            "task_run_id": "b31c68dfef62485f8dca3edf32b742d0",
+            "status": "failed",
+            "characters": null,
+            "error": "初始生成执行终止"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT (SELECT COUNT(*) FROM memory_snapshots) AS snapshots,(SELECT COUNT(*) FROM memory_stores WHERE store_type='soul') AS soul_stores",
+        "rows": [
+          {
+            "snapshots": 0,
+            "soul_stores": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "data_directory": "data/m1-snapshot-validation-02",
+    "queries": [
+      {
+        "sql": "SELECT id,task_run_id,status,length(result) AS characters,error FROM memory_soul_generations",
+        "rows": [
+          {
+            "id": "2b6f56bcaa1e4d439c9a926168d8c143",
+            "task_run_id": "0f557c3e27a14d8d8209ee910c44c794",
+            "status": "failed",
+            "characters": 1173,
+            "error": "{\"details\":{\"characters\":1173,\"maximum\":1485,\"minimum\":1215,\"reason\":\"\"},\"error\":\"SOUL_GENERATION_FAILED\",\"message\":\"真实 aux 未生成符合配额的初始 soul\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT (SELECT COUNT(*) FROM memory_snapshots) AS snapshots,(SELECT COUNT(*) FROM memory_stores WHERE store_type='soul') AS soul_stores",
+        "rows": [
+          {
+            "snapshots": 0,
+            "soul_stores": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "data_directory": "data/m1-snapshot-validation-03",
+    "queries": [
+      {
+        "sql": "SELECT id,task_run_id,status,length(result) AS characters,error FROM memory_soul_generations",
+        "rows": [
+          {
+            "id": "d5d64b18efe3419eb037290023a0dfc0",
+            "task_run_id": "efa354d57b284867b5c8d1a095ce1d0e",
+            "status": "failed",
+            "characters": 1212,
+            "error": "{\"details\":{\"characters\":1212,\"maximum\":1485,\"minimum\":1215,\"reason\":\"\"},\"error\":\"SOUL_GENERATION_FAILED\",\"message\":\"真实 aux 未生成符合配额的初始 soul\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT (SELECT COUNT(*) FROM memory_snapshots) AS snapshots,(SELECT COUNT(*) FROM memory_stores WHERE store_type='soul') AS soul_stores",
+        "rows": [
+          {
+            "snapshots": 0,
+            "soul_stores": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "data_directory": "data/m1-snapshot-validation-04",
+    "queries": [
+      {
+        "sql": "SELECT id,task_run_id,status,length(result) AS characters,error FROM memory_soul_generations",
+        "rows": [
+          {
+            "id": "4128231fe86a4ab09c8ab5233b3bed0c",
+            "task_run_id": "fc017320b94247f18868695384bb4647",
+            "status": "failed",
+            "characters": 1104,
+            "error": "{\"details\":{\"characters\":1104,\"maximum\":1485,\"minimum\":1215,\"reason\":\"\"},\"error\":\"SOUL_GENERATION_FAILED\",\"message\":\"真实 aux 未生成符合配额的初始 soul\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT (SELECT COUNT(*) FROM memory_snapshots) AS snapshots,(SELECT COUNT(*) FROM memory_stores WHERE store_type='soul') AS soul_stores",
+        "rows": [
+          {
+            "snapshots": 0,
+            "soul_stores": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "data_directory": "data/m1-snapshot-validation-06",
+    "queries": [
+      {
+        "sql": "SELECT id,task_run_id,status,length(result) AS characters,error FROM memory_soul_generations",
+        "rows": [
+          {
+            "id": "1343c433d4ad45d9972736786017a640",
+            "task_run_id": "a35f4d3c1a504332bbf093f6ed81e894",
+            "status": "failed",
+            "characters": 1014,
+            "error": "{\"details\":{\"characters\":1014,\"maximum\":1485,\"minimum\":1215,\"reason\":\"\"},\"error\":\"SOUL_GENERATION_FAILED\",\"message\":\"真实 aux 未生成符合配额的初始 soul\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT (SELECT COUNT(*) FROM memory_snapshots) AS snapshots,(SELECT COUNT(*) FROM memory_stores WHERE store_type=\"soul\") AS soul_stores",
+        "rows": [
+          {
+            "snapshots": 0,
+            "soul_stores": 0
+          }
+        ]
+      }
+    ]
+  }
+]

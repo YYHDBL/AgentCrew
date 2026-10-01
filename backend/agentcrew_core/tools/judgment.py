@@ -125,6 +125,7 @@ def build_protected_paths(data_dir: Path, home: Path | None = None) -> list[Path
         data_dir / "soul.meta.json",
         data_dir / "agents",
         data_dir / "archive",
+        data_dir / "conversations" / "*" / "memory-snapshot.json",
         home / ".ssh",
         home / ".aws",
         home / ".gnupg",

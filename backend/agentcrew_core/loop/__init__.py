@@ -188,6 +188,7 @@ class LoopDeps:
     model: str                                         # llm.request_started 用
     start_ordinal: int = 1  # C9：resume 续接历史回合号（steps 唯一键与
     #                                           回合上限都按任务计，不得重置）
+    model_slot: str = "main"
 
 
 @dataclass(frozen=True)
@@ -219,7 +220,7 @@ async def run_task(messages: list[dict], deps: LoopDeps) -> LoopResult:
 
         step_id = uuid.uuid4().hex
         await deps.emit("step.started", {
-            "step_id": step_id, "ordinal": ordinal, "model_slot": "main"})
+            "step_id": step_id, "ordinal": ordinal, "model_slot": deps.model_slot})
         retry_no = 0
         llm_call_id = ""
         started = time.monotonic()
