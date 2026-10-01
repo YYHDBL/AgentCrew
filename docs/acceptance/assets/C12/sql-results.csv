@@ -1,0 +1,202 @@
+task_run_id,status,current_attempt_no,event_count,min_seq,max_seq,llm_projection,llm_events,tool_projection,tool_events,completed_events
+073d3fa69be7413a9da3546933d03845,completed,2,35,1,35,4,4,3,3,1
+f0999d4886bf446c95300610675af494,cancelled,2,49,1,49,6,6,5,5,0
+0e6eb81407ab46a285643f6c0e53a714,completed,1,25,1,25,3,3,3,3,1
+ca1d0fddd60e4bc6a5626793726e05d5,cancelled,1,10,1,10,1,1,1,1,0
+37c884c94b8b44138fa56424ee3ff01b,completed,1,23,1,23,3,3,2,2,1
+task_run_id,seq,global_seq,attempt_no,type
+073d3fa69be7413a9da3546933d03845,1,1,,run.queued
+073d3fa69be7413a9da3546933d03845,2,2,,materials.imported
+073d3fa69be7413a9da3546933d03845,3,3,1,run.started
+073d3fa69be7413a9da3546933d03845,4,4,1,step.started
+073d3fa69be7413a9da3546933d03845,5,5,1,llm.request_started
+073d3fa69be7413a9da3546933d03845,6,6,1,llm.request_done
+073d3fa69be7413a9da3546933d03845,7,7,1,step.completed
+073d3fa69be7413a9da3546933d03845,8,8,,tool.prepared
+073d3fa69be7413a9da3546933d03845,9,9,,tool.dispatched
+073d3fa69be7413a9da3546933d03845,10,10,,tool.completed
+073d3fa69be7413a9da3546933d03845,11,11,1,step.started
+073d3fa69be7413a9da3546933d03845,12,12,1,llm.request_started
+073d3fa69be7413a9da3546933d03845,13,13,1,llm.request_done
+073d3fa69be7413a9da3546933d03845,14,14,1,step.completed
+073d3fa69be7413a9da3546933d03845,15,15,,tool.prepared
+073d3fa69be7413a9da3546933d03845,16,16,,permission.requested
+073d3fa69be7413a9da3546933d03845,17,17,,permission.resolved
+073d3fa69be7413a9da3546933d03845,18,18,,tool.dispatched
+073d3fa69be7413a9da3546933d03845,19,19,,artifact.created
+073d3fa69be7413a9da3546933d03845,20,20,,artifact.ready
+073d3fa69be7413a9da3546933d03845,21,21,,tool.completed
+073d3fa69be7413a9da3546933d03845,22,22,1,step.started
+073d3fa69be7413a9da3546933d03845,23,23,1,llm.request_started
+073d3fa69be7413a9da3546933d03845,24,24,1,llm.request_done
+073d3fa69be7413a9da3546933d03845,25,25,1,step.completed
+073d3fa69be7413a9da3546933d03845,26,26,1,tool.prepared
+073d3fa69be7413a9da3546933d03845,27,27,1,tool.dispatched
+073d3fa69be7413a9da3546933d03845,28,28,,question.requested
+073d3fa69be7413a9da3546933d03845,29,29,,run.interrupted
+073d3fa69be7413a9da3546933d03845,30,30,2,run.resumed
+073d3fa69be7413a9da3546933d03845,31,31,2,step.started
+073d3fa69be7413a9da3546933d03845,32,32,2,llm.request_started
+073d3fa69be7413a9da3546933d03845,33,33,2,llm.request_done
+073d3fa69be7413a9da3546933d03845,34,34,2,step.completed
+073d3fa69be7413a9da3546933d03845,35,35,2,run.completed
+f0999d4886bf446c95300610675af494,1,36,,run.queued
+f0999d4886bf446c95300610675af494,2,37,1,run.started
+f0999d4886bf446c95300610675af494,3,38,1,step.started
+f0999d4886bf446c95300610675af494,4,39,1,llm.request_started
+f0999d4886bf446c95300610675af494,5,40,1,llm.request_done
+f0999d4886bf446c95300610675af494,6,41,1,step.completed
+f0999d4886bf446c95300610675af494,7,42,,tool.prepared
+f0999d4886bf446c95300610675af494,8,43,,permission.requested
+f0999d4886bf446c95300610675af494,9,44,,permission.resolved
+f0999d4886bf446c95300610675af494,10,45,,tool.dispatched
+f0999d4886bf446c95300610675af494,11,46,,tool.completed
+f0999d4886bf446c95300610675af494,12,47,1,step.started
+f0999d4886bf446c95300610675af494,13,48,1,llm.request_started
+f0999d4886bf446c95300610675af494,14,49,1,llm.request_done
+f0999d4886bf446c95300610675af494,15,50,1,step.completed
+f0999d4886bf446c95300610675af494,16,51,,tool.prepared
+f0999d4886bf446c95300610675af494,17,52,,permission.requested
+f0999d4886bf446c95300610675af494,18,53,,permission.resolved
+f0999d4886bf446c95300610675af494,19,54,,tool.dispatched
+f0999d4886bf446c95300610675af494,20,55,,tool.completed
+f0999d4886bf446c95300610675af494,21,56,1,step.started
+f0999d4886bf446c95300610675af494,22,57,1,llm.request_started
+f0999d4886bf446c95300610675af494,23,58,1,llm.request_done
+f0999d4886bf446c95300610675af494,24,59,1,step.completed
+f0999d4886bf446c95300610675af494,25,60,,tool.prepared
+f0999d4886bf446c95300610675af494,26,61,,tool.dispatched
+f0999d4886bf446c95300610675af494,27,62,,artifact.created
+f0999d4886bf446c95300610675af494,28,63,,artifact.ready
+f0999d4886bf446c95300610675af494,29,64,,tool.completed
+f0999d4886bf446c95300610675af494,30,65,1,step.started
+f0999d4886bf446c95300610675af494,31,66,1,llm.request_started
+f0999d4886bf446c95300610675af494,32,67,1,llm.request_done
+f0999d4886bf446c95300610675af494,33,68,1,step.completed
+f0999d4886bf446c95300610675af494,34,69,,tool.prepared
+f0999d4886bf446c95300610675af494,35,70,,permission.requested
+f0999d4886bf446c95300610675af494,36,71,,permission.resolved
+f0999d4886bf446c95300610675af494,37,72,,tool.dispatched
+f0999d4886bf446c95300610675af494,38,73,,tool.completed
+f0999d4886bf446c95300610675af494,39,74,1,step.started
+f0999d4886bf446c95300610675af494,40,75,1,llm.request_started
+f0999d4886bf446c95300610675af494,41,76,,run.interrupted
+f0999d4886bf446c95300610675af494,42,77,2,run.resumed
+f0999d4886bf446c95300610675af494,43,78,2,step.started
+f0999d4886bf446c95300610675af494,44,79,2,llm.request_started
+f0999d4886bf446c95300610675af494,45,80,2,llm.request_done
+f0999d4886bf446c95300610675af494,46,81,2,step.completed
+f0999d4886bf446c95300610675af494,47,82,,tool.prepared
+f0999d4886bf446c95300610675af494,48,83,,permission.requested
+f0999d4886bf446c95300610675af494,49,84,2,run.cancelled
+0e6eb81407ab46a285643f6c0e53a714,1,85,,run.queued
+0e6eb81407ab46a285643f6c0e53a714,2,86,,materials.imported
+0e6eb81407ab46a285643f6c0e53a714,3,87,1,run.started
+0e6eb81407ab46a285643f6c0e53a714,4,88,1,step.started
+0e6eb81407ab46a285643f6c0e53a714,5,89,1,llm.request_started
+0e6eb81407ab46a285643f6c0e53a714,6,90,1,llm.request_done
+0e6eb81407ab46a285643f6c0e53a714,7,91,1,step.completed
+0e6eb81407ab46a285643f6c0e53a714,8,92,,tool.prepared
+0e6eb81407ab46a285643f6c0e53a714,9,93,,tool.dispatched
+0e6eb81407ab46a285643f6c0e53a714,10,94,,tool.completed
+0e6eb81407ab46a285643f6c0e53a714,11,95,1,step.started
+0e6eb81407ab46a285643f6c0e53a714,12,96,1,llm.request_started
+0e6eb81407ab46a285643f6c0e53a714,13,97,1,llm.request_done
+0e6eb81407ab46a285643f6c0e53a714,14,98,1,step.completed
+0e6eb81407ab46a285643f6c0e53a714,15,99,,tool.prepared
+0e6eb81407ab46a285643f6c0e53a714,16,100,,tool.prepared
+0e6eb81407ab46a285643f6c0e53a714,17,101,,tool.dispatched
+0e6eb81407ab46a285643f6c0e53a714,18,102,,tool.dispatched
+0e6eb81407ab46a285643f6c0e53a714,19,103,,tool.completed
+0e6eb81407ab46a285643f6c0e53a714,20,104,,tool.completed
+0e6eb81407ab46a285643f6c0e53a714,21,105,1,step.started
+0e6eb81407ab46a285643f6c0e53a714,22,106,1,llm.request_started
+0e6eb81407ab46a285643f6c0e53a714,23,107,1,llm.request_done
+0e6eb81407ab46a285643f6c0e53a714,24,108,1,step.completed
+0e6eb81407ab46a285643f6c0e53a714,25,109,1,run.completed
+ca1d0fddd60e4bc6a5626793726e05d5,1,110,,run.queued
+ca1d0fddd60e4bc6a5626793726e05d5,2,111,1,run.started
+ca1d0fddd60e4bc6a5626793726e05d5,3,112,1,step.started
+ca1d0fddd60e4bc6a5626793726e05d5,4,113,1,llm.request_started
+ca1d0fddd60e4bc6a5626793726e05d5,5,114,1,llm.request_done
+ca1d0fddd60e4bc6a5626793726e05d5,6,115,1,step.completed
+ca1d0fddd60e4bc6a5626793726e05d5,7,116,1,tool.prepared
+ca1d0fddd60e4bc6a5626793726e05d5,8,117,1,tool.dispatched
+ca1d0fddd60e4bc6a5626793726e05d5,9,118,1,question.requested
+ca1d0fddd60e4bc6a5626793726e05d5,10,121,1,run.cancelled
+37c884c94b8b44138fa56424ee3ff01b,1,124,,run.queued
+37c884c94b8b44138fa56424ee3ff01b,2,125,1,run.started
+37c884c94b8b44138fa56424ee3ff01b,3,126,1,step.started
+37c884c94b8b44138fa56424ee3ff01b,4,127,1,llm.request_started
+37c884c94b8b44138fa56424ee3ff01b,5,128,1,llm.request_done
+37c884c94b8b44138fa56424ee3ff01b,6,129,1,step.completed
+37c884c94b8b44138fa56424ee3ff01b,7,130,1,tool.prepared
+37c884c94b8b44138fa56424ee3ff01b,8,131,1,tool.dispatched
+37c884c94b8b44138fa56424ee3ff01b,9,132,1,question.requested
+37c884c94b8b44138fa56424ee3ff01b,10,134,1,question.answered
+37c884c94b8b44138fa56424ee3ff01b,11,135,1,tool.completed
+37c884c94b8b44138fa56424ee3ff01b,12,136,1,step.started
+37c884c94b8b44138fa56424ee3ff01b,13,137,1,llm.request_started
+37c884c94b8b44138fa56424ee3ff01b,14,138,1,llm.request_done
+37c884c94b8b44138fa56424ee3ff01b,15,139,1,step.completed
+37c884c94b8b44138fa56424ee3ff01b,16,140,,tool.prepared
+37c884c94b8b44138fa56424ee3ff01b,17,141,,tool.dispatched
+37c884c94b8b44138fa56424ee3ff01b,18,142,,tool.completed
+37c884c94b8b44138fa56424ee3ff01b,19,143,1,step.started
+37c884c94b8b44138fa56424ee3ff01b,20,144,1,llm.request_started
+37c884c94b8b44138fa56424ee3ff01b,21,145,1,llm.request_done
+37c884c94b8b44138fa56424ee3ff01b,22,146,1,step.completed
+37c884c94b8b44138fa56424ee3ff01b,23,147,1,run.completed
+task_run_id,tool_name,path,prepared_count
+073d3fa69be7413a9da3546933d03845,write_file,"整理说明.md",1
+f0999d4886bf446c95300610675af494,write_file,"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default/清单.csv",1
+tool_name,pattern,effect
+write_file,/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default,allow
+global_seq,task_run_id,type,payload
+16,073d3fa69be7413a9da3546933d03845,permission.requested,"{""always_scope_preview"": ""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default"", ""input_hash"": ""0852e9c955a405ad4318fa8f2e79586d6d25dc5943161f07771f493a81b260a8"", ""options"": [""allow_once"", ""allow_always"", ""reject_once"", ""reject_always""], ""risk"": ""medium"", ""target"": ""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default/整理说明.md"", ""tool"": ""write_file"", ""tool_call_id"": ""call_8447e066873244afb20e0a59""}"
+17,073d3fa69be7413a9da3546933d03845,permission.resolved,"{""decision"": ""allow_always"", ""tool_call_id"": ""call_8447e066873244afb20e0a59""}"
+29,073d3fa69be7413a9da3546933d03845,run.interrupted,"{""reason"": ""backend_restart_reconciliation""}"
+30,073d3fa69be7413a9da3546933d03845,run.resumed,"{""attempt_id"": ""ceba5e0b23c842f696273fd69ac1dc7b"", ""attempt_no"": 2, ""context_fingerprint"": {""model_config"": {""api_key_sha256"": ""0ba9aead0a505412"", ""base_url"": ""https://open.bigmodel.cn/api/anthropic"", ""max_tokens"": 4096, ""model"": ""glm-5.3-flash""}, ""system_prompt_hash"": ""6542bde7edee036df799dca6eddf96c50e445c883f5c2c37ea016c4808cb15b5"", ""tools_schema_hash"": ""379c777a880da6c89ac50ebf06ca97e4086fa629ac79482fac3c5d5dd0147c29""}, ""resume_reason"": ""user_requested""}"
+43,f0999d4886bf446c95300610675af494,permission.requested,"{""always_scope_preview"": ""INBOX=\""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/inbox\""\nWS=\""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default\""\necho \""=== inbox 根目录 ===\""\nls -la \""$INBOX\""\necho \""\""\necho \""=== 文件|大小字节|修改时间|MD5 基线 ===\""\nfor f in \""$INBOX\""/*; do\n  [ -f \""$f\"" ] || continue\n  name=$(basename \""$f\"")\n  size=$(stat -f %z \""$f\"")\n  mtime=$(stat -f \""%Sm\"" -t \""%Y-%m-%d %H:%M:%S\"" \""$f\"")\n  md5=$(md5 -q \""$f\"")\n  echo \""$name|$size|$mtime|$md5\""\ndone\necho \""\""\necho \""=== 工作空间现状（副作用账本） ===\""\nls -la \""$WS\"""", ""input_hash"": ""6b13abb203e984a0861b5f3a5ae3f00f19ef772f1487f2648dbb0ee1e029e95e"", ""options"": [""allow_once"", ""allow_always"", ""reject_once"", ""reject_always""], ""risk"": ""medium"", ""target"": ""INBOX=\""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/inbox\""\nWS=\""/Users/yyhdbl/Desktop/workMate/agentcrew-de"", ""tool"": ""bash"", ""tool_call_id"": ""call_b2c3d1a266eb4ca1956746da""}"
+44,f0999d4886bf446c95300610675af494,permission.resolved,"{""decision"": ""allow_once"", ""tool_call_id"": ""call_b2c3d1a266eb4ca1956746da""}"
+52,f0999d4886bf446c95300610675af494,permission.requested,"{""always_scope_preview"": ""INBOX=\""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/inbox\""\ncd \""$INBOX\"" || exit 1\nmkdir -p pdf csv txt md no_extension\n\nmv \""Warehouse_盘点.pdf\"" \""meeting-brief.pdf\"" \""十月预算.pdf\"" \""采购单 003.pdf\"" pdf/ || exit 1\nmv \""clients October.csv\"" \""stock_20261001.csv\"" \""报销记录.csv\"" \""销售明细.csv\"" csv/ || exit 1\nmv \""field-notes.txt\"" \""todo 10月.txt\"" \""交接说明.txt\"" \""电话记录.txt\"" txt/ || exit 1\nmv \""Release Notes.md\"" \""会议纪要.md\"" \""操作指南.md\"" \""项目进度.md\"" md/ || exit 1\nmv \""DELIVERY_104\"" \""README\"" \""临时便签\"" \""库存核对\"" no_extension/ || exit 1\n\necho \""=== 移动完成，目录结构 ===\""\nfind . -mindepth 1 -maxdepth 1 | sort\necho \""\""\necho \""=== 移动后校验：文件|大小字节|修改时间|MD5（应与基线一致） ===\""\nfor f in pdf/* csv/* txt/* md/* no_extension/*; do\n  [ -f \""$f\"" ] || continue\n  size=$(stat -f %z \""$f\"")\n  mtime=$(stat -f \""%Sm\"" -t \""%Y-%m-%d %H:%M:%S\"" \""$f\"")\n  md5=$(md5 -q \""$f\"")\n  echo \""$f|$size|$mtime|$md5\""\ndone\necho \""\""\necho \""根目录剩余普通文件数：$(find . -maxdepth 1 -type f | wc -l | tr -d ' ')\"""", ""input_hash"": ""919dcac6eebe5e85319037e928deeabfaa0c2453009a3833a681b04681f62d77"", ""options"": [""allow_once"", ""allow_always"", ""reject_once"", ""reject_always""], ""risk"": ""medium"", ""target"": ""INBOX=\""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/inbox\""\ncd \""$INBOX\"" || exit 1\nmkdir -p pdf csv txt md n"", ""tool"": ""bash"", ""tool_call_id"": ""call_fb5479b909aa4e7ab5904fee""}"
+53,f0999d4886bf446c95300610675af494,permission.resolved,"{""decision"": ""allow_once"", ""tool_call_id"": ""call_fb5479b909aa4e7ab5904fee""}"
+70,f0999d4886bf446c95300610675af494,permission.requested,"{""always_scope_preview"": ""INBOX=\""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/inbox\""\nWS=\""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default\""\ncp \""$WS/清单.csv\"" \""$INBOX/清单.csv\"" || exit 1\n\necho \""=== 复制件一致性 ===\""\ndiff \""$WS/清单.csv\"" \""$INBOX/清单.csv\"" && echo \""两份清单完全一致\""\nmd5 -q \""$WS/清单.csv\""; md5 -q \""$INBOX/清单.csv\""\n\necho \""\""\necho \""=== inbox 最终结构 ===\""\nfind \""$INBOX\"" | sed \""s|$INBOX|inbox|\"" | sort\necho \""\""\necho \""各子文件夹文件数：\""\nfor d in pdf csv txt md no_extension; do\n  echo \""$d: $(find \""$INBOX/$d\"" -type f | wc -l | tr -d ' ')\""\ndone\n\necho \""\""\necho \""=== 清单行数（含表头应为 21 行，即 20 条记录） ===\""\nwc -l < \""$INBOX/清单.csv\""\n\necho \""\""\necho \""=== 实际文件大小 vs 清单记录 逐项比对 ===\""\nfail=0\ntail -n +2 \""$INBOX/清单.csv\"" | while IFS=, read -r name type path size; do\n  actual=$(stat -f %z \""$INBOX/$path\"")\n  if [ \""$actual\"" = \""$size\"" ]; then\n    echo \""OK  $path ($actual)\""\n  else\n    echo \""MISMATCH $path 清单=$size 实际=$actual\""\n  fi\ndone\n\necho \""\""\necho \""=== 修改时间抽查（应为 2026-10-01 10:18:39） ===\""\nfind \""$INBOX\"" -type f ! -name \""清单.csv\"" -exec stat -f \""%N %Sm\"" -t \""%Y-%m-%d %H:%M:%S\"" {} \\; | awk '{print ($4==\""10:18:39\""?\""OK \"":\""CHANGED\"") $0}' | head -25"", ""input_hash"": ""4c10f0b47891791b0a7a5cee892ecf5e65fefe209516bb3065fc2f61a194f8b4"", ""options"": [""allow_once"", ""allow_always"", ""reject_once"", ""reject_always""], ""risk"": ""medium"", ""target"": ""INBOX=\""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/inbox\""\nWS=\""/Users/yyhdbl/Desktop/workMate/agentcrew-de"", ""tool"": ""bash"", ""tool_call_id"": ""call_1f799107221741f79d713154""}"
+71,f0999d4886bf446c95300610675af494,permission.resolved,"{""decision"": ""allow_once"", ""tool_call_id"": ""call_1f799107221741f79d713154""}"
+76,f0999d4886bf446c95300610675af494,run.interrupted,"{""reason"": ""backend_restart_reconciliation""}"
+77,f0999d4886bf446c95300610675af494,run.resumed,"{""attempt_id"": ""915751ffde374b01ae5ec2d6a02cb1c9"", ""attempt_no"": 2, ""context_fingerprint"": {""model_config"": {""api_key_sha256"": ""0ba9aead0a505412"", ""base_url"": ""https://open.bigmodel.cn/api/anthropic"", ""max_tokens"": 4096, ""model"": ""glm-5.3-flash""}, ""system_prompt_hash"": ""7ced4249fbb9bb6cbf6dab0ec8ee5a889ff910454235e3339b7bd937cb2a6831"", ""tools_schema_hash"": ""379c777a880da6c89ac50ebf06ca97e4086fa629ac79482fac3c5d5dd0147c29""}, ""resume_reason"": ""user_requested""}"
+83,f0999d4886bf446c95300610675af494,permission.requested,"{""always_scope_preview"": ""INBOX=\""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/inbox\""\necho \""=== 全部 20 个原文件的修改时间去重（只应有一个值） ===\""\nfind \""$INBOX\"" -type f ! -name \""清单.csv\"" -exec stat -f \""%Sm\"" -t \""%Y-%m-%d %H:%M:%S\"" {} \\; | sort -u\necho \""\""\necho \""=== 全部 20 个原文件的 MD5 去重计数核对（与移动前基线一致） ===\""\nfind \""$INBOX\"" -type f ! -name \""清单.csv\"" -exec md5 -q {} \\; | sort | md5\necho \""基线合计 MD5：\""\nprintf '%s\\n' e1493e28650f1ece538ed69dec12cab9 6db0080fdaaf0a4a2e88d5aec7386c28 7cb29ab93cb29a28068bdc1da36480d0 7127b0dd6b5178f98fa122d4179cfe5f e07a592e8b4be0acadd0a0e4258d2dd2 5734cc50a84ef471b6b407fd6b108715 771e0b556db09aa9b643f329d3e0f895 d8fe7489347db41c467a45107c8a9ff9 2f9bd4bbb48f5d883f55188413a3fd4e eec44ad2111fd5bdd3ae36937d30fd74 ac64cd20352a0f58b8a799538ae1ab74 372dfc67c162265835bd3a63c2d4ce26 4b41f60bd030f23ef08b73c219ab37b5 242867972bb536aa56a5cb4163fdf4b4 96a50bb6a76a3896bef6318a9e0fa57a 06d59fdca7b463cd63850ef3256bf793 7a1281fd2da7944b651f3b6a9c244b49 d213ed8b055002be4323e6af65cd834a c6b7316b10422419faea64df025ddfaf 1ec9ee6041a5b96ecfbefad83586df4d | sort | md5\necho \""\""\necho \""=== 工作空间与 inbox 根的清单确认 ===\""\nls -l \""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default/清单.csv\"" \""$INBOX/清单.csv\"""", ""input_hash"": ""fde163ef87ff6b1ca8b1fea4514fb9969831c10eaaf3ffb8cad330e6be5b7e1c"", ""options"": [""allow_once"", ""allow_always"", ""reject_once"", ""reject_always""], ""risk"": ""medium"", ""target"": ""INBOX=\""/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/inbox\""\necho \""=== 全部 20 个原文件的修改时间去重（只应有一个值） ===\""\nfind \"""", ""tool"": ""bash"", ""tool_call_id"": ""call_72649900ae2b483ba99f9f7f""}"
+84,f0999d4886bf446c95300610675af494,run.cancelled,{}
+121,ca1d0fddd60e4bc6a5626793726e05d5,run.cancelled,{}
+type,event_count
+llm.request_done,4
+llm.request_started,4
+question.answered,1
+question.requested,2
+queue.item_cancelled,1
+queue.item_enqueued,2
+queue.paused,1
+queue.resumed,1
+run.cancelled,1
+run.completed,1
+run.queued,2
+run.started,2
+step.completed,4
+step.started,4
+tool.completed,2
+tool.dispatched,3
+tool.prepared,3
+id,status,instruction
+ca1d0fddd60e4bc6a5626793726e05d5,cancelled,"必须调用 ask_user 提问“C12 排队验收等待”，等待我的回答后再回复。"
+37c884c94b8b44138fa56424ee3ff01b,completed,"必须调用 ask_user 提问“C12 队首已继续”，等待我的回答；回答后使用 read_file 读取工作空间的 整理说明.md 并报告内容。"
+role,message_count
+assistant,1
+user,3
+global_seq,type,payload
+110,run.queued,"{""client_request_id"": ""05e8b89b-8f00-4589-b24a-7cfb9df5ec8c"", ""instruction"": ""必须调用 ask_user 提问“C12 排队验收等待”，等待我的回答后再回复。""}"
+119,queue.item_enqueued,"{""client_request_id"": ""1f78b222-469f-4ec7-a7f3-bf742a5637a3"", ""item_id"": ""e335e084a2674d0ba67717e4df29e00c"", ""text"": ""必须调用 ask_user 提问“C12 队首已继续”，等待我的回答；回答后使用 read_file 读取工作空间的 整理说明.md 并报告内容。""}"
+120,queue.item_enqueued,"{""client_request_id"": ""794b042f-170d-4c7f-9064-f2267eeaa7ae"", ""item_id"": ""a1836e4eeafc46ebb6eaae30d5d079a4"", ""text"": ""请读取工作空间 清单.csv 并报告条目数量。""}"
+122,queue.paused,{}
+123,queue.resumed,{}
+124,run.queued,"{""client_request_id"": ""1f78b222-469f-4ec7-a7f3-bf742a5637a3"", ""instruction"": ""必须调用 ask_user 提问“C12 队首已继续”，等待我的回答；回答后使用 read_file 读取工作空间的 整理说明.md 并报告内容。"", ""queue_item_id"": ""e335e084a2674d0ba67717e4df29e00c""}"
+133,queue.item_cancelled,"{""item_ids"": [""a1836e4eeafc46ebb6eaae30d5d079a4""]}"

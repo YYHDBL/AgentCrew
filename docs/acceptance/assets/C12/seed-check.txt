@@ -1,0 +1,4 @@
+生成 20 个文件：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-intermediate/seed-check/data/demo/inbox
+核验通过：20 个真实文件、五种类型、内容与 SHA-256 一致
+生成 20 个文件：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-intermediate/seed-check/data/demo/inbox
+核验通过：20 个真实文件、五种类型、内容与 SHA-256 一致

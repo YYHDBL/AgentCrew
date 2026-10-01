@@ -1,0 +1,63 @@
+{
+  "originals_unchanged": true,
+  "successful_imports": 3,
+  "failed_imports": 1,
+  "scope": {
+    "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default",
+    "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/conversations/f89401b88db4449899a0c124ab1ae146/materials",
+    "folders": []
+  },
+  "files": [
+    {
+      "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/material-input/十月预算.pdf",
+      "size_bytes": 1691,
+      "mtime_ns": 1790821480726639179,
+      "sha256": "321ddce597b93d7205b6a92ad1dc9df68516b8d82c0f6116f34bec2f5796b0ba",
+      "imported_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/conversations/f89401b88db4449899a0c124ab1ae146/materials/十月预算.pdf",
+      "imported_matches": true
+    },
+    {
+      "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/material-input/电话记录.txt",
+      "size_bytes": 745,
+      "mtime_ns": 1790821480733546295,
+      "sha256": "af85d81e39f4e1d60cb4945d314e5a9430cadf32ee09539ef106a22489be2d2b",
+      "imported_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/conversations/f89401b88db4449899a0c124ab1ae146/materials/电话记录.txt",
+      "imported_matches": true
+    },
+    {
+      "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/material-input/销售明细.csv",
+      "size_bytes": 1026,
+      "mtime_ns": 1790821480730133612,
+      "sha256": "1ebcf08cf78d4bbd14941f8f070e5769738476afbc568e6424e20877d468806a",
+      "imported_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/conversations/f89401b88db4449899a0c124ab1ae146/materials/销售明细.csv",
+      "imported_matches": true
+    }
+  ],
+  "material_records": [
+    {
+      "original_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/material-input/电话记录.txt",
+      "stored_name": "电话记录.txt",
+      "size_bytes": 745,
+      "error": null
+    },
+    {
+      "original_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/material-input/销售明细.csv",
+      "stored_name": "销售明细.csv",
+      "size_bytes": 1026,
+      "error": null
+    },
+    {
+      "original_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/material-input/十月预算.pdf",
+      "stored_name": "十月预算.pdf",
+      "size_bytes": 1691,
+      "error": null
+    },
+    {
+      "original_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/missing-selection/待导入便签.txt",
+      "stored_name": "",
+      "size_bytes": null,
+      "error": "文件不存在：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/missing-selection/待导入便签.txt"
+    }
+  ],
+  "missing_path_method": "原生选择真实文件后，将文件移动到 retained-source；发送时原路径确实不存在，文件内容保留。"
+}

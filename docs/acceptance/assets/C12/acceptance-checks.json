@@ -1,0 +1,58 @@
+{
+  "files_verified": 20,
+  "total_source_bytes": 89356,
+  "task_sequences_and_projections_consistent": true,
+  "runs": [
+    {
+      "id": "073d3fa69be7413a9da3546933d03845",
+      "status": "completed",
+      "event_count": 35,
+      "llm_count": 4,
+      "tool_count": 3
+    },
+    {
+      "id": "f0999d4886bf446c95300610675af494",
+      "status": "cancelled",
+      "event_count": 49,
+      "llm_count": 6,
+      "tool_count": 5
+    },
+    {
+      "id": "0e6eb81407ab46a285643f6c0e53a714",
+      "status": "completed",
+      "event_count": 25,
+      "llm_count": 3,
+      "tool_count": 3
+    },
+    {
+      "id": "ca1d0fddd60e4bc6a5626793726e05d5",
+      "status": "cancelled",
+      "event_count": 10,
+      "llm_count": 1,
+      "tool_count": 1
+    },
+    {
+      "id": "37c884c94b8b44138fa56424ee3ff01b",
+      "status": "completed",
+      "event_count": 23,
+      "llm_count": 3,
+      "tool_count": 2
+    }
+  ],
+  "queue_counts_verified": true,
+  "paused_snapshots_identical": true,
+  "organize_run_completed": false,
+  "shared_test_files_identical": true,
+  "results": [
+    false,
+    true,
+    false,
+    false,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "pass_count": 6
+}

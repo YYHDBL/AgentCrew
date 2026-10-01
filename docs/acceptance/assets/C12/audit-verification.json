@@ -1,0 +1,23 @@
+{
+  "internal": {
+    "ok": true,
+    "broken_at_seq": null,
+    "reason": null,
+    "checked_count": 23
+  },
+  "with_anchor": {
+    "ok": true,
+    "broken_at_seq": null,
+    "reason": null,
+    "checked_count": 23
+  },
+  "anchor": {
+    "seq": 23,
+    "hash": "41f015d9371b5fe7829c8ca06eecc0eab7dafd5e192922f37e03e9365f0fa1f7"
+  },
+  "database_head": {
+    "seq": 23,
+    "hash": "41f015d9371b5fe7829c8ca06eecc0eab7dafd5e192922f37e03e9365f0fa1f7"
+  },
+  "anchor_source": "Electron 正常退出时由后端写入，验收未调用 snapshot_chain_head"
+}
