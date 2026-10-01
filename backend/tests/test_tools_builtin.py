@@ -128,9 +128,9 @@ def test_write_file_rejects_protected_and_out_of_scope(scheduler, env, tmp_path)
                              "content": "hack"}, env))
     assert not result.ok and result.error.startswith("PROTECTED_PATH")
     _, result2 = run(_invoke(scheduler, "write_file",
-                             {"path": "/tmp/c5-outside.txt", "content": "x"}, env))
+                             {"path": str(tmp_path / "c5-outside.txt"), "content": "x"}, env))
     assert not result2.ok and result2.error.startswith("OUT_OF_SCOPE")
-    assert not Path("/tmp/c5-outside.txt").exists()
+    assert not (tmp_path / "c5-outside.txt").exists()
 
 
 # ── bash ──────────────────────────────────────────────────────────

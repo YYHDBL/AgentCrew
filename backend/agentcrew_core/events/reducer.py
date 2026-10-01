@@ -18,7 +18,10 @@ can_cancel / can_continue_queue 前端直接调用。全部无副作用、可参
   question.requested / question.answered  同上，计数器增减（同任务校验）
   run.completed / run.failed   starting|running → idle（计数清零）
   run.cancelled         starting|running → idle；队列有 queued 项 →
-                        queue_paused = 1（§4：用户停止后不自动接续）
+                        queue_paused = 1（§4：用户停止后不自动接续）。
+                        C9 起 idle 也合法：显式放弃 interrupted/
+                        waiting_verification 任务（无 live runner，对账后
+                        FSM 已回 idle）——同样套用队列暂停规则
   run.interrupted       starting|running|error → idle（重启对账收敛）
   queue.paused / queue.resumed   任意状态置 / 清 queue_paused（幂等）
   queue.item_enqueued   任意状态追加排队项
@@ -164,7 +167,7 @@ def reduce(state: ConversationState, event: Event) -> ConversationState:
         return _finish(state)
 
     if t == RunEventType.RUN_CANCELLED:
-        if state.state not in ("starting", "running"):
+        if state.state not in ("starting", "running", "idle"):
             raise InvalidTransition("run.cancelled", state)
         nxt = _finish(state)
         if nxt.queued_items:

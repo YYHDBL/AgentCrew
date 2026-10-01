@@ -181,7 +181,8 @@ def test_stale_resolution_does_not_pollute_next_task():
     (lambda: ev(T.PERMISSION_REQUESTED), "starting"),
     (lambda: ev(T.QUESTION_REQUESTED), "idle"),
     (lambda: ev(T.RUN_COMPLETED), "idle"),
-    (lambda: ev(T.RUN_CANCELLED), "idle"),
+    # run.cancelled from idle 自 C9 起合法（显式放弃 interrupted/
+    # waiting_verification 任务）——新语义见 test_c9_recovery
     (lambda: ev(T.RUN_INTERRUPTED), "idle"),
 ])
 def test_invalid_transitions_raise(event_factory, before):

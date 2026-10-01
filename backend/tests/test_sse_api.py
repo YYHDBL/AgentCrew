@@ -260,6 +260,14 @@ def test_slow_consumer_gets_resync_then_catches_up(tmp_path):
     估计——Linux 大 sndbuf 下固定 600 条灌不满，外审回稿 S14）→ 收到
     event:resync（游标 = 实际送达的最后一条）→ 服务端终止连接 →
     从游标重连恰好补齐。
+
+    C9 加固为确定性断言（真实背压法，历史三次时序 flake）：
+    - 等生成器进入实时段不再用固定 sleep，而是轮询订阅的
+      last_sent_global_seq——历史补播真实送达后才开始灌发布（否则
+      生成器晚启动时首轮 append 就溢出，断言游标依赖偶然时序）；
+    - 结束读取以**协议事实**为准（chunked 终止块 0\\r\\n\\r\\n 到达即停），
+      不再用 1.5s 时钟窗口等 FIN（keep-alive 下 FIN 本来就不来，重载
+      机器上终止块晚到会被窗口吃掉）。
     """
     srv = LiveServer(
         tmp_path, bus_kwargs={"max_queue": 20, "hard_kill_grace": 30.0}
@@ -274,7 +282,16 @@ def test_slow_consumer_gets_resync_then_catches_up(tmp_path):
             f"GET /api/conversations/{CONV}/stream?from=0 HTTP/1.1\r\n"
             f"Host: x\r\nAuthorization: Bearer {TOKEN}\r\n\r\n".encode()
         )
-        time.sleep(0.3)  # 让历史段与初期帧把内核缓冲灌满、生成器停摆
+        # 等历史段真实送达（订阅游标推进到 3）——生成器确定已进实时段
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            if any(getattr(sub, "last_sent_global_seq", 0) >= 3
+                   for sub in srv.bus._subs):
+                break
+            time.sleep(0.05)
+        else:
+            raise AssertionError("历史补播未在期限内送达（环境异常）")
+
         total_live = 0
         overflowed = False
         deadline = time.monotonic() + 20
@@ -289,7 +306,7 @@ def test_slow_consumer_gets_resync_then_catches_up(tmp_path):
         assert overflowed, \
             f"发布 {total_live} 条仍未触发队列溢出——环境无法制造背压，断言无意义"
 
-        raw.settimeout(5)
+        raw.settimeout(10)
         chunks = b""
         try:
             while True:
@@ -297,27 +314,16 @@ def test_slow_consumer_gets_resync_then_catches_up(tmp_path):
                 if not part:
                     break
                 chunks += part
-                if b"event: resync" in chunks:
-                    # 流终止的服务端可见语义：resync 之后不再有任何数据帧
-                    #（uvicorn 把空闲 socket 留在 keep-alive 池 ~5s，FIN 晚于流结束）
-                    raw.settimeout(1.5)
-                    try:
-                        while True:
-                            tail = raw.recv(65536)
-                            if not tail:
-                                break
-                            chunks += tail
-                    except socket.timeout:
-                        pass
-                    break
+                if b"event: resync" in chunks and b"0\r\n\r\n" in chunks:
+                    break  # 协议级终止块已到，流完整收尾（不等 FIN）
         except socket.timeout:
             pass
         raw.close()
         text = chunks.decode("utf-8", errors="replace")
         assert "event: resync" in text, "慢消费者应收到 resync 帧"
+        assert b"0\r\n\r\n" in chunks, "响应流应以 chunked 终止块结束（服务端终止的协议级证据）"
         _, _, after_resync = text.partition("event: resync")
         assert '"global_seq"' not in after_resync, "resync 后不应再有数据帧（流已终止）"
-        assert b"0\r\n\r\n" in chunks, "响应流应以 chunked 终止块结束（服务端终止的协议级证据）"
 
         lines = text.splitlines()
         data_seqs, resync_data, current_event = [], None, None
