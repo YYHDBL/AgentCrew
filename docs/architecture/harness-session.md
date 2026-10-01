@@ -2,6 +2,7 @@
 
 > 模块深潜 #1 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（D1–D5 全部对齐）**
 > 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)。本文档粒度到"可以直接写代码"。
+> M1 生命周期与数据字段依据：[ADR-011](../decisions/ADR-011-memory-lifecycle.md)，接口使用 [OpenAPI v0.4](../contracts/openapi.yaml)。后台作业与前台任务分别持久化，恢复使用冻结快照及有效压缩检查点。
 > **v1.8（2026-09-30，C8 二轮外审）**：§6.2 补交互原语豁免条款（ask_user 不参与副作用核验，中断结局=未获回答，C9 合成占位）。
 > **v1.4（2026-09-30，对齐产品 F001–F010）**：新增任务材料与访问范围（task_materials + 任务级 scope 判定）、**排队暂停语义修订**（用户停止 → 队列暂停而非自动顶上；completed/failed 才自动接续——修订 D5 原义）、待核验结果提交（verification API）、产物投影与状态探测（artifacts 表）、审批 pending 列表与 always_scope_preview。接口全量见 [contracts/openapi.yaml](../contracts/openapi.yaml) v0.2。
 
@@ -92,7 +93,7 @@ global_seq INTEGER PRIMARY KEY AUTOINCREMENT,  -- 全局单调游标（会话级
 id TEXT UNIQUE,
 task_run_id FK NULL,                  -- 可空：会话域事件（queue.*，F006）无任务锚点（v2 迁移放开，C7）
 seq INT, UNIQUE(task_run_id, seq),    # seq 任务内单调递增（任务事件）；会话域事件 seq 恒 0
-conversation_id FK,                        -- 冗余，方便按会话拉流
+conversation_id FK NULL,                   -- 会话/任务事件必填；M1 跨会话管理事件可空，payload.scope 记录范围
 agent_run_id TEXT NULL,                    -- M5 多 Agent 预留位
 attempt_no INT,
 type TEXT,                                 -- 事件类型枚举（见 §3）
@@ -147,9 +148,15 @@ created_at, updated_at
 | **执行事件**（run_events） | 任务执行过程的一切事实 | append-only；**事件载荷必须携带重建模型上下文所需的全文**：`LLM_REQUEST_DONE` 含完整回复文本；`TOOL_COMPLETED` 含完整工具输出（内联上限 32KB，超出落 artifact 文件并在事件中留指针——**工件文件随任务存活，不得删除**，重建时按需读取）；用户指令原文入 `RUN_QUEUED` 载荷 |
 | **投影表**（messages/steps/llm_calls/tool_calls） | 查询加速视图 | 全部可从执行事件 + 工件重建；messages 只存用户消息与最终回复属于**投影裁剪**，不是事实源 |
 | **业务状态表**（grant/规则/角色/记忆/cron/连接器） | 各领域权威状态 | **不从 run_events 重建**，各有自己的账本（memory_ledger、审计链、cron_job_runs）；事件流里只有它们的变更事件 |
-| **上下文恢复** | resume 的重建依据 | = 执行事件（全文 + 工件）；M1 压缩生效后，`CONTEXT_COMPACTED` 的摘要成为替代旧消息的持久内容 |
+| **上下文恢复** | resume 的重建依据 | 首次会话三库及 Skill 索引冻结并持久化；M1 压缩后使用最近有效检查点内的摘要、保留消息及后续事件，核对快照身份与工件 SHA，再核对副作用账本。禁止重新填入全部压缩前历史；检查点损坏明确报错。 |
 
 **会话级游标**：`global_seq`（事件表自增主键）跨任务稳定有序，供会话聚合 SSE 使用；任务内 `seq` 保持不变。
+
+### 2.4 M1 业务与辅助执行对象
+
+三库及 Skill 的业务修订、metadata、持久化 change_id 意图和 append-only 账本由 M1-02/M1-05 维护；会话唯一快照由 M1-03 创建并在所有后续任务及恢复中复用。独立后台作业、模型/工具调用、审批和唯一任务摘要由 M1-06/M1-09 保存。触发计数和去重水位以真实发送事件及含工具的模型完成事件驱动，同事务更新，重试与恢复不能重复触发。压缩检查点与 context.compacted 同事务追加。完整字段、唯一性、状态机与迁移卡片见 [ADR-011](../decisions/ADR-011-memory-lifecycle.md#持久化对象及唯一约束)。
+
+后台使用 `job_id`，其来源任务放在 `source_task_run_id`。后台事件使用会话或范围事件与全局游标；前台 reducer 忽略后台审批及状态，界面单独显示作业。前台发送（包括排队）立即取消 aux 和待审批作业，两秒内关闭模型流并完成取消；已准备变更使用意图恢复协议提交完整状态。后台失败不能更改已完成前台任务。
 
 ---
 
@@ -363,7 +370,7 @@ M0 内置工具 = **五件套**（v1.7：核心四件套 + ask_user 交互原语
 
 **用户点"恢复"**（前置：无 `pending_verification` 调用，否则 409 并返回清单——F003）：
 1. 新建 `RunAttempt(kind=resume, resume_reason=...)`
-2. 从 `run_events` 重放重建完整消息上下文（事件载荷含回复全文与工具输出，超限部分读工件——见 §2.3 持久化契约）
+2. 校验会话冻结快照、最近有效压缩检查点和工件；读取检查点持久化摘要与保留消息，再重放其来源水位之后的 `run_events`，无检查点时重放原始事件。工具请求/结果完整配对；压缩前事件继续供回查，恢复不得重新填入已被摘要替代的历史。
 3. 注入两段系统提示：副作用账本（"你已执行：整理了 1-30 号发票写入 half.xlsx；结果不明：调用过 send_mail"）+ 恢复指令（"任务中断于第 31 张，请决定如何继续"）
 4. 幂等钥匙自动拦截重复副作用（§6.2）
 5. 发 `RUN_RESUMED`，进入正常循环

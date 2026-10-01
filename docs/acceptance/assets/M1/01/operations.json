@@ -1,0 +1,132 @@
+{
+  "path_count": 44,
+  "memory_operation_count": 18,
+  "operations": [
+    {
+      "path": "/api/memory/stores/{store_type}/{store_id}",
+      "method": "get",
+      "operation_id": "readMemoryStore",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-02"
+    },
+    {
+      "path": "/api/memory/stores/{store_type}/{store_id}",
+      "method": "post",
+      "operation_id": "createMemoryEntry",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-02"
+    },
+    {
+      "path": "/api/memory/stores/{store_type}/{store_id}/entries/{entry_hash}",
+      "method": "patch",
+      "operation_id": "editMemoryEntry",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-02"
+    },
+    {
+      "path": "/api/memory/stores/{store_type}/{store_id}/entries/{entry_hash}",
+      "method": "delete",
+      "operation_id": "archiveMemoryEntry",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-02"
+    },
+    {
+      "path": "/api/memory/stores/{store_type}/{store_id}/entries/{entry_hash}/{action}",
+      "method": "post",
+      "operation_id": "changeMemoryEntryState",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-02"
+    },
+    {
+      "path": "/api/memory/stores/{store_type}/{store_id}/entries/{entry_hash}/review",
+      "method": "post",
+      "operation_id": "reviewMemoryEntry",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-03"
+    },
+    {
+      "path": "/api/memory/ledger",
+      "method": "get",
+      "operation_id": "listMemoryLedger",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-02"
+    },
+    {
+      "path": "/api/memory/ledger/{id}/rollback",
+      "method": "post",
+      "operation_id": "restoreMemoryLedger",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-02"
+    },
+    {
+      "path": "/api/memory/search",
+      "method": "get",
+      "operation_id": "searchMemory",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-04"
+    },
+    {
+      "path": "/api/memory/skills",
+      "method": "get",
+      "operation_id": "listMemorySkills",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-05"
+    },
+    {
+      "path": "/api/memory/skills",
+      "method": "post",
+      "operation_id": "createMemorySkill",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-05"
+    },
+    {
+      "path": "/api/memory/skills/{id}/file",
+      "method": "get",
+      "operation_id": "readMemorySkillFile",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-05"
+    },
+    {
+      "path": "/api/memory/jobs",
+      "method": "get",
+      "operation_id": "listMemoryJobs",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-09"
+    },
+    {
+      "path": "/api/memory/jobs/{id}",
+      "method": "get",
+      "operation_id": "readMemoryJob",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-09"
+    },
+    {
+      "path": "/api/memory/jobs/{id}/cancel",
+      "method": "post",
+      "operation_id": "cancelMemoryJob",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-09"
+    },
+    {
+      "path": "/api/memory/jobs/{id}/approvals/{approval_id}",
+      "method": "post",
+      "operation_id": "decideMemoryJobApproval",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-09"
+    },
+    {
+      "path": "/api/memory/curate/run",
+      "method": "post",
+      "operation_id": "startMemoryCurator",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-10"
+    },
+    {
+      "path": "/api/memory/stream",
+      "method": "get",
+      "operation_id": "streamMemoryEvents",
+      "implementation_card": "M1-11",
+      "domain_card": "M1-09"
+    }
+  ]
+}

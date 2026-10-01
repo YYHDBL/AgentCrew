@@ -1,0 +1,27 @@
+{
+  "session_id": "m1-model-validation-cd5f6310d81d463fa809fbb27fd98d71",
+  "slots": [
+    {
+      "slot": "main",
+      "model": "deepseek-v4.1-flash",
+      "provider": "openai-compatible",
+      "validated_at": "2026-10-01T08:55:19.747458+00:00",
+      "input_tokens": 16,
+      "output_tokens": 24,
+      "response_sha256": "17f1ed6b09feacaf3770418e866d51e59a8c07f42cc1932b687c7702933d8da1",
+      "text_characters": 43,
+      "event_count": 13
+    },
+    {
+      "slot": "aux",
+      "model": "deepseek-v4.1-flash",
+      "provider": "openai-compatible",
+      "validated_at": "2026-10-01T08:55:23.315955+00:00",
+      "input_tokens": 16,
+      "output_tokens": 23,
+      "response_sha256": "c015ae3abc38cd01f3aa7d314124796e33e973c9ff322aad7329a7e3346941fd",
+      "text_characters": 43,
+      "event_count": 13
+    }
+  ]
+}

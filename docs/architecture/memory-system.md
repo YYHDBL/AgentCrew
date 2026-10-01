@@ -1,6 +1,6 @@
 # 03 · Memory 系统详设
 
-> 模块深潜 #2 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（M1–M3 对齐，其余技术细节直接设计）**
+> 模块深潜 #2 ｜ 更新日期：2026-10-01 ｜ 状态：**已定稿；实施契约见 ADR-011 与 OpenAPI v0.4**
 > 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)（Q12 全项 Memory + hermes 蓝图）、[02-Harness与Session事件模型](./harness-session.md)（事件与循环挂钩点）
 > 参考源码：`workMate/hermes-agent/`（Python，源码级）
 
@@ -31,7 +31,7 @@ data/
     # v1.1：来源与依据必填——管理页能回答"这条记忆从哪来"；高风险事实 needs_review=true
 ```
 
-- **条目格式**：markdown 文件内用 `§` 分隔条目（hermes 同款）；sidecar 按条目首行哈希对齐元数据
+- **条目格式**：Markdown 文件内用独立段落 `§` 分隔条目，使用成熟 Markdown 库识别，代码块中的符号保留正文语义。稳定 `entry_id` 和首行 SHA-256 关联 metadata，首行编辑保留稳定身份。整库修订和完整校验值遵循 [ADR-011](../decisions/ADR-011-memory-lifecycle.md)。
 - **限额（默认，可配置）**：USER ≈ 1,400 字符；工作区 MEMORY ≈ 2,200 字符；soul ≈ 2,700 字符（入职生成的首版约占一半，留成长空间）
 - **超限纪律**：`memory_write` 工具在超限时**拒绝写入并返回现有条目清单**，逼模型当场合并/删减再重试；每回合最多 3 次失败后返回"本次跳过保存"——记忆永不阻塞用户回复
 
@@ -58,7 +58,7 @@ data/
 
 **触发**（确定性计数器，不做内容判断）：每 **10 个用户回合** → 记忆提炼；每 **15 次工具迭代** → skill 审查。回合结束、回复已交付后执行；**前台优先**——用户发新消息 2 秒内取消 fork。
 
-**执行**：fork 一个 aux 槽（GLM flash）agent，重放本回合对话快照，只给白名单工具：`memory_write`（三库）/ `skill_patch` / `session_search`（只读）/ `read_file`（只读）。无 terminal、无写文件。
+**执行**：使用当前配置的 aux 槽运行独立后台 agent，输入近期原文和历史摘要，只给白名单工具：`memory_write`（三库）/ `skill_patch` / `session_search`（只读）/ `read_file`（只读）。Skill 的受控读取通过 skill_patch 的 read 动作登记修订，前台按需阅读沿用 skill_view。作业、模型流和审批的独立身份及取消协议见 [ADR-011](../decisions/ADR-011-memory-lifecycle.md)。
 
 **三库路由**（写进 fork 的提示词）：
 
@@ -86,7 +86,7 @@ data/
 | 区块 | 预算 |
 |---|---|
 | system prompt（三库快照 + skill 索引 + 工具声明） | ≤ 15% |
-| 对话历史（含任务摘要块） | 剩余的 60% |
+| 对话历史（含任务摘要块） | 模型窗口的 60% |
 | 工具结果 + 预留给模型输出 | ≥ 25% |
 
 **压缩管线**（阈值：历史预算占用 ≥ 80% 触发，循环挂钩点=模型请求前）：
@@ -117,7 +117,7 @@ data/
 ## 8. Skill（程序性记忆，记忆侧）
 
 - **三级渐进披露**：system prompt 常驻**只有索引**（名字 + ≤60 字符描述——超限部分永远不被路由）；`skill_view(name)` 载全文；`skill_view(name, file=references/…)` 载支撑文件
-- **AI 自写/自改**：`skill_patch` 工具（create/patch/edit），**read-before-write 强制**（本回合必须先 skill_view 过）；变更走 append-only skill 账本
+- **AI 自写/自改**：`skill_patch` 工具（create/patch/edit），**read-before-write 强制**。前台本用户回合先通过 skill_view 读取正文和修订；后台使用白名单内 skill_patch 的 read 动作，记录同一作业、用户回合、Skill 和读取修订。新建先读取同范围同名称目标的不存在状态，写入时仍需校验未被并发创建。变更使用 append-only 账本。
 - **反熵增**（写进提示词）：skill 是"类级指令库"不是事件日志——必须可泛化 + 一句机理；禁止 PR 号/日期/一次性细节；同一教训只留一条；宁可扩展已有 skill 不建重复
 - 遗忘同 §7；版本与授权（grant）归治理模块（docs/04）
 - `/learn` 等价物：用户在会话里说"把这个流程存成技能"→ 走提炼 fork 的 skill 分支
@@ -128,11 +128,13 @@ data/
 ```
 id PK, store_type(user|workspace|soul|skill), store_id,
 action(create|update|archive|restore|pin|rollback),
-before_text NULL, after_text NULL, actor(user|agent|curator|system),
+change_id UNIQUE, before_text NULL, after_text NULL,
+before_metadata JSON, after_metadata JSON, before_files JSON, after_files JSON,
+actor(user|agent|curator|system), source JSON, restored_ledger_id NULL,
 task_run_id NULL, created_at
 ```
 
-- 任何一次变更都可从账本回滚（恢复 before_text）；管理页提供时间线 + 回滚按钮
+- 任何一次变更都可从账本恢复 before_text、before_metadata 和支撑文件，恢复追加新记录；管理页提供时间线与“恢复此次变更前内容”操作。完整 change_id 意图、同目录原子替换和启动恢复按 [ADR-011](../decisions/ADR-011-memory-lifecycle.md) 执行。
 - soul 的每次演化都在账本里——"小文的成长记录"本身就是演示素材
 
 ## 10. 管理页（记忆管理，Cowork 侧栏 + 员工档案页）
@@ -141,15 +143,18 @@ task_run_id NULL, created_at
 
 ## 11. API 增量
 
-```
-GET    /api/memory/user | workspace/:id | agent/:id/soul     读库（含 sidecar 元数据）
-PATCH  /api/memory/.../entries/:hash                        编辑条目
-POST   /api/memory/.../pin | archive | restore              状态操作
-DELETE /api/memory/.../entries/:hash                        删除（归档式）
-GET    /api/memory/ledger?store=                            账本
-POST   /api/memory/ledger/:id/rollback                      回滚
-POST   /api/memory/curate/run                               手动触发治理（演示用）
-```
+统一接口定义见 [OpenAPI v0.4](../contracts/openapi.yaml)。三库与 Skill 使用 `/api/memory/stores/{store_type}/{store_id}`，`user/owner`、`workspace/<workspace_id>`、`soul/<agent_id>` 表示三个库。正文新建/编辑、归档式删除、固定/取消固定、恢复和人工审核使用条目哈希、预期整库修订及唯一 change_id；账本恢复追加完整前后状态。Skill 索引、支撑文件、中文检索、后台作业、独立审批、手动治理与范围事件订阅均有完整请求及响应 schema。
+
+| 接口能力 | 领域实施 | HTTP 及界面验收 |
+|---|---|---|
+| 库与条目、状态、完整账本及恢复 | M1-02 | M1-11、M1-12 |
+| 人工审核及原文管理 | M1-03 | M1-11、M1-12 |
+| 检索与作用域分页 | M1-04 | M1-11、M1-13 |
+| Skill 索引、正文与支撑文件 | M1-05 | M1-11、M1-12 |
+| 摘要、后台状态、取消、独立审批和事件续播 | M1-06、M1-09 | M1-11、M1-12 |
+| 启动及手动确定性治理、归档报告 | M1-10 | M1-11、M1-12 |
+
+所有操作复用本地 Bearer 鉴权和现有身份范围。分页上限200，游标绑定作用域并排他；写入源身份由服务建立。错误使用既有 error 信封：401 `UNAUTHORIZED`、403 `OUT_OF_SCOPE`、404 `NOT_FOUND`、422 `VALIDATION_ERROR`，409 为 `REVISION_CONFLICT/ENTRY_HASH_CONFLICT/EXTERNAL_MODIFICATION/IDEMPOTENCY_CONFLICT/QUOTA_EXCEEDED/APPROVAL_STALE/SYSTEM_BUSY`，503 为 `STORE_RECOVERING`，500 为持久化故障。超限 detail 返回 current_entries/used_characters/quota/available_characters；每个用户回合第三次保存失败之后明确返回保存跳过状态并禁止新的写入尝试。
 
 事件枚举扩展（遵循 docs/02 纪律，先加类型再实现）：
 `memory.updated` / `memory.archived` / `skill.patched`
@@ -171,3 +176,5 @@ POST   /api/memory/curate/run                               手动触发治理�
 - 压缩管线：构造超长历史，断言保护头尾 + 摘要模板字段 + 事件
 - 治理：造不同 last_hit_at 的条目跑 pass，断言状态迁移与 pinned 豁免
 - 账本：变更-回滚-再读一致性
+
+M1-01 的身份、修订、审核、写入恢复、快照、触发计数、使用统计、token 依据、检查点和引用豁免字段详见 [ADR-011](../decisions/ADR-011-memory-lifecycle.md)。按卡片逐次迁移和真实验证。短查询对规范化后少于三个 Unicode 字符的输入执行参数化 `instr(text, ?)`，至少三个字符使用转义为字面短语的 trigram MATCH；两条路径使用相同范围、审核、防投毒、排序和分页规则。

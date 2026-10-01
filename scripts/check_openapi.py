@@ -4,11 +4,13 @@ import sys
 from pathlib import Path
 
 import yaml
+from openapi_spec_validator import validate
 
 ROOT = Path(__file__).resolve().parent.parent
 DOC = ROOT / "docs" / "contracts" / "openapi.yaml"
 
 spec = yaml.safe_load(DOC.read_text())
+validate(spec)
 paths = spec.get("paths", {})
 assert paths, "paths 为空"
 
@@ -20,6 +22,10 @@ for path, ops in paths.items():
     for method, op in ops.items():
         if not isinstance(op, dict):
             continue
+        if path.startswith("/api/memory/") and method in ("get", "post", "patch", "delete"):
+            assert op.get("x-implementation-card") == "M1-11", f"{path} {method} 缺少 HTTP 实施归属"
+            assert op.get("x-domain-card") in {f"M1-{number:02}" for number in range(2, 11)}, f"{path} {method} 缺少领域实施归属"
+            assert op.get("operationId"), f"{path} {method} 缺少操作标识"
         for code, resp in op.get("responses", {}).items():
             desc = str(resp.get("description", ""))
             assert "success" not in desc.lower() or "data" in desc.lower(), f"{path} {code} 信封描述可疑"

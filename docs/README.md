@@ -26,7 +26,7 @@
 
 [PRODUCT.md](./product/PRODUCT.md) 定义用户、产品边界和页面职责；[USER-FLOWS.md](./product/USER-FLOWS.md) 定义完整用户流程；[features](./features/) 定义每项具体功能及验收；[design-input.md](./design/design-input.md) 汇总交给 UX Agent 的页面状态与视觉方向。接口与事件契约由后端维护，设计和实现应核对其能否支撑产品状态。代码位置约定为 `backend/` 与 `desktop/`。
 
-[M1 Memory 实施任务卡](./tasks/M1-cards.md) 将 Memory 详设拆分为 13 张卡，明确实施依赖、后端与前端职责、文件范围和真实验收条件；功能实施等待 M0 收口确认。
+[M1 Memory 实施任务卡](./tasks/M1-cards.md) 将 Memory 详设拆分为 13 张卡，明确实施依赖、后端与前端职责、文件范围和真实验收条件；[M0 所有者收口确认](./acceptance/M0-owner-confirmation.md) 已完成，按卡片开始实施。
 
 [M2 安全与治理实施任务卡](./tasks/M2-cards.md) 将资源、角色、授权、连接器、规则、完整沙盒、恢复和审计拆分为 13 张卡，包含参考源码与七项治理验收映射；功能实施等待 M1 收口确认。
 

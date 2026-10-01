@@ -89,11 +89,28 @@
 ## 材料与任务（v1.4，F001）
 `materials.imported`（payload: 逐文件结果 original_path/stored_name/error + folders 逐项结果 path/error——外审回稿：逐项结果随事件持久化，创建响应与幂等重放同源读回；部分失败仍创建任务）/ `conversation.updated`（标题由首条指令生成等元数据变化）
 
-## 上下文（M1，harness-session 占位）
-`context.compacted / tool.result_externalized`
+## M1 记忆、技能、后台与上下文
 
-## 记忆与技能（M1，memory-system §11）
-`memory.updated / memory.archived / skill.patched`
+M1 的会话后台事件没有前台 `task_run_id/seq`；来源任务放入 payload 的 `source_task_run_id`。人工管理及启动治理事件允许没有 conversation_id，使用 payload.scope 定义当前 owner/workspace/agent 范围；会话事件流只返回所属会话，记忆管理流只返回当前身份可读范围。所有事件沿用提交后的全局水位和排他续播，不修改前台任务状态及等待计数。M1-02 持久化与事件写入同事务，M1-11 实际验证 HTTP/SSE，M1-12 验证界面重放。
+
+`MemoryScope = {owner_id: string, workspace_id: string | null, agent_id: string | null}`。`ChangePayload = {change_id: string, ledger_id: integer, store_type: "user" | "workspace" | "soul" | "skill", store_id: string, entry_id: string | null, entry_hash: string | null, revision: integer, action: string, summary: string, scope: MemoryScope, source_task_run_id: string | null, job_id: string | null}`。摘要最多200字符并执行凭据脱敏；正文及 metadata 的完整前后状态由账本保存。
+
+| 事件 | 必填 payload | 实施与消费 |
+|---|---|---|
+| `memory.updated` | ChangePayload | M1-02 的创建、编辑、固定、恢复、审核和账本恢复；通知引用 change_id，重播不重复显示同一变更 |
+| `memory.archived` | ChangePayload，加 `archive_path: string` | M1-02/M1-10 的完整归档，保持原材料及恢复身份 |
+| `skill.patched` | ChangePayload，加 `name: string, description: string, files: string[]` | M1-05，description≤60字符，索引及正文使用分别处理 |
+| `memory.snapshot_created` | `{snapshot_id: string, conversation_id: string, snapshot_sha256: string, stores: object[], scope: MemoryScope}` | M1-03，同会话首次执行唯一；stores 保存身份、修订和校验值 |
+| `memory.job_status` | `{job_id: string, kind: string, status: string, scope: MemoryScope, trigger_global_seq: integer, source_task_run_id: string \| null, model: string \| null, config_version: string, usage: {input_tokens: integer, output_tokens: integer}, error: string \| null}` | M1-06/M1-09，状态使用 OpenAPI MemoryJob 枚举；取消完成才提交 cancelled，错误先脱敏 |
+| `memory.summary_created` | `{job_id: string, source_task_run_id: string, summary_id: string, summary: string, scope: MemoryScope}` | M1-06，summary≤200字符，与唯一任务摘要同事务 |
+| `memory.approval_requested` | `{job_id: string, approval_id: string, call_id: string, tool: string, input: object, input_hash: string, scope: MemoryScope}` | M1-09，独立作业身份；不创建前台等待计数 |
+| `memory.approval_resolved` | `{job_id: string, approval_id: string, decision: "allow_once" \| "reject_once" \| "expired", actor: string, scope: MemoryScope}` | M1-09，终止作业先让旧审批失效；同决定重试读取首次结果 |
+| `memory.curated` | `{job_id: string, report: object, last_curate_at: string, scope: MemoryScope}` | M1-10，完整成功后更新治理水位，报告包含检查/陈旧/归档/豁免标识及原因 |
+| `context.budget_checked` | `{model: string, context_window: integer, counting_method: string, tokenizer_revision: string, system_tokens: integer, history_tokens: integer, tool_result_tokens: integer, output_reserved: integer, total_input_tokens: integer}` | M1-07，模型请求前记录完整请求计数和输出预算 |
+| `tool.result_externalized` | `{call_id: string, artifact_path: string, sha256: string, size_bytes: integer, prefix_bytes: integer, source_global_seq: integer}` | M1-07/M1-08，完整结果裁剪前保存，prefix_bytes≤2048，工件随任务保留 |
+| `context.compacted` | `{checkpoint_id: string, snapshot_id: string, source_global_seq: integer, replaced_from_global_seq: integer, replaced_to_global_seq: integer, before_tokens: integer, after_tokens: integer, summarized_messages: integer, template_version: string, checkpoint_sha256: string}` | M1-08，事件与摘要/保留消息检查点同事务；恢复只重放检查点后续事件 |
+
+后台模型请求和工具明细保存为独立作业记录，使用 job_id/call_id 和来源 global_seq 查询。新前台消息两秒内取消 aux、审批和流，已准备变更遵循 [ADR-011](../decisions/ADR-011-memory-lifecycle.md) 的恢复协议。M1-13 核对记录数量、文件 SHA/mtime、副作用次数和两级审计。
 
 ## 治理（M2，governance §6）
 `governance.grant_changed / governance.rule_changed`
