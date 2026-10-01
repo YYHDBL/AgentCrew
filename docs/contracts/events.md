@@ -3,6 +3,68 @@
 > 维护者：后端 Agent ｜ 权威定义在各详设；新增机制**先加事件类型再实现**（纪律）。
 > **SSE 语义（v1.1）**：载荷 = `{global_seq, task_run_id?, seq?, type, payload, ts}`；游标（from/after_seq）**排他**；控制帧：`event:resync`（溢出终止，data 含最后连续 global_seq）、`event:shutdown`（优雅关闭，客户端存游标）、`event:ping` 心跳；FSM 快照带 `at_global_seq` 配对续播。
 
+## M0 帧与 payload schema
+
+以下字段定义对应 C8 运行时。`?` 表示字段可以省略；允许 JSON `null` 的字段明确写出 `null`，省略与 `null` 分别处理。`integer` 为整数，`object` 为 JSON 对象，`T[]` 为数组。未知附加字段允许保留，已列字段的名称和类型保持兼容。事件由执行层发射，投影表消费同一载荷。
+
+普通帧的必填字段为 `global_seq: integer`、`type: string`、`payload: object`、`ts: string`。`global_seq` 为已提交事件的全局递增位置，`ts` 为 ISO 8601 时间。任务事件携带 `task_run_id: string` 与 `seq: integer`；会话域事件省略这两个字段。`attempt_no?: integer` 为运行尝试编号。任务内 `seq` 和会话级 `global_seq` 分别用于对应端点，不能互换。
+
+| SSE 控制帧 | data schema | 客户端行为 |
+|---|---|---|
+| `resync` | `{last_continuous_global_seq: integer, reason: "slow_consumer", task_run_id?: string, seq?: integer}` | 服务端结束当前流；客户端立即重新获取 state 与完整历史，完成后从新水位排他续播。恢复请求失败后按连接失败规则退避。 |
+| `shutdown` | `{last_continuous_global_seq: integer, reason: "server_shutdown", task_run_id?: string, seq?: integer}` | 保存已连续消费的游标，结束当前订阅；重新连接时先获取快照并配对历史。 |
+| `ping` | 无业务载荷 | 只维持连接，不修改游标或业务状态。当前服务使用 SSE 注释心跳；客户端同样忽略命名 `ping` 帧。 |
+
+首次加载、普通断线重连及 resync 恢复均先获取 state 的 `at_global_seq`。当前 state 只含 FSM 与队列，聊天和过程由会话历史补齐至该水位，包含无 `task_run_id` 的会话域事件；历史恢复完成后，以该水位订阅实时流并跳过 `global_seq <= at_global_seq` 的帧。恢复期间保留已有画面。连接失败按 1、2、4、8、16、30 秒退避，每次重新经 preload 获取端口与 token。
+
+### 任务、队列与模型
+
+| 事件 | payload schema | 消费语义 |
+|---|---|---|
+| `run.queued` | `{instruction: string, client_request_id?: string \| null, cron_job_id?: string \| null, queue_item_id?: string}` | 用户指令全文。存在 `queue_item_id` 时，该消息已由入队事件建立，避免重复呈现。 |
+| `run.started` | `{attempt_no: integer, attempt_id: string, kind?: "initial", context_fingerprint?: object}` | 开始首次运行尝试。fingerprint 包含 `system_prompt_hash`、`tools_schema_hash` 和 `model_config`。 |
+| `run.completed` | `{final_text?: string, outcome?: string}` | 任务成功终态；C8 发射最终回复全文。 |
+| `run.failed` | `{reason: string}` | 任务失败终态，与单次模型请求失败分别呈现。 |
+| `run.cancelled` | `{}` | 用户停止任务的终态。 |
+| `run.interrupted` | `{reason?: string}` | 中断终态，关闭本次运行的待操作卡片。 |
+| `run.resumed` | `{attempt_no: integer, attempt_id: string, resume_reason: string}` | 恢复尝试，执行与核验界面由 C9 负责。 |
+| `queue.item_enqueued` | `{item_id: string, text: string, client_request_id?: string \| null}` | 会话域事件，保存用户发送记录；state 查询将队列条目标识映射为 `queue[].id`。 |
+| `queue.item_cancelled` | `{item_ids: string[]}` | 删除等待执行的条目，用户发送记录保留。 |
+| `queue.paused` / `queue.resumed` | `{}` | 暂停或继续队列；合法动作读取 state 的能力字段。 |
+| `step.started` | `{step_id: string, ordinal: integer, model_slot?: string}` | 建立步骤，`step_id` 用于关联同一步骤中的请求重试。 |
+| `step.completed` | `{step_id: string, input_tokens?: integer, output_tokens?: integer, latency_ms?: integer}` | 模型回合完成；后续工具事件独立表示工具执行状态。 |
+| `llm.request_started` | `{llm_call_id: string, step_id: string, model: string, retry_no?: integer}` | 每次请求尝试有独立 `llm_call_id`；同一步骤重试保留 `step_id`。 |
+| `llm.request_done` | `{llm_call_id: string, step_id: string, text: string, tool_uses: ToolUse[], thinking_blocks: ThinkingBlock[], prompt_tokens: integer, completion_tokens: integer, latency_ms: integer, stop_reason: string \| null}` | C8 完整回复。`tool_uses=[]` 表示最终文本回合；包含工具调用的回合继续执行工具，文本保留在事件中。 |
+| `llm.request_failed` | `{llm_call_id: string, step_id: string, error: string, retry_no: integer}` | `error` 含错误分类与说明。该请求结束，后续允许同一步骤重试；后续成功应显示已恢复。 |
+
+`ToolUse = {id: string, name: string, input: object}`；`ThinkingBlock = {text: string, signature: string}`。C8 的 `llm.request_done` 总是携带数组，空数组和空字符串也保留。文本 delta 当前未公开为会话事件；D2 逐字呈现读取持久化全文，历史恢复立即呈现全文。
+
+### 工具、审批、提问与材料
+
+| 事件 | payload schema | 消费语义 |
+|---|---|---|
+| `tool.prepared` | `{call_id: string, tool_name: string, side_effect_class: string, input_hash: string, risk_level: string, input: object, read_only_verdict?: boolean, verdict_reason?: string, content_sha256?: string, step_id?: string, tool_call_id?: string}` | 建立调用记录；`side_effect_class` 为 `verifiable`、`external_idempotency` 或 `outcome_unknown`。`write_file` 正常准备时附带内容哈希，参数校验失败时可缺少判定附加字段。 |
+| `tool.dispatched` | `{call_id: string}` | 工具实际开始执行。 |
+| `tool.completed` | `{call_id: string, output: string, output_summary: string, details?: object, artifact_path?: string}` | 执行成功；`output` 为完整内联输出，超限输出由工件指针恢复，`output_summary` 用于界面摘要。 |
+| `tool.failed` | `{call_id: string, error: string, output_summary: string, output?: string, details?: object, artifact_path?: string}` | 校验、权限或执行失败。执行前失败可省略 `output`，摘要为空字符串。 |
+| `tool.skipped_idempotent` | `{call_id: string, note?: string}` | 供应商确认幂等命中。 |
+| `tool.pending_verification` | `{call_id: string}` | 调用结果需要核验，执行恢复由 C9 负责。 |
+| `tool.verification_submitted` | `{call_id: string, verdict: "confirmed_executed" \| "confirmed_not_executed", note?: string, actor?: string}` | 保存核验决定。 |
+| `permission.requested` | `{tool_call_id: string, tool: string, risk: string, options: Decision[], input_hash: string, target: string, always_scope_preview: string}` | 使用 `tool_call_id` 关联工具 `call_id`；呈现持续授权范围，决定请求携带原始 `input_hash`。 |
+| `permission.resolved` | `{tool_call_id: string, decision: Decision}` | 关闭对应审批卡；任务终态同样关闭过期卡片。 |
+| `question.requested` | `{request_id: string, question: string, options?: string[]}` | 建立待回答卡片，关联键为 `request_id`。 |
+| `question.answered` | `{request_id: string, answer: string \| null}` | 关闭对应卡片；`null` 表示用户取消回答。 |
+| `materials.imported` | `{files: ImportedFile[], folders?: ImportedFolder[]}` | 保存逐项导入与授权结果，部分失败仍保留成功项。 |
+| `conversation.updated` | `{title?: string}` | 更新会话元数据。 |
+| `artifact.created` | `{artifact_id: string, task_run_id: string, tool_call_id?: string, path: string, name: string, ext?: string}` | 产物进入生成状态。 |
+| `artifact.ready` | `{artifact_id: string, size_bytes?: integer}` | 产物生成完成。 |
+| `artifact.failed` | `{artifact_id: string, error?: string}` | 产物生成失败。 |
+| `artifact.missing_detected` | `{artifact_id: string}` | 产物查询发现文件缺失。 |
+
+`Decision` 为 `allow_once`、`allow_always`、`reject_once` 或 `reject_always`。`ImportedFile = {original_path: string, stored_name: string, size_bytes: integer | null, error: string | null}`；`ImportedFolder = {path: string, error: string | null}`。审批事件的 `tool`、工具准备事件的 `tool_name` 分别使用自己的字段名；身份关联使用上述标识字段。
+
+核对实现：`agentcrew_core/events/__init__.py` 的 `Event.as_frame`、`agentcrew_core/loop/__init__.py`、`agentcrew_core/tools/scheduler.py` 与 `builtin/`、`agentcrew_server/approvals.py`、`questions.py`、`sessions.py`，投影消费规则见 `agentcrew_server/db/projections.py`。新增或修改字段时同步维护此契约。
+
 ## 任务生命周期（harness-session §3）
 `run.queued / run.started / run.completed / run.failed / run.cancelled / run.interrupted / run.resumed`
 

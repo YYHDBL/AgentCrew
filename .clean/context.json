@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "generated_by": "clean-code skill / detect_stack.py",
+  "root": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop",
+  "confidence": "inferred from file layout; verify before relying on it",
+  "primary_language": "Python",
+  "languages": {
+    "Python": 70,
+    "TypeScript": 7,
+    "JavaScript": 2,
+    "CSS": 1,
+    "HTML": 1
+  },
+  "ecosystems": [
+    "Node.js",
+    "Python"
+  ],
+  "manifests": [
+    {
+      "path": "backend/pyproject.toml",
+      "ecosystem": "Python",
+      "suggested_verify_command": "pytest",
+      "depth": 1
+    },
+    {
+      "path": "desktop/package.json",
+      "ecosystem": "Node.js",
+      "suggested_verify_command": "npm test",
+      "depth": 1
+    }
+  ],
+  "frameworks": [
+    "FastAPI",
+    "Pydantic",
+    "React"
+  ],
+  "packs": [
+    "references/languages/python.md",
+    "references/frameworks/fastapi.md",
+    "references/frameworks/react.md"
+  ],
+  "pack_scopes": {
+    "references/frameworks/fastapi.md": [
+      "backend"
+    ],
+    "references/frameworks/react.md": [
+      "desktop"
+    ]
+  },
+  "test_runners": [
+    "pytest"
+  ],
+  "tests": {
+    "test_file_count": 22,
+    "test_directories": [
+      "backend/tests",
+      "desktop/tests"
+    ]
+  },
+  "dependencies": [
+    {
+      "name": "fastapi",
+      "version": "0.115",
+      "manifest": "backend/pyproject.toml"
+    },
+    {
+      "name": "uvicorn",
+      "version": "0.30",
+      "manifest": "backend/pyproject.toml"
+    },
+    {
+      "name": "sse-starlette",
+      "version": "2.1",
+      "manifest": "backend/pyproject.toml"
+    },
+    {
+      "name": "pydantic",
+      "version": "2.7",
+      "manifest": "backend/pyproject.toml"
+    },
+    {
+      "name": "httpx",
+      "version": "0.27",
+      "manifest": "backend/pyproject.toml"
+    },
+    {
+      "name": "antd",
+      "version": "5.29.3",
+      "manifest": "desktop/package.json"
+    },
+    {
+      "name": "react",
+      "version": "18.3.1",
+      "manifest": "desktop/package.json"
+    },
+    {
+      "name": "react-dom",
+      "version": "18.3.1",
+      "manifest": "desktop/package.json"
+    },
+    {
+      "name": "@types/node",
+      "version": "^26.0.0",
+      "manifest": "desktop/package.json"
+    },
+    {
+      "name": "@types/react",
+      "version": "^18.3.0",
+      "manifest": "desktop/package.json"
+    },
+    {
+      "name": "@types/react-dom",
+      "version": "^18.3.0",
+      "manifest": "desktop/package.json"
+    },
+    {
+      "name": "@vitejs/plugin-react",
+      "version": "^5.1.0",
+      "manifest": "desktop/package.json"
+    },
+    {
+      "name": "electron",
+      "version": "^44.4.5",
+      "manifest": "desktop/package.json"
+    },
+    {
+      "name": "electron-vite",
+      "version": "^5.0.0",
+      "manifest": "desktop/package.json"
+    },
+    {
+      "name": "typescript",
+      "version": "^6.0.0",
+      "manifest": "desktop/package.json"
+    },
+    {
+      "name": "vite",
+      "version": "^7.3.0",
+      "manifest": "desktop/package.json"
+    }
+  ],
+  "suggested_verify_commands": [
+    "pytest",
+    "npm test"
+  ],
+  "source_roots": [],
+  "layer_candidates": {
+    "adapter": {
+      "api": 7
+    },
+    "infrastructure": {
+      "db": 9
+    }
+  },
+  "quality_tools": [
+    "pytest"
+  ],
+  "existing_context_files": [],
+  "purpose": {
+    "signals": [],
+    "note": "Purpose is inferred from layout only. Confirm it with the user before letting it influence a design decision."
+  },
+  "files_scanned": 156,
+  "scan_truncated": false
+}

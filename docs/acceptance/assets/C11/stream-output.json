@@ -1,0 +1,81 @@
+[
+  {
+    "check": "question-refresh-answer",
+    "passed": true,
+    "head": 16
+  },
+  {
+    "check": "reconnect-snapshot-order",
+    "requests": [
+      {
+        "path": "/api/conversations/084a2b82dfcf4379ad086d63e6f648f6/state",
+        "time": 1790786321287
+      },
+      {
+        "path": "/api/conversations/084a2b82dfcf4379ad086d63e6f648f6/scope",
+        "time": 1790786321294
+      },
+      {
+        "path": "/api/conversations/084a2b82dfcf4379ad086d63e6f648f6/stream?from=0",
+        "time": 1790786321298
+      },
+      {
+        "path": "/api/conversations/084a2b82dfcf4379ad086d63e6f648f6/stream?from=16",
+        "time": 1790786321320
+      }
+    ],
+    "snapshotIndex": 0,
+    "streamIndex": 2
+  },
+  {
+    "check": "restart-incremental-events",
+    "passed": true,
+    "head": 23
+  },
+  {
+    "check": "model-retry-events",
+    "failed": 28,
+    "completed": 32
+  },
+  {
+    "check": "model-retry-rendering",
+    "passed": true
+  },
+  {
+    "check": "real-queue-pressure",
+    "queued": 2
+  },
+  {
+    "check": "real-queue-pressure",
+    "queued": 202
+  },
+  {
+    "check": "real-queue-pressure",
+    "queued": 402
+  },
+  {
+    "check": "real-queue-pressure",
+    "queued": 602
+  },
+  {
+    "check": "real-queue-pressure",
+    "queued": 802
+  },
+  {
+    "check": "real-queue-pressure",
+    "queued": 1002
+  },
+  {
+    "check": "resync-full-recovery",
+    "passed": true,
+    "cursor": 43,
+    "head": 1047,
+    "snapshotDelayMs": 15,
+    "messages": 1007
+  },
+  {
+    "check": "shutdown-cursor-reconnect",
+    "passed": true,
+    "cursor": 1049
+  }
+]

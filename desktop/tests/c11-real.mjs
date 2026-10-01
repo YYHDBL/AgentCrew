@@ -6,7 +6,8 @@ import { resolve } from 'node:path'
 
 // 全程使用真实 Electron、后端与 GLM；独立数据目录保留实际任务产物。
 const directory = resolve('.artifacts', `c11-${Date.now()}`)
-const evidence = resolve('../docs/acceptance/assets/C11')
+const textOnly = process.argv.includes('--text-only')
+const evidence = textOnly ? directory : resolve('../docs/acceptance/assets/C11')
 await mkdir(`${directory}/data`, { recursive: true })
 await mkdir(evidence, { recursive: true })
 await copyFile('../backend/data/config.json', `${directory}/data/config.json`)
@@ -17,7 +18,7 @@ const errors = []
 page.on('pageerror', (error) => errors.push(error.message))
 const output = []
 const record = (event, data = {}) => { const row = { event, ...data }; output.push(row); console.log(JSON.stringify(row)) }
-const screenshot = async (name) => page.screenshot({ path: `${evidence}/${name}.png` })
+const screenshot = async (name) => { if (!textOnly) await page.screenshot({ path: `${evidence}/${name}.png` }) }
 const request = (path) => page.evaluate(async (path) => {
   const port = await window.agentcrew.getBackendPort()
   const token = await window.agentcrew.getToken()
@@ -113,11 +114,20 @@ try {
   assert.ok(processLine)
   const pid = Number(processLine.trim().split(/\s+/)[0])
   process.kill(pid, 'SIGKILL')
-  await page.waitForFunction(async (oldPort) => { const port = await window.agentcrew.getBackendPort(); return port && port !== oldPort }, oldPort)
+  const newPort = await page.evaluate(async (oldPort) => {
+    const deadline = Date.now() + 30000
+    while (Date.now() < deadline) {
+      const port = await window.agentcrew.getBackendPort()
+      if (port && port !== oldPort) return port
+      await new Promise((resolve) => setTimeout(resolve, 100))
+    }
+    throw new Error('后端未在期限内重新启动')
+  }, oldPort)
+  assert.ok(newPort && newPort !== oldPort)
   await page.waitForFunction(() => document.querySelector('.notice')?.textContent?.includes('已连接'))
   assert.equal(await page.locator('.message.user').count(), 3)
   await screenshot('sidecar-reconnected')
-  record('sidecar-reconnected', { killedPid: pid, oldPort, newPort: await page.evaluate(() => window.agentcrew.getBackendPort()) })
+  record('sidecar-reconnected', { killedPid: pid, oldPort, newPort })
   await page.reload()
   await page.waitForFunction(() => document.querySelectorAll('.message.user').length === 3)
   assert.deepEqual(await request(`/conversations/${queueId}/state`), queueState)

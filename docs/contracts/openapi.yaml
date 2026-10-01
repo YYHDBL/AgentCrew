@@ -72,7 +72,7 @@ components:
         waiting_approvals: { type: integer }
         waiting_questions: { type: integer }
         queue_paused: { type: boolean }
-        at_global_seq: { type: integer, description: 快照反映到的事件位置；≤它的 seq 已被吸收，续播跳过（v0.3） }
+        at_global_seq: { type: integer, description: 快照反映到的全局事件位置；≤它的 global_seq 已被吸收，续播跳过（v0.3） }
         queue:
           type: array
           items:

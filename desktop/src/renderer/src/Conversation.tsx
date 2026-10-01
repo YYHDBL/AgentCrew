@@ -44,6 +44,10 @@ export function Details({ events, action, busy }: { events: Frame[]; action: Act
   const answered = new Set(events.filter((e) => e.type === 'question.answered').map((e) => e.payload.request_id))
   const terminal = new Set(events.filter((e) => ['run.completed', 'run.failed', 'run.cancelled', 'run.interrupted'].includes(e.type)).map((e) => e.task_run_id))
   const completedSteps = new Set(events.filter((e) => e.type === 'step.completed').map((e) => e.payload.step_id))
+  const latestRequests = new Map<unknown, Frame>()
+  for (const event of events) {
+    if (event.type.startsWith('llm.request_')) latestRequests.set(event.payload.step_id, event)
+  }
   const tools = new Map<unknown, Frame[]>()
   for (const event of events) {
     if (!event.type.startsWith('tool.')) continue
@@ -71,7 +75,12 @@ export function Details({ events, action, busy }: { events: Frame[]; action: Act
       </section>
     }
     if (event.type === 'materials.imported') return <section className="process-card" key={event.global_seq}><h3>任务材料</h3>{Array.isArray(p.files) && p.files.map((file: Record<string, unknown>) => <p key={String(file.original_path)}><span className="file-path">{String(file.original_path)}</span>{file.error ? `导入失败：${String(file.error)}` : `已导入：${String(file.stored_name)}（${String(file.size_bytes)} 字节）`}</p>)}{Array.isArray(p.folders) && p.folders.map((folder: Record<string, unknown>) => <p key={String(folder.path)}><span className="file-path">{String(folder.path)}</span>{folder.error ? `授权失败：${String(folder.error)}` : '文件夹已授权'}</p>)}</section>
-    if (event.type === 'run.failed' || event.type === 'llm.request_failed') return <section className="process-card" role="alert" key={event.global_seq}><h3>执行错误</h3><p>{String(p.reason ?? p.error)}</p></section>
+    if (event.type === 'llm.request_failed') {
+      const latest = latestRequests.get(p.step_id)!
+      const outcome = latest.type === 'llm.request_done' ? '已恢复' : latest.type === 'llm.request_started' && !terminal.has(event.task_run_id) ? '正在重试' : terminal.has(event.task_run_id) ? '已结束' : '等待重试'
+      return <section className="process-card" key={event.global_seq}><h3>模型请求失败 · {outcome}</h3><p>{String(p.error)}</p></section>
+    }
+    if (event.type === 'run.failed') return <section className="process-card" role="alert" key={event.global_seq}><h3>执行错误</h3><p>{String(p.reason)}</p></section>
     return null
   })}</div>
 }
