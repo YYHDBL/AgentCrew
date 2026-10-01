@@ -6,6 +6,7 @@ import asyncio
 import json
 import os
 import re
+import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -402,13 +403,17 @@ class MemoryStore:
                 results.append(await self._finish_change(row[0], plan))
         return results
 
-    async def record_hits(self, entry_ids: list[str]) -> None:
+    async def record_hits(self, entry_ids: list[str], *, use_id: str | None = None) -> None:
         """显式检索使用单独统计，冻结快照及业务修订均保持不变。"""
         now = datetime.now(timezone.utc).isoformat()
+        use_id = use_id or uuid.uuid4().hex
         def tx(conn):
             with conn:
-                conn.executemany("INSERT INTO memory_usage VALUES(?,1,?) ON CONFLICT(entry_id) DO UPDATE SET hits=hits+1,last_hit_at=excluded.last_hit_at",
-                                 [(entry_id, now) for entry_id in set(entry_ids)])
+                conn.execute("BEGIN IMMEDIATE")
+                for entry_id in sorted(set(entry_ids)):
+                    inserted = conn.execute("INSERT OR IGNORE INTO memory_usage_hits VALUES(?,?,?)", (use_id, entry_id, now))
+                    if inserted.rowcount:
+                        conn.execute("INSERT INTO memory_usage VALUES(?,1,?) ON CONFLICT(entry_id) DO UPDATE SET hits=hits+1,last_hit_at=excluded.last_hit_at", (entry_id, now))
         await self.events.channel.execute(tx)
 
     async def run_tool(self, invocation, context) -> dict:

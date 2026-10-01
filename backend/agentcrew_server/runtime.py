@@ -26,6 +26,7 @@ if TYPE_CHECKING:  # 避免运行时循环导入（bus 导入 core.events 而已
     from .settings import SettingsService
     from .memory.store import MemoryStore
     from .memory.snapshots import MemorySnapshots
+    from .memory.search import MemorySearch
 
 
 @dataclass
@@ -56,6 +57,7 @@ class RuntimeState:
     recovery: "RecoveryService | None" = None  # M0-C9 起装配
     memory: "MemoryStore | None" = None
     snapshots: "MemorySnapshots | None" = None
+    memory_search: "MemorySearch | None" = None
 
     async def shutdown(self) -> None:
         """优雅关闭（§7 顺序；任务取消不写终态——run_manager.shutdown 在

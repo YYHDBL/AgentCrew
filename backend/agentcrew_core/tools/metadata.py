@@ -76,3 +76,4 @@ class WorkContext:
     # 全部需审批——人工/规则放行后执行器的域名硬检查须认这笔授权（外审 S02）
     approved_calls: set[str] = field(default_factory=set)
     memory_writer: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
+    memory_search: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None

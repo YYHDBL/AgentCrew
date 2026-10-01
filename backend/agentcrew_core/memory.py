@@ -50,11 +50,11 @@ def suspected_injection(text: str) -> bool:
     return False
 
 
-def context_entries(entries: list[dict]) -> list[dict]:
+def context_entries(entries: list[dict], *, include_archived: bool = False) -> list[dict]:
     """模型可见材料统一经过审核与投毒检查，管理读取仍保留原文。"""
     result = []
     for entry in entries:
-        if entry["state"] == "archived" or entry["needs_review"]:
+        if (entry["state"] == "archived" and not include_archived) or entry["needs_review"]:
             continue
         value = copy.deepcopy(entry)
         if suspected_injection(value["text"]):

@@ -153,7 +153,7 @@ def test_bad_migration_full_startup_enters_diagnostic_mode(tmp_path):
             has_bad = conn.execute(
                 "SELECT count(*) FROM sqlite_master WHERE name='nope'"
             ).fetchone()[0]
-            assert version == 4 and has_bad == 0
+            assert version == 5 and has_bad == 0
         finally:
             conn.close()
         proc.send_signal(signal.SIGTERM)

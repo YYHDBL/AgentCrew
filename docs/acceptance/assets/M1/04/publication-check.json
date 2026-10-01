@@ -1,0 +1,35 @@
+{
+  "credential_matches": 0,
+  "files": [
+    {
+      "path": "docs/acceptance/assets/M1/04/backend-tests.txt",
+      "sha256": "7a9e78e46d59de3b68ae3f707d7009b9c592936d31d6acd5394b580dcbb16a0b",
+      "bytes": 1117
+    },
+    {
+      "path": "docs/acceptance/assets/M1/04/history-search.json",
+      "sha256": "480d1992b513f24b7b0926c03cd389505f9cdae17306315dcdfb82fcc3bbfbbf",
+      "bytes": 8546
+    },
+    {
+      "path": "docs/acceptance/assets/M1/04/http-model.json",
+      "sha256": "fe29ffab97bd3b7f005d8993005d7818e3bd71a7e6f1435929b503d6b6b094aa",
+      "bytes": 270730
+    },
+    {
+      "path": "docs/acceptance/assets/M1/04/openapi.txt",
+      "sha256": "6682792bf87a47f66a5d044d2c89e78949ba201c7f6784b5311af287f52fcb31",
+      "bytes": 42
+    },
+    {
+      "path": "docs/acceptance/assets/M1/04/search-tests.txt",
+      "sha256": "38307896ff27727ad6df7aba8a4e9d7ad9ee37ea232d82a439dd6390f7356dd7",
+      "bytes": 99
+    },
+    {
+      "path": "docs/acceptance/assets/M1/04/sqlite-capabilities.json",
+      "sha256": "426c21bf0f0aa52f7601be94b90f96e530e6939618e54db5738a9586d729f584",
+      "bytes": 1824
+    }
+  ]
+}

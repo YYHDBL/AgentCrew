@@ -25,6 +25,7 @@ from .externalize import (
 from .http_request import HTTP_SCHEMA, _http_request
 from .read_file import READ_FILE_SCHEMA, _read_file
 from .memory_write import MEMORY_WRITE_SCHEMA, _memory_write
+from .session_search import SESSION_SEARCH_SCHEMA, _session_search
 from .seatbelt import seatbelt_profile
 from .write_file import WRITE_FILE_SCHEMA, _write_file, _write_file_extras
 from .write_file import _open_dir_nofollow  # noqa: F401 —— 测试引用面
@@ -76,6 +77,13 @@ def build_default_registry():
               risk_level="medium", needs_approval=False, concurrent_safe=False,
               side_effect_class="verifiable"),
         _memory_write,
+    ))
+    registry.register(Tool(
+        _meta("session_search", "在当前工作区和员工允许的历史与记忆中查找中文或其他子串，返回可回查来源。支持短词、分页和显式归档查询；检索不调用模型。",
+              SESSION_SEARCH_SCHEMA, read_only=True, destructive=False,
+              risk_level="low", needs_approval=False, concurrent_safe=True,
+              side_effect_class="verifiable"),
+        _session_search,
     ))
     registry.register(Tool(
         _meta("ask_user", "向用户提问并等待回答（用于澄清任务，答案会回到对话）",

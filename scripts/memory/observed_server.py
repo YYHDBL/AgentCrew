@@ -12,9 +12,22 @@ from agentcrew_server.cli import main
 from agentcrew_server.secrets import redact
 
 _observed_requests = set()
+_observed_searches = {}
 
 
 def observe(frame, event, arg):
+    if (os.environ.get("MEMORY_SEARCH_EVIDENCE") and event in {"call", "return"}
+            and frame.f_globals.get("__name__") == "agentcrew_server.memory.search" and frame.f_code.co_name == "_query"):
+        store = frame.f_locals["self"]
+        count = store.db.read_conn.execute("SELECT COUNT(*) FROM llm_calls").fetchone()[0]
+        if event == "call":
+            _observed_searches[frame] = {"query": frame.f_locals["query"], "before_llm_calls": count}
+        elif event == "return":
+            value = {**_observed_searches.pop(frame), "after_llm_calls": count,
+                     "result": arg, "observed_at": datetime.now(timezone.utc).isoformat()}
+            with Path(os.environ["MEMORY_SEARCH_EVIDENCE"]).open("a", encoding="utf-8") as output:
+                output.write(redact(json.dumps(value, ensure_ascii=False)) + "\n")
+        return
     if event != "call" or frame.f_globals.get("__name__") != "httpx._client" or frame.f_code.co_name != "_send_single_request":
         return
     request = frame.f_locals["request"]

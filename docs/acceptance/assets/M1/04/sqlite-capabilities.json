@@ -1,0 +1,58 @@
+{
+  "queries": [
+    {
+      "sql": "SELECT sqlite_version() AS sqlite_version",
+      "rows": [
+        {
+          "sqlite_version": "3.50.4"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT name,sql FROM sqlite_master WHERE name IN (\"messages_fts\",\"memory_fts\",\"messages_fts_insert\",\"memory_fts_update\") ORDER BY name",
+      "rows": [
+        {
+          "name": "memory_fts",
+          "sql": "CREATE VIRTUAL TABLE memory_fts USING fts5(text, content='memory_entries', tokenize='trigram')"
+        },
+        {
+          "name": "memory_fts_update",
+          "sql": "CREATE TRIGGER memory_fts_update AFTER UPDATE OF text ON memory_entries BEGIN\n        INSERT INTO memory_fts(memory_fts,rowid,text) VALUES('delete',old.rowid,old.text);\n        INSERT INTO memory_fts(rowid,text) VALUES(new.rowid,new.text); END"
+        },
+        {
+          "name": "messages_fts",
+          "sql": "CREATE VIRTUAL TABLE messages_fts USING fts5(content, content='messages', tokenize='trigram')"
+        },
+        {
+          "name": "messages_fts_insert",
+          "sql": "CREATE TRIGGER messages_fts_insert AFTER INSERT ON messages BEGIN\n        INSERT INTO messages_fts(rowid,content) VALUES(new.rowid,new.content); END"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT version,name FROM schema_migrations ORDER BY version",
+      "rows": [
+        {
+          "version": 1,
+          "name": "M0 初始建表"
+        },
+        {
+          "version": 2,
+          "name": "C7 客户端幂等键"
+        },
+        {
+          "version": 3,
+          "name": "M1 三库与记忆账本"
+        },
+        {
+          "version": 4,
+          "name": "M1 会话快照与注入统计"
+        },
+        {
+          "version": 5,
+          "name": "M1 trigram 检索与使用去重"
+        }
+      ]
+    }
+  ]
+}

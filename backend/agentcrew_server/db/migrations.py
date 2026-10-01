@@ -20,6 +20,7 @@ from .schema_v1 import V1_STATEMENTS
 from .schema_v2 import V2_STATEMENTS
 from .schema_v3 import V3_STATEMENTS
 from .schema_v4 import V4_STATEMENTS
+from .schema_v5 import V5_STATEMENTS
 
 _SNAPSHOT_KEEP = 3
 _BUSY_RETRIES = 3
@@ -37,6 +38,7 @@ MIGRATIONS: tuple[Migration, ...] = (
     Migration(version=2, name="C7 客户端幂等键", statements=V2_STATEMENTS),
     Migration(version=3, name="M1 三库与记忆账本", statements=V3_STATEMENTS),
     Migration(version=4, name="M1 会话快照与注入统计", statements=V4_STATEMENTS),
+    Migration(version=5, name="M1 trigram 检索与使用去重", statements=V5_STATEMENTS),
 )
 
 

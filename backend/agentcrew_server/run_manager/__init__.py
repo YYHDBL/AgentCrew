@@ -119,6 +119,7 @@ class RunManager:
         questions: "QuestionService",
         memory=None,
         snapshots=None,
+        memory_search=None,
     ):
         self._db = db
         self._store = event_store
@@ -130,6 +131,7 @@ class RunManager:
         self._questions = questions
         self._memory = memory
         self._snapshots = snapshots
+        self._memory_search = memory_search
         self._runs: dict[str, _Run] = {}
         self._guardrails: dict[str, str] = {}  # task_id → 护栏提示（接续注入）
         self._recovery = None  # C9：RecoveryService（cli 装配后注回，resume 重建用）
@@ -328,6 +330,8 @@ class RunManager:
                 task_run_id, conversation_id)
             if self._memory is not None:
                 ctx.memory_writer = self._memory.run_tool
+            if self._memory_search is not None:
+                ctx.memory_search = self._memory_search.run_tool
 
             async def sink(event_type: str, payload: dict) -> None:
                 await self._emit(task_run_id, conversation_id,
