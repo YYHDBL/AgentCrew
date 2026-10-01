@@ -1,0 +1,410 @@
+"""三库持久化：意图、原子文件替换和账本/审计/事件事务。"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import os
+import re
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+
+from agentcrew_core.events import RunEventType
+from agentcrew_core.memory import QUOTAS, failure, render_entries, sha256, transform
+from agentcrew_core.tools.builtin.write_file import _open_dir_nofollow
+
+from ..db.audit import SNAPSHOT_EVERY, append_audit, snapshot_chain_head
+from ..db.database import Database
+from ..db.event_store import EventStore
+from ..secrets import known_secrets, redact
+
+
+def canonical(obj) -> str:
+    return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+@dataclass(frozen=True)
+class MemoryIdentity:
+    workspace_id: str
+    agent_id: str
+    actor_type: str = "user"
+    actor_id: str = "owner"
+    conversation_id: str | None = None
+    task_run_id: str | None = None
+    job_id: str | None = None
+    user_turn_id: str | None = None
+
+    def source(self, change_id: str | None = None) -> dict:
+        value = {k: v for k, v in asdict(self).items()
+                if v is not None and k not in {"workspace_id", "agent_id", "user_turn_id"}}
+        if self.actor_type == "user" and change_id:
+            value["manual_edit_id"] = change_id
+        return value
+
+
+class MemoryStore:
+    def __init__(self, db: Database, events: EventStore, data_dir: Path, settings=None):
+        self.db = db
+        self.events = events
+        self.data_dir = data_dir.absolute()
+        self.settings = settings
+        self._locks: dict[tuple[str, str], asyncio.Lock] = {}
+
+    def quota(self, store_type: str) -> int:
+        configured = self.settings.config.values["memory"] if self.settings else {}
+        return configured.get(f"{store_type}_quota", QUOTAS[store_type])
+
+    def path(self, store_type: str, store_id: str) -> Path:
+        if not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", store_id):
+            raise ValueError("库身份包含非法路径字符")
+        if store_type == "user" and store_id == "owner":
+            return self.data_dir / "USER.md"
+        if store_type == "workspace":
+            return self.data_dir / "workspaces" / store_id / "MEMORY.md"
+        if store_type == "soul":
+            return self.data_dir / "agents" / store_id / "soul.md"
+        raise ValueError("库类型或身份无效")
+
+    def _authorize(self, identity: MemoryIdentity, store_type: str, store_id: str) -> dict | None:
+        if any(not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value) for value in (identity.workspace_id, identity.agent_id)):
+            return failure("OUT_OF_SCOPE", "工作区和员工身份包含非法路径字符")
+        expected = {"user": "owner", "workspace": identity.workspace_id, "soul": identity.agent_id}
+        if store_type not in expected or store_id != expected[store_type]:
+            return failure("OUT_OF_SCOPE", "记忆库不属于当前执行范围")
+        if identity.actor_type == "user":
+            if identity.actor_id != "owner" or identity.task_run_id or identity.job_id:
+                return failure("OUT_OF_SCOPE", "人工操作身份无效")
+        elif identity.actor_type == "agent":
+            if identity.actor_id != identity.agent_id or not identity.conversation_id:
+                return failure("OUT_OF_SCOPE", "员工操作缺少真实会话身份")
+        else:
+            return failure("OUT_OF_SCOPE", "记忆操作身份无效")
+        if identity.conversation_id:
+            row = self.db.read_conn.execute(
+                "SELECT workspace_id,agent_id FROM conversations WHERE id=?", (identity.conversation_id,)).fetchone()
+            if row is None or tuple(row) != (identity.workspace_id, identity.agent_id):
+                return failure("OUT_OF_SCOPE", "记忆来源与会话身份不一致")
+        if identity.task_run_id:
+            row = self.db.read_conn.execute("SELECT conversation_id FROM task_runs WHERE id=?", (identity.task_run_id,)).fetchone()
+            if row is None or row[0] != identity.conversation_id:
+                return failure("OUT_OF_SCOPE", "记忆来源任务不属于当前会话")
+        return None
+
+    def _pending(self, store_type: str, store_id: str):
+        return self.db.read_conn.execute(
+            "SELECT change_id FROM memory_changes WHERE store_type=? AND store_id=? AND status='prepared'",
+            (store_type, store_id)).fetchone()
+
+    def _file_text(self, path: Path) -> str | None:
+        if path.is_symlink() or any(p.is_symlink() for p in path.parents):
+            raise ValueError("记忆文件不能使用符号链接")
+        if not path.exists():
+            return None
+        directory = _open_dir_nofollow(path)
+        try:
+            descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=directory)
+            with os.fdopen(descriptor, "rb") as stream:
+                return stream.read().decode("utf-8")
+        finally:
+            os.close(directory)
+
+    def _load(self, store_type: str, store_id: str) -> dict:
+        if self._pending(store_type, store_id):
+            return failure("STORE_RECOVERING", "记忆库存在未完成写入意图")
+        path = self.path(store_type, store_id)
+        text = self._file_text(path)
+        metadata = self._file_text(path.with_suffix(".meta.json"))
+        row = self.db.read_conn.execute("SELECT * FROM memory_stores WHERE store_type=? AND store_id=?", (store_type, store_id)).fetchone()
+        if row is None:
+            if text is not None or metadata is not None:
+                return failure("EXTERNAL_MODIFICATION", "记忆文件没有对应的持久化版本")
+            return {"store_type": store_type, "store_id": store_id, "revision": 0,
+                    "text": "", "metadata": {"revision": 0, "entries": []},
+                    "text_sha256": None, "metadata_sha256": None}
+        if text is None or metadata is None or sha256(text.encode()) != row["text_sha256"] or sha256(metadata.encode()) != row["metadata_sha256"]:
+            return failure("EXTERNAL_MODIFICATION", "文件与持久化版本的校验值不一致")
+        return {**dict(row), "metadata": json.loads(metadata)}
+
+    async def read(self, identity: MemoryIdentity, store_type: str, store_id: str) -> dict:
+        denied = await asyncio.to_thread(self._authorize, identity, store_type, store_id)
+        if denied:
+            return denied
+        lock = self._locks.setdefault((store_type, store_id), asyncio.Lock())
+        if lock.locked():
+            return failure("STORE_RECOVERING", "记忆库正在写入")
+        async with lock:
+            value = await asyncio.to_thread(self._load, store_type, store_id)
+        if "error" in value:
+            return value
+        watermark = self.db.read_conn.execute("SELECT COALESCE(MAX(global_seq),0) FROM run_events").fetchone()[0]
+        return {**value, "entries": value["metadata"]["entries"],
+                "sha256": value["text_sha256"] or sha256(b""),
+                "metadata_sha256": value["metadata_sha256"] or sha256(canonical(value["metadata"]).encode()),
+                "used_characters": len(value["text"]), "quota": self.quota(store_type), "at_global_seq": watermark}
+
+    def _replayed(self, change_id: str, request_hash: str, conn=None) -> dict | None:
+        conn = conn if conn is not None else self.db.read_conn
+        row = conn.execute("SELECT input_hash,status,result FROM memory_changes WHERE change_id=?", (change_id,)).fetchone()
+        if row:
+            if row[0] != request_hash:
+                return failure("IDEMPOTENCY_CONFLICT", "change_id 已绑定不同输入")
+            if row[1] != "committed":
+                return failure("STORE_RECOVERING", "该写入正在恢复")
+            return {**json.loads(row[2]), "idempotent_replay": True}
+        row = conn.execute("SELECT input_hash,result FROM memory_failed_attempts WHERE change_id=?", (change_id,)).fetchone()
+        if row:
+            return json.loads(row[1]) if row[0] == request_hash else failure("IDEMPOTENCY_CONFLICT", "change_id 已绑定不同输入")
+        return None
+
+    async def _record_failure(self, identity, change_id, request_hash, result) -> dict:
+        execution = identity.job_id or identity.task_run_id
+        turn = identity.user_turn_id or identity.task_run_id
+        def tx(conn):
+            with conn:
+                conn.execute("BEGIN IMMEDIATE")
+                replayed = self._replayed(change_id, request_hash, conn)
+                if replayed is not None:
+                    return replayed
+                recorded = dict(result)
+                if execution:
+                    row = conn.execute("SELECT failures FROM memory_write_turns WHERE execution_id=? AND user_turn_id=?", (execution, turn)).fetchone()
+                    count = min(3, (row[0] if row else 0) + 1)
+                    conn.execute("INSERT INTO memory_write_turns VALUES(?,?,?) ON CONFLICT(execution_id,user_turn_id) DO UPDATE SET failures=excluded.failures", (execution, turn, count))
+                    recorded.update(save_failures=count, skipped=count >= 3)
+                    if count >= 3:
+                        recorded["message"] += "；本回合跳过保存"
+                conn.execute("INSERT INTO memory_failed_attempts VALUES(?,?,?)", (change_id, request_hash, canonical(recorded)))
+            return recorded
+        return await self.events.channel.execute(tx)
+
+    async def change(self, identity: MemoryIdentity, store_type: str, store_id: str, *,
+                     change_id: str, expected_revision: int, basis: str,
+                     operations: list[dict] | None = None, restored_ledger_id: int | None = None) -> dict:
+        denied = await asyncio.to_thread(self._authorize, identity, store_type, store_id)
+        if denied:
+            return denied
+        if not isinstance(change_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", change_id) or type(expected_revision) is not int or expected_revision < 0 or not isinstance(basis, str) or not basis.strip():
+            return failure("VALIDATION_ERROR", "change_id、预期修订及依据必须有效")
+        if not operations and not restored_ledger_id:
+            return failure("VALIDATION_ERROR", "缺少记忆修改动作")
+        request_hash = sha256(canonical({"identity": asdict(identity), "store_type": store_type, "store_id": store_id,
+            "expected_revision": expected_revision, "basis": basis, "operations": operations, "restored_ledger_id": restored_ledger_id}).encode())
+        async with self._locks.setdefault((store_type, store_id), asyncio.Lock()):
+            replayed = await asyncio.to_thread(self._replayed, change_id, request_hash)
+            if replayed is not None:
+                return replayed
+            supplied = canonical({"operations": operations, "basis": basis})
+            if any(secret in supplied for secret in known_secrets()):
+                return await self._record_failure(identity, change_id, request_hash,
+                    failure("CREDENTIAL_REJECTED", "记忆正文或依据包含已登记凭据"))
+            execution = identity.job_id or identity.task_run_id
+            if execution:
+                row = self.db.read_conn.execute("SELECT failures FROM memory_write_turns WHERE execution_id=? AND user_turn_id=?", (execution, identity.user_turn_id or identity.task_run_id)).fetchone()
+                if row and row[0] >= 3:
+                    return failure("SAVE_SKIPPED", "本回合已失败三次，跳过保存", skipped=True)
+            before = await asyncio.to_thread(self._load, store_type, store_id)
+            if "error" in before:
+                return before if before["error"] == "STORE_RECOVERING" else await self._record_failure(identity, change_id, request_hash, before)
+            if before["revision"] != expected_revision:
+                return await self._record_failure(identity, change_id, request_hash, failure("REVISION_CONFLICT", "预期修订已经陈旧", current_revision=before["revision"]))
+            now = datetime.now(timezone.utc).isoformat()
+            restored_files = []
+            if restored_ledger_id:
+                row = self.db.read_conn.execute("SELECT store_type,store_id,before_metadata,before_files FROM memory_ledger WHERE id=?", (restored_ledger_id,)).fetchone()
+                if row is None or tuple(row[:2]) != (store_type, store_id):
+                    return await self._record_failure(identity, change_id, request_hash, failure("NOT_FOUND", "该库的账本记录不存在"))
+                entries = json.loads(row[2])["entries"]
+                restored_files = json.loads(row[3])
+            else:
+                entries = transform(before["metadata"]["entries"], operations, identity.source(change_id), basis, now)
+            if isinstance(entries, dict):
+                return await self._record_failure(identity, change_id, request_hash, entries)
+            text = render_entries(entries)
+            quota = self.quota(store_type)
+            if len(text) > quota:
+                return await self._record_failure(identity, change_id, request_hash, failure("QUOTA_EXCEEDED", "记忆配额不足，请整合条目", current_entries=before["metadata"]["entries"], used_characters=len(before["text"]), quota=quota, available_characters=max(0, quota-len(before["text"]))))
+            action = "rollback" if restored_ledger_id else operations[0]["action"] if len(operations) == 1 else "batch"
+            action = {"add": "create", "edit": "update"}.get(action, action)
+            plan = await asyncio.to_thread(self._plan, identity, before, entries, text, basis, now, change_id, restored_ledger_id, action, restored_files)
+            task = asyncio.create_task(self._prepare_and_finish(change_id, request_hash, plan))
+            try:
+                return await asyncio.shield(task)
+            finally:
+                await task
+
+    async def _prepare_and_finish(self, change_id, request_hash, plan):
+        prepared = await self.events.channel.execute(lambda conn: self._prepare_tx(conn, change_id, request_hash, plan))
+        if prepared:
+            return prepared
+        return await self._finish_change(change_id, plan)
+
+    def _plan(self, identity, before, entries, text, basis, now, change_id, restored_id, action, restored_files):
+        store_type, store_id = before["store_type"], before["store_id"]
+        metadata = {"revision": before["revision"] + 1, "entries": entries}
+        path = self.path(store_type, store_id)
+        files = []
+        for target, content in ((path, text), (path.with_suffix(".meta.json"), canonical(metadata))):
+            previous = (before["text"] if target == path else canonical(before["metadata"])) if before["revision"] else None
+            files.append({"path": str(target.relative_to(self.data_dir)), "before": previous, "after": content})
+        old = {e["entry_id"]: e for e in before["metadata"]["entries"]}
+        for entry in entries:
+            if entry["state"] == "archived" and old.get(entry["entry_id"], {}).get("state") != "archived":
+                root = (self.data_dir / "agents" / identity.agent_id / "archive" if identity.actor_type == "agent" else self.data_dir / "archive") / store_type / store_id / entry["entry_id"]
+                archive_meta = {**entry, "original_path": str(path.relative_to(self.data_dir)), "store_type": store_type, "store_id": store_id}
+                for target, content in ((root / "entry.md", entry["text"]), (root / "entry.meta.json", canonical(archive_meta))):
+                    relative = str(target.relative_to(self.data_dir))
+                    tracked = self.db.read_conn.execute("SELECT json_extract(f.value,'$.content') FROM memory_ledger l,json_each(l.after_files) f WHERE json_extract(f.value,'$.path')=? ORDER BY l.global_seq DESC LIMIT 1", (relative,)).fetchone()
+                    files.append({"path": relative, "before": tracked[0] if tracked else None, "after": content})
+        primary_paths = {str(path.relative_to(self.data_dir)), str(path.with_suffix(".meta.json").relative_to(self.data_dir))}
+        for restored in restored_files:
+            if restored["path"] in primary_paths:
+                continue
+            self._intent_path(restored["path"])
+            tracked = self.db.read_conn.execute("SELECT json_extract(f.value,'$.content') FROM memory_ledger l,json_each(l.after_files) f WHERE json_extract(f.value,'$.path')=? ORDER BY l.global_seq DESC LIMIT 1", (restored["path"],)).fetchone()
+            files = [f for f in files if f["path"] != restored["path"]]
+            files.append({"path": restored["path"], "before": tracked[0] if tracked else None, "after": restored["content"]})
+        for item in files:
+            item["before_sha256"] = sha256(item["before"].encode()) if item["before"] is not None else None
+            item["after_sha256"] = sha256(item["after"].encode()) if item["after"] is not None else None
+        return {"store_type": store_type, "store_id": store_id, "before": before, "after_text": text,
+                "after_metadata": metadata, "files": files, "identity": asdict(identity), "source": identity.source(change_id),
+                "basis": basis, "created_at": now, "revision": metadata["revision"],
+                "change_id": change_id, "restored_ledger_id": restored_id,
+                "action": action}
+
+    def _prepare_tx(self, conn, change_id, request_hash, plan):
+        with conn:
+            conn.execute("BEGIN IMMEDIATE")
+            replayed = self._replayed(change_id, request_hash, conn)
+            if replayed is not None:
+                return replayed
+            row = conn.execute("SELECT revision FROM memory_stores WHERE store_type=? AND store_id=?", (plan["store_type"], plan["store_id"])).fetchone()
+            if (row[0] if row else 0) != plan["before"]["revision"]:
+                return failure("REVISION_CONFLICT", "准备意图时修订发生变化")
+            plan["ledger_id"] = conn.execute("SELECT COALESCE(MAX(id),0)+1 FROM (SELECT id FROM memory_ledger UNION ALL SELECT json_extract(plan,'$.ledger_id') AS id FROM memory_changes)").fetchone()[0]
+            conn.execute("INSERT INTO memory_changes(change_id,input_hash,store_type,store_id,expected_revision,plan,status,created_at) VALUES(?,?,?,?,?,?,'prepared',?)", (change_id, request_hash, plan["store_type"], plan["store_id"], plan["before"]["revision"], canonical(plan), plan["created_at"]))
+
+    def _replace_files(self, plan) -> dict | None:
+        for item in plan["files"]:
+            target = self._intent_path(item["path"])
+            current = self._file_text(target)
+            digest = sha256(current.encode()) if current is not None else None
+            if digest not in (item["before_sha256"], item["after_sha256"]):
+                return failure("EXTERNAL_MODIFICATION", "意图文件出现第三种状态", path=item["path"])
+        for item in plan["files"]:
+            content = item["after"].encode() if item["after"] is not None else None
+            self._atomic_replace(self._intent_path(item["path"]), content, item["before_sha256"], item["after_sha256"], plan["change_id"])
+
+    def _intent_path(self, relative: str) -> Path:
+        path = Path(relative)
+        target = self.data_dir / path
+        if path.is_absolute() or ".." in path.parts or not target.resolve().is_relative_to(self.data_dir.resolve()):
+            raise ValueError("记忆意图中的文件路径超出数据目录")
+        return target
+
+    def _atomic_replace(self, target, content, before_sha, after_sha, change_id):
+        target.parent.mkdir(parents=True, exist_ok=True)
+        fd = _open_dir_nofollow(target)
+        try:
+            current = self._file_text(target)
+            digest = sha256(current.encode()) if current is not None else None
+            if digest == after_sha:
+                return
+            if digest != before_sha:
+                raise ValueError("EXTERNAL_MODIFICATION：文件在替换前发生变化")
+            if content is None:
+                os.unlink(target.name, dir_fd=fd)
+                os.fsync(fd)
+                return
+            temporary = f".{target.name}.{change_id}.pending"
+            descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW, 0o600, dir_fd=fd)
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(content)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, target.name, src_dir_fd=fd, dst_dir_fd=fd)
+            os.fsync(fd)
+            for parent in target.parent.parents:
+                if parent == self.data_dir.parent:
+                    break
+                descriptor = os.open(parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+                try:
+                    os.fsync(descriptor)
+                finally:
+                    os.close(descriptor)
+        finally:
+            os.close(fd)
+
+    async def _finish_change(self, change_id, plan):
+        error = await asyncio.to_thread(self._replace_files, plan)
+        if error:
+            return error
+        return await self.events.channel.execute(lambda conn: self._commit_tx(conn, change_id, plan))
+
+    def _commit_tx(self, conn, change_id, plan):
+        with conn:
+            conn.execute("BEGIN IMMEDIATE")
+            state = conn.execute("SELECT status,result FROM memory_changes WHERE change_id=?", (change_id,)).fetchone()
+            if state[0] == "committed":
+                return {**json.loads(state[1]), "idempotent_replay": True}
+            kind, store_id = plan["store_type"], plan["store_id"]
+            text_sha = sha256(plan["after_text"].encode())
+            meta_sha = sha256(canonical(plan["after_metadata"]).encode())
+            conn.execute("INSERT INTO memory_stores VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(store_type,store_id) DO UPDATE SET revision=excluded.revision,text=excluded.text,metadata=excluded.metadata,text_sha256=excluded.text_sha256,metadata_sha256=excluded.metadata_sha256,updated_at=excluded.updated_at", (kind, store_id, plan["revision"], plan["after_text"], canonical(plan["after_metadata"]), text_sha, meta_sha, plan["created_at"]))
+            conn.execute("DELETE FROM memory_entries WHERE store_type=? AND store_id=?", (kind, store_id))
+            for entry in plan["after_metadata"]["entries"]:
+                conn.execute("INSERT INTO memory_entries VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (entry["entry_id"], kind, store_id, entry["entry_hash"], entry["text"], entry["state"], entry["hits"], entry["last_hit_at"], entry["created_at"], canonical(entry["source"]), entry["basis"], int(entry["needs_review"]), entry["approved_by"], entry["approved_at"]))
+            old = {e["entry_id"]: e["state"] for e in plan["before"]["metadata"]["entries"]}
+            archived = any(e["state"] == "archived" and old.get(e["entry_id"]) != "archived" for e in plan["after_metadata"]["entries"])
+            event_type = RunEventType.MEMORY_ARCHIVED if archived else RunEventType.MEMORY_UPDATED
+            prior = {e["entry_id"]: e for e in plan["before"]["metadata"]["entries"]}
+            changed = [e for e in plan["after_metadata"]["entries"] if prior.get(e["entry_id"]) != e]
+            single = changed[0] if len(changed) == 1 else None
+            payload = {"change_id": change_id, "ledger_id": plan["ledger_id"], "store_type": kind, "store_id": store_id,
+                "revision": plan["revision"], "action": plan["action"], "source": plan["source"],
+                "entry_id": single["entry_id"] if single else None, "entry_hash": single["entry_hash"] if single else None,
+                "summary": redact(single["text"] if single else f"记忆库完成 {plan['action']}，修改 {len(changed)} 条记忆")[:200],
+                "source_task_run_id": plan["identity"]["task_run_id"], "job_id": plan["identity"]["job_id"],
+                "scope": {"owner_id": "owner", "workspace_id": plan["identity"]["workspace_id"], "agent_id": plan["identity"]["agent_id"]}}
+            if archived:
+                payload["archive_path"] = str(Path(next(f["path"] for f in plan["files"] if f["path"].endswith("/entry.md"))).parent)
+            event = self.events.append_in_tx(conn, task_run_id=None, conversation_id=plan["identity"]["conversation_id"], type=event_type, payload=payload)
+            audit_seq = append_audit(conn, ts=plan["created_at"], actor_type=plan["source"]["actor_type"], actor_id=plan["source"]["actor_id"], action=event_type.value, resource_type="memory_store", resource_id=f"{kind}:{store_id}", detail=canonical(payload))
+            before_files = [{"path": f["path"], "content": f["before"], "sha256": f["before_sha256"]} for f in plan["files"]]
+            after_files = [{"path": f["path"], "content": f["after"], "sha256": f["after_sha256"]} for f in plan["files"]]
+            conn.execute("INSERT INTO memory_ledger VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (plan["ledger_id"], change_id, kind, store_id, plan["action"], plan["revision"], plan["before"]["text"], plan["after_text"], canonical(plan["before"]["metadata"]), canonical(plan["after_metadata"]), canonical(before_files), canonical(after_files), canonical(plan["source"]), plan["basis"], plan["restored_ledger_id"], audit_seq, event.global_seq, plan["created_at"]))
+            result = {"change_id": change_id, "ledger_id": plan["ledger_id"], "store_type": kind, "store_id": store_id,
+                      "entry_id": payload["entry_id"], "entry_hash": payload["entry_hash"],
+                      "revision": plan["revision"], "global_seq": event.global_seq, "idempotent_replay": False}
+            conn.execute("UPDATE memory_changes SET status='committed',result=?,committed_at=? WHERE change_id=?", (canonical(result), datetime.now(timezone.utc).isoformat(), change_id))
+        self.events.publish(event)
+        if audit_seq % SNAPSHOT_EVERY == 0:
+            snapshot_chain_head(conn, self.data_dir / "chain-head.txt")
+        return result
+
+    async def recover(self) -> list[dict]:
+        rows = self.db.read_conn.execute("SELECT change_id,plan FROM memory_changes WHERE status='prepared' ORDER BY created_at,change_id").fetchall()
+        results = []
+        for row in rows:
+            plan = json.loads(row[1])
+            async with self._locks.setdefault((plan["store_type"], plan["store_id"]), asyncio.Lock()):
+                results.append(await self._finish_change(row[0], plan))
+        return results
+
+    async def run_tool(self, invocation, context) -> dict:
+        row = self.db.read_conn.execute("SELECT workspace_id,agent_id,conversation_id FROM task_runs JOIN conversations ON conversations.id=task_runs.conversation_id WHERE task_runs.id=?", (context.task_run_id,)).fetchone()
+        if row is None:
+            return failure("OUT_OF_SCOPE", "记忆工具缺少真实任务身份")
+        identity = MemoryIdentity(row[0], row[1], "agent", row[1], row[2], context.task_run_id, user_turn_id=context.task_run_id)
+        target = invocation.input.get("target")
+        store_id = {"user": "owner", "workspace": row[0], "soul": row[1]}.get(target)
+        if store_id is None:
+            return failure("VALIDATION_ERROR", "target 必须为 user、workspace 或 soul")
+        if invocation.input.get("action") == "read":
+            return await self.read(identity, target, store_id)
+        operations = invocation.input.get("operations")
+        if operations is None:
+            operations = [{k: invocation.input[k] for k in ("action", "entry_hash", "text") if k in invocation.input}]
+        return await self.change(identity, target, store_id, change_id=invocation.call_id,
+            expected_revision=invocation.input.get("expected_revision"), basis=invocation.input.get("basis"), operations=operations)

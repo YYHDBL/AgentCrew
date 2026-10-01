@@ -1,0 +1,306 @@
+[
+  {
+    "boundary": "committed",
+    "process_exit": -9,
+    "before_files": [
+      {
+        "path": "USER.md",
+        "sha256": "bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b",
+        "mtime_ns": 1790850441010071851
+      },
+      {
+        "path": "USER.meta.json",
+        "sha256": "fb409a6986841ccddc9dd4b3a756c4d08c0cd778d324309c19e86b53f2a092c8",
+        "mtime_ns": 1790850441010772263
+      }
+    ],
+    "before_changes": [
+      [
+        "sigkill-change",
+        "committed"
+      ]
+    ],
+    "queries": [
+      {
+        "sql": "SELECT change_id,status,result FROM memory_changes",
+        "rows": [
+          {
+            "change_id": "sigkill-change",
+            "status": "committed",
+            "result": "{\"change_id\":\"sigkill-change\",\"entry_hash\":\"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\",\"entry_id\":\"c52d9aa77717475d89cecac07a03b205\",\"global_seq\":1,\"idempotent_replay\":false,\"ledger_id\":1,\"revision\":1,\"store_id\":\"owner\",\"store_type\":\"user\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT id,change_id,revision,audit_seq,global_seq FROM memory_ledger",
+        "rows": [
+          {
+            "id": 1,
+            "change_id": "sigkill-change",
+            "revision": 1,
+            "audit_seq": 1,
+            "global_seq": 1
+          }
+        ]
+      },
+      {
+        "sql": "SELECT seq,action,detail FROM audit_log",
+        "rows": [
+          {
+            "seq": 1,
+            "action": "memory.updated",
+            "detail": "{\"action\":\"create\",\"change_id\":\"sigkill-change\",\"entry_hash\":\"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\",\"entry_id\":\"c52d9aa77717475d89cecac07a03b205\",\"job_id\":null,\"ledger_id\":1,\"revision\":1,\"scope\":{\"agent_id\":\"agent\",\"owner_id\":\"owner\",\"workspace_id\":\"ws\"},\"source\":{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"sigkill-change\"},\"source_task_run_id\":null,\"store_id\":\"owner\",\"store_type\":\"user\",\"summary\":\"SIGKILL 后恰好提交一次\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT global_seq,type,payload FROM run_events",
+        "rows": [
+          {
+            "global_seq": 1,
+            "type": "memory.updated",
+            "payload": "{\"action\": \"create\", \"change_id\": \"sigkill-change\", \"entry_hash\": \"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\", \"entry_id\": \"c52d9aa77717475d89cecac07a03b205\", \"job_id\": null, \"ledger_id\": 1, \"revision\": 1, \"scope\": {\"agent_id\": \"agent\", \"owner_id\": \"owner\", \"workspace_id\": \"ws\"}, \"source\": {\"actor_id\": \"owner\", \"actor_type\": \"user\", \"manual_edit_id\": \"sigkill-change\"}, \"source_task_run_id\": null, \"store_id\": \"owner\", \"store_type\": \"user\", \"summary\": \"SIGKILL 后恰好提交一次\"}"
+          }
+        ]
+      }
+    ],
+    "after_files": [
+      {
+        "path": "USER.md",
+        "sha256": "bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b",
+        "mtime_ns": 1790850441010071851
+      },
+      {
+        "path": "USER.meta.json",
+        "sha256": "fb409a6986841ccddc9dd4b3a756c4d08c0cd778d324309c19e86b53f2a092c8",
+        "mtime_ns": 1790850441010772263
+      }
+    ],
+    "audit_verified": true,
+    "recovery_count": 2
+  },
+  {
+    "boundary": "files_replaced",
+    "process_exit": -9,
+    "before_files": [
+      {
+        "path": "USER.md",
+        "sha256": "bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b",
+        "mtime_ns": 1790850440902115112
+      },
+      {
+        "path": "USER.meta.json",
+        "sha256": "5a821ff4f0993dff2eef91efd0ce72a629a6b75e7042eda209e71e19053b4ceb",
+        "mtime_ns": 1790850440902695234
+      }
+    ],
+    "before_changes": [
+      [
+        "sigkill-change",
+        "prepared"
+      ]
+    ],
+    "queries": [
+      {
+        "sql": "SELECT change_id,status,result FROM memory_changes",
+        "rows": [
+          {
+            "change_id": "sigkill-change",
+            "status": "committed",
+            "result": "{\"change_id\":\"sigkill-change\",\"entry_hash\":\"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\",\"entry_id\":\"9503e9a94e20447e842c99ca4d20ef63\",\"global_seq\":1,\"idempotent_replay\":false,\"ledger_id\":1,\"revision\":1,\"store_id\":\"owner\",\"store_type\":\"user\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT id,change_id,revision,audit_seq,global_seq FROM memory_ledger",
+        "rows": [
+          {
+            "id": 1,
+            "change_id": "sigkill-change",
+            "revision": 1,
+            "audit_seq": 1,
+            "global_seq": 1
+          }
+        ]
+      },
+      {
+        "sql": "SELECT seq,action,detail FROM audit_log",
+        "rows": [
+          {
+            "seq": 1,
+            "action": "memory.updated",
+            "detail": "{\"action\":\"create\",\"change_id\":\"sigkill-change\",\"entry_hash\":\"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\",\"entry_id\":\"9503e9a94e20447e842c99ca4d20ef63\",\"job_id\":null,\"ledger_id\":1,\"revision\":1,\"scope\":{\"agent_id\":\"agent\",\"owner_id\":\"owner\",\"workspace_id\":\"ws\"},\"source\":{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"sigkill-change\"},\"source_task_run_id\":null,\"store_id\":\"owner\",\"store_type\":\"user\",\"summary\":\"SIGKILL 后恰好提交一次\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT global_seq,type,payload FROM run_events",
+        "rows": [
+          {
+            "global_seq": 1,
+            "type": "memory.updated",
+            "payload": "{\"action\": \"create\", \"change_id\": \"sigkill-change\", \"entry_hash\": \"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\", \"entry_id\": \"9503e9a94e20447e842c99ca4d20ef63\", \"job_id\": null, \"ledger_id\": 1, \"revision\": 1, \"scope\": {\"agent_id\": \"agent\", \"owner_id\": \"owner\", \"workspace_id\": \"ws\"}, \"source\": {\"actor_id\": \"owner\", \"actor_type\": \"user\", \"manual_edit_id\": \"sigkill-change\"}, \"source_task_run_id\": null, \"store_id\": \"owner\", \"store_type\": \"user\", \"summary\": \"SIGKILL 后恰好提交一次\"}"
+          }
+        ]
+      }
+    ],
+    "after_files": [
+      {
+        "path": "USER.md",
+        "sha256": "bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b",
+        "mtime_ns": 1790850440902115112
+      },
+      {
+        "path": "USER.meta.json",
+        "sha256": "5a821ff4f0993dff2eef91efd0ce72a629a6b75e7042eda209e71e19053b4ceb",
+        "mtime_ns": 1790850440902695234
+      }
+    ],
+    "audit_verified": true,
+    "recovery_count": 2
+  },
+  {
+    "boundary": "first_file",
+    "process_exit": -9,
+    "before_files": [
+      {
+        "path": "USER.md",
+        "sha256": "bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b",
+        "mtime_ns": 1790850440790255731
+      }
+    ],
+    "before_changes": [
+      [
+        "sigkill-change",
+        "prepared"
+      ]
+    ],
+    "queries": [
+      {
+        "sql": "SELECT change_id,status,result FROM memory_changes",
+        "rows": [
+          {
+            "change_id": "sigkill-change",
+            "status": "committed",
+            "result": "{\"change_id\":\"sigkill-change\",\"entry_hash\":\"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\",\"entry_id\":\"b180ed9586704648bc3ec8712214ef35\",\"global_seq\":1,\"idempotent_replay\":false,\"ledger_id\":1,\"revision\":1,\"store_id\":\"owner\",\"store_type\":\"user\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT id,change_id,revision,audit_seq,global_seq FROM memory_ledger",
+        "rows": [
+          {
+            "id": 1,
+            "change_id": "sigkill-change",
+            "revision": 1,
+            "audit_seq": 1,
+            "global_seq": 1
+          }
+        ]
+      },
+      {
+        "sql": "SELECT seq,action,detail FROM audit_log",
+        "rows": [
+          {
+            "seq": 1,
+            "action": "memory.updated",
+            "detail": "{\"action\":\"create\",\"change_id\":\"sigkill-change\",\"entry_hash\":\"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\",\"entry_id\":\"b180ed9586704648bc3ec8712214ef35\",\"job_id\":null,\"ledger_id\":1,\"revision\":1,\"scope\":{\"agent_id\":\"agent\",\"owner_id\":\"owner\",\"workspace_id\":\"ws\"},\"source\":{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"sigkill-change\"},\"source_task_run_id\":null,\"store_id\":\"owner\",\"store_type\":\"user\",\"summary\":\"SIGKILL 后恰好提交一次\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT global_seq,type,payload FROM run_events",
+        "rows": [
+          {
+            "global_seq": 1,
+            "type": "memory.updated",
+            "payload": "{\"action\": \"create\", \"change_id\": \"sigkill-change\", \"entry_hash\": \"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\", \"entry_id\": \"b180ed9586704648bc3ec8712214ef35\", \"job_id\": null, \"ledger_id\": 1, \"revision\": 1, \"scope\": {\"agent_id\": \"agent\", \"owner_id\": \"owner\", \"workspace_id\": \"ws\"}, \"source\": {\"actor_id\": \"owner\", \"actor_type\": \"user\", \"manual_edit_id\": \"sigkill-change\"}, \"source_task_run_id\": null, \"store_id\": \"owner\", \"store_type\": \"user\", \"summary\": \"SIGKILL 后恰好提交一次\"}"
+          }
+        ]
+      }
+    ],
+    "after_files": [
+      {
+        "path": "USER.md",
+        "sha256": "bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b",
+        "mtime_ns": 1790850440790255731
+      },
+      {
+        "path": "USER.meta.json",
+        "sha256": "49ff7b0580407930313d7c72bebe9a8786f2a15a9e4d2b35d117d44a8f512173",
+        "mtime_ns": 1790850440795526990
+      }
+    ],
+    "audit_verified": true,
+    "recovery_count": 2
+  },
+  {
+    "boundary": "prepared",
+    "process_exit": -9,
+    "before_files": [],
+    "before_changes": [
+      [
+        "sigkill-change",
+        "prepared"
+      ]
+    ],
+    "queries": [
+      {
+        "sql": "SELECT change_id,status,result FROM memory_changes",
+        "rows": [
+          {
+            "change_id": "sigkill-change",
+            "status": "committed",
+            "result": "{\"change_id\":\"sigkill-change\",\"entry_hash\":\"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\",\"entry_id\":\"4d18bcea6b2d47f897a7e7ba976ec5ba\",\"global_seq\":1,\"idempotent_replay\":false,\"ledger_id\":1,\"revision\":1,\"store_id\":\"owner\",\"store_type\":\"user\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT id,change_id,revision,audit_seq,global_seq FROM memory_ledger",
+        "rows": [
+          {
+            "id": 1,
+            "change_id": "sigkill-change",
+            "revision": 1,
+            "audit_seq": 1,
+            "global_seq": 1
+          }
+        ]
+      },
+      {
+        "sql": "SELECT seq,action,detail FROM audit_log",
+        "rows": [
+          {
+            "seq": 1,
+            "action": "memory.updated",
+            "detail": "{\"action\":\"create\",\"change_id\":\"sigkill-change\",\"entry_hash\":\"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\",\"entry_id\":\"4d18bcea6b2d47f897a7e7ba976ec5ba\",\"job_id\":null,\"ledger_id\":1,\"revision\":1,\"scope\":{\"agent_id\":\"agent\",\"owner_id\":\"owner\",\"workspace_id\":\"ws\"},\"source\":{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"sigkill-change\"},\"source_task_run_id\":null,\"store_id\":\"owner\",\"store_type\":\"user\",\"summary\":\"SIGKILL 后恰好提交一次\"}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT global_seq,type,payload FROM run_events",
+        "rows": [
+          {
+            "global_seq": 1,
+            "type": "memory.updated",
+            "payload": "{\"action\": \"create\", \"change_id\": \"sigkill-change\", \"entry_hash\": \"bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b\", \"entry_id\": \"4d18bcea6b2d47f897a7e7ba976ec5ba\", \"job_id\": null, \"ledger_id\": 1, \"revision\": 1, \"scope\": {\"agent_id\": \"agent\", \"owner_id\": \"owner\", \"workspace_id\": \"ws\"}, \"source\": {\"actor_id\": \"owner\", \"actor_type\": \"user\", \"manual_edit_id\": \"sigkill-change\"}, \"source_task_run_id\": null, \"store_id\": \"owner\", \"store_type\": \"user\", \"summary\": \"SIGKILL 后恰好提交一次\"}"
+          }
+        ]
+      }
+    ],
+    "after_files": [
+      {
+        "path": "USER.md",
+        "sha256": "bf43a6d3c222c53d57d9a74944cb25772c2b47d31262328e576fd28a9b3de32b",
+        "mtime_ns": 1790850440688344996
+      },
+      {
+        "path": "USER.meta.json",
+        "sha256": "718f2bb28ab2f004a23728caf9a321b5a06d49fc7c06d56454c34b4151b7bb0d",
+        "mtime_ns": 1790850440688832702
+      }
+    ],
+    "audit_verified": true,
+    "recovery_count": 2
+  }
+]

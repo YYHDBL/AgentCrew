@@ -366,7 +366,7 @@ components:
         change_id: { type: string }
         store_type: { type: string, enum: [user, workspace, soul, skill] }
         store_id: { type: string }
-        action: { type: string, enum: [create, update, archive, restore, pin, unpin, review, rollback] }
+        action: { type: string, enum: [create, update, archive, restore, pin, unpin, review, rollback, batch] }
         before_text: { type: [string, "null"] }
         after_text: { type: [string, "null"] }
         before_metadata: { type: object, additionalProperties: true }

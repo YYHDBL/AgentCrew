@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import re
+from pathlib import Path
 
 def _sbpl_quote(path: str) -> str:
     """SBPL 字符串字面量转义（外审回稿 S06，macOS 实测）：`\"` 生效（未转义
@@ -20,10 +22,15 @@ def seatbelt_profile(scope_realpaths: list[str],
     rules += [f'(allow file-write* (subpath "{_sbpl_quote(p)}"))'
               for p in scope_realpaths]
     # 双向禁：先禁写（含 scope 内受保护路径），再禁读
-    rules += [f'(deny file-write* (subpath "{_sbpl_quote(p)}"))'
-              for p in deny_realpaths]
-    rules += [f'(deny file-read* (subpath "{_sbpl_quote(p)}"))'
-              for p in deny_realpaths]
+    for path in deny_realpaths:
+        if "*" in Path(path).parts:
+            prefix = Path(path).parent.parent
+            name = "".join(f"[{c.upper()}{c.lower()}]" if c.isalpha() else re.escape(c) for c in Path(path).name)
+            pattern = "^" + re.escape(str(prefix)) + "/[^/]+/" + name + "$"
+            selector = '(regex #"' + pattern.replace('"', '\\"') + '")'
+        else:
+            selector = f'(subpath "{_sbpl_quote(path)}")'
+        rules.extend(f'(deny {operation} {selector})' for operation in ("file-write*", "file-read*"))
     return "\n".join(rules)
 
 def _sandboxed_argv(profile: str, command: str) -> list[str]:

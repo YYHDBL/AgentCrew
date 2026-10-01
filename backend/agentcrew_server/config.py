@@ -31,6 +31,8 @@ DEFAULTS: dict[str, Any] = {
         "max_file_mb": 50,
         "max_folders": 5,
     },
+    "memory": {"user_quota": 1400, "workspace_quota": 2200, "soul_quota": 2700,
+               "write_approval": False},
     "models": {
         "main": {"provider": "glm", "model": "", "base_url": "", "api_key": ""},
         "aux": {"provider": "glm", "model": "", "base_url": "", "api_key": ""},
@@ -153,8 +155,11 @@ def validate(cfg: Mapping[str, Any]) -> None:
         ("gates.token_budget", 1),
         ("limits.max_files", 1), ("limits.max_file_mb", 1),
         ("limits.max_folders", 1),
+        ("memory.user_quota", 1), ("memory.workspace_quota", 1), ("memory.soul_quota", 1),
     ):
         _require_int(cfg, dotted, minimum)
+    if type(_get_path(cfg, "memory.write_approval")) is not bool:
+        raise ConfigError("memory.write_approval 需要布尔值")
     models = cfg.get("models")
     if not isinstance(models, Mapping):
         raise ConfigError(f"models 需要对象，得到 {models!r}")

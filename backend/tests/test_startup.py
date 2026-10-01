@@ -146,14 +146,14 @@ def test_bad_migration_full_startup_enters_diagnostic_mode(tmp_path):
         log_text = (tmp_path / "logs" / "sidecar.log").read_text(encoding="utf-8")
         assert "只读诊断模式" in log_text
         assert "迁移 v99" in log_text
-        # 回滚核验：版本仍是 1，坏表不存在
+        # 失败迁移撤销，已完成迁移和业务表保持完整。
         conn = sqlite3.connect(str(tmp_path / "agentcrew.db"))
         try:
             version = conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
             has_bad = conn.execute(
                 "SELECT count(*) FROM sqlite_master WHERE name='nope'"
             ).fetchone()[0]
-            assert version == 2 and has_bad == 0
+            assert version == 3 and has_bad == 0
         finally:
             conn.close()
         proc.send_signal(signal.SIGTERM)

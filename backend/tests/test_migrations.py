@@ -36,11 +36,11 @@ def test_fresh_apply_creates_all_13_tables(tmp_path):
     db = _make_db(tmp_path)
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "applied"
-    assert result.applied_versions == [1, 2]
+    assert result.applied_versions == [1, 2, 3]
     assert result.snapshot_path and Path(result.snapshot_path).exists()
     assert _EXPECTED_TABLES <= _tables(db)
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 2
+    assert version == 3
     db.close()
 
 
@@ -64,7 +64,7 @@ def test_downgrade_refused_with_both_versions(tmp_path):
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "conflict"
     assert isinstance(result.error, MigrationConflictError)
-    assert "v9" in str(result.error) and "v2" in str(result.error)
+    assert "v9" in str(result.error) and "v3" in str(result.error)
     db.close()
 
 
@@ -72,7 +72,7 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
     db = _make_db(tmp_path)
     run_migrations(db.write_conn, tmp_path / "backups")
     bad = Migration(
-        version=3,
+        version=4,
         name="故意非法",
         statements=("CREATE TABLE should_not_exist (id TEXT",),  # 语法错误
     )
@@ -81,9 +81,9 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
     )
     with pytest.raises(MigrationFailedError):
         run_migrations(db.write_conn, tmp_path / "backups")
-    # 该迁移事务整体回滚：版本停在 2、坏表不存在、既有表完好
+    # 该迁移事务整体撤销：既有版本及业务表保持完整。
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 2
+    assert version == 3
     assert "should_not_exist" not in _tables(db)
     assert "conversations" in _tables(db)
     db.close()
@@ -123,8 +123,8 @@ def test_snapshot_includes_uncheckpointed_wal_data(tmp_path):
     db.close()
 
 
-def test_v2_upgrade_preserves_events_and_global_seq(tmp_path):
-    """v1 库升级 v2：run_events 表重建（task_run_id 放开可空）后
+def test_upgrade_preserves_events_and_global_seq(tmp_path):
+    """v1 库升级：run_events 表重建（任务与会话身份允许为空）后
     global_seq 保持原值——SSE 游标/at_global_seq 不漂移；旧事件可继续追加。"""
     import json as _json
 
@@ -155,7 +155,7 @@ def test_v2_upgrade_preserves_events_and_global_seq(tmp_path):
     assert [r[0] for r in before] == [1, 2, 3]
 
     result = m.run_migrations(conn, tmp_path / "backups")
-    assert result.status == "applied" and result.applied_versions == [2]
+    assert result.status == "applied" and result.applied_versions == [2, 3]
     after = conn.execute(
         "SELECT global_seq, id, task_run_id FROM run_events"
         " ORDER BY global_seq").fetchall()

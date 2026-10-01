@@ -139,7 +139,7 @@ def test_invalid_call_id_rejected(tmp_path):
     registry = ToolRegistry()
 
     async def touch(inv, ctx):
-        (Path("/tmp") / "c5-evil").write_text("pwned")
+        (tmp_path / "c5-evil").write_text("pwned")
         return _ok()
 
     registry.register(Tool(_meta("touch", read_only=False), touch))
@@ -148,7 +148,7 @@ def test_invalid_call_id_rejected(tmp_path):
         result = run(scheduler.run(
             ToolInvocation(bad_id, "touch", {}), WorkContext()))
         assert not result.ok and result.error == "INVALID_CALL_ID", bad_id
-    assert not Path("/tmp/c5-evil").exists(), "非法 call_id 不得执行任何副作用"
+    assert not (tmp_path / "c5-evil").exists(), "非法 call_id 不得执行任何副作用"
 
 
 def test_prepared_emit_failure_blocks_execution(tmp_path):

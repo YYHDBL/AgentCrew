@@ -115,6 +115,7 @@ class RunManager:
         approvals: "ApprovalService",
         scheduler: "ToolScheduler",
         questions: "QuestionService",
+        memory=None,
     ):
         self._db = db
         self._store = event_store
@@ -124,6 +125,7 @@ class RunManager:
         self._approvals = approvals
         self._scheduler = scheduler
         self._questions = questions
+        self._memory = memory
         self._runs: dict[str, _Run] = {}
         self._guardrails: dict[str, str] = {}  # task_id → 护栏提示（接续注入）
         self._recovery = None  # C9：RecoveryService（cli 装配后注回，resume 重建用）
@@ -310,6 +312,8 @@ class RunManager:
                 task_run_id)
             ctx.ask_resolver = self._questions.make_resolver(
                 task_run_id, conversation_id)
+            if self._memory is not None:
+                ctx.memory_writer = self._memory.run_tool
 
             async def sink(event_type: str, payload: dict) -> None:
                 await self._emit(task_run_id, conversation_id,

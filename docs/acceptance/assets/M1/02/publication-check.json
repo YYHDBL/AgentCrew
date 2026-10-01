@@ -1,0 +1,25 @@
+{
+  "credential_matches": 0,
+  "files": [
+    {
+      "path": "backend-tests.txt",
+      "sha256": "04caa976525ab7e1e03be66a603f3b305bd0c170f8eb93fb434d414effed0477"
+    },
+    {
+      "path": "http-model.json",
+      "sha256": "0f58c747d4460ea65b814d6346fbb8de407b5a7f38aaf446941a3d33d74878f9"
+    },
+    {
+      "path": "openapi.txt",
+      "sha256": "6682792bf87a47f66a5d044d2c89e78949ba201c7f6784b5311af287f52fcb31"
+    },
+    {
+      "path": "sigkill.json",
+      "sha256": "797895ca58a6ef9e55599c99ff640878e1196a443ecf0bc30cd83faec248efd8"
+    },
+    {
+      "path": "store-tests.txt",
+      "sha256": "d32c5693ca597b389346039a7d358ce4285dbc4d282c327bb683f85c874992f1"
+    }
+  ]
+}

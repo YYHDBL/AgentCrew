@@ -59,6 +59,11 @@ def create_app(runtime: RuntimeState) -> FastAPI:
     @asynccontextmanager
     async def lifespan(_: FastAPI):
         runtime.log.debug("http.lifespan startup")
+        if runtime.memory is not None and runtime.diagnostic is None:
+            results = await runtime.memory.recover()
+            for result in results:
+                if "error" in result:
+                    raise RuntimeError(f"记忆启动恢复失败：{result}")
         if runtime.recovery is not None:
             # 启动对账（§7）：非终态任务收敛 interrupted、结清 dispatched
             # 调用——必须在 RunManager 派发协程之前完成

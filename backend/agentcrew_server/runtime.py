@@ -24,6 +24,7 @@ if TYPE_CHECKING:  # 避免运行时循环导入（bus 导入 core.events 而已
     from .run_manager import RunManager
     from .sessions import SessionService
     from .settings import SettingsService
+    from .memory.store import MemoryStore
 
 
 @dataclass
@@ -52,6 +53,7 @@ class RuntimeState:
     questions: "QuestionService | None" = None  # M0-C8 起装配
     run_manager: "RunManager | None" = None  # M0-C8 起装配
     recovery: "RecoveryService | None" = None  # M0-C9 起装配
+    memory: "MemoryStore | None" = None
 
     async def shutdown(self) -> None:
         """优雅关闭（§7 顺序；任务取消不写终态——run_manager.shutdown 在

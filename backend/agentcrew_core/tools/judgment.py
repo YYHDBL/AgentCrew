@@ -93,9 +93,15 @@ def path_in_scope(path: Path, scope: list[Path]) -> bool:
 
 
 def path_is_protected(path: Path, protected: list[Path]) -> bool:
-    real = Path(path).resolve()
-    return any(real == Path(p).resolve() or _within(real, Path(p).resolve())
-               for p in protected)
+    real = Path(str(Path(path).resolve()).casefold())
+    for protected_path in protected:
+        root = Path(str(Path(protected_path).resolve()).casefold())
+        if "*" in root.parts:
+            if real.match(str(root)):
+                return True
+        elif real == root or _within(real, root):
+            return True
+    return False
 
 
 def build_protected_paths(data_dir: Path, home: Path | None = None) -> list[Path]:
@@ -114,7 +120,11 @@ def build_protected_paths(data_dir: Path, home: Path | None = None) -> list[Path
         data_dir / "backups",
         data_dir / "logs",
         data_dir / "USER.md",
+        data_dir / "USER.meta.json",
         data_dir / "soul.md",
+        data_dir / "soul.meta.json",
+        data_dir / "agents",
+        data_dir / "archive",
         home / ".ssh",
         home / ".aws",
         home / ".gnupg",
@@ -126,10 +136,8 @@ def build_protected_paths(data_dir: Path, home: Path | None = None) -> list[Path
     ]
     # MEMORY.md（当前及未来工作区）——目录可能不存在，按字面列入
     workspaces = data_dir / "workspaces"
-    if workspaces.exists():
-        candidates.extend(p / "MEMORY.md" for p in workspaces.iterdir() if p.is_dir())
-    else:
-        candidates.append(workspaces / "MEMORY.md")
+    candidates.extend([workspaces / "MEMORY.md", workspaces / "MEMORY.meta.json",
+                       workspaces / "*" / "MEMORY.md", workspaces / "*" / "MEMORY.meta.json"])
     return candidates
 
 

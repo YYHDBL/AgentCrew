@@ -24,6 +24,7 @@ from .externalize import (
 )
 from .http_request import HTTP_SCHEMA, _http_request
 from .read_file import READ_FILE_SCHEMA, _read_file
+from .memory_write import MEMORY_WRITE_SCHEMA, _memory_write
 from .seatbelt import seatbelt_profile
 from .write_file import WRITE_FILE_SCHEMA, _write_file, _write_file_extras
 from .write_file import _open_dir_nofollow  # noqa: F401 —— 测试引用面
@@ -68,6 +69,13 @@ def build_default_registry():
               needs_approval=True, concurrent_safe=True,
               side_effect_class="outcome_unknown"),
         _http_request,
+    ))
+    registry.register(Tool(
+        _meta("memory_write", "读取或修改持久化三库。用户偏好进入 user，工作区事实进入 workspace，员工经验进入 soul。先 read 获取修订和条目哈希；写入提供 expected_revision 和真实依据 basis，可用 operations 一次整合多个条目。配额失败三次后本回合跳过保存。",
+              MEMORY_WRITE_SCHEMA, read_only=False, destructive=False,
+              risk_level="medium", needs_approval=False, concurrent_safe=False,
+              side_effect_class="verifiable"),
+        _memory_write,
     ))
     registry.register(Tool(
         _meta("ask_user", "向用户提问并等待回答（用于澄清任务，答案会回到对话）",

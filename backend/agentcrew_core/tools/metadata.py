@@ -75,3 +75,4 @@ class WorkContext:
     # 经三级闸门授权的 http_request 调用（call_id 级）：M0 allowed_hosts 空 =
     # 全部需审批——人工/规则放行后执行器的域名硬检查须认这笔授权（外审 S02）
     approved_calls: set[str] = field(default_factory=set)
+    memory_writer: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None

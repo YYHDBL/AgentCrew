@@ -124,6 +124,22 @@ class RecoveryService:
                 continue  # §6.2 v1.8 豁免：账本停 dispatched，重放合成占位
             if self._is_read_only(tool_name):
                 continue  # 外审 K4：纯读无副作用可核验，占位降级即可
+            if tool_name == "memory_write":
+                change = self._db.read_conn.execute("SELECT status,result FROM memory_changes WHERE change_id=?", (call_id,)).fetchone()
+                if change is not None and change[0] == "committed":
+                    result = json.loads(change[1])
+                    await self._store.append(task_run_id=task_id, conversation_id=conversation_id,
+                        type=RunEventType.TOOL_COMPLETED,
+                        payload={"call_id": call_id, "output": json.dumps(result, ensure_ascii=False),
+                                 "output_summary": "记忆意图已提交，恢复核对账本完成", "details": result})
+                    auto_done += 1
+                elif change is None:
+                    await self._store.append(task_run_id=task_id, conversation_id=conversation_id,
+                        type=RunEventType.TOOL_FAILED,
+                        payload={"call_id": call_id, "error": "MEMORY_NOT_COMMITTED", "output_summary": "记忆调用没有持久化意图，没有发生写入"})
+                else:
+                    raise RuntimeError("记忆未完成意图必须先恢复，再核对工具调用")
+                continue
             artifact_path: str | None = None
             if effect_class == "verifiable":
                 artifact_path = await asyncio.to_thread(

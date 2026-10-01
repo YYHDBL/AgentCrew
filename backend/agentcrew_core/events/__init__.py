@@ -68,6 +68,9 @@ class RunEventType(StrEnum):
     CONTEXT_COMPACTED = "context.compacted"
     TOOL_RESULT_EXTERNALIZED = "tool.result_externalized"
 
+    MEMORY_UPDATED = "memory.updated"
+    MEMORY_ARCHIVED = "memory.archived"
+
 
 @dataclass(frozen=True)
 class Event:
@@ -80,7 +83,7 @@ class Event:
     id: str
     task_run_id: str | None
     seq: int
-    conversation_id: str
+    conversation_id: str | None
     type: RunEventType
     payload: dict[str, Any] = field(default_factory=dict)
     attempt_no: int | None = None
