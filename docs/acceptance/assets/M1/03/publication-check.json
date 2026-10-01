@@ -12,11 +12,6 @@
       "bytes": 4529
     },
     {
-      "path": "docs/acceptance/assets/M1/03/http-model 2.json",
-      "sha256": "3997beab0474ee3702f9ae877148d4625fc6244f8da6fac30a563fb4b403b4ad",
-      "bytes": 128911
-    },
-    {
       "path": "docs/acceptance/assets/M1/03/http-model.json",
       "sha256": "12958a430c069416294bda71f1b64a3bfc05027489ac656a53851024b285396f",
       "bytes": 164821
