@@ -1,0 +1,10 @@
+{
+  "endpoint": "/api/task-runs/908cd21feaff4a668e284a4ab295db8f/resume",
+  "status": 202,
+  "body": {
+    "data": {
+      "warnings": []
+    }
+  },
+  "trigger": "真实界面恢复按钮"
+}

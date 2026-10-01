@@ -1,0 +1,223 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c11-recovery-1790824002591",
+  "interrupted_without_resume": {
+    "approvals": 0,
+    "conversation": "d33f8df8211344f4a46b4aa00a850344",
+    "task_run_id": "8311bd37ab7445dbb55584f584bd3586",
+    "killed_pid": 39943,
+    "old_port": 65317,
+    "new_port": 65431
+  },
+  "resumed_approval": {
+    "task_run_id": "8311bd37ab7445dbb55584f584bd3586",
+    "resumed_global_seq": 10,
+    "permission_global_seq": 16,
+    "visible_and_enabled": true,
+    "approved_through_ui": true,
+    "completed": true,
+    "replay_preserved": true
+  },
+  "events": [
+    {
+      "global_seq": 1,
+      "seq": 1,
+      "type": "run.queued",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 2,
+      "seq": 2,
+      "type": "run.started",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 3,
+      "seq": 3,
+      "type": "step.started",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 4,
+      "seq": 4,
+      "type": "llm.request_started",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 5,
+      "seq": 5,
+      "type": "llm.request_done",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 6,
+      "seq": 6,
+      "type": "step.completed",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 7,
+      "seq": 7,
+      "type": "tool.prepared",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 8,
+      "seq": 8,
+      "type": "permission.requested",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 9,
+      "seq": 9,
+      "type": "run.interrupted",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 10,
+      "seq": 10,
+      "type": "run.resumed",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 11,
+      "seq": 11,
+      "type": "step.started",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 12,
+      "seq": 12,
+      "type": "llm.request_started",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 13,
+      "seq": 13,
+      "type": "llm.request_done",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 14,
+      "seq": 14,
+      "type": "step.completed",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 15,
+      "seq": 15,
+      "type": "tool.prepared",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 16,
+      "seq": 16,
+      "type": "permission.requested",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 17,
+      "seq": 17,
+      "type": "permission.resolved",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586",
+      "decision": "allow_once",
+      "tool_call_id": "call_8647ff94fb7e4ab69faadcaa"
+    },
+    {
+      "global_seq": 18,
+      "seq": 18,
+      "type": "tool.dispatched",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 19,
+      "seq": 19,
+      "type": "artifact.created",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 20,
+      "seq": 20,
+      "type": "artifact.ready",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 21,
+      "seq": 21,
+      "type": "tool.completed",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 22,
+      "seq": 22,
+      "type": "step.started",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 23,
+      "seq": 23,
+      "type": "llm.request_started",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 24,
+      "seq": 24,
+      "type": "llm.request_done",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 25,
+      "seq": 25,
+      "type": "step.completed",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 26,
+      "seq": 26,
+      "type": "tool.prepared",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 27,
+      "seq": 27,
+      "type": "tool.dispatched",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 28,
+      "seq": 28,
+      "type": "tool.completed",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 29,
+      "seq": 29,
+      "type": "step.started",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 30,
+      "seq": 30,
+      "type": "llm.request_started",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 31,
+      "seq": 31,
+      "type": "llm.request_done",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 32,
+      "seq": 32,
+      "type": "step.completed",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    },
+    {
+      "global_seq": 33,
+      "seq": 33,
+      "type": "run.completed",
+      "task_run_id": "8311bd37ab7445dbb55584f584bd3586"
+    }
+  ],
+  "all_checks_passed": true
+}

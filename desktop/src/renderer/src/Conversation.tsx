@@ -42,12 +42,17 @@ const decisions = [['allow_once', '允许'], ['allow_always', '总是允许'], [
 export function Details({ events, action, busy }: { events: Frame[]; action: Action; busy: boolean }): JSX.Element {
   const resolved = new Set(events.filter((e) => e.type === 'permission.resolved').map((e) => e.payload.tool_call_id))
   const answered = new Set(events.filter((e) => e.type === 'question.answered').map((e) => e.payload.request_id))
-  const terminal = new Set(events.filter((e) => ['run.completed', 'run.failed', 'run.cancelled', 'run.interrupted'].includes(e.type)).map((e) => e.task_run_id))
   const completedSteps = new Set(events.filter((e) => e.type === 'step.completed').map((e) => e.payload.step_id))
+  const lifecycles = new Map<string, Frame>()
   const latestRequests = new Map<unknown, Frame>()
   for (const event of events) {
+    if (event.task_run_id && ['run.queued', 'run.started', 'run.resumed', 'run.completed', 'run.failed', 'run.cancelled', 'run.interrupted'].includes(event.type)) {
+      const latest = lifecycles.get(event.task_run_id)
+      if (!latest || event.global_seq > latest.global_seq) lifecycles.set(event.task_run_id, event)
+    }
     if (event.type.startsWith('llm.request_')) latestRequests.set(event.payload.step_id, event)
   }
+  const terminal = new Set([...lifecycles.values()].filter((e) => ['run.completed', 'run.failed', 'run.cancelled', 'run.interrupted'].includes(e.type)).map((e) => e.task_run_id))
   const tools = new Map<unknown, Frame[]>()
   for (const event of events) {
     if (!event.type.startsWith('tool.')) continue
@@ -81,6 +86,8 @@ export function Details({ events, action, busy }: { events: Frame[]; action: Act
       return <section className="process-card" key={event.global_seq}><h3>模型请求失败 · {outcome}</h3><p>{String(p.error)}</p></section>
     }
     if (event.type === 'run.failed') return <section className="process-card" role="alert" key={event.global_seq}><h3>执行错误</h3><p>{String(p.reason)}</p></section>
+    if (event.type === 'run.interrupted') return <section className="process-card" key={event.global_seq}><h3>任务已中断</h3><p>{String(p.reason)}</p></section>
+    if (event.type === 'run.resumed') return <section className="process-card" key={event.global_seq}><h3>已恢复 · 第 {String(p.attempt_no)} 次尝试</h3></section>
     return null
   })}</div>
 }

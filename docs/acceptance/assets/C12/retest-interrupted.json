@@ -1,0 +1,37 @@
+{
+  "port": 51608,
+  "state": {
+    "status": 200,
+    "body": {
+      "data": {
+        "state": "idle",
+        "waiting_approvals": 0,
+        "waiting_questions": 0,
+        "queue_paused": false,
+        "at_global_seq": 33,
+        "queue": [],
+        "can_send": true,
+        "can_queue": false,
+        "can_cancel": false,
+        "can_continue_queue": false,
+        "current_task_run_id": null
+      }
+    }
+  },
+  "runs": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "id": "908cd21feaff4a668e284a4ab295db8f",
+          "instruction": "把 inbox 里的文件按类型整理到子文件夹并生成清单.csv。inbox 已授权，路径为 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/inbox。请保留全部 20 个文件的原名、内容和修改时间，按 pdf/csv/txt/md/no_extension 五种类型分类。清单列为 原名,类型,相对路径,大小字节，共 20 条记录。执行顺序：先读取真实目录；使用 write_file 在当前任务工作空间创建 整理说明.md，内容为「C12 文件整理验收：保留原名、内容和修改时间。」；然后使用 bash 移动文件；使用 write_file 在当前工作空间生成 清单.csv，再复制到 inbox/清单.csv；最后核对目录、清单与真实文件并完成任务。恢复执行时根据副作用账本继续尚未完成的移动和清单生成，已成功写入的 整理说明.md 保持原状。只有全部分类与清单核验完成后才能回复完成；直接执行这些已明确要求的步骤，等待界面审批即可。",
+          "status": "interrupted",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-01T03:09:12.188342+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  }
+}

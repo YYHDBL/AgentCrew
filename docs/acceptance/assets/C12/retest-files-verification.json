@@ -1,0 +1,233 @@
+{
+  "task_run_id": "908cd21feaff4a668e284a4ab295db8f",
+  "status": "completed",
+  "attempt_no": 2,
+  "total_original_files": 20,
+  "total_original_bytes": 89356,
+  "files": [
+    {
+      "name": "Warehouse_盘点.pdf",
+      "relative_path": "pdf/Warehouse_盘点.pdf",
+      "size_bytes": 4353,
+      "sha256": "22c9c585593b1e4ffb30ef0794fc775d65b713b6c8b5cccc83a5d909b8a4f706",
+      "before_mtime_ns": 1790824043380393160,
+      "after_mtime_ns": 1790824043380393160,
+      "matched": true
+    },
+    {
+      "name": "meeting-brief.pdf",
+      "relative_path": "pdf/meeting-brief.pdf",
+      "size_bytes": 3400,
+      "sha256": "e5611361a1361326cb70c3e73cadc30963cf2761240bdb469b0a6630a9395155",
+      "before_mtime_ns": 1790824043378465116,
+      "after_mtime_ns": 1790824043378465116,
+      "matched": true
+    },
+    {
+      "name": "十月预算.pdf",
+      "relative_path": "pdf/十月预算.pdf",
+      "size_bytes": 1691,
+      "sha256": "321ddce597b93d7205b6a92ad1dc9df68516b8d82c0f6116f34bec2f5796b0ba",
+      "before_mtime_ns": 1790824043375368570,
+      "after_mtime_ns": 1790824043375368570,
+      "matched": true
+    },
+    {
+      "name": "采购单 003.pdf",
+      "relative_path": "pdf/采购单 003.pdf",
+      "size_bytes": 2513,
+      "sha256": "4a2cd53aaf6845488c04ce4502205cda77babbe51e2c6abc7555c26ccf5e9d17",
+      "before_mtime_ns": 1790824043376305988,
+      "after_mtime_ns": 1790824043376305988,
+      "matched": true
+    },
+    {
+      "name": "clients October.csv",
+      "relative_path": "csv/clients October.csv",
+      "size_bytes": 2036,
+      "sha256": "58eaf3af4cf6b8010572062ab54eb5fc81cebeb3fb91750bef9f1aaeeeae987d",
+      "before_mtime_ns": 1790824043380758493,
+      "after_mtime_ns": 1790824043380758493,
+      "matched": true
+    },
+    {
+      "name": "stock_20261001.csv",
+      "relative_path": "csv/stock_20261001.csv",
+      "size_bytes": 3054,
+      "sha256": "ec5f9411fcbacd409a569ff7c8d186f0a958a1e3e796e0be3610d11ce98338ea",
+      "before_mtime_ns": 1790824043380937119,
+      "after_mtime_ns": 1790824043380937119,
+      "matched": true
+    },
+    {
+      "name": "报销记录.csv",
+      "relative_path": "csv/报销记录.csv",
+      "size_bytes": 4084,
+      "sha256": "6555e93132b88134bb7e3c541479a0dc95631bab2b1698c6878ec10d9d5b5760",
+      "before_mtime_ns": 1790824043381074785,
+      "after_mtime_ns": 1790824043381074785,
+      "matched": true
+    },
+    {
+      "name": "销售明细.csv",
+      "relative_path": "csv/销售明细.csv",
+      "size_bytes": 1026,
+      "sha256": "1ebcf08cf78d4bbd14941f8f070e5769738476afbc568e6424e20877d468806a",
+      "before_mtime_ns": 1790824043380530535,
+      "after_mtime_ns": 1790824043380530535,
+      "matched": true
+    },
+    {
+      "name": "field-notes.txt",
+      "relative_path": "txt/field-notes.txt",
+      "size_bytes": 11978,
+      "sha256": "33d8e1b45a9359339eb431d5d2dd22441dfdcdc6d359c9c321869e51ba43ba5a",
+      "before_mtime_ns": 1790824043381575703,
+      "after_mtime_ns": 1790824043381575703,
+      "matched": true
+    },
+    {
+      "name": "todo 10月.txt",
+      "relative_path": "txt/todo 10月.txt",
+      "size_bytes": 2970,
+      "sha256": "6f9b4e9452eb295623a17bf70335106dbe8996f3615d37a3e557f26b2df93d6b",
+      "before_mtime_ns": 1790824043381270786,
+      "after_mtime_ns": 1790824043381270786,
+      "matched": true
+    },
+    {
+      "name": "交接说明.txt",
+      "relative_path": "txt/交接说明.txt",
+      "size_bytes": 6713,
+      "sha256": "fbe4974adb5657a89cbb9969ecfa77f688732be05edc57399ba44c29f4605bab",
+      "before_mtime_ns": 1790824043381379703,
+      "after_mtime_ns": 1790824043381379703,
+      "matched": true
+    },
+    {
+      "name": "电话记录.txt",
+      "relative_path": "txt/电话记录.txt",
+      "size_bytes": 745,
+      "sha256": "af85d81e39f4e1d60cb4945d314e5a9430cadf32ee09539ef106a22489be2d2b",
+      "before_mtime_ns": 1790824043381175786,
+      "after_mtime_ns": 1790824043381175786,
+      "matched": true
+    },
+    {
+      "name": "Release Notes.md",
+      "relative_path": "md/Release Notes.md",
+      "size_bytes": 6713,
+      "sha256": "9f99b15f8c611bd3039776c0a381f6d734c942a988d058a3e9253acc7e9f3d22",
+      "before_mtime_ns": 1790824043381884287,
+      "after_mtime_ns": 1790824043381884287,
+      "matched": true
+    },
+    {
+      "name": "会议纪要.md",
+      "relative_path": "md/会议纪要.md",
+      "size_bytes": 2971,
+      "sha256": "b862a6566d51273d4ca1196f77bcd5e8927a3767b12d06b212463a99ac871bf2",
+      "before_mtime_ns": 1790824043381778870,
+      "after_mtime_ns": 1790824043381778870,
+      "matched": true
+    },
+    {
+      "name": "操作指南.md",
+      "relative_path": "md/操作指南.md",
+      "size_bytes": 11978,
+      "sha256": "2161f62add360b3cf38efbec308e3f7dc5e59f6c925429d2b27ab53e4b0efeb3",
+      "before_mtime_ns": 1790824043382023703,
+      "after_mtime_ns": 1790824043382023703,
+      "matched": true
+    },
+    {
+      "name": "项目进度.md",
+      "relative_path": "md/项目进度.md",
+      "size_bytes": 744,
+      "sha256": "8e2e322a3d88d61d0f789f7f5f1d3b947915e8b354498ddd520b81807a1fdd28",
+      "before_mtime_ns": 1790824043381680536,
+      "after_mtime_ns": 1790824043381680536,
+      "matched": true
+    },
+    {
+      "name": "DELIVERY_104",
+      "relative_path": "no_extension/DELIVERY_104",
+      "size_bytes": 6709,
+      "sha256": "9bd10ef92edeaf748e1531a964b5c0d2e04a4d60dd03b13f3dbc66f91a496272",
+      "before_mtime_ns": 1790824043382345579,
+      "after_mtime_ns": 1790824043382345579,
+      "matched": true
+    },
+    {
+      "name": "README",
+      "relative_path": "no_extension/README",
+      "size_bytes": 735,
+      "sha256": "42f563c57406a8e69f98d72100f97ff3559d264460b2827c85d30d04ebef95b3",
+      "before_mtime_ns": 1790824043382128370,
+      "after_mtime_ns": 1790824043382128370,
+      "matched": true
+    },
+    {
+      "name": "临时便签",
+      "relative_path": "no_extension/临时便签",
+      "size_bytes": 2968,
+      "sha256": "b86092bff569e1fe54d9718687ca8c5e38a0471cd31b12d246a19219a57be172",
+      "before_mtime_ns": 1790824043382232079,
+      "after_mtime_ns": 1790824043382232079,
+      "matched": true
+    },
+    {
+      "name": "库存核对",
+      "relative_path": "no_extension/库存核对",
+      "size_bytes": 11975,
+      "sha256": "80a7d2b84bb8f3d03514a90574b647495f42ca41699d86bcaa53b645fcd3214a",
+      "before_mtime_ns": 1790824043382486954,
+      "after_mtime_ns": 1790824043382486954,
+      "matched": true
+    }
+  ],
+  "plan_unchanged": {
+    "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-retest/data/workspaces/default/整理说明.md",
+    "size_bytes": 64,
+    "mtime_ns": 1790824233194377673,
+    "sha256": "ed7119b17bff277414b8522446b0da13a66d13a9b01be13dd1ee57ff85088fc2"
+  },
+  "manifest_bytes": 1010,
+  "manifest_sha256": "6201710deb5d24f06c62d8769255f6d507b7f98551de27ded5ba3491440e0d39",
+  "manifest_matches_workspace": true,
+  "manifest_matches_report_fulltext": true,
+  "write_file_prepared_counts": {
+    "整理说明.md": 1,
+    "清单.csv": 1
+  },
+  "old_move_never_dispatched": true,
+  "lifecycle": [
+    {
+      "global_seq": 1,
+      "type": "run.queued"
+    },
+    {
+      "global_seq": 3,
+      "type": "run.started"
+    },
+    {
+      "global_seq": 33,
+      "type": "run.interrupted"
+    },
+    {
+      "global_seq": 34,
+      "type": "run.resumed"
+    },
+    {
+      "global_seq": 80,
+      "type": "run.completed"
+    }
+  ],
+  "event_count": 80,
+  "seq_contiguous": true,
+  "llm_projection": 8,
+  "llm_events": 8,
+  "tool_projection": 9,
+  "tool_events": 9,
+  "all_checks_passed": true
+}

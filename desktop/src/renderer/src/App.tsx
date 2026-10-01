@@ -221,7 +221,9 @@ export default function App(): JSX.Element {
               <h1>{selected ? conversations.find((item) => item.id === selected)?.title || '任务对话' : '给数字员工交代一项工作'}</h1>
               <span className="connection-label" role="status">{connection === 'connected' ? '任务服务已连接' : connection === 'reconnecting' ? '任务服务正在重新连接' : '正在连接任务服务'}</span>
             </div>
-            <div className="notice" role="status">{selected ? `${session.status} · ${displayState ?? '正在加载'} · 等待审批 ${state?.waiting_approvals ?? 0} · 等待回答 ${state?.waiting_questions ?? 0}` : '输入任务指令，可以附加文件或授权文件夹。'}</div>
+            <div className="notice" role="status">{selected ? `${session.status} · ${displayState ?? '正在加载'} · 等待审批 ${state?.waiting_approvals ?? 0} · 等待回答 ${state?.waiting_questions ?? 0}` : '输入任务指令，可以附加文件或授权文件夹。'}
+              {displayState === 'interrupted' && lastRun?.task_run_id && <Button disabled={busy || connection !== 'connected' || session.status !== '已连接'} loading={busy} onClick={() => void action(`/task-runs/${lastRun.task_run_id}/resume`, {})}>恢复</Button>}
+            </div>
             {(actionError || session.error) && <p id="request-error" role="alert">{actionError || session.error}</p>}
             {selected ? <Chat events={session.events} replayedThrough={session.replayedThrough} /> : <div className="empty-workspace">
               <div className="empty-symbol" aria-hidden="true">＋</div>

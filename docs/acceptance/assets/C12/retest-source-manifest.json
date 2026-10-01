@@ -1,0 +1,122 @@
+[
+  {
+    "name": "DELIVERY_104",
+    "size_bytes": 6709,
+    "mtime_ns": 1790824043382345579,
+    "sha256": "9bd10ef92edeaf748e1531a964b5c0d2e04a4d60dd03b13f3dbc66f91a496272"
+  },
+  {
+    "name": "README",
+    "size_bytes": 735,
+    "mtime_ns": 1790824043382128370,
+    "sha256": "42f563c57406a8e69f98d72100f97ff3559d264460b2827c85d30d04ebef95b3"
+  },
+  {
+    "name": "Release Notes.md",
+    "size_bytes": 6713,
+    "mtime_ns": 1790824043381884287,
+    "sha256": "9f99b15f8c611bd3039776c0a381f6d734c942a988d058a3e9253acc7e9f3d22"
+  },
+  {
+    "name": "Warehouse_盘点.pdf",
+    "size_bytes": 4353,
+    "mtime_ns": 1790824043380393160,
+    "sha256": "22c9c585593b1e4ffb30ef0794fc775d65b713b6c8b5cccc83a5d909b8a4f706"
+  },
+  {
+    "name": "clients October.csv",
+    "size_bytes": 2036,
+    "mtime_ns": 1790824043380758493,
+    "sha256": "58eaf3af4cf6b8010572062ab54eb5fc81cebeb3fb91750bef9f1aaeeeae987d"
+  },
+  {
+    "name": "field-notes.txt",
+    "size_bytes": 11978,
+    "mtime_ns": 1790824043381575703,
+    "sha256": "33d8e1b45a9359339eb431d5d2dd22441dfdcdc6d359c9c321869e51ba43ba5a"
+  },
+  {
+    "name": "meeting-brief.pdf",
+    "size_bytes": 3400,
+    "mtime_ns": 1790824043378465116,
+    "sha256": "e5611361a1361326cb70c3e73cadc30963cf2761240bdb469b0a6630a9395155"
+  },
+  {
+    "name": "stock_20261001.csv",
+    "size_bytes": 3054,
+    "mtime_ns": 1790824043380937119,
+    "sha256": "ec5f9411fcbacd409a569ff7c8d186f0a958a1e3e796e0be3610d11ce98338ea"
+  },
+  {
+    "name": "todo 10月.txt",
+    "size_bytes": 2970,
+    "mtime_ns": 1790824043381270786,
+    "sha256": "6f9b4e9452eb295623a17bf70335106dbe8996f3615d37a3e557f26b2df93d6b"
+  },
+  {
+    "name": "临时便签",
+    "size_bytes": 2968,
+    "mtime_ns": 1790824043382232079,
+    "sha256": "b86092bff569e1fe54d9718687ca8c5e38a0471cd31b12d246a19219a57be172"
+  },
+  {
+    "name": "交接说明.txt",
+    "size_bytes": 6713,
+    "mtime_ns": 1790824043381379703,
+    "sha256": "fbe4974adb5657a89cbb9969ecfa77f688732be05edc57399ba44c29f4605bab"
+  },
+  {
+    "name": "会议纪要.md",
+    "size_bytes": 2971,
+    "mtime_ns": 1790824043381778870,
+    "sha256": "b862a6566d51273d4ca1196f77bcd5e8927a3767b12d06b212463a99ac871bf2"
+  },
+  {
+    "name": "十月预算.pdf",
+    "size_bytes": 1691,
+    "mtime_ns": 1790824043375368570,
+    "sha256": "321ddce597b93d7205b6a92ad1dc9df68516b8d82c0f6116f34bec2f5796b0ba"
+  },
+  {
+    "name": "库存核对",
+    "size_bytes": 11975,
+    "mtime_ns": 1790824043382486954,
+    "sha256": "80a7d2b84bb8f3d03514a90574b647495f42ca41699d86bcaa53b645fcd3214a"
+  },
+  {
+    "name": "报销记录.csv",
+    "size_bytes": 4084,
+    "mtime_ns": 1790824043381074785,
+    "sha256": "6555e93132b88134bb7e3c541479a0dc95631bab2b1698c6878ec10d9d5b5760"
+  },
+  {
+    "name": "操作指南.md",
+    "size_bytes": 11978,
+    "mtime_ns": 1790824043382023703,
+    "sha256": "2161f62add360b3cf38efbec308e3f7dc5e59f6c925429d2b27ab53e4b0efeb3"
+  },
+  {
+    "name": "电话记录.txt",
+    "size_bytes": 745,
+    "mtime_ns": 1790824043381175786,
+    "sha256": "af85d81e39f4e1d60cb4945d314e5a9430cadf32ee09539ef106a22489be2d2b"
+  },
+  {
+    "name": "采购单 003.pdf",
+    "size_bytes": 2513,
+    "mtime_ns": 1790824043376305988,
+    "sha256": "4a2cd53aaf6845488c04ce4502205cda77babbe51e2c6abc7555c26ccf5e9d17"
+  },
+  {
+    "name": "销售明细.csv",
+    "size_bytes": 1026,
+    "mtime_ns": 1790824043380530535,
+    "sha256": "1ebcf08cf78d4bbd14941f8f070e5769738476afbc568e6424e20877d468806a"
+  },
+  {
+    "name": "项目进度.md",
+    "size_bytes": 744,
+    "mtime_ns": 1790824043381680536,
+    "sha256": "8e2e322a3d88d61d0f789f7f5f1d3b947915e8b354498ddd520b81807a1fdd28"
+  }
+]

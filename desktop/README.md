@@ -7,3 +7,5 @@
 执行 `npm run build && node tests/c11-real.mjs` 进行真实 Electron/GLM 验收，需有效的 `../backend/data/config.json`。脚本使用 `playwright-core` 和项目 Electron，在 `.artifacts/` 中建立隔离数据目录，真实调用模型并写入三个验收文件；截图与不含凭证的结果进入 `../docs/acceptance/assets/C11/`。
 
 执行 `node tests/c11-real.mjs --text-only` 进行相同操作与断言，文本结果保存在本次 `.artifacts/c11-*/` 目录，不进行截图操作。执行 `node tests/c11-stream.mjs` 检查提问中刷新、重启后的快照配对与新增事件、真实模型文本传输中断后的重试呈现、会话流背压产生的 resync，以及优雅关闭的 shutdown 游标。该检查通过本地代理转发真实响应并施加传输故障，排队压力指令全部取消，运行数据与文本结果保存在 `.artifacts/c11-stream-*/`。
+
+执行 `npm run build && node tests/c11-recovery.mjs` 核验中断恢复后的审批显示。测试使用真实 Electron、GLM、文件和 SIGKILL，确认未恢复的 interrupted 任务隐藏旧审批卡，通过界面恢复后，同一任务的新审批可见、可点击，批准后文件写入成功并完成任务；完成后刷新保留恢复卡并隐藏审批和恢复按钮。真实事件与运行数据保存在 `.artifacts/c11-recovery-*/`。
