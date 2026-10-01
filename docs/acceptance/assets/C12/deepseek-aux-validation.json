@@ -1,0 +1,46 @@
+{
+  "slot": "aux",
+  "model": "deepseek-v4.1-flash",
+  "endpoint": "https://opencode.ai/zen/go/v1/chat/completions",
+  "event_types": [
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "thinking_delta",
+    "text_delta",
+    "text_delta",
+    "thinking_block",
+    "usage",
+    "done"
+  ],
+  "text": "2",
+  "usage": [
+    {
+      "input_tokens": 45,
+      "output_tokens": 55
+    }
+  ],
+  "passed": true
+}

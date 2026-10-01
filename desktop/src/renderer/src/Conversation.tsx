@@ -44,8 +44,10 @@ export function Details({ events, action, busy }: { events: Frame[]; action: Act
   const answered = new Set(events.filter((e) => e.type === 'question.answered').map((e) => e.payload.request_id))
   const completedSteps = new Set(events.filter((e) => e.type === 'step.completed').map((e) => e.payload.step_id))
   const lifecycles = new Map<string, Frame>()
+  const interruptedThrough = new Map<string, number>()
   const latestRequests = new Map<unknown, Frame>()
   for (const event of events) {
+    if (event.task_run_id && event.type === 'run.interrupted') interruptedThrough.set(event.task_run_id, Math.max(interruptedThrough.get(event.task_run_id) ?? 0, event.global_seq))
     if (event.task_run_id && ['run.queued', 'run.started', 'run.resumed', 'run.completed', 'run.failed', 'run.cancelled', 'run.interrupted'].includes(event.type)) {
       const latest = lifecycles.get(event.task_run_id)
       if (!latest || event.global_seq > latest.global_seq) lifecycles.set(event.task_run_id, event)
@@ -62,6 +64,9 @@ export function Details({ events, action, busy }: { events: Frame[]; action: Act
   }
   return <div className="details-scroll">{events.map((event) => {
     const p = event.payload
+    if (event.type === 'permission.requested' && !resolved.has(p.tool_call_id) && event.global_seq < (interruptedThrough.get(event.task_run_id ?? '') ?? 0)) return <section className="process-card" key={event.global_seq}>
+      <h3>审批已失效</h3><p>任务中断时此调用已停止，审批请求已失效。</p><p>工具：{String(p.tool)}</p><p>目标：<span className="file-path">{String(p.target)}</span></p>
+    </section>
     if (event.type === 'permission.requested' && !resolved.has(p.tool_call_id) && !terminal.has(event.task_run_id)) return <section className="process-card approval" key={event.global_seq}>
       <h3>等待审批：{String(p.tool)}</h3><p>风险等级：{String(p.risk)}</p><p>目标：<span className="file-path">{String(p.target)}</span></p><p>持续授权范围：<span className="file-path">{String(p.always_scope_preview)}</span></p>
       <div className="card-actions">{decisions.map(([decision, label]) => <Button key={decision} disabled={busy} onClick={() => action(`/tool-approvals/${p.tool_call_id}`, { decision, input_hash: p.input_hash })}>{label}</Button>)}</div>

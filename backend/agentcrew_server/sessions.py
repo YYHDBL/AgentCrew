@@ -202,6 +202,29 @@ class SessionService:
             raise SessionError(ErrorCode.NOT_FOUND, f"会话不存在：{conversation_id}")
         return row
 
+    def list_messages(self, conversation_id: str, *, limit: int = 50,
+                      before: str | None = None) -> dict[str, Any]:
+        """读取最新一页，按时间与 id 正序返回；before 为同会话排他游标。"""
+        self.conversation_or_404(conversation_id)
+        conn = self._db.read_conn
+        where = "conversation_id = ?"
+        params: list[Any] = [conversation_id]
+        if before is not None:
+            cursor = conn.execute(
+                "SELECT created_at, id FROM messages"
+                " WHERE conversation_id = ? AND id = ?",
+                (conversation_id, before)).fetchone()
+            if cursor is None:
+                raise SessionError(ErrorCode.NOT_FOUND, f"消息游标不存在：{before}")
+            where += " AND (created_at, id) < (?, ?)"
+            params.extend(cursor)
+        rows = conn.execute(
+            "SELECT id, role, content, task_run_id, created_at FROM messages"
+            f" WHERE {where} ORDER BY created_at DESC, id DESC LIMIT ?",
+            (*params, limit + 1)).fetchall()
+        return {"items": [dict(row) for row in reversed(rows[:limit])],
+                "has_more": len(rows) > limit}
+
     def _last_task_status(self, conversation_id: str) -> str | None:
         row = self._db.read_conn.execute(
             "SELECT status FROM task_runs WHERE conversation_id = ?"

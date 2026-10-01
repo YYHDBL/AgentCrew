@@ -42,11 +42,7 @@ from agentcrew_core.loop import (
     run_task,
     user_text_message,
 )
-from agentcrew_core.provider.glm_anthropic import (
-    DEFAULT_BASE_URL,
-    GLMAnthropicProvider,
-    SlotConfig,
-)
+from agentcrew_core.provider.glm_anthropic import SlotConfig
 from agentcrew_core.provider.types import ToolCall
 from agentcrew_core.tools import ToolInvocation, ToolScheduler, WorkContext
 from agentcrew_core.tools.metadata import ToolResult
@@ -58,6 +54,7 @@ from agentcrew_core.tools.scheduler import (
 )
 
 from ..bus import Subscription, Topic
+from ..providers import ConfiguredProvider, bind_slot
 
 if TYPE_CHECKING:
     from .approvals import ApprovalService
@@ -218,17 +215,13 @@ class RunManager:
 
     def _bind_slot(self, slot: str) -> SlotConfig:
         entry = self._settings.config.values.get("models", {}).get(slot, {})
-        return SlotConfig(
-            model=entry.get("model", ""),
-            api_key=entry.get("api_key", ""),
-            base_url=entry.get("base_url") or DEFAULT_BASE_URL,
-            max_tokens=int(entry.get("max_tokens", 4096)),
-        )
+        return bind_slot(entry)
 
     @staticmethod
     def _model_config(cfg: SlotConfig) -> dict[str, Any]:
         """fingerprint 的 model_config——绝不放明文 key（只有摘要）。"""
         return {
+            "provider": cfg.provider,
             "model": cfg.model,
             "base_url": cfg.base_url,
             "max_tokens": cfg.max_tokens,
@@ -310,7 +303,8 @@ class RunManager:
             # ── attempt 装配：配置/环境块/工具 schema 全部在此刻绑定 ──
             slot, tools, system, _agent_id, fingerprint = \
                 await self._assemble_attempt(conversation_id, task_run_id)
-            provider = GLMAnthropicProvider({"main": slot}, client=self._http)
+            provider = ConfiguredProvider({"main": slot}, client=self._http,
+                                          session_id=conversation_id)
             ctx = await asyncio.to_thread(
                 self._sessions.build_work_context, conversation_id,
                 task_run_id)

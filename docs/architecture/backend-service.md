@@ -59,6 +59,8 @@
 - **写入失败**：先写文件（临时+rename），成功后才切换内存生效版本；文件写失败 → 500 CONFIG_WRITE_FAILED，内存配置不变
 - 一切配置变更入审计链（含 config_version）
 
+模型槽的 `provider` 支持 `glm`（Anthropic Messages）和 `openai-compatible`（Chat Completions）。后者必须提供 `base_url`，可填写 API 根地址或以 `/chat/completions` 结尾的请求地址；装配时绑定到 SDK 使用的根地址。OpenCode Go 的 DeepSeek V4.1 Flash 使用 `provider=openai-compatible`、`model=deepseek-v4.1-flash`、`base_url=https://opencode.ai/zen/go/v1`，实际请求为 `/chat/completions`。每个会话的请求携带稳定 conversation_id 作为 `x-opencode-session`，客户端标识为 `agentcrew/0.1.0`。配置和密钥保存在受 Git 忽略的 `backend/data/config.json`；开发版 Electron 默认读取此目录。实现与真实验证见 [ADR-010](../decisions/ADR-010-openai-compatible-provider.md)。
+
 ## 5. CORS 与请求/资源上限（分开定义，v1.1）
 
 - **CORS allow all origins**：安全由 Bearer 承担（显式头、无 cookie、无浏览器自动携带——无 CSRF 面）；第四轮审查确认保留

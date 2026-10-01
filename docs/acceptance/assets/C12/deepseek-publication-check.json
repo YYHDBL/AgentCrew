@@ -1,0 +1,31 @@
+{
+  "scanned_changed_files": 35,
+  "exact_secret_matches": 0,
+  "credential_fields_in_evidence": 0,
+  "local_config_ignored": true,
+  "integration_runtime_ignored": true,
+  "new_screenshots": 0,
+  "evidence": [
+    {
+      "path": "docs/acceptance/assets/C12/deepseek-aux-validation.json",
+      "sha256": "9578aa7c600a707b01ac3f017abe02ab33493c26e751c0483eaea5215ccff1f5"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/deepseek-backend-tests.txt",
+      "sha256": "807d47f5c5e15ad3dff0fb2ded4a71a49af1c1ff5b77b4b92ae2b7295517674f"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/deepseek-build.txt",
+      "sha256": "6c149c09003419f1229c002c716f74657b9e6691b179e324cd77512c2f897b73"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/deepseek-desktop-settings.json",
+      "sha256": "c4d64281cfddf0773bd73026015ff829cf9083db233b2a8bbab02fefd4e5a3a2"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/deepseek-recovery-validation.json",
+      "sha256": "b6bb9fa5d51517078cbcd877b23d94ffac55cc588d56d0a5607e940aaddf5e0c"
+    }
+  ],
+  "passed": true
+}

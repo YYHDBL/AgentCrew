@@ -57,6 +57,7 @@ class SlotConfig:
     api_key: str
     base_url: str = DEFAULT_BASE_URL
     max_tokens: int = DEFAULT_MAX_TOKENS
+    provider: str = "glm"
 
 
 def backoff_seconds(attempt: int) -> float:

@@ -226,6 +226,78 @@ def _create(asm, c, instruction="首个任务") -> str:
                   json={"instruction": instruction}).json()["data"]["conversation"]["id"]
 
 
+def test_messages_pagination_and_cancelled_queue_history(asm):
+    """真实指令写入投影，最新页与排他游标完整覆盖历史，取消保留消息。"""
+    with asm.client() as c:
+        conv_id = _create(asm, c, "整理工作资料")
+        url = f"/api/conversations/{conv_id}/messages"
+        for index in range(51):
+            response = c.post(
+                f"/api/conversations/{conv_id}/instructions", headers=AUTH,
+                json={"text": f"核对第 {index + 1} 份资料"})
+            assert response.status_code == 202
+        expected = [dict(row) for row in asm.db.read_conn.execute(
+            "SELECT id, role, content, task_run_id, created_at FROM messages"
+            " WHERE conversation_id=? ORDER BY created_at, id",
+            (conv_id,)).fetchall()]
+        response = c.get(url, headers=AUTH)
+        assert response.status_code == 200
+        latest = response.json()["data"]
+        assert latest == {"items": expected[-50:], "has_more": True}
+        assert expected[0]["task_run_id"] is not None
+        assert all(item["task_run_id"] is None for item in latest["items"])
+
+        # 新指令到达后，已有游标读取更早消息仍然排他且无遗漏。
+        assert c.post(f"/api/conversations/{conv_id}/instructions",
+                      headers=AUTH, json={"text": "汇总全部核对结果"}).status_code == 202
+        older = c.get(url, headers=AUTH, params={
+            "before": latest["items"][0]["id"], "limit": 2}).json()["data"]
+        assert older == {"items": expected[:2], "has_more": False}
+        assert older["items"] + latest["items"] == expected
+        assert c.get(url, headers=AUTH, params={
+            "before": expected[0]["id"]}).json()["data"] == {
+                "items": [], "has_more": False}
+        newest = c.get(url, headers=AUTH, params={"limit": 1}).json()["data"]
+        assert newest["has_more"] is True
+        assert newest["items"][0]["content"] == "汇总全部核对结果"
+        assert c.post(f"/api/conversations/{conv_id}/queue/cancel",
+                      headers=AUTH, json={"all": True}).status_code == 200
+        all_messages = c.get(url, headers=AUTH, params={"limit": 200}).json()["data"]
+        assert all_messages == {
+            "items": expected + newest["items"], "has_more": False}
+        assert c.get(url).status_code == 401
+
+
+def test_messages_missing_conversation_and_scoped_cursor(asm):
+    with asm.client() as c:
+        conv_id = _create(asm, c)
+        other_id = _create(asm, c, "另一个会话的指令")
+        other_cursor = asm.db.read_conn.execute(
+            "SELECT id FROM messages WHERE conversation_id=?",
+            (other_id,)).fetchone()[0]
+        for path, params in [
+            ("/api/conversations/unknown/messages", {}),
+            (f"/api/conversations/{conv_id}/messages", {"before": "unknown"}),
+            (f"/api/conversations/{conv_id}/messages", {"before": other_cursor}),
+        ]:
+            response = c.get(path, headers=AUTH, params=params)
+            assert response.status_code == 404
+            assert response.json()["error"]["code"] == "NOT_FOUND"
+
+
+@pytest.mark.parametrize("params", [
+    {"limit": 0}, {"limit": -1}, {"limit": 201}, {"limit": "invalid"},
+    {"before": ""},
+])
+def test_messages_invalid_pagination(asm, params):
+    with asm.client() as c:
+        conv_id = _create(asm, c)
+        response = c.get(f"/api/conversations/{conv_id}/messages",
+                         headers=AUTH, params=params)
+        assert response.status_code == 422
+        assert response.json()["error"]["code"] == "VALIDATION_ERROR"
+
+
 def test_second_instruction_queues_with_position(asm):
     with asm.client() as c:
         conv_id = _create(asm, c)

@@ -231,7 +231,7 @@ components:
     ModelSlot:
       type: object
       properties:
-        provider: { type: string }
+        provider: { type: string, enum: [glm, openai-compatible], description: glm 使用 Anthropic Messages；openai-compatible 使用 Chat Completions }
         model: { type: string }
         api_key_configured: { type: boolean }
         api_key_hint: { type: string, description: 尾 4 位 }
@@ -441,11 +441,12 @@ paths:
   /api/conversations/{id}/messages:
     get:
       tags: [runs]
-      summary: 聊天记录（分页：limit ≤200，before=消息 id 游标）
+      summary: 聊天记录（默认最新 50 条，before=同会话消息 id 排他游标）
+      description: 每页按 created_at、id 正序返回。before 读取该消息之前的最新一页；继续读取更早记录时使用 items 第一条的 id。会话或游标不存在、游标属于其他会话时返回 404。
       parameters:
         - { name: id, in: path, required: true, schema: { type: string } }
-        - { name: limit, in: query, schema: { type: integer, maximum: 200, default: 50 } }
-        - { name: before, in: query, schema: { type: string }, description: 返回该消息 id 之前的记录 }
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+        - { name: before, in: query, schema: { type: string, minLength: 1 }, description: 返回该消息 id 之前的记录，不包含游标消息 }
       responses:
         "200":
           description: 分页消息
@@ -458,7 +459,10 @@ paths:
                     type: object
                     properties:
                       items: { type: array, items: { $ref: "#/components/schemas/Message" } }
-                      has_more: { type: boolean }
+                      has_more: { type: boolean, description: 是否还有更早的消息 }
+        "401": { $ref: "#/components/responses/ErrEnvelope" }
+        "404": { $ref: "#/components/responses/ErrEnvelope" }
+        "422": { $ref: "#/components/responses/ErrEnvelope" }
   /api/conversations/{id}/task-runs:
     get:
       tags: [runs]

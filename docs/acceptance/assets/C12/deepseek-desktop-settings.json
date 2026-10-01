@@ -1,0 +1,19 @@
+{
+  "config_version": "1",
+  "models": {
+    "main": {
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash",
+      "api_key_configured": true,
+      "effective_source": "file"
+    },
+    "aux": {
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash",
+      "api_key_configured": true,
+      "effective_source": "file"
+    }
+  },
+  "development_default_data_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/backend/data",
+  "passed": true
+}

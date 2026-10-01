@@ -316,7 +316,7 @@ def main(argv: list[str] | None = None) -> int:
         # 同步入队——发布顺序 = 提交顺序（backend-service §2 v1.9）
         bus = EventBus()
         event_store = EventStore(channel, publisher=bus.publish)
-        # Provider 双槽（M0-C4）：main/aux 从配置链构建（ADR-009：Anthropic 端点）
+        # Provider 双槽：main/aux 从配置链绑定请求协议。
         provider = build_provider(config.values.get("models", {}))
         # 审批闸门 + 带闸门调度器（M0-C6）：事件经 EventStore 落库并扇出 SSE
         approvals = ApprovalService(db, event_store, data_dir / "chain-head.txt")
