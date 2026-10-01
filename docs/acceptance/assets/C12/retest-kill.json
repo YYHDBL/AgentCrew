@@ -1,0 +1,17 @@
+{
+  "task_run_id": "908cd21feaff4a668e284a4ab295db8f",
+  "pid": 40131,
+  "signal": "SIGKILL",
+  "port_before": 49522,
+  "process": "40131 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/backend/.venv/bin/python3 -m agentcrew_server --port 49522 --data-dir /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-retest/data --parent-pid 40100",
+  "pending_call_id": "call_c049cedfb6234bf0b69b50c4",
+  "last_global_seq": 32,
+  "inbox_original_files": 20,
+  "move_dispatched": false,
+  "plan_before_kill": {
+    "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-retest/data/workspaces/default/整理说明.md",
+    "size_bytes": 64,
+    "mtime_ns": 1790824233194377673,
+    "sha256": "ed7119b17bff277414b8522446b0da13a66d13a9b01be13dd1ee57ff85088fc2"
+  }
+}

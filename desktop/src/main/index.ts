@@ -1,0 +1,138 @@
+import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, Notification, powerSaveBlocker, shell, Tray } from 'electron'
+import { isAbsolute, join } from 'node:path'
+import { Sidecar, appendLaunchLog } from './sidecar'
+
+process.on('unhandledRejection', (reason) => {
+  appendLaunchLog(`${new Date().toISOString()} unhandledRejection ${String(reason)}\n`)
+})
+process.on('uncaughtException', (error) => {
+  // 未捕获异常后监管状态不可信：记日志后退出（后端由 --parent-pid 看护收尾）。
+  appendLaunchLog(`${new Date().toISOString()} uncaughtException ${error instanceof Error ? error.stack ?? error.message : String(error)}\n`)
+  app.exit(1)
+})
+
+if (!app.requestSingleInstanceLock()) app.quit()
+else {
+  let window: BrowserWindow | null = null
+  let tray: Tray | null = null
+  let quitting = false
+  let exitPending = false
+  let exitReady = false
+  let blocker: number | null = null
+  let sidecar: Sidecar
+
+  const showWindow = (): void => {
+    if (!window || window.isDestroyed()) return
+    window.show()
+    window.focus()
+  }
+
+function createWindow(): void {
+  window = new BrowserWindow({
+    width: 1440,
+    height: 900,
+    minWidth: 760,
+    minHeight: 600,
+    backgroundColor: '#F8FAFD',
+    title: 'AgentCrew',
+    titleBarStyle: 'hiddenInset',
+    trafficLightPosition: { x: 20, y: 18 },
+    webPreferences: {
+      preload: join(__dirname, '../preload/index.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true
+    }
+  })
+
+  window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
+  window.webContents.on('will-navigate', (event) => event.preventDefault())
+  window.on('close', (event) => { if (!quitting) { event.preventDefault(); window?.hide() } })
+  window.on('closed', () => { window = null })
+
+  if (process.env.ELECTRON_RENDERER_URL) {
+    void window.loadURL(process.env.ELECTRON_RENDERER_URL)
+  } else {
+    void window.loadFile(join(__dirname, '../renderer/index.html'))
+  }
+}
+
+function quitFromTray(): void {
+  const choice = dialog.showMessageBoxSync({
+    type: 'warning', buttons: ['取消', '退出'], defaultId: 0, cancelId: 0,
+    title: '退出 AgentCrew', message: '退出后任务服务会停止。',
+    detail: '如果有正在运行或等待审批的任务，退出会中断处理。'
+  })
+  if (choice !== 1) return
+  quitting = true
+  app.quit()
+}
+
+app.on('second-instance', showWindow)
+app.whenReady().then(() => {
+  sidecar = new Sidecar()
+  createWindow()
+  blocker = powerSaveBlocker.start('prevent-app-suspension')
+  Menu.setApplicationMenu(Menu.buildFromTemplate([
+    { label: 'AgentCrew', submenu: [{ role: 'about' }, { type: 'separator' }, { label: '退出 AgentCrew', accelerator: 'CommandOrControl+Q', click: quitFromTray }] },
+    { role: 'editMenu' }, { role: 'viewMenu' }, { role: 'windowMenu' }
+  ]))
+  tray = new Tray(nativeImage.createFromNamedImage('NSImageNameActionTemplate'))
+  tray.setToolTip('AgentCrew')
+  tray.setContextMenu(Menu.buildFromTemplate([
+    { label: '打开主窗口', click: showWindow },
+    { label: '任务服务状态请查看主窗口', enabled: false },
+    { type: 'separator' },
+    { label: '退出 AgentCrew', click: quitFromTray }
+  ]))
+  tray.on('click', showWindow)
+  const fromWindow = (event: Electron.IpcMainInvokeEvent): boolean => !!window && !window.isDestroyed() && event.sender.id === window.webContents.id && !event.sender.isDestroyed()
+  ipcMain.handle('backend-port', (event) => { if (!fromWindow(event)) throw new Error('无效的调用来源'); return sidecar.getBackendPort() })
+  ipcMain.handle('backend-token', (event) => { if (!fromWindow(event)) throw new Error('无效的调用来源'); return sidecar.getToken() })
+  ipcMain.handle('select-materials', async (event, kind: unknown) => {
+    if (!fromWindow(event) || (kind !== 'files' && kind !== 'folders')) throw new Error('材料选择参数无效')
+    const result = await dialog.showOpenDialog(window!, { properties: kind === 'files' ? ['openFile', 'multiSelections'] : ['openDirectory', 'multiSelections'] })
+    return result.canceled ? [] : result.filePaths
+  })
+  ipcMain.handle('notify', (event, title: unknown, body: unknown) => {
+    if (!fromWindow(event) || typeof title !== 'string' || typeof body !== 'string' || title.length > 120 || body.length > 1000) throw new Error('通知参数无效')
+    if (!Notification.isSupported()) return false
+    new Notification({ title, body }).show()
+    return true
+  })
+  ipcMain.handle('open-path', async (event, path: unknown) => {
+    if (!fromWindow(event) || typeof path !== 'string' || !isAbsolute(path)) throw new Error('文件路径无效')
+    // 只定位不执行：openPath 会以默认应用启动目标（macOS 上含 .app 包），
+    // 超出最小必要特权面；reveal 在 Finder 里选中，满足"找到产物"的需要。
+    shell.showItemInFolder(path)
+    return ''
+  })
+  ipcMain.handle('keep-awake', (event, enabled: unknown) => {
+    if (!fromWindow(event) || typeof enabled !== 'boolean') throw new Error('休眠设置无效')
+    if (enabled && blocker === null) blocker = powerSaveBlocker.start('prevent-app-suspension')
+    if (!enabled && blocker !== null) { powerSaveBlocker.stop(blocker); blocker = null }
+  })
+  void sidecar.start()
+  app.on('activate', showWindow)
+})
+
+app.on('before-quit', (event) => {
+  if (exitReady) return
+  event.preventDefault()
+  if (exitPending) return
+  exitPending = true
+  quitting = true
+  void (async () => {
+    if (sidecar && !(await sidecar.stop())) {
+      exitPending = false
+      quitting = false
+      void dialog.showMessageBox({ type: 'error', title: '无法退出 AgentCrew', message: '后端进程未能在清理期限内退出。', detail: `日志：${sidecar.logPath}` })
+      return
+    }
+    if (blocker !== null) powerSaveBlocker.stop(blocker)
+    exitReady = true
+    app.quit()
+  })()
+})
+app.on('window-all-closed', () => { /* 托盘维持应用与后端运行。 */ })
+}

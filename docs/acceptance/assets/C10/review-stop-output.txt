@@ -1,0 +1,3 @@
+{"event":"stopped-before-ready","electron":63415,"uv":63526,"python":63539}
+{"event":"restarted","elapsedMs":37281,"process":"65129 65128 65128 S    /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/backend/.venv/bin/python3 -m agentcrew_server --port 60090 --data-dir /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c10-stop-1790761522036/data --parent-pid 63415"}
+{"event":"exited","quitElapsedMs":5223,"orphanPython":false}

@@ -1,0 +1,118 @@
+{
+  "checked_at": "2026-10-01",
+  "screenshots_visually_reviewed": 21,
+  "screenshot_review_record": "screenshots-review.md",
+  "actual_config_secret_scan_passed": true,
+  "plaintext_credential_pattern_scan_passed": true,
+  "files_scanned": 55,
+  "configuration_ignored_and_untracked": true,
+  "screenshots": [
+    {
+      "path": "docs/acceptance/assets/C12/01-instruction.png",
+      "sha256": "321928d44c108ddad875fcb964647537c2d8723a609fab2884950834743f8e5b",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/02-write-approval.png",
+      "sha256": "2b40343bfcb4a7f1b838a6c39557359dc17b8662bdead86ab64f5c953d7bae45",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/03-refresh-restored.png",
+      "sha256": "1cf2e12275033ee4b462039e2dae8c7cbdea47dc5523e343db29c2b3f6af6fe1",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/04-before-kill.png",
+      "sha256": "33ad988774d2a1a52693b6289bb06cecace459db13a9745e2945dfecfbca2dbe",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/05-reconnected-interrupted.png",
+      "sha256": "f478c66b6d066c5089bb619a30b27a4886a021037a828713632919afbf65f299",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/06-bash-approval.png",
+      "sha256": "1ee995577b886535b0af3058076f199c05a7cb4ee331cc58b63712922a7eb3ce",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/07-visible-approval.png",
+      "sha256": "3db71fa1bc10d8c96c2506046ff23a9ac8d823cd9a88f725eb5739d6fcdbb294",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/08-approval-controls.png",
+      "sha256": "4ad57eba02fa24c8000d96badf4ffd0d5d4d3e51ce257eb3b18f01736205706a",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/09-move-approval.png",
+      "sha256": "411a56f261156e997f27327d7e10d9ed02f86446e4b78d17c2a9f11ea536eccd",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/10-manifest-copy-approval.png",
+      "sha256": "2dfe23fcbce855b8213eabb3bf22c59e43ae9d926ee4b3632b4ef83425115994",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/11-organize-interrupted.png",
+      "sha256": "56b6b117025ff8ca71122ce996b15f59779b9ab5029a321c385499e10bacc256",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/12-resumed-approval-missing.png",
+      "sha256": "cdda26d4a3cbd05cda307792dea137f69288c4152c422e5a801554e31be5b490",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/13-organize-cancelled.png",
+      "sha256": "2f52de334087088b1b566b092feb1580e26fcb080f9a026a5e49a3ad103b7105",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/14-native-materials.png",
+      "sha256": "83e242ef573a7ef37231caee194ec0723f9078d6a818b570c81542b1687ec1dd",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/15-materials-and-scope.png",
+      "sha256": "5a92f7dad1a119b28587ae85304a5baf535f6cb76a60502899c8971d836636c1",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/16-materials-completed.png",
+      "sha256": "e2d4ce4c8a3897e36fa302d70b78945f03845ba53702f108e4b7417e719a1855",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/17-queue-two.png",
+      "sha256": "43be015be0ac7e56fa7685be06e812f311ee2f751357f961c1f878bb0751b362",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/18-queue-paused.png",
+      "sha256": "b866abbf548ab44da0027e3f37bc8aecc63a5438d628b76837f95699caf029ce",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/19-queue-front-running.png",
+      "sha256": "8f9d9f7616494aa3cae234b5893a8249bae602016aa15343d1150636a8049a6f",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/20-queue-rest-cancelled.png",
+      "sha256": "9d80f1b5e6394b777ab5f3e16c7e1d80a5fc80eaca91de6573260c641a9664a9",
+      "visual_review": "未发现 key/token"
+    },
+    {
+      "path": "docs/acceptance/assets/C12/21-queue-completed.png",
+      "sha256": "6fb21f01bdf8275f336ba30f19f3ca44a1b307c44fdf3852f75de3eefc60affd",
+      "visual_review": "未发现 key/token"
+    }
+  ],
+  "staged_files_checked": true,
+  "backend_application_changes_in_delivery": false
+}

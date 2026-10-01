@@ -87,3 +87,12 @@ def test_empty_env_value_ignored():
     effective, env_fields = apply_env(DEFAULTS, {"AGENTCREW_LOG_LEVEL": ""})
     assert effective["log_level"] == "info"
     assert env_fields == []
+
+
+def test_model_protocol_validation():
+    for entry in ({"provider": "unknown"}, {"provider": "openai-compatible"}):
+        with pytest.raises(ConfigError, match="models.main"):
+            apply_env(merge_config(DEFAULTS, {"models": {"main": entry}}), {})
+    entry = {"provider": "openai-compatible", "base_url": "https://opencode.ai/zen/go/v1"}
+    effective, _ = apply_env(merge_config(DEFAULTS, {"models": {"main": entry}}), {})
+    assert effective["models"]["main"]["provider"] == "openai-compatible"

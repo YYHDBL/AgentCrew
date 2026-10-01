@@ -1,0 +1,11 @@
+{
+  "pid": 34563,
+  "signal": "SIGKILL",
+  "port_before": 61147,
+  "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default/整理说明.md",
+  "size_bytes": 64,
+  "mtime_ns": 1790821319940310161,
+  "sha256": "ed7119b17bff277414b8522446b0da13a66d13a9b01be13dd1ee57ff85088fc2",
+  "content": "C12 文件整理验收：保留原名、内容和修改时间。",
+  "process": "34563 34562 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/backend/.venv/bin/python3 -m agentcrew_server --port 61147 --data-dir /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data --parent-pid 34529"
+}

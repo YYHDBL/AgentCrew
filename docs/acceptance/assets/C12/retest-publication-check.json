@@ -1,0 +1,66 @@
+{
+  "checked_at": "2026-10-01T03:25:40.263Z",
+  "all_c12_assets_scanned": true,
+  "modified_source_and_docs_scanned": true,
+  "exact_config_and_current_runtime_secrets_scanned": true,
+  "credential_matches": 0,
+  "scanned_file_count": 81,
+  "config_gitignored_and_untracked": true,
+  "screenshots": [
+    {
+      "path": "docs/acceptance/assets/C12/retest-01-instruction.png",
+      "sha256": "44ae5fae7b05738a9d1dc3ffb7223b5974910bf8e73556a33e2ec56848c4120b",
+      "manual_full_image_review": true,
+      "credential_visible": false
+    },
+    {
+      "path": "docs/acceptance/assets/C12/retest-02-write-approval.png",
+      "sha256": "2a99dd66559a38b42815261bfa9119b11873a90f06016e39a667c07ac2a7bd36",
+      "manual_full_image_review": true,
+      "credential_visible": false
+    },
+    {
+      "path": "docs/acceptance/assets/C12/retest-03-before-kill.png",
+      "sha256": "2d7a820f35139ff97c6675a2dc58d16e1f1fb851a312821acc85745090b894b7",
+      "manual_full_image_review": true,
+      "credential_visible": false
+    },
+    {
+      "path": "docs/acceptance/assets/C12/retest-04-interrupted-resume-button.png",
+      "sha256": "03beac6dd1a23ef5d841cade6ce13d016ca3dc2d69ff6b3a03d835fdb820ec59",
+      "manual_full_image_review": true,
+      "credential_visible": false
+    },
+    {
+      "path": "docs/acceptance/assets/C12/retest-05-resumed-timeline.png",
+      "sha256": "a4ec7d6928ac46c9ceb00537d121a8608f51d97fa456ee1e35811bae9bdf76af",
+      "manual_full_image_review": true,
+      "credential_visible": false
+    },
+    {
+      "path": "docs/acceptance/assets/C12/retest-06-resumed-new-approval.png",
+      "sha256": "0982c633ffa2d6afc27a60795b9c6eea11ee4b7a7d7fc75e2e17ad136b6d921a",
+      "manual_full_image_review": true,
+      "credential_visible": false
+    },
+    {
+      "path": "docs/acceptance/assets/C12/retest-07-copy-approval.png",
+      "sha256": "f9bf3a597b11cc600e2bd3e5eb53da566799978641d4c7c0917bb679dd66d9cc",
+      "manual_full_image_review": true,
+      "credential_visible": false
+    },
+    {
+      "path": "docs/acceptance/assets/C12/retest-08-verification-approvals.png",
+      "sha256": "43d5542e81af7b92d576420cd5e32fe2e8c8fda38757a71b392917f0ebdfd4f3",
+      "manual_full_image_review": true,
+      "credential_visible": false
+    },
+    {
+      "path": "docs/acceptance/assets/C12/retest-09-completed.png",
+      "sha256": "ed8bc2de0114cfcc22eb5338c42ced290ad3f414088bb58f72e9e4666ab84375",
+      "manual_full_image_review": true,
+      "credential_visible": false
+    }
+  ],
+  "passed": true
+}

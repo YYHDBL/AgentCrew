@@ -167,6 +167,10 @@ def validate(cfg: Mapping[str, Any]) -> None:
         for field in ("provider", "model", "base_url", "api_key"):
             if field in entry:
                 _require_str(cfg, f"models.{slot}.{field}")
+        if entry.get("provider", "glm") not in ("glm", "openai-compatible"):
+            raise ConfigError(f"models.{slot}.provider 需要 glm 或 openai-compatible")
+        if entry.get("provider") == "openai-compatible" and not entry.get("base_url"):
+            raise ConfigError(f"models.{slot}.base_url：openai-compatible 需要配置请求地址")
         if "max_tokens" in entry:
             _require_int(cfg, f"models.{slot}.max_tokens", 1)
 

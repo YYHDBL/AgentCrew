@@ -1,0 +1,27 @@
+{
+  "task_run_id": "f0999d4886bf446c95300610675af494",
+  "signal": "SIGKILL",
+  "copied_call": "call_1f799107221741f79d713154",
+  "files": [
+    {
+      "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default/清单.csv",
+      "mtime_ns": 1790821651560190025,
+      "size_bytes": 1010,
+      "sha256": "6201710deb5d24f06c62d8769255f6d507b7f98551de27ded5ba3491440e0d39"
+    },
+    {
+      "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/demo/inbox/清单.csv",
+      "mtime_ns": 1790821715678017638,
+      "size_bytes": 1010,
+      "sha256": "6201710deb5d24f06c62d8769255f6d507b7f98551de27ded5ba3491440e0d39"
+    },
+    {
+      "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default/整理说明.md",
+      "mtime_ns": 1790821319940310161,
+      "size_bytes": 64,
+      "sha256": "ed7119b17bff277414b8522446b0da13a66d13a9b01be13dd1ee57ff85088fc2"
+    }
+  ],
+  "pid": 35267,
+  "last_global_seq": 75
+}

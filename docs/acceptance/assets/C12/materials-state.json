@@ -1,0 +1,47 @@
+{
+  "conversation": "f89401b88db4449899a0c124ab1ae146",
+  "state": {
+    "status": 200,
+    "body": {
+      "data": {
+        "state": "idle",
+        "waiting_approvals": 0,
+        "waiting_questions": 0,
+        "queue_paused": false,
+        "at_global_seq": 109,
+        "queue": [],
+        "can_send": true,
+        "can_queue": false,
+        "can_cancel": false,
+        "can_continue_queue": false,
+        "current_task_run_id": null
+      }
+    }
+  },
+  "scope": {
+    "status": 200,
+    "body": {
+      "data": {
+        "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/workspaces/default",
+        "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/c12-electron/data/conversations/f89401b88db4449899a0c124ab1ae146/materials",
+        "folders": []
+      }
+    }
+  },
+  "runs": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "id": "0e6eb81407ab46a285643f6c0e53a714",
+          "instruction": "请检查本任务导入的真实材料，通过 bash 列出 materials 目录的文件名和大小，并使用 read_file 读取 电话记录.txt 与 销售明细.csv 的前几行，报告成功材料的文件名和实际读取结果。十月预算.pdf 只核对文件存在与大小；逐项报告导入失败材料的原因。请保持材料原件不变。",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-01T02:32:59.849903+00:00",
+          "finished_at": "2026-10-01T02:33:28.818457+00:00"
+        }
+      ]
+    }
+  }
+}

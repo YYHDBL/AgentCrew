@@ -1,0 +1,64 @@
+{
+  "observed_at": "2026-10-01T02:40:17.201Z",
+  "state": {
+    "status": 200,
+    "body": {
+      "data": {
+        "state": "idle",
+        "waiting_approvals": 0,
+        "waiting_questions": 0,
+        "queue_paused": false,
+        "at_global_seq": 147,
+        "queue": [],
+        "can_send": true,
+        "can_queue": false,
+        "can_cancel": false,
+        "can_continue_queue": false,
+        "current_task_run_id": null
+      }
+    }
+  },
+  "runs": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "id": "ca1d0fddd60e4bc6a5626793726e05d5",
+          "instruction": "必须调用 ask_user 提问“C12 排队验收等待”，等待我的回答后再回复。",
+          "status": "cancelled",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-01T02:38:24.383271+00:00",
+          "finished_at": "2026-10-01T02:38:57.732061+00:00"
+        },
+        {
+          "id": "37c884c94b8b44138fa56424ee3ff01b",
+          "instruction": "必须调用 ask_user 提问“C12 队首已继续”，等待我的回答；回答后使用 read_file 读取工作空间的 整理说明.md 并报告内容。",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-01T02:39:33.165404+00:00",
+          "finished_at": "2026-10-01T02:40:06.471709+00:00"
+        }
+      ]
+    }
+  },
+  "events": {
+    "status": 404,
+    "body": {
+      "error": {
+        "code": "NOT_FOUND",
+        "message": "Not Found"
+      }
+    }
+  },
+  "messages": {
+    "status": 404,
+    "body": {
+      "error": {
+        "code": "NOT_FOUND",
+        "message": "Not Found"
+      }
+    }
+  }
+}

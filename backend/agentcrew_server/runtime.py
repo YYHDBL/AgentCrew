@@ -13,13 +13,13 @@ from .db.database import Database
 from .db.write_channel import WriteChannel
 
 if TYPE_CHECKING:  # 避免运行时循环导入（bus 导入 core.events 而已，防御性）
-    from agentcrew_core.provider import GLMAnthropicProvider
     from agentcrew_core.tools import ToolScheduler
 
     from .approvals import ApprovalService
     from .bus import EventBus
     from .db.event_store import EventStore
     from .questions import QuestionService
+    from .providers import ConfiguredProvider
     from .recovery import RecoveryService
     from .run_manager import RunManager
     from .sessions import SessionService
@@ -44,7 +44,7 @@ class RuntimeState:
     token: str = ""
     bus: "EventBus | None" = None
     event_store: "EventStore | None" = None
-    provider: GLMAnthropicProvider | None = None
+    provider: ConfiguredProvider | None = None
     approvals: "ApprovalService | None" = None  # M0-C6 起装配
     scheduler: "ToolScheduler | None" = None
     settings: "SettingsService | None" = None  # M0-C7 起装配

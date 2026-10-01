@@ -64,13 +64,6 @@ class Assembly:
         self.db.close()
 
 
-@pytest.fixture
-def asm(tmp_path):
-    a = Assembly(tmp_path)
-    yield a
-    a.close()
-
-
 def _ctx(a: Assembly, tmp_path: Path) -> WorkContext:
     scope = tmp_path / "ws"
     scope.mkdir(exist_ok=True)
@@ -78,23 +71,6 @@ def _ctx(a: Assembly, tmp_path: Path) -> WorkContext:
         scope=[scope], protected=[], artifacts_dir=tmp_path / "art",
         task_run_id=RUN,
     )
-
-
-def _fire_and_forget_tool(a: Assembly, tmp_path: Path, tool: str,
-                          inp: dict) -> asyncio.Task:
-    """后台启动带闸门工具执行（弹卡时它会挂起，由测试侧决定）。"""
-    loop = asyncio.get_event_loop() if False else None
-
-    async def _run():
-        inv = ToolInvocation(new_call_id(), tool, inp)
-        return await a.approvals.run_tool(
-            task_run_id=RUN, conversation_id=CONV, agent_id=AGENT,
-            invocation=inv, ctx=_ctx(a, tmp_path))
-    return asyncio.ensure_future(_run())
-
-
-def _sync(coro_fn):
-    return asyncio.new_event_loop().run_until_complete if False else asyncio.run
 
 
 def test_full_chain_allow_once(tmp_path):
@@ -255,6 +231,8 @@ def test_reject_does_not_execute(tmp_path):
         # tool.failed 事件记录拒绝
         types = [e[0] for e in _events(a)]
         assert types.count("permission.resolved") == 1
+        assert types.count("tool.failed") == 1, \
+            f"拒绝应记 tool.failed 事件：{types}"
         a.close()
     asyncio.run(scenario())
 

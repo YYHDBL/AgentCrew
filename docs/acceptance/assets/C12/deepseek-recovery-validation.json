@@ -1,0 +1,436 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c11-recovery-1790836159638",
+  "interrupted_without_resume": {
+    "approvals": 0,
+    "conversation": "8c9940cd59a54cb396209af48f8b2d7c",
+    "task_run_id": "386d7034f964420683bbec047803388a",
+    "killed_pid": 59147,
+    "old_port": 49286,
+    "new_port": 49373
+  },
+  "expired_approval": {
+    "tool_call_ids": [
+      "call_00_4at5xf4nfa37rhx6esd43u6s",
+      "call_01_z69ax5r8znt0tr8o6agogmws"
+    ],
+    "historical_cards": 2,
+    "historical_card_visible": true,
+    "buttons": 0,
+    "active_approvals": 1,
+    "replay_preserved": true
+  },
+  "resumed_approval": {
+    "task_run_id": "386d7034f964420683bbec047803388a",
+    "resumed_global_seq": 12,
+    "permission_global_seq": 18,
+    "visible_and_enabled": true,
+    "approved_through_ui": true,
+    "completed": true,
+    "replay_preserved": true
+  },
+  "events": [
+    {
+      "global_seq": 1,
+      "seq": 1,
+      "type": "run.queued",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 2,
+      "seq": 2,
+      "type": "run.started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 3,
+      "seq": 3,
+      "type": "step.started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 4,
+      "seq": 4,
+      "type": "llm.request_started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 5,
+      "seq": 5,
+      "type": "llm.request_done",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 6,
+      "seq": 6,
+      "type": "step.completed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 7,
+      "seq": 7,
+      "type": "tool.prepared",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 8,
+      "seq": 8,
+      "type": "tool.prepared",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 9,
+      "seq": 9,
+      "type": "permission.requested",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 10,
+      "seq": 10,
+      "type": "permission.requested",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 11,
+      "seq": 11,
+      "type": "run.interrupted",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 12,
+      "seq": 12,
+      "type": "run.resumed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 13,
+      "seq": 13,
+      "type": "step.started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 14,
+      "seq": 14,
+      "type": "llm.request_started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 15,
+      "seq": 15,
+      "type": "llm.request_done",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 16,
+      "seq": 16,
+      "type": "step.completed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 17,
+      "seq": 17,
+      "type": "tool.prepared",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 18,
+      "seq": 18,
+      "type": "permission.requested",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 19,
+      "seq": 19,
+      "type": "permission.resolved",
+      "task_run_id": "386d7034f964420683bbec047803388a",
+      "decision": "allow_once",
+      "tool_call_id": "call_00_uaimayy172b55tr9w55cd9go"
+    },
+    {
+      "global_seq": 20,
+      "seq": 20,
+      "type": "tool.dispatched",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 21,
+      "seq": 21,
+      "type": "tool.completed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 22,
+      "seq": 22,
+      "type": "step.started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 23,
+      "seq": 23,
+      "type": "llm.request_started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 24,
+      "seq": 24,
+      "type": "llm.request_done",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 25,
+      "seq": 25,
+      "type": "step.completed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 26,
+      "seq": 26,
+      "type": "tool.prepared",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 27,
+      "seq": 27,
+      "type": "permission.requested",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 28,
+      "seq": 28,
+      "type": "permission.resolved",
+      "task_run_id": "386d7034f964420683bbec047803388a",
+      "decision": "allow_once",
+      "tool_call_id": "call_00_yiwmdcsddw5bf2clo30pwlb8"
+    },
+    {
+      "global_seq": 29,
+      "seq": 29,
+      "type": "tool.dispatched",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 30,
+      "seq": 30,
+      "type": "artifact.created",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 31,
+      "seq": 31,
+      "type": "artifact.ready",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 32,
+      "seq": 32,
+      "type": "tool.completed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 33,
+      "seq": 33,
+      "type": "step.started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 34,
+      "seq": 34,
+      "type": "llm.request_started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 35,
+      "seq": 35,
+      "type": "llm.request_done",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 36,
+      "seq": 36,
+      "type": "step.completed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 37,
+      "seq": 37,
+      "type": "tool.prepared",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 38,
+      "seq": 38,
+      "type": "tool.prepared",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 39,
+      "seq": 39,
+      "type": "permission.requested",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 40,
+      "seq": 40,
+      "type": "tool.dispatched",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 41,
+      "seq": 41,
+      "type": "tool.completed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 42,
+      "seq": 42,
+      "type": "permission.resolved",
+      "task_run_id": "386d7034f964420683bbec047803388a",
+      "decision": "allow_once",
+      "tool_call_id": "call_01_28k1ocj37nk2zrbxrb7ppd2z"
+    },
+    {
+      "global_seq": 43,
+      "seq": 43,
+      "type": "tool.dispatched",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 44,
+      "seq": 44,
+      "type": "tool.failed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 45,
+      "seq": 45,
+      "type": "step.started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 46,
+      "seq": 46,
+      "type": "llm.request_started",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 47,
+      "seq": 47,
+      "type": "llm.request_done",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 48,
+      "seq": 48,
+      "type": "step.completed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    },
+    {
+      "global_seq": 49,
+      "seq": 49,
+      "type": "run.completed",
+      "task_run_id": "386d7034f964420683bbec047803388a"
+    }
+  ],
+  "all_checks_passed": true,
+  "model": "deepseek-v4.1-flash",
+  "sql_validation": {
+    "task": {
+      "query": "SELECT id,status,current_attempt_no FROM task_runs WHERE id=?",
+      "parameters": [
+        "386d7034f964420683bbec047803388a"
+      ],
+      "rows": [
+        {
+          "id": "386d7034f964420683bbec047803388a",
+          "status": "completed",
+          "current_attempt_no": 2
+        }
+      ]
+    },
+    "attempts": {
+      "query": "SELECT attempt_no,json_extract(context_fingerprint,'$.model_config.provider') AS provider,json_extract(context_fingerprint,'$.model_config.model') AS model,json_extract(context_fingerprint,'$.model_config.base_url') AS base_url FROM run_attempts WHERE task_run_id=? ORDER BY attempt_no",
+      "parameters": [
+        "386d7034f964420683bbec047803388a"
+      ],
+      "rows": [
+        {
+          "attempt_no": 1,
+          "provider": "openai-compatible",
+          "model": "deepseek-v4.1-flash",
+          "base_url": "https://opencode.ai/zen/go/v1"
+        },
+        {
+          "attempt_no": 2,
+          "provider": "openai-compatible",
+          "model": "deepseek-v4.1-flash",
+          "base_url": "https://opencode.ai/zen/go/v1"
+        }
+      ]
+    },
+    "counts": {
+      "query": "SELECT (SELECT COUNT(*) FROM llm_calls l JOIN steps s ON s.id=l.step_id WHERE s.task_run_id=?) AS llm_projection,(SELECT COUNT(*) FROM run_events WHERE task_run_id=? AND type='llm.request_started') AS llm_events,(SELECT COUNT(*) FROM tool_calls WHERE task_run_id=?) AS tool_projection,(SELECT COUNT(*) FROM run_events WHERE task_run_id=? AND type='tool.prepared') AS tool_events",
+      "parameters": [
+        "386d7034f964420683bbec047803388a",
+        "386d7034f964420683bbec047803388a",
+        "386d7034f964420683bbec047803388a",
+        "386d7034f964420683bbec047803388a"
+      ],
+      "rows": [
+        {
+          "llm_projection": 5,
+          "llm_events": 5,
+          "tool_projection": 6,
+          "tool_events": 6
+        }
+      ]
+    },
+    "usage": {
+      "query": "SELECT json_extract(payload,'$.usage.input_tokens') AS input_tokens,json_extract(payload,'$.usage.output_tokens') AS output_tokens FROM run_events WHERE task_run_id=? AND type='llm.request_done' ORDER BY seq",
+      "parameters": [
+        "386d7034f964420683bbec047803388a"
+      ],
+      "rows": [
+        {
+          "input_tokens": null,
+          "output_tokens": null
+        },
+        {
+          "input_tokens": null,
+          "output_tokens": null
+        },
+        {
+          "input_tokens": null,
+          "output_tokens": null
+        },
+        {
+          "input_tokens": null,
+          "output_tokens": null
+        },
+        {
+          "input_tokens": null,
+          "output_tokens": null
+        }
+      ]
+    }
+  },
+  "artifact": {
+    "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c11-recovery-1790836159638/data/workspaces/default/c11-recovery/recovered.txt",
+    "content": "C11 recovery completed\n",
+    "size_bytes": 23,
+    "sha256": "68dc5c36974be3dd0b8b027c4abe94037ee412fa9767a1718134091f12504a38",
+    "mtime_ns": 1790836176673732854
+  },
+  "audit": {
+    "internal": {
+      "ok": true,
+      "broken_at_seq": null,
+      "reason": null,
+      "checked_count": 12
+    },
+    "anchor": {
+      "ok": true,
+      "broken_at_seq": null,
+      "reason": null,
+      "checked_count": 12
+    }
+  }
+}

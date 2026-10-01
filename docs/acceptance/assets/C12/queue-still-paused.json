@@ -1,0 +1,48 @@
+{
+  "observed_at": "2026-10-01T02:39:27.260Z",
+  "state": {
+    "status": 200,
+    "body": {
+      "data": {
+        "state": "idle",
+        "waiting_approvals": 0,
+        "waiting_questions": 0,
+        "queue_paused": true,
+        "at_global_seq": 122,
+        "queue": [
+          {
+            "id": "e335e084a2674d0ba67717e4df29e00c",
+            "text": "必须调用 ask_user 提问“C12 队首已继续”，等待我的回答；回答后使用 read_file 读取工作空间的 整理说明.md 并报告内容。",
+            "enqueued_at": "2026-10-01T02:38:37.700855+00:00"
+          },
+          {
+            "id": "a1836e4eeafc46ebb6eaae30d5d079a4",
+            "text": "请读取工作空间 清单.csv 并报告条目数量。",
+            "enqueued_at": "2026-10-01T02:38:50.203024+00:00"
+          }
+        ],
+        "can_send": true,
+        "can_queue": false,
+        "can_cancel": false,
+        "can_continue_queue": true,
+        "current_task_run_id": null
+      }
+    }
+  },
+  "runs": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "id": "ca1d0fddd60e4bc6a5626793726e05d5",
+          "instruction": "必须调用 ask_user 提问“C12 排队验收等待”，等待我的回答后再回复。",
+          "status": "cancelled",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-01T02:38:24.383271+00:00",
+          "finished_at": "2026-10-01T02:38:57.732061+00:00"
+        }
+      ]
+    }
+  }
+}

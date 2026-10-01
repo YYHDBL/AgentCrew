@@ -1,4 +1,4 @@
-"""会话与排队 API（M0-C7）：创建/材料/scope/limits/指令/排队控制/state。
+"""会话与排队 API：创建/材料/scope/limits/指令/排队控制/state/消息分页。
 
 契约：docs/contracts/openapi.yaml v0.3。202 无响应体（continue）按契约
 有意设计；错误码信封经 SessionError → ApiError 映射。
@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import asyncio
 
-from fastapi import Request, Response
+from fastapi import Query, Request, Response
 from pydantic import BaseModel, Field
 
 from ..sessions import SessionError
@@ -50,6 +50,13 @@ def install_session_routes(app, runtime) -> None:
     @app.get("/api/conversations")
     async def list_conversations():
         return await asyncio.to_thread(service.list_conversations)
+
+    @app.get("/api/conversations/{conversation_id}/messages")
+    async def list_messages(conversation_id: str,
+                            limit: int = Query(50, ge=1, le=200),
+                            before: str | None = Query(None, min_length=1)):
+        return await asyncio.to_thread(
+            service.list_messages, conversation_id, limit=limit, before=before)
 
     @app.get("/api/conversations/{conversation_id}/scope")
     async def get_scope(conversation_id: str):

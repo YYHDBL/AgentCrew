@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CI 守卫：contracts/openapi.yaml 必须是合法 YAML，且响应信封与 backend-service §4 一致。"""
+"""契约守卫（本地/CI 均可跑）：contracts/openapi.yaml 必须是合法 YAML，且响应信封与 backend-service §4 一致。"""
 import sys
 from pathlib import Path
 

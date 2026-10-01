@@ -1,0 +1,16 @@
+2026-09-30，真实不可写 data-dir 启动；Electron PID 58328。
+桌面辅助功能工具返回：
+
+Window: "", App: Electron.
+0 对话框 Description: 警告, Secondary Actions: Raise
+	1 图像 Electron 重要警告
+	2 text 任务服务无法启动，已达到自动重启上限。 进程退出：1
+启动失败：data-dir 不可写：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c10-dialog/data（Permission denied）
+
+启动日志：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/c10-dialog/sidecar-launch.log
+	3 按钮 确定, ID: action-button--999
+
+2026-09-30T09:42:15.998Z，通过原生退出按钮确认退出。
+退出前 Python PID 59431 为 T 状态，uv PID 59430，Electron PID 59305。
+2026-09-30T09:42:30Z，ps -o pid,ppid,pgid,stat -p 59305,59430,59431 返回：
+  PID  PPID  PGID STAT
