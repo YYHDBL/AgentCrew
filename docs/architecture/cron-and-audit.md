@@ -3,6 +3,7 @@
 > 模块深潜 #4 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（C1–C2 对齐，其余直接设计；C2 按用户指示参考 hermes）**
 > 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)（Q17 cron 语义）、[02-Harness与Session事件模型](./harness-session.md)（闸门/事件/排队）、[03-Memory系统详设](./memory-system.md)（fork 基础设施、skill 账本）、[04-权限治理详设](./governance.md)（pattern 规则、审计链）
 > 参考源码：`workMate/AionCore/crates/aionui-cron/`（四段式/错过语义）、`workMate/AionUi/packages/desktop/src/common/adapter/ipcBridge.ts`（ICronJob 契约）、`workMate/hermes-agent/agent/background_review.py`（fork 机制）
+> 实施任务：[M3 监控回放与自动化实施卡](../tasks/M3-cards.md)，15 张卡均未开始，依赖 M2 收口确认。
 
 ---
 
@@ -10,8 +11,8 @@
 
 | # | 决策点 | 结论 |
 |---|---|---|
-| C1 | 无人值守的审批 | **预授权范围 + 超出即拒**：创建定时任务时勾选允许范围（pattern 复用 G1），运行时第三闸按预授权判定，范围外直接拒绝 + 审计 + 通知；绝不免审批、绝不挂起等人 |
-| C2 | 审计触发 | **参考 hermes**：审计 Agent 是审查 fork 的第三个消费者（同一套机制：aux 槽、白名单工具、前台优先、允许"无需报告"）；触发= hermes 式计数器（每 N 个任务批量审）**+ 失败任务插队立即审**（对 hermes 的有意反向：她跳过失败回合，我们优先审失败——产品卖点归因） |
+| C1 | 无人值守的审批 | 当前权限与 scope/protected 校验通过后，需审批调用必须同时满足员工 allow 与计划预授权；任何 deny 或范围外操作直接拒绝、审计并通知，不等待人类 |
+| C2 | 审查触发 | 复用 M1 辅助模型作业、白名单及前台两秒取消；失败任务立即登记高优先级审查，每五个完成任务批量审查。允许无需报告，并保留实际作业状态与原因 |
 
 ---
 
@@ -36,16 +37,19 @@ cron_jobs(id PK, workspace_id FK, name,
 
 cron_job_runs(id PK, job_id FK, task_run_id FK, scheduled_at,
               status CHECK IN (fired, missed, skipped, failed), note,
-              UNIQUE(job_id, scheduled_at))   -- 时间跳变/休眠唤醒防重复记录（v1.1）
+              UNIQUE(job_id, scheduled_at))   -- 定时发生记录防重复；手动触发使用独立请求身份
 ```
+
+一次计划发生与初始执行、重试执行分别关联，保留每次实际 TaskRun、重试次数和错误；不得用多条 fired 记录冒充新到期。missed/skipped 可以没有 TaskRun，通过作业域持久事件与独立游标查询，不伪造会话。关联任务的 completed/interrupted/待核验状态按实际执行记录显示。
 
 ### 1.2 调度器（单进程，简化自 AionCore）
 
 - 每个 job 一个 asyncio 定时任务（`at` 一次性 / `every` interval / `cron` 表达式）；配置全在库里，**重启 = 重读表重建定时器**
-- **错过语义**：启动（或唤醒）时 `next_run_at < now` → 写 `missed` run 记录 + 通知，**不补跑**，重排下次
+- **错过语义**：启动或唤醒时已错过的到期点 → 写 `missed` 记录 + 通知，不补跑，重排下次；运行中正常定时延迟与错过窗口的界限由调度契约明确。连续错过需保存覆盖时间和次数，过期 at 结束该一次性计划
 - **冲突**：到点时上一轮还没跑完 → 记 `skipped` + 重排（不排队堆积）
-- **重试**：执行失败 30 秒后重试，上限 3 次；**任务存在 `pending_verification`（结果不明待核验，docs/02 §6.2）时不自动重试**，等待人工确认（v1.1）
-- 多实例租约/认领表（AionCore 的 `cron_job_runs` claim+lease）**明确不做**——单进程单机，写进"以后再说"
+- **重试**：可重试失败在失败后 30 秒重试，初始执行后最多额外三次，归属同一计划发生记录。停用、权限拒绝、未知副作用及待核验禁止自动重试；存在已完成副作用时按原事件与账本验证安全接续，无法证明时停止自动重试并保留人工处理状态
+- 单机单进程调度，沿用 instance.lock、串行写入与发生记录唯一约束
+- 已有会话忙碌、队列已暂停或待核验时记录 skipped，不替用户继续队列，不改变会话模式
 
 ### 1.3 执行流（与 Harness 的接缝）
 
@@ -66,8 +70,8 @@ cron_job_runs(id PK, job_id FK, task_run_id FK, scheduled_at,
 ### 1.4 数字员工自建定时任务（created_by=agent）
 
 - 对话里"每天早上 9 点把昨日报表发我" → 小文调 `schedule_task` 工具
-- 该工具元数据 `needs_approval=恒真`（建立无人值守执行权是高危动作，**永远要审批**，即使会话在免确认规则下）
-- 审批卡片**内置预授权范围选择器**：你批的不是"建任务"，是"建任务 + 它夜里能动哪些东西"——C1 的授权动作前移到创建时
+- 创建批准具有不可免除的人工确认语义，员工 allow 或 allow_always 不能代替授权人类批准
+- 审批卡片展示不可变计划提案与预授权范围选择器，用户只能缩小当前合法候选范围；最终配置绑定提案 input_hash、批准身份和修订号，重复提交不重复创建
 - 任务列表页与员工档案页都能看到"谁建的定时任务"，owner/admin 可停用任何 job
 
 ## 2. 轨迹审计 Agent（hermes 式）
@@ -83,7 +87,7 @@ cron_job_runs(id PK, job_id FK, task_run_id FK, scheduled_at,
 | 产物 | 三库写入 + skill 补丁 | 结构化审计报告 |
 | 允许 | "Nothing to save" | "Nothing to report" |
 
-**与 hermes 的差异（有意为之，写进文档供面试讲）**：hermes 跳过中断/失败回合的审查；我们**反向**——失败任务插队优先审，因为产品卖点是可观测性与归因，无人值守失败恰恰最需要报告。
+审查触发与输入水位持久化，重复事件不重复发起。审查作业独立于前台 TaskRun，失败分析仍服从前台优先；没有报告时保留 skipped 及原因，不修改原任务终态。
 
 ### 2.2 输入与报告
 
@@ -104,11 +108,11 @@ audit_reports(id PK, task_run_id FK UNIQUE, created_at,
   })
 ```
 
-事件：`audit.reported`。失败任务的报告在 Run Center 任务卡上直接可见（不用点开找）。
+事件：有有效报告时提交 `audit.reported`。报告保留模型、时间、适用尝试和输入水位，事件引用必须存在且属于目标任务。Run Center 展示报告与原事件链接；未生成、失败或无报告分别显示真实状态。
 
 ### 2.3 闭环：报告 → skill
 
-审计报告含 `skill_proposal` 时，Run Center 出"固化为技能"按钮 → 走提炼 fork 的 skill 分支（用户确认 → 新 skill 版本，source=agent，入 skill 账本）→ 下次任务直接复用。**失败 → 归因 → 改进 → 固化**，全链在同一平台完成。
+审计报告含有效 `skill_proposal` 时，Run Center 提供固化为技能操作。授权人类确认后进入 M1 Skill 提炼分支，按 M2 服务发布不可变新版本，source=agent，并写入记忆账本。固化不自动授予 grant；管理员授权后，下一任务有效索引及读取才可复用。不存在提案或发布失败时显示实际状态。
 
 ## 3. API 增量
 
@@ -124,12 +128,12 @@ POST /api/audit-reports/:id/promote-skill        # 固化为技能
 
 ## 4. 验收（里程碑 M3 组成部分）
 
-1. 定时准确触发（fake clock 测试 + 真机演示）；`at`/`every`/`cron` 三种 schedule 都可用
-2. 错过不补跑：改系统时间/杀进程错过窗口 → 重启标记 missed + 通知，无重复执行
+1. 自有时间计算参数化测试通过，真机验证 at/every/cron 三种计划准确触发
+2. 错过不补跑：真实暂停/恢复进程、终止重启或系统休眠跨过窗口 → 记录 missed + 通知，无重复执行
 3. 复用会话与新建会话两种模式都可演示（同一员工每天在同一个会话里接着干）
 4. **预授权演示**：范围外写路径被拒 + 审计留痕 + 通知可见（C1 的现场戏）
-5. 失败任务自动出审计报告，报告断点可跳转事件流
-6. 报告"固化技能"一键走通，新 skill 出现在员工索引里
+5. 失败任务自动登记审查，实际报告引用可跳转原事件；无报告或审查失败如实展示
+6. 实际报告提案经真人确认固化为新技能版本，按 M2 授权后在下一任务读取和复用
 7. 数字员工建定时任务必弹审批（含范围选择器）
 
 ## 5. 测试
