@@ -368,8 +368,17 @@ def test_shutdown_wins_over_overflow(tmp_path):
             f"Host: x\r\nAuthorization: Bearer {TOKEN}\r\n\r\n".encode()
         )
         time.sleep(0.3)  # 不读：让队列灌满溢出
-        srv.append(30, pad=600)
-        time.sleep(0.3)
+        deadline = time.monotonic() + 20
+        overflowed = False
+        while time.monotonic() < deadline:
+            srv.append(50, pad=768)
+            time.sleep(0.05)
+            if any(getattr(sub, "overflowed", False)
+                   for sub in srv.bus._subs):
+                overflowed = True
+                break
+        assert overflowed, \
+            "队列未灌满——溢出前提未证，'shutdown 压过 overflow' 断言无意义"
         srv.bus.shutdown_all()  # 溢出未恢复时触发优雅关闭
         raw.settimeout(5)
         chunks = b""
