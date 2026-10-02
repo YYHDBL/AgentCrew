@@ -1,0 +1,10 @@
+.                                                                        [100%]
+1 passed in 2.63s
+.                                                                        [100%]
+1 passed in 2.25s
+.                                                                        [100%]
+1 passed in 2.35s
+.                                                                        [100%]
+1 passed in 2.31s
+.                                                                        [100%]
+1 passed in 2.36s

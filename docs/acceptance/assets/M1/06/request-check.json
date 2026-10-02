@@ -1,0 +1,185 @@
+{
+  "validated_at": "2026-10-02T03:07:52.203278+00:00",
+  "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+  "baseline_summaries": [
+    {
+      "id": "5d9069a883ed4455b8a665e8dd4e8679",
+      "task_run_id": "a5dbbf6bc04545e5906293c4154cbae7",
+      "job_id": "c58f09872c0648dfa7c89be077658611",
+      "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+      "text": "已确认本次任务材料编号为 SUMMARY-1、标签颜色为蓝色，并以单句文字回复完成，未涉及工具调用或记忆保存。",
+      "created_at": "2026-10-02T03:03:42.453337+00:00"
+    },
+    {
+      "id": "d0b9bf5fb3e340d19c9dbbd9788f0c19",
+      "task_run_id": "c185ad7049ab431bb1f5deee5550ddd3",
+      "job_id": "9b682861657046ada8b1acf6c7463d77",
+      "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+      "text": "已确认编号SUMMARY-2、绿色标签两项任务资料，并按直接文字回复、省略工具调用和记忆保存要求完成。",
+      "created_at": "2026-10-02T03:03:48.078149+00:00"
+    },
+    {
+      "id": "0b0932e7fe634bc19c4140bff300ae92",
+      "task_run_id": "b4a2dfab0b4c4089a2dd1044f3bf5efb",
+      "job_id": "e9d6d7ae3a9449b1adb6e54f3fb8006f",
+      "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+      "text": "确认任务材料编号为 SUMMARY-3、标签颜色为黄色，并已直接文字回复，未调用工具或保存记忆。",
+      "created_at": "2026-10-02T03:04:26.577754+00:00"
+    },
+    {
+      "id": "318a1411d5cd409895059b54dafce263",
+      "task_run_id": "6032e4b87b3d45389f92a4048ca1f741",
+      "job_id": "f26e0bc4095f4d52a40ac6db6def0e1f",
+      "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+      "text": "已确认本次任务材料编号为 SUMMARY-4、标签颜色为紫色，并以文字回复完成，未调用工具或保存记忆。",
+      "created_at": "2026-10-02T03:04:57.317163+00:00"
+    },
+    {
+      "id": "f72dba2eebb54f4f9e4ea9ef1a3c99cf",
+      "task_run_id": "04772071f05f4353bfee95d5cf714cf5",
+      "job_id": "58f63aa5fd294871a32baba32e125af3",
+      "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+      "text": "已确认本次任务材料编号SUMMARY-5、标签橙色，并作单句文字回复，未调用工具或保存记忆。",
+      "created_at": "2026-10-02T03:05:56.943341+00:00"
+    },
+    {
+      "id": "af1965d277d549cd9b9d80eb183f7c63",
+      "task_run_id": "26eac70a0eac4814b8c73938378ad167",
+      "job_id": "4c14a81ccf4f41b78a8cfac969f922ab",
+      "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+      "text": "已确认任务材料编号 SUMMARY-6、标签白色，并按要求仅文字回复，未调用工具或保存记忆。",
+      "created_at": "2026-10-02T03:06:41.197849+00:00"
+    }
+  ],
+  "expected_recent_five": [
+    "d0b9bf5fb3e340d19c9dbbd9788f0c19",
+    "0b0932e7fe634bc19c4140bff300ae92",
+    "318a1411d5cd409895059b54dafce263",
+    "f72dba2eebb54f4f9e4ea9ef1a3c99cf",
+    "af1965d277d549cd9b9d80eb183f7c63"
+  ],
+  "observed_work_records": [
+    {
+      "body_sha256": "a0d5123be28f98742edd9e40428acde9b821fac1364a54ab2631cdef1d4b8c35",
+      "summary_ids": [
+        "5d9069a883ed4455b8a665e8dd4e8679"
+      ]
+    },
+    {
+      "body_sha256": "03694a5c629e0d8c6e7a7174abeab12a9cb4020865ae72f4ef1bd61556b4dc53",
+      "summary_ids": [
+        "5d9069a883ed4455b8a665e8dd4e8679",
+        "d0b9bf5fb3e340d19c9dbbd9788f0c19"
+      ]
+    },
+    {
+      "body_sha256": "26b6b2b9c12adb840e76ec77135202d827c43b063db7656996016de47190c856",
+      "summary_ids": [
+        "5d9069a883ed4455b8a665e8dd4e8679",
+        "d0b9bf5fb3e340d19c9dbbd9788f0c19",
+        "0b0932e7fe634bc19c4140bff300ae92"
+      ]
+    },
+    {
+      "body_sha256": "bfba42f7440222a8bd35bfbfcd319a173419c799a20e345c7edd54eda7697808",
+      "summary_ids": [
+        "5d9069a883ed4455b8a665e8dd4e8679",
+        "d0b9bf5fb3e340d19c9dbbd9788f0c19",
+        "0b0932e7fe634bc19c4140bff300ae92",
+        "318a1411d5cd409895059b54dafce263"
+      ]
+    },
+    {
+      "body_sha256": "abe7ab60f455d5313673a9df88e44867f1727c29465bf6f466d9c8385633b82f",
+      "summary_ids": [
+        "5d9069a883ed4455b8a665e8dd4e8679",
+        "d0b9bf5fb3e340d19c9dbbd9788f0c19",
+        "0b0932e7fe634bc19c4140bff300ae92",
+        "318a1411d5cd409895059b54dafce263",
+        "f72dba2eebb54f4f9e4ea9ef1a3c99cf"
+      ]
+    },
+    {
+      "body_sha256": "abe7ab60f455d5313673a9df88e44867f1727c29465bf6f466d9c8385633b82f",
+      "summary_ids": [
+        "5d9069a883ed4455b8a665e8dd4e8679",
+        "d0b9bf5fb3e340d19c9dbbd9788f0c19",
+        "0b0932e7fe634bc19c4140bff300ae92",
+        "318a1411d5cd409895059b54dafce263",
+        "f72dba2eebb54f4f9e4ea9ef1a3c99cf"
+      ]
+    },
+    {
+      "body_sha256": "abe7ab60f455d5313673a9df88e44867f1727c29465bf6f466d9c8385633b82f",
+      "summary_ids": [
+        "5d9069a883ed4455b8a665e8dd4e8679",
+        "d0b9bf5fb3e340d19c9dbbd9788f0c19",
+        "0b0932e7fe634bc19c4140bff300ae92",
+        "318a1411d5cd409895059b54dafce263",
+        "f72dba2eebb54f4f9e4ea9ef1a3c99cf"
+      ]
+    },
+    {
+      "body_sha256": "e0f7ac2d8f69f067180e6fe3129e0f5e1572db1abf8d6b7ab086dd0c5e91a8e6",
+      "summary_ids": [
+        "d0b9bf5fb3e340d19c9dbbd9788f0c19",
+        "0b0932e7fe634bc19c4140bff300ae92",
+        "318a1411d5cd409895059b54dafce263",
+        "f72dba2eebb54f4f9e4ea9ef1a3c99cf",
+        "af1965d277d549cd9b9d80eb183f7c63"
+      ]
+    },
+    {
+      "body_sha256": "59937181b041a61c0d074b4d4f323dd72a31144c467047bb3ec7a17b85859384",
+      "summary_ids": [
+        "d0b9bf5fb3e340d19c9dbbd9788f0c19",
+        "0b0932e7fe634bc19c4140bff300ae92",
+        "318a1411d5cd409895059b54dafce263",
+        "f72dba2eebb54f4f9e4ea9ef1a3c99cf",
+        "af1965d277d549cd9b9d80eb183f7c63"
+      ]
+    },
+    {
+      "body_sha256": "022fbb36395d188503cb4b29fb8e6f815531f1d74c1785597b5a07e57386a094",
+      "summary_ids": [
+        "0b0932e7fe634bc19c4140bff300ae92",
+        "318a1411d5cd409895059b54dafce263",
+        "f72dba2eebb54f4f9e4ea9ef1a3c99cf",
+        "af1965d277d549cd9b9d80eb183f7c63",
+        "4228eb4a053b440282bf5c7911367a44"
+      ]
+    }
+  ],
+  "models": [
+    "deepseek-v4.1-flash"
+  ],
+  "main_requests": 11,
+  "model_requests": 20,
+  "summaries": 7,
+  "snapshot": {
+    "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+    "sha256": "ffe3477e45b1336933960b37038fc753bb565c1b5909f2e8f674fdb5552b6287",
+    "global_seq": 113
+  },
+  "cancellation_seconds": 0.01733212501858361,
+  "sigkill": [
+    {
+      "job_id": "cdb3160fcfc2496095ae52dcddfa7ac6",
+      "task_run_id": "66d98869c6164886b2cd1fba818b6cc8",
+      "exit_code": -9,
+      "stream": {
+        "job_id": "cdb3160fcfc2496095ae52dcddfa7ac6",
+        "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+        "event": "actual_text_delta",
+        "monotonic": 178513.464135041,
+        "observed_at": "2026-10-02T03:07:49.253839+00:00"
+      },
+      "observed_at": "2026-10-02T03:07:49.258459+00:00"
+    }
+  ],
+  "audit": {
+    "ok": true,
+    "checked_count": 50,
+    "reason": null
+  }
+}

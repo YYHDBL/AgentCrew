@@ -72,6 +72,8 @@ class RunEventType(StrEnum):
     MEMORY_ARCHIVED = "memory.archived"
     MEMORY_SNAPSHOT_CREATED = "memory.snapshot_created"
     SKILL_PATCHED = "skill.patched"
+    MEMORY_JOB_STATUS = "memory.job_status"
+    MEMORY_SUMMARY_CREATED = "memory.summary_created"
 
 
 @dataclass(frozen=True)

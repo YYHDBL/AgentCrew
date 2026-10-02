@@ -27,6 +27,7 @@ if TYPE_CHECKING:  # 避免运行时循环导入（bus 导入 core.events 而已
     from .memory.store import MemoryStore
     from .memory.snapshots import MemorySnapshots
     from .memory.search import MemorySearch
+    from .memory.jobs import MemoryJobs
 
 
 @dataclass
@@ -58,11 +59,14 @@ class RuntimeState:
     memory: "MemoryStore | None" = None
     snapshots: "MemorySnapshots | None" = None
     memory_search: "MemorySearch | None" = None
+    memory_jobs: "MemoryJobs | None" = None
 
     async def shutdown(self) -> None:
         """优雅关闭（§7 顺序；任务取消不写终态——run_manager.shutdown 在
         总线停收之前执行，被取消任务不落 run.* 终态，C9 对账收敛）。"""
         self.log.info("shutdown.begin 优雅关闭（总预算 10s；停收新请求由 uvicorn 完成）")
+        if self.memory_jobs is not None:
+            await self.memory_jobs.shutdown()
         if self.run_manager is not None:
             try:
                 await self.run_manager.shutdown()

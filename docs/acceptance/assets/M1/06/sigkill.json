@@ -1,0 +1,176 @@
+[
+  {
+    "boundary": "running",
+    "exit_code": -9,
+    "queries": [
+      {
+        "sql": "SELECT id,kind,status,trigger_global_seq,task_run_id FROM memory_jobs",
+        "rows": [
+          {
+            "id": "c4496e981e68446e9faba5c81b41358e",
+            "kind": "summary",
+            "status": "interrupted",
+            "trigger_global_seq": 3,
+            "task_run_id": "2e50b99e67994473936d4f75bdcacb8a"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT * FROM session_summaries",
+        "rows": []
+      },
+      {
+        "sql": "SELECT global_seq,type,payload FROM run_events ORDER BY global_seq",
+        "rows": [
+          {
+            "global_seq": 1,
+            "type": "run.queued",
+            "payload": "{\"client_request_id\": null, \"instruction\": \"记录材料核查批次0\"}"
+          },
+          {
+            "global_seq": 2,
+            "type": "run.started",
+            "payload": "{\"attempt_id\": \"attempt-2e50b99e67994473936d4f75bdcacb8a\", \"attempt_no\": 1, \"kind\": \"initial\"}"
+          },
+          {
+            "global_seq": 3,
+            "type": "run.completed",
+            "payload": "{\"final_text\": \"已保存材料核查批次0，SHA256=eed497e01c54aa0ff02d41807cd19dc5242e3c012bc7157b5ff4773354752872\"}"
+          },
+          {
+            "global_seq": 4,
+            "type": "memory.job_status",
+            "payload": "{\"config_version\": \"0\", \"error\": null, \"job_id\": \"c4496e981e68446e9faba5c81b41358e\", \"kind\": \"summary\", \"model\": \"\", \"scope\": {\"agent_id\": \"default\", \"owner_id\": \"owner\", \"workspace_id\": \"default\"}, \"source_task_run_id\": \"2e50b99e67994473936d4f75bdcacb8a\", \"status\": \"queued\", \"trigger_global_seq\": 3, \"usage\": {\"input_tokens\": 0, \"output_tokens\": 0}}"
+          },
+          {
+            "global_seq": 5,
+            "type": "memory.job_status",
+            "payload": "{\"config_version\": \"0\", \"error\": null, \"job_id\": \"c4496e981e68446e9faba5c81b41358e\", \"kind\": \"summary\", \"model\": \"\", \"scope\": {\"agent_id\": \"default\", \"owner_id\": \"owner\", \"workspace_id\": \"default\"}, \"source_task_run_id\": \"2e50b99e67994473936d4f75bdcacb8a\", \"status\": \"running\", \"trigger_global_seq\": 3, \"usage\": {\"input_tokens\": 0, \"output_tokens\": 0}}"
+          },
+          {
+            "global_seq": 6,
+            "type": "memory.job_status",
+            "payload": "{\"config_version\": \"0\", \"error\": \"进程终止期间辅助作业未完成\", \"job_id\": \"c4496e981e68446e9faba5c81b41358e\", \"kind\": \"summary\", \"model\": \"\", \"scope\": {\"agent_id\": \"default\", \"owner_id\": \"owner\", \"workspace_id\": \"default\"}, \"source_task_run_id\": \"2e50b99e67994473936d4f75bdcacb8a\", \"status\": \"interrupted\", \"trigger_global_seq\": 3, \"usage\": {\"input_tokens\": 0, \"output_tokens\": 0}}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT seq,action,resource_id,hash FROM audit_log ORDER BY seq",
+        "rows": [
+          {
+            "seq": 1,
+            "action": "memory.job_status",
+            "resource_id": "c4496e981e68446e9faba5c81b41358e",
+            "hash": "22adea94e7cbadd0cc89b3b6f7882c9ad90db0a43900731a6ea6bc6e5391eaca"
+          },
+          {
+            "seq": 2,
+            "action": "memory.job_status",
+            "resource_id": "c4496e981e68446e9faba5c81b41358e",
+            "hash": "b9d9a079a53f82a13ace26fb5bf2946f7363ee3ff2e6b4731711b78f53414a91"
+          },
+          {
+            "seq": 3,
+            "action": "memory.job_status",
+            "resource_id": "c4496e981e68446e9faba5c81b41358e",
+            "hash": "75d522981c5c2571c22cad523f4525f15d4f5f4b20f1d09f11cc9a3ce6a08e35"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "boundary": "committed",
+    "exit_code": -9,
+    "queries": [
+      {
+        "sql": "SELECT id,kind,status,trigger_global_seq,task_run_id FROM memory_jobs",
+        "rows": [
+          {
+            "id": "39ae3180078f4ce09c07faf0166af013",
+            "kind": "summary",
+            "status": "completed",
+            "trigger_global_seq": 3,
+            "task_run_id": "03dd33a1168141e9aea8546197c74ce4"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT * FROM session_summaries",
+        "rows": [
+          {
+            "id": "564e07472de7441ab62087b10f789cc9",
+            "task_run_id": "03dd33a1168141e9aea8546197c74ce4",
+            "job_id": "39ae3180078f4ce09c07faf0166af013",
+            "conversation_id": "c4462a930f6e41d9bd5eadf6cdcd721d",
+            "text": "已保存材料核查批次0",
+            "created_at": "2026-10-02T03:04:09.877342+00:00"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT global_seq,type,payload FROM run_events ORDER BY global_seq",
+        "rows": [
+          {
+            "global_seq": 1,
+            "type": "run.queued",
+            "payload": "{\"client_request_id\": null, \"instruction\": \"记录材料核查批次0\"}"
+          },
+          {
+            "global_seq": 2,
+            "type": "run.started",
+            "payload": "{\"attempt_id\": \"attempt-03dd33a1168141e9aea8546197c74ce4\", \"attempt_no\": 1, \"kind\": \"initial\"}"
+          },
+          {
+            "global_seq": 3,
+            "type": "run.completed",
+            "payload": "{\"final_text\": \"已保存材料核查批次0，SHA256=eed497e01c54aa0ff02d41807cd19dc5242e3c012bc7157b5ff4773354752872\"}"
+          },
+          {
+            "global_seq": 4,
+            "type": "memory.job_status",
+            "payload": "{\"config_version\": \"0\", \"error\": null, \"job_id\": \"39ae3180078f4ce09c07faf0166af013\", \"kind\": \"summary\", \"model\": \"\", \"scope\": {\"agent_id\": \"default\", \"owner_id\": \"owner\", \"workspace_id\": \"default\"}, \"source_task_run_id\": \"03dd33a1168141e9aea8546197c74ce4\", \"status\": \"queued\", \"trigger_global_seq\": 3, \"usage\": {\"input_tokens\": 0, \"output_tokens\": 0}}"
+          },
+          {
+            "global_seq": 5,
+            "type": "memory.job_status",
+            "payload": "{\"config_version\": \"0\", \"error\": null, \"job_id\": \"39ae3180078f4ce09c07faf0166af013\", \"kind\": \"summary\", \"model\": \"\", \"scope\": {\"agent_id\": \"default\", \"owner_id\": \"owner\", \"workspace_id\": \"default\"}, \"source_task_run_id\": \"03dd33a1168141e9aea8546197c74ce4\", \"status\": \"running\", \"trigger_global_seq\": 3, \"usage\": {\"input_tokens\": 0, \"output_tokens\": 0}}"
+          },
+          {
+            "global_seq": 6,
+            "type": "memory.summary_created",
+            "payload": "{\"job_id\": \"39ae3180078f4ce09c07faf0166af013\", \"scope\": {\"agent_id\": \"default\", \"owner_id\": \"owner\", \"workspace_id\": \"default\"}, \"source_task_run_id\": \"03dd33a1168141e9aea8546197c74ce4\", \"summary\": \"已保存材料核查批次0\", \"summary_id\": \"564e07472de7441ab62087b10f789cc9\"}"
+          },
+          {
+            "global_seq": 7,
+            "type": "memory.job_status",
+            "payload": "{\"config_version\": \"0\", \"error\": null, \"job_id\": \"39ae3180078f4ce09c07faf0166af013\", \"kind\": \"summary\", \"model\": \"\", \"scope\": {\"agent_id\": \"default\", \"owner_id\": \"owner\", \"workspace_id\": \"default\"}, \"source_task_run_id\": \"03dd33a1168141e9aea8546197c74ce4\", \"status\": \"completed\", \"trigger_global_seq\": 3, \"usage\": {\"input_tokens\": 0, \"output_tokens\": 0}}"
+          }
+        ]
+      },
+      {
+        "sql": "SELECT seq,action,resource_id,hash FROM audit_log ORDER BY seq",
+        "rows": [
+          {
+            "seq": 1,
+            "action": "memory.job_status",
+            "resource_id": "39ae3180078f4ce09c07faf0166af013",
+            "hash": "1055e582d25305c82a570c37ac2900f0e313b5837c912e4d4264966c246d7cd3"
+          },
+          {
+            "seq": 2,
+            "action": "memory.job_status",
+            "resource_id": "39ae3180078f4ce09c07faf0166af013",
+            "hash": "2d3f1efcb650f734d7abab6fd3db72cb05a7395e74a61f219b80880f0f073910"
+          },
+          {
+            "seq": 3,
+            "action": "memory.job_status",
+            "resource_id": "39ae3180078f4ce09c07faf0166af013",
+            "hash": "51eccf5302880b2cb63426c6c10e5f1221ffc24c2991ee8366e817f5a28a546f"
+          }
+        ]
+      }
+    ]
+  }
+]

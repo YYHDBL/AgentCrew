@@ -121,6 +121,7 @@ class RunManager:
         snapshots=None,
         memory_search=None,
         memory_skills=None,
+        summaries=None,
     ):
         self._db = db
         self._store = event_store
@@ -134,6 +135,7 @@ class RunManager:
         self._snapshots = snapshots
         self._memory_search = memory_search
         self._memory_skills = memory_skills
+        self._summaries = summaries
         self._runs: dict[str, _Run] = {}
         self._guardrails: dict[str, str] = {}  # task_id → 护栏提示（接续注入）
         self._recovery = None  # C9：RecoveryService（cli 装配后注回，resume 重建用）
@@ -663,7 +665,7 @@ class RunManager:
             "SELECT id, instruction FROM task_runs"
             " WHERE conversation_id = ? AND status = 'completed'"
             " ORDER BY created_at", (conversation_id,)).fetchall()
-        messages: list[dict] = []
+        messages: list[dict] = self._summaries.messages(conversation_id) if self._summaries is not None else []
         for task_id, instruction in rows:
             reply = self._db.read_conn.execute(
                 "SELECT content FROM messages"

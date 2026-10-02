@@ -75,6 +75,9 @@ def create_app(runtime: RuntimeState) -> FastAPI:
                     runtime.log.info("http.lifespan 启动对账：%s", summary)
             except Exception:  # noqa: BLE001 —— 对账失败如实记录，不拦启动
                 runtime.log.exception("http.lifespan 启动对账失败")
+        if runtime.memory_jobs is not None and runtime.diagnostic is None:
+            await runtime.memory_jobs.recover()
+            await runtime.memory_jobs.start()
         if runtime.run_manager is not None:
             await runtime.run_manager.start()  # 总线订阅 + 派发协程（C8）
         yield

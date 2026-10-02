@@ -394,18 +394,19 @@ class RecoveryService:
                 raise SessionError(
                     ErrorCode.INVALID_TRANSITION,
                     f"会话状态 {fsm.state} 不可恢复（有任务执行中）")
-            result, _ledger = await asyncio.to_thread(
-                self.rebuild_for_resume, task_run_id)
-            if result.needs_manual_review:
-                _log.error("resume.replay_corrupt task=%s warnings=%s",
-                           task_run_id, result.warnings)
-                raise SessionError(
-                    ErrorCode.REPLAY_CORRUPT,
-                    "重放遇损坏事件行，上下文完整性无保证，需人工介入",
-                    detail={"warnings": result.warnings})
-            await self._run_manager.start_resume(
-                task_run_id, conversation_id,
-                resume_reason or "user_requested", attempt_no + 1)
+            async with self._sessions.foreground():
+                result, _ledger = await asyncio.to_thread(
+                    self.rebuild_for_resume, task_run_id)
+                if result.needs_manual_review:
+                    _log.error("resume.replay_corrupt task=%s warnings=%s",
+                               task_run_id, result.warnings)
+                    raise SessionError(
+                        ErrorCode.REPLAY_CORRUPT,
+                        "重放遇损坏事件行，上下文完整性无保证，需人工介入",
+                        detail={"warnings": result.warnings})
+                await self._run_manager.start_resume(
+                    task_run_id, conversation_id,
+                    resume_reason or "user_requested", attempt_no + 1)
         # K1：非 409 路径的降级告警（如工件缺失）返回调用方可见
         return {"warnings": list(result.warnings)}
 

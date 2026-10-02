@@ -198,6 +198,7 @@ def install_sse_routes(app, runtime) -> None:
             _conversation_stream(runtime, sub, conversation_id, from_seq),
             ping=PING_INTERVAL_SECONDS,
             headers=_SSE_HEADERS,
+            shutdown_grace_period=1,
         )
 
     @app.get("/api/task-runs/{task_run_id}/events")
@@ -228,6 +229,7 @@ def install_sse_routes(app, runtime) -> None:
             _task_stream(runtime, sub, task_run_id, from_seq),
             ping=PING_INTERVAL_SECONDS,
             headers=_SSE_HEADERS,
+            shutdown_grace_period=1,
         )
 
 

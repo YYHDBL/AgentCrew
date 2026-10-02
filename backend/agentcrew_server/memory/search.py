@@ -10,7 +10,7 @@ from agentcrew_core.memory import context_entries, failure, sha256, suspected_in
 from ..secrets import redact
 from .store import MemoryIdentity, MemoryStore, canonical
 
-_CURSOR = re.compile(r"([0-9a-f]{64}):(message|memory):([A-Za-z0-9_-]{1,128})\Z")
+_CURSOR = re.compile(r"([0-9a-f]{64}):(message|memory|summary):([A-Za-z0-9_-]{1,128})\Z")
 
 
 class MemorySearch:
@@ -60,6 +60,7 @@ class MemorySearch:
             phrase = '"' + query.replace('"', '""') + '"'
             message_match = "m.rowid IN (SELECT rowid FROM messages_fts WHERE messages_fts MATCH ?)" if len(query) >= 3 else "instr(m.content, ?) > 0"
             memory_match = "e.rowid IN (SELECT rowid FROM memory_fts WHERE memory_fts MATCH ?)" if len(query) >= 3 else "instr(e.text, ?) > 0"
+            summary_match = "s.rowid IN (SELECT rowid FROM summaries_fts WHERE summaries_fts MATCH ?)" if len(query) >= 3 else "instr(s.text, ?) > 0"
             term = phrase if len(query) >= 3 else query
             sql = f"""SELECT m.id,'message' AS kind,m.content AS text,m.created_at,
                 json_object('conversation_id',m.conversation_id,'task_run_id',m.task_run_id,
@@ -76,8 +77,18 @@ class MemorySearch:
                 e.store_type,e.store_id,e.state
                 FROM memory_entries e JOIN memory_stores s USING(store_type,store_id)
                 WHERE e.entry_id IN (SELECT value FROM json_each(?)) AND e.needs_review=0
-                    AND {memory_match}"""
-            params = [identity.workspace_id, identity.agent_id, term, canonical(allowed), term]
+                    AND {memory_match}
+                UNION ALL
+                SELECT s.id,'summary',s.text,s.created_at,
+                json_object('conversation_id',s.conversation_id,'task_run_id',s.task_run_id,
+                    'summary_id',s.id,'job_id',s.job_id,'workspace_id',c.workspace_id,
+                    'agent_id',c.agent_id,'conversation_status',c.status),NULL,NULL,NULL
+                FROM session_summaries s JOIN conversations c ON c.id=s.conversation_id
+                JOIN task_runs t ON t.id=s.task_run_id
+                WHERE c.workspace_id=? AND c.agent_id=? AND t.status='completed'
+                    AND {summary_match} AND memory_context_safe(s.text)"""
+            params = [identity.workspace_id, identity.agent_id, term, canonical(allowed), term,
+                      identity.workspace_id, identity.agent_id, term]
             where = ""
             if cursor:
                 position = conn.execute(f"SELECT created_at,id,kind FROM ({sql}) WHERE kind=? AND id=?",
@@ -102,6 +113,8 @@ class MemorySearch:
                 conn.execute("INSERT INTO memory_fts(memory_fts) VALUES('rebuild')")
                 conn.execute("INSERT INTO messages_fts(messages_fts,rank) VALUES('integrity-check',1)")
                 conn.execute("INSERT INTO memory_fts(memory_fts,rank) VALUES('integrity-check',1)")
+                conn.execute("INSERT INTO summaries_fts(summaries_fts) VALUES('rebuild')")
+                conn.execute("INSERT INTO summaries_fts(summaries_fts,rank) VALUES('integrity-check',1)")
         await self.store.events.channel.execute(tx)
 
     async def run_tool(self, invocation, context):

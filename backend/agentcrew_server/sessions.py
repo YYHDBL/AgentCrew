@@ -28,6 +28,7 @@ import logging
 import shutil
 import sqlite3
 import uuid
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -154,6 +155,15 @@ class SessionService:
         self._settings = settings  # limits 取生效配置（PATCH 成功后即为新值）
         self._locks: dict[str, asyncio.Lock] = {}
         self._locks_guard = asyncio.Lock()
+        self.memory_jobs = None
+
+    @asynccontextmanager
+    async def foreground(self):
+        if self.memory_jobs is None:
+            yield
+        else:
+            async with self.memory_jobs.foreground():
+                yield
 
     async def _conv_lock(self, conversation_id: str) -> asyncio.Lock:
         return await self._scoped_lock(f"conv:{conversation_id}")
@@ -333,14 +343,25 @@ class SessionService:
         client_request_id: str | None,
         import_files: list[str] | None, folders: list[str] | None,
     ) -> dict[str, Any]:
+        async with self.foreground():
+            return await self._create_foreground_conversation(
+                instruction=instruction, agent_id=agent_id,
+                client_request_id=client_request_id,
+                import_files=import_files, folders=folders)
+
+    async def _create_foreground_conversation(
+        self, *, instruction: str, agent_id: str | None,
+        client_request_id: str | None,
+        import_files: list[str] | None, folders: list[str] | None,
+    ) -> dict[str, Any]:
         conv_id = uuid.uuid4().hex
         task_id = uuid.uuid4().hex
         agent = agent_id or DEFAULT_AGENT_ID
         limits = self._limits()
         materials_dir = self._data_dir / "conversations" / conv_id / "materials"
-        file_results = import_materials(list(import_files or []),
-                                        materials_dir, limits)
-        folder_results = validate_folders(list(folders or []), limits)
+        file_results = await asyncio.to_thread(import_materials, list(import_files or []),
+                                                materials_dir, limits)
+        folder_results = await asyncio.to_thread(validate_folders, list(folders or []), limits)
         provided = len(file_results) + len(folder_results)
         rejected = sum(1 for r in file_results if r["error"]) + \
             sum(1 for r in folder_results if r["error"])
@@ -448,12 +469,13 @@ class SessionService:
 
             if can_send(fsm):
                 task_id = uuid.uuid4().hex
-                event = await self._store.append(
-                    task_run_id=task_id, conversation_id=conversation_id,
-                    type=RunEventType.RUN_QUEUED,
-                    payload={"instruction": text,
-                             "client_request_id": client_request_id},
-                )
+                async with self.foreground():
+                    event = await self._store.append(
+                        task_run_id=task_id, conversation_id=conversation_id,
+                        type=RunEventType.RUN_QUEUED,
+                        payload={"instruction": text,
+                                 "client_request_id": client_request_id},
+                    )
                 return {"mode": "started", "queue_position": None,
                         "task_run_id": event.task_run_id}
 
@@ -466,12 +488,13 @@ class SessionService:
 
             if can_queue(fsm):
                 item_id = uuid.uuid4().hex
-                await self._store.append(
-                    task_run_id=None, conversation_id=conversation_id,
-                    type=RunEventType.QUEUE_ITEM_ENQUEUED,
-                    payload={"item_id": item_id, "text": text,
-                             "client_request_id": client_request_id},
-                )
+                async with self.foreground():
+                    await self._store.append(
+                        task_run_id=None, conversation_id=conversation_id,
+                        type=RunEventType.QUEUE_ITEM_ENQUEUED,
+                        payload={"item_id": item_id, "text": text,
+                                 "client_request_id": client_request_id},
+                    )
                 fsm2, _ = await asyncio.to_thread(
                     self._fsm_sync, conversation_id)
                 return {"mode": "queued",
@@ -609,7 +632,7 @@ class SessionService:
             return task_id
 
     async def continue_queue(self, conversation_id: str) -> None:
-        async with await self._conv_lock(conversation_id):
+        async with await self._conv_lock(conversation_id), self.foreground():
             await asyncio.to_thread(self.conversation_or_404, conversation_id)
             fsm, _ = await asyncio.to_thread(self._fsm_sync, conversation_id)
             head = fsm.queued_items[0] if fsm.queued_items else None
