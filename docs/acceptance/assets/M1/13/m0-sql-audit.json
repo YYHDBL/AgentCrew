@@ -1,0 +1,3274 @@
+{
+  "queries": [
+    {
+      "sql": "SELECT t.id,t.status,t.current_attempt_no,COUNT(DISTINCT s.id) AS projected_steps,(SELECT COUNT(*) FROM run_events e WHERE e.task_run_id=t.id AND e.type='step.started') AS started_steps FROM task_runs t LEFT JOIN steps s ON s.task_run_id=t.id GROUP BY t.id ORDER BY t.created_at,t.id",
+      "rows": [
+        {
+          "id": "8dce8a7d89f845c2828b6bafc67d108c",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 4,
+          "started_steps": 4
+        },
+        {
+          "id": "21fb60f395fd4efda1b9a1f3f830047e",
+          "status": "interrupted",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "74efc21e61b246669e46ccd25bfeecac",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 4,
+          "started_steps": 4
+        },
+        {
+          "id": "927d4c40e4e0481d9f784770ffd99013",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 3,
+          "started_steps": 3
+        },
+        {
+          "id": "61a77891c15343e29e6462caae8ca829",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "99324de42a40425e9fc63f14aace0a68",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "1251feeef82c4103af98361da5193613",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "36958eb207bb4a26931401462da67676",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "5395908af27240c8961f89847af4cb3e",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "81755ed6eeca4b1d96375d7c428951f0",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "dec2f9220f054e1593c22faef7e2aa09",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "f0fc9f8c678449559c05d8ae5588d815",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "9dc2d3e294b24ee692a39a9c036d58d6",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "a215c3e19e37498e847d25d6b138981c",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 3,
+          "started_steps": 3
+        },
+        {
+          "id": "0062392015994008bf54b8c485fbc6e5",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "b5c47a8f70b0409dbb9fb94615aa81fa",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "6d73dbe39f9e42308d59036c6697f4a7",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "74272fca778646b6b0cafe67883ea34c",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "5ac05bb5b8e6433e989a0b77396c0fab",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "d4195b0c6917419fa54d62b15a4d6838",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "7b0727c3c9b642dab4d16dd63c9ded03",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "d593c75e324e41a3b1b183db76ea1c2d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "adc4061c17884e33abd5945a03bb337d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "908583af8a014085be78f47b3ef53bc1",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "cbb3655e124f4732971aeaceb80a2033",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "c69baf0727f948268a9184429e7ea0c5",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "7f2f353cf14d4354aee28a6f7435c9ea",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "c691743c7270426ca0a0358d64fcba10",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "7bec9c7ec9214b7f85d2fc45c512944f",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "a1a2ab8435c84b1e98eab64caf6d3663",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "2a1e25fa37ed4aef81bb1fb06f0e6790",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "737a8f30fae04524a31cba8f7379b9ec",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "46c023b980674ce8a2ce12c6291c2ac7",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "073d754cfc514f9d958cf52bda49cc4b",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "5b838ea365df4250b99239e0b80be346",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "c5fdce8b92684e4d997388b503157a56",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "c583b5e6ada647ab8c0625e7692d1d52",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "858e12706f0e469c93ddd6a27f854fea",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "26c73139d689493bbb907402e55111c9",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "a051cc7d1a2f441ba5068010efcbdf6c",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "e5cf071bca1f4822a6aa79eb42bfedfc",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "f6d6870590794da192a4c4ddd3a8214a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "6fca07b768fd473fbc2c65eb0e4e62b0",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "3528d2d08f484eceb8b6298e422f32e7",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "9f9fd0d64f744f669a372eaf0770714a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "5f36099d488345759f66220c629cc66b",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "1f5e6ccf490e4d75a582b54e105e1a5d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "04463c976bbc4e0f952f94fb57ef6dfa",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "8f86943c6dfd48e6a61dba3b9a2d159a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "25682d5a81244ba89e96f06a619f8c98",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "ca240b4eee3448cfb445fac1cfd14619",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "301cd8e875404fd4b7969fcfff820b5d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "a5ff0ae1a13741068ba943be96b3a4f3",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "7b676c9d1a4d4dc5bfefb369d76984fe",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "5a68dcc38b954d53b42a6febdd64c9d4",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "60c9a245b72948c79f3ab142dfb95054",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "8f6a7242c75a4426a03e9ac0bf1b249e",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "c8e91bb6b288427ebd2cc03367238b77",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "66b6e0690f90405785abe456ec8f4505",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "6e6ae34836a849819dd0c7265bd70585",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "27b9dac19960445685fb76f0050bbd24",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "e8bb509fb18e48bca9d3c001fe95fa07",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "fa972862bcde46cea63a646c9e60574a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "958d51a5e7d84f80aa63ca29c275a598",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "fe9ba1934ed843a0ba410f132df21e5a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "6301b2dd4f0a4810880d529ab7f76d61",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "c2bd840b4bfc43f1a0f5fc453a22c2c7",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "1f5c0680b1da4e0d92c918bfc48f1c3d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "16146508c24043429cea3f50dfce1a57",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "91b34273b7f642d29b746dd41ff9f326",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "e6877c547bd84d149907e93c1eb123b9",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "9869630bf28548f8904b3ed575f5d558",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "7554521b8b0c4f49ae78014f888bcd2a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "d7a2379da717411ebcf2a407289c961b",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "f80041ac05474da18299ab14bf3c23ad",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "52463f8158cd4da48b20e90bc666273d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "283fe56269a04909a08eb81f02520f50",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "6bc03ccddb8c4f53b22e7d3b7f3a515f",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "54b7365fb7714c7489d970a0e297091a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "6d08419ea8c44e24a244ab56807ef7a1",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "4bd289736402454b9ee897c75920098d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "d810fa30ca7c4f888d32519a142cb3fc",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "5bf91548053f4e44aa0d53409b3ce464",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "4110bcde35c942d0a65dbb653050fcf3",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "53ea7b2367cb4bc9a0603637f4bd5d92",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "e335ab9702e34ff6ab5ba91aedf7402b",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "da711fbda1b2496bb12796e720633a1e",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "f81e504d14454957b859b2bb16b566d3",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "8ec43342cc2448c18067db370f2c889e",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "511b6aa72dd54410956a12500be2267a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "335306e6d768426bb7f95432a2248a8d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "fbe6e6ad40e442a992cf77b7b8c59c76",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "5cd3f179c77140e4b799e5b5d87d9400",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "2db55aaad53749d3aa3c6df3d2360040",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "8c6a5f62f8464670bebe4d717e006924",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "e8e869f244454e4b87a2b4fb9b81696c",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "bb3080d03fee493bb3db7988403bba78",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "148949d05e90486392eeefbf50a8318f",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "ee62fa5b46624d35863bbe62d4f97998",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "b253751e53a049a496e04e634fdcc96c",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "346b1523547d4dcc842857945f3e9eb3",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "e22ed037003b4a9288f07321d354fd98",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "4bc5b321045b4872bbb5e85df82e0b80",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "b287a07fc67349a88ec25285fd5ec941",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "48ab977f51854d0fa8d68eeacbada9ee",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "a5ed1e5aa9dd4ef5ae679eabb97004f5",
+          "status": "completed",
+          "current_attempt_no": 2,
+          "projected_steps": 4,
+          "started_steps": 4
+        },
+        {
+          "id": "c6ca4804514e49f28477011c3430972b",
+          "status": "cancelled",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "3d87070dce43476c9ac22d3e3ac3da32",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "f9b01d5baf29491bab07b7400a66c31f",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 4,
+          "started_steps": 4
+        },
+        {
+          "id": "2c57090f2a504f258dddc1802c46025a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 5,
+          "started_steps": 5
+        }
+      ]
+    },
+    {
+      "sql": "SELECT t.id,COUNT(DISTINCT l.id) AS projected_calls,(SELECT COUNT(*) FROM run_events e WHERE e.task_run_id=t.id AND e.type='llm.request_started') AS started_calls FROM task_runs t LEFT JOIN steps s ON s.task_run_id=t.id LEFT JOIN llm_calls l ON l.step_id=s.id GROUP BY t.id ORDER BY t.created_at,t.id",
+      "rows": [
+        {
+          "id": "8dce8a7d89f845c2828b6bafc67d108c",
+          "projected_calls": 4,
+          "started_calls": 4
+        },
+        {
+          "id": "21fb60f395fd4efda1b9a1f3f830047e",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "74efc21e61b246669e46ccd25bfeecac",
+          "projected_calls": 4,
+          "started_calls": 4
+        },
+        {
+          "id": "927d4c40e4e0481d9f784770ffd99013",
+          "projected_calls": 3,
+          "started_calls": 3
+        },
+        {
+          "id": "61a77891c15343e29e6462caae8ca829",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "99324de42a40425e9fc63f14aace0a68",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "1251feeef82c4103af98361da5193613",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "36958eb207bb4a26931401462da67676",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "5395908af27240c8961f89847af4cb3e",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "81755ed6eeca4b1d96375d7c428951f0",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "dec2f9220f054e1593c22faef7e2aa09",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "f0fc9f8c678449559c05d8ae5588d815",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "9dc2d3e294b24ee692a39a9c036d58d6",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "a215c3e19e37498e847d25d6b138981c",
+          "projected_calls": 3,
+          "started_calls": 3
+        },
+        {
+          "id": "0062392015994008bf54b8c485fbc6e5",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "b5c47a8f70b0409dbb9fb94615aa81fa",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "6d73dbe39f9e42308d59036c6697f4a7",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "74272fca778646b6b0cafe67883ea34c",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "5ac05bb5b8e6433e989a0b77396c0fab",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "d4195b0c6917419fa54d62b15a4d6838",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "7b0727c3c9b642dab4d16dd63c9ded03",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "d593c75e324e41a3b1b183db76ea1c2d",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "adc4061c17884e33abd5945a03bb337d",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "908583af8a014085be78f47b3ef53bc1",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "cbb3655e124f4732971aeaceb80a2033",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "c69baf0727f948268a9184429e7ea0c5",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "7f2f353cf14d4354aee28a6f7435c9ea",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "c691743c7270426ca0a0358d64fcba10",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "7bec9c7ec9214b7f85d2fc45c512944f",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "a1a2ab8435c84b1e98eab64caf6d3663",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "2a1e25fa37ed4aef81bb1fb06f0e6790",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "737a8f30fae04524a31cba8f7379b9ec",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "46c023b980674ce8a2ce12c6291c2ac7",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "073d754cfc514f9d958cf52bda49cc4b",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "5b838ea365df4250b99239e0b80be346",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "c5fdce8b92684e4d997388b503157a56",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "c583b5e6ada647ab8c0625e7692d1d52",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "858e12706f0e469c93ddd6a27f854fea",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "26c73139d689493bbb907402e55111c9",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "a051cc7d1a2f441ba5068010efcbdf6c",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "e5cf071bca1f4822a6aa79eb42bfedfc",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "f6d6870590794da192a4c4ddd3a8214a",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "6fca07b768fd473fbc2c65eb0e4e62b0",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "3528d2d08f484eceb8b6298e422f32e7",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "9f9fd0d64f744f669a372eaf0770714a",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "5f36099d488345759f66220c629cc66b",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "1f5e6ccf490e4d75a582b54e105e1a5d",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "04463c976bbc4e0f952f94fb57ef6dfa",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "8f86943c6dfd48e6a61dba3b9a2d159a",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "25682d5a81244ba89e96f06a619f8c98",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "ca240b4eee3448cfb445fac1cfd14619",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "301cd8e875404fd4b7969fcfff820b5d",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "a5ff0ae1a13741068ba943be96b3a4f3",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "7b676c9d1a4d4dc5bfefb369d76984fe",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "5a68dcc38b954d53b42a6febdd64c9d4",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "60c9a245b72948c79f3ab142dfb95054",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "8f6a7242c75a4426a03e9ac0bf1b249e",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "c8e91bb6b288427ebd2cc03367238b77",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "66b6e0690f90405785abe456ec8f4505",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "6e6ae34836a849819dd0c7265bd70585",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "27b9dac19960445685fb76f0050bbd24",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "e8bb509fb18e48bca9d3c001fe95fa07",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "fa972862bcde46cea63a646c9e60574a",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "958d51a5e7d84f80aa63ca29c275a598",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "fe9ba1934ed843a0ba410f132df21e5a",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "6301b2dd4f0a4810880d529ab7f76d61",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "c2bd840b4bfc43f1a0f5fc453a22c2c7",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "1f5c0680b1da4e0d92c918bfc48f1c3d",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "16146508c24043429cea3f50dfce1a57",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "91b34273b7f642d29b746dd41ff9f326",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "e6877c547bd84d149907e93c1eb123b9",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "9869630bf28548f8904b3ed575f5d558",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "7554521b8b0c4f49ae78014f888bcd2a",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "d7a2379da717411ebcf2a407289c961b",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "f80041ac05474da18299ab14bf3c23ad",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "52463f8158cd4da48b20e90bc666273d",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "283fe56269a04909a08eb81f02520f50",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "6bc03ccddb8c4f53b22e7d3b7f3a515f",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "54b7365fb7714c7489d970a0e297091a",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "6d08419ea8c44e24a244ab56807ef7a1",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "4bd289736402454b9ee897c75920098d",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "d810fa30ca7c4f888d32519a142cb3fc",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "5bf91548053f4e44aa0d53409b3ce464",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "4110bcde35c942d0a65dbb653050fcf3",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "53ea7b2367cb4bc9a0603637f4bd5d92",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "e335ab9702e34ff6ab5ba91aedf7402b",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "da711fbda1b2496bb12796e720633a1e",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "f81e504d14454957b859b2bb16b566d3",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "8ec43342cc2448c18067db370f2c889e",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "511b6aa72dd54410956a12500be2267a",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "335306e6d768426bb7f95432a2248a8d",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "fbe6e6ad40e442a992cf77b7b8c59c76",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "5cd3f179c77140e4b799e5b5d87d9400",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "2db55aaad53749d3aa3c6df3d2360040",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "8c6a5f62f8464670bebe4d717e006924",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "e8e869f244454e4b87a2b4fb9b81696c",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "bb3080d03fee493bb3db7988403bba78",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "148949d05e90486392eeefbf50a8318f",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "ee62fa5b46624d35863bbe62d4f97998",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "b253751e53a049a496e04e634fdcc96c",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "346b1523547d4dcc842857945f3e9eb3",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "e22ed037003b4a9288f07321d354fd98",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "4bc5b321045b4872bbb5e85df82e0b80",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "b287a07fc67349a88ec25285fd5ec941",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "48ab977f51854d0fa8d68eeacbada9ee",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "a5ed1e5aa9dd4ef5ae679eabb97004f5",
+          "projected_calls": 4,
+          "started_calls": 4
+        },
+        {
+          "id": "c6ca4804514e49f28477011c3430972b",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "3d87070dce43476c9ac22d3e3ac3da32",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "f9b01d5baf29491bab07b7400a66c31f",
+          "projected_calls": 4,
+          "started_calls": 4
+        },
+        {
+          "id": "2c57090f2a504f258dddc1802c46025a",
+          "projected_calls": 5,
+          "started_calls": 5
+        }
+      ]
+    },
+    {
+      "sql": "SELECT change_id,status,(SELECT COUNT(*) FROM memory_ledger l WHERE l.change_id=m.change_id) AS ledgers,(SELECT COUNT(*) FROM run_events e WHERE e.type IN ('memory.updated','memory.archived','skill.patched') AND json_extract(e.payload,'$.change_id')=m.change_id) AS memory_events FROM memory_changes m ORDER BY created_at,change_id",
+      "rows": [
+        {
+          "change_id": "c7ce3ba1871f466eb367aeab42133fc3",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "f7bf13ad4a514621886c7de638329952",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_x11z7birqz9e1ifzlxuteb1v",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "da71b17b12b34fbdbf1580434dc8b73b",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_rvlnhfl1eo1pib9genc6gsek",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_jjuymm6lulew0h3qff5ks4xs",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_nm8xsmlxa7ugoc2j9pvotk3z",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_01_7pnkltuiuugm9kx39t8wsh3u",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_soxchhm1kesvhb6a6z19x59c",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_01_cstsgroh2ipo2o3bezs4twe1",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "chatcmpl-tool-97267de8c3b85dd4",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "chatcmpl-tool-9f91446c774866c9",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "chatcmpl-tool-b176c125394bd38c",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "curator-history-input",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "curator-skill-history-0",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "curator-skill-history-1",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "curator-real-pin",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "curator-skill-0",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "curator-skill-1",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "curate-75bc4dcc68565e16bbc3238f04687e7f662ad21e228d307554d40a50854a5f54",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "curate-a83f4440b446777ce332175d2c428a557c7d7ba9607144c3974316f33ddf6c97",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "curator-real-restore",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "ea7200e201764a36b7f25e5d731ff2ec",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "2382b813e23f4cd38c4e1c40bbcb9a39",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "9ecd44ce1804429eaa6f40d0e040e202",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "14ca0873d9fc4b578a2fc23d7ca56124",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "13db784c31704b649790dff60b73d076",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "7bc3daf0e3c2499ab2eb973e394dd21c",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "4ead457230c147bc95447757272ae229",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "ad8da6036c5f4b4fa9951f17c55bd364",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "7774ebba5c484b0e8fd25c60f64effc6",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "681301bc963e49fc87c9f964d3837e9f",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "03a050bdd1c041faa3bb10816aba6c03",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "d3dd4fda029743f592e4f5ea47b3e771",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "0a3aeb2c666e4e1481ebdbe395cef24b",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "curate-70794b9bd42974502b62ae03b4d427c5d6cbb96902e867a8cc3c1a5ea6451a6e",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "96094647bc1b47cc9a12fded516f7c49",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "e576d661-7418-4e4f-8b15-06e4c4765534",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "c8d099d3-da34-4f07-8c48-6cf3b64add97",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "e77e5269-73a9-41c7-b92a-7f6009d465ed",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "8c9a7da5-c56c-45a9-8ec5-10314f33319f",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "84562d8a-add3-4893-bc3b-dc4593ecc184",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "bd56d454-70be-4e5b-b3c4-f96cb273b09a",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "115747af-3f10-425d-82cc-c0f0fa9a98d1",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "dfdd7af6-6dda-4a98-8b73-a61ae465bfd9",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "5920c1c0-6822-407f-a399-e6e3c08543fd",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "6b5690cd-642c-4f22-83f9-7eaae7c49abd",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "3ed3ad3c-dae3-4209-a579-558fb0167f4d",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "565196d7-06a9-4f66-a43e-5bba3580c9ef",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "02887cc1-52c9-4f5e-8820-2caab7270e28",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "ddf39b05-8e5a-4bfd-bd2e-f7ed215172c6",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "8f7fbf9e-c13b-42ed-b091-d4ab61be919d",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "chatcmpl-tool-896de0a60b0f7325",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,change_id,store_type,store_id,action,revision,source,audit_seq,global_seq FROM memory_ledger ORDER BY id",
+      "rows": [
+        {
+          "id": 1,
+          "change_id": "c7ce3ba1871f466eb367aeab42133fc3",
+          "store_type": "skill",
+          "store_id": "1a71e0ece171461bacd71f839d61870c",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"c7ce3ba1871f466eb367aeab42133fc3\"}",
+          "audit_seq": 1,
+          "global_seq": 1
+        },
+        {
+          "id": 2,
+          "change_id": "f7bf13ad4a514621886c7de638329952",
+          "store_type": "soul",
+          "store_id": "skill-validator",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"3c9b7f1de56a433ea9ba7e61facff4fd\",\"task_run_id\":\"8dce8a7d89f845c2828b6bafc67d108c\"}",
+          "audit_seq": 2,
+          "global_seq": 3
+        },
+        {
+          "id": 3,
+          "change_id": "call_00_x11z7birqz9e1ifzlxuteb1v",
+          "store_type": "skill",
+          "store_id": "1a71e0ece171461bacd71f839d61870c",
+          "action": "update",
+          "revision": 2,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"3c9b7f1de56a433ea9ba7e61facff4fd\",\"task_run_id\":\"8dce8a7d89f845c2828b6bafc67d108c\"}",
+          "audit_seq": 6,
+          "global_seq": 22
+        },
+        {
+          "id": 4,
+          "change_id": "da71b17b12b34fbdbf1580434dc8b73b",
+          "store_type": "skill",
+          "store_id": "1a71e0ece171461bacd71f839d61870c",
+          "action": "update",
+          "revision": 3,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"da71b17b12b34fbdbf1580434dc8b73b\"}",
+          "audit_seq": 12,
+          "global_seq": 51
+        },
+        {
+          "id": 5,
+          "change_id": "call_00_rvlnhfl1eo1pib9genc6gsek",
+          "store_type": "skill",
+          "store_id": "1a71e0ece171461bacd71f839d61870c",
+          "action": "update",
+          "revision": 4,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"a4a4845214d24d129aacd194b85ed2cb\",\"task_run_id\":\"74efc21e61b246669e46ccd25bfeecac\"}",
+          "audit_seq": 16,
+          "global_seq": 72
+        },
+        {
+          "id": 6,
+          "change_id": "call_00_jjuymm6lulew0h3qff5ks4xs",
+          "store_type": "skill",
+          "store_id": "0a08c4379abf5ecc9f023ecacdfa3adc",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"b2ae0ff698894793acae90479b99bac2\",\"task_run_id\":\"927d4c40e4e0481d9f784770ffd99013\"}",
+          "audit_seq": 22,
+          "global_seq": 105
+        },
+        {
+          "id": 7,
+          "change_id": "call_00_nm8xsmlxa7ugoc2j9pvotk3z",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"dfb71d64fa954070a736b1ce19cee774\",\"job_id\":\"64b2b079dd05482d85bb53d96b54787a\",\"task_run_id\":\"adc4061c17884e33abd5945a03bb337d\"}",
+          "audit_seq": 102,
+          "global_seq": 439
+        },
+        {
+          "id": 8,
+          "change_id": "call_01_7pnkltuiuugm9kx39t8wsh3u",
+          "store_type": "workspace",
+          "store_id": "default",
+          "action": "batch",
+          "revision": 1,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"dfb71d64fa954070a736b1ce19cee774\",\"job_id\":\"64b2b079dd05482d85bb53d96b54787a\",\"task_run_id\":\"adc4061c17884e33abd5945a03bb337d\"}",
+          "audit_seq": 103,
+          "global_seq": 440
+        },
+        {
+          "id": 9,
+          "change_id": "call_00_soxchhm1kesvhb6a6z19x59c",
+          "store_type": "soul",
+          "store_id": "skill-validator",
+          "action": "create",
+          "revision": 2,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"dfb71d64fa954070a736b1ce19cee774\",\"job_id\":\"64b2b079dd05482d85bb53d96b54787a\",\"task_run_id\":\"adc4061c17884e33abd5945a03bb337d\"}",
+          "audit_seq": 104,
+          "global_seq": 441
+        },
+        {
+          "id": 10,
+          "change_id": "call_01_cstsgroh2ipo2o3bezs4twe1",
+          "store_type": "skill",
+          "store_id": "51ade6c509fa5cdb9590d48bc14cd8de",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"dfb71d64fa954070a736b1ce19cee774\",\"job_id\":\"64b2b079dd05482d85bb53d96b54787a\",\"task_run_id\":\"adc4061c17884e33abd5945a03bb337d\"}",
+          "audit_seq": 105,
+          "global_seq": 442
+        },
+        {
+          "id": 11,
+          "change_id": "chatcmpl-tool-97267de8c3b85dd4",
+          "store_type": "skill",
+          "store_id": "1a71e0ece171461bacd71f839d61870c",
+          "action": "update",
+          "revision": 5,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"dfb71d64fa954070a736b1ce19cee774\",\"job_id\":\"a50cc8f8f071403ea50d4edea5c28e09\",\"task_run_id\":\"7554521b8b0c4f49ae78014f888bcd2a\"}",
+          "audit_seq": 330,
+          "global_seq": 1257
+        },
+        {
+          "id": 12,
+          "change_id": "chatcmpl-tool-9f91446c774866c9",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 2,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"dfb71d64fa954070a736b1ce19cee774\",\"job_id\":\"a50cc8f8f071403ea50d4edea5c28e09\",\"task_run_id\":\"7554521b8b0c4f49ae78014f888bcd2a\"}",
+          "audit_seq": 331,
+          "global_seq": 1258
+        },
+        {
+          "id": 13,
+          "change_id": "chatcmpl-tool-b176c125394bd38c",
+          "store_type": "workspace",
+          "store_id": "default",
+          "action": "update",
+          "revision": 2,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"dfb71d64fa954070a736b1ce19cee774\",\"job_id\":\"09bf141c409546fd923f6f331fe2052c\",\"task_run_id\":\"5bf91548053f4e44aa0d53409b3ce464\"}",
+          "audit_seq": 375,
+          "global_seq": 1462
+        },
+        {
+          "id": 14,
+          "change_id": "curator-history-input",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 3,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"curator-history-input\"}",
+          "audit_seq": 416,
+          "global_seq": 1601
+        },
+        {
+          "id": 15,
+          "change_id": "curator-real-pin",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "pin",
+          "revision": 4,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"curator-real-pin\"}",
+          "audit_seq": 417,
+          "global_seq": 1602
+        },
+        {
+          "id": 16,
+          "change_id": "curator-skill-0",
+          "store_type": "skill",
+          "store_id": "245764c196435094b6bbf93ab55a0d4d",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"curator-skill-0\"}",
+          "audit_seq": 418,
+          "global_seq": 1603
+        },
+        {
+          "id": 17,
+          "change_id": "curator-skill-history-0",
+          "store_type": "skill",
+          "store_id": "245764c196435094b6bbf93ab55a0d4d",
+          "action": "update",
+          "revision": 2,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"curator-skill-history-0\"}",
+          "audit_seq": 419,
+          "global_seq": 1604
+        },
+        {
+          "id": 18,
+          "change_id": "curator-skill-1",
+          "store_type": "skill",
+          "store_id": "a1f47f9ceffb5abea944e55653b922b6",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"curator-skill-1\"}",
+          "audit_seq": 420,
+          "global_seq": 1605
+        },
+        {
+          "id": 19,
+          "change_id": "curator-skill-history-1",
+          "store_type": "skill",
+          "store_id": "a1f47f9ceffb5abea944e55653b922b6",
+          "action": "update",
+          "revision": 2,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"curator-skill-history-1\"}",
+          "audit_seq": 421,
+          "global_seq": 1606
+        },
+        {
+          "id": 20,
+          "change_id": "curate-75bc4dcc68565e16bbc3238f04687e7f662ad21e228d307554d40a50854a5f54",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "batch",
+          "revision": 5,
+          "source": "{\"actor_id\":\"8cfe4878563d4272a0c6783368cf17ff\",\"actor_type\":\"curator\",\"job_id\":\"8cfe4878563d4272a0c6783368cf17ff\"}",
+          "audit_seq": 425,
+          "global_seq": 1610
+        },
+        {
+          "id": 21,
+          "change_id": "curate-a83f4440b446777ce332175d2c428a557c7d7ba9607144c3974316f33ddf6c97",
+          "store_type": "skill",
+          "store_id": "a1f47f9ceffb5abea944e55653b922b6",
+          "action": "archive",
+          "revision": 3,
+          "source": "{\"actor_id\":\"d7f79a1225164931ba940892913a63c8\",\"actor_type\":\"curator\",\"job_id\":\"d7f79a1225164931ba940892913a63c8\"}",
+          "audit_seq": 429,
+          "global_seq": 1614
+        },
+        {
+          "id": 22,
+          "change_id": "curator-real-restore",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "restore",
+          "revision": 6,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"curator-real-restore\"}",
+          "audit_seq": 436,
+          "global_seq": 1621
+        },
+        {
+          "id": 23,
+          "change_id": "ea7200e201764a36b7f25e5d731ff2ec",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 7,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"ea7200e201764a36b7f25e5d731ff2ec\"}",
+          "audit_seq": 441,
+          "global_seq": 1634
+        },
+        {
+          "id": 24,
+          "change_id": "2382b813e23f4cd38c4e1c40bbcb9a39",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "update",
+          "revision": 8,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"2382b813e23f4cd38c4e1c40bbcb9a39\"}",
+          "audit_seq": 442,
+          "global_seq": 1635
+        },
+        {
+          "id": 25,
+          "change_id": "9ecd44ce1804429eaa6f40d0e040e202",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "pin",
+          "revision": 9,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"9ecd44ce1804429eaa6f40d0e040e202\"}",
+          "audit_seq": 443,
+          "global_seq": 1636
+        },
+        {
+          "id": 26,
+          "change_id": "14ca0873d9fc4b578a2fc23d7ca56124",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "unpin",
+          "revision": 10,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"14ca0873d9fc4b578a2fc23d7ca56124\"}",
+          "audit_seq": 444,
+          "global_seq": 1637
+        },
+        {
+          "id": 27,
+          "change_id": "13db784c31704b649790dff60b73d076",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "archive",
+          "revision": 11,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"13db784c31704b649790dff60b73d076\"}",
+          "audit_seq": 445,
+          "global_seq": 1638
+        },
+        {
+          "id": 28,
+          "change_id": "7bc3daf0e3c2499ab2eb973e394dd21c",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "restore",
+          "revision": 12,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"7bc3daf0e3c2499ab2eb973e394dd21c\"}",
+          "audit_seq": 446,
+          "global_seq": 1639
+        },
+        {
+          "id": 29,
+          "change_id": "4ead457230c147bc95447757272ae229",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "archive",
+          "revision": 13,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"4ead457230c147bc95447757272ae229\"}",
+          "audit_seq": 447,
+          "global_seq": 1640
+        },
+        {
+          "id": 30,
+          "change_id": "ad8da6036c5f4b4fa9951f17c55bd364",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 14,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"ad8da6036c5f4b4fa9951f17c55bd364\"}",
+          "audit_seq": 448,
+          "global_seq": 1641
+        },
+        {
+          "id": 31,
+          "change_id": "7774ebba5c484b0e8fd25c60f64effc6",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "review",
+          "revision": 15,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"7774ebba5c484b0e8fd25c60f64effc6\"}",
+          "audit_seq": 449,
+          "global_seq": 1642
+        },
+        {
+          "id": 32,
+          "change_id": "681301bc963e49fc87c9f964d3837e9f",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "review",
+          "revision": 16,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"681301bc963e49fc87c9f964d3837e9f\"}",
+          "audit_seq": 450,
+          "global_seq": 1643
+        },
+        {
+          "id": 33,
+          "change_id": "03a050bdd1c041faa3bb10816aba6c03",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "rollback",
+          "revision": 17,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"03a050bdd1c041faa3bb10816aba6c03\"}",
+          "audit_seq": 451,
+          "global_seq": 1644
+        },
+        {
+          "id": 34,
+          "change_id": "d3dd4fda029743f592e4f5ea47b3e771",
+          "store_type": "skill",
+          "store_id": "8e855a6e55665350af3ef33ba8ea3ce5",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"d3dd4fda029743f592e4f5ea47b3e771\"}",
+          "audit_seq": 452,
+          "global_seq": 1645
+        },
+        {
+          "id": 35,
+          "change_id": "0a3aeb2c666e4e1481ebdbe395cef24b",
+          "store_type": "skill",
+          "store_id": "8e855a6e55665350af3ef33ba8ea3ce5",
+          "action": "update",
+          "revision": 2,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"0a3aeb2c666e4e1481ebdbe395cef24b\"}",
+          "audit_seq": 453,
+          "global_seq": 1646
+        },
+        {
+          "id": 36,
+          "change_id": "curate-70794b9bd42974502b62ae03b4d427c5d6cbb96902e867a8cc3c1a5ea6451a6e",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "archive",
+          "revision": 18,
+          "source": "{\"actor_id\":\"6e428e02d5b24bed91bf8b5b8791ff7f\",\"actor_type\":\"curator\",\"job_id\":\"6e428e02d5b24bed91bf8b5b8791ff7f\"}",
+          "audit_seq": 456,
+          "global_seq": 1649
+        },
+        {
+          "id": 37,
+          "change_id": "96094647bc1b47cc9a12fded516f7c49",
+          "store_type": "workspace",
+          "store_id": "default",
+          "action": "create",
+          "revision": 3,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"96094647bc1b47cc9a12fded516f7c49\"}",
+          "audit_seq": 459,
+          "global_seq": 1652
+        },
+        {
+          "id": 38,
+          "change_id": "e576d661-7418-4e4f-8b15-06e4c4765534",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 19,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"e576d661-7418-4e4f-8b15-06e4c4765534\"}",
+          "audit_seq": 460,
+          "global_seq": 1653
+        },
+        {
+          "id": 39,
+          "change_id": "c8d099d3-da34-4f07-8c48-6cf3b64add97",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "pin",
+          "revision": 20,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"c8d099d3-da34-4f07-8c48-6cf3b64add97\"}",
+          "audit_seq": 461,
+          "global_seq": 1654
+        },
+        {
+          "id": 40,
+          "change_id": "e77e5269-73a9-41c7-b92a-7f6009d465ed",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "archive",
+          "revision": 21,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"e77e5269-73a9-41c7-b92a-7f6009d465ed\"}",
+          "audit_seq": 462,
+          "global_seq": 1655
+        },
+        {
+          "id": 41,
+          "change_id": "8c9a7da5-c56c-45a9-8ec5-10314f33319f",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "restore",
+          "revision": 22,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"8c9a7da5-c56c-45a9-8ec5-10314f33319f\"}",
+          "audit_seq": 463,
+          "global_seq": 1656
+        },
+        {
+          "id": 42,
+          "change_id": "84562d8a-add3-4893-bc3b-dc4593ecc184",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "update",
+          "revision": 23,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"84562d8a-add3-4893-bc3b-dc4593ecc184\"}",
+          "audit_seq": 464,
+          "global_seq": 1657
+        },
+        {
+          "id": 43,
+          "change_id": "bd56d454-70be-4e5b-b3c4-f96cb273b09a",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "rollback",
+          "revision": 24,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"bd56d454-70be-4e5b-b3c4-f96cb273b09a\"}",
+          "audit_seq": 465,
+          "global_seq": 1658
+        },
+        {
+          "id": 44,
+          "change_id": "115747af-3f10-425d-82cc-c0f0fa9a98d1",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 25,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"115747af-3f10-425d-82cc-c0f0fa9a98d1\"}",
+          "audit_seq": 466,
+          "global_seq": 1659
+        },
+        {
+          "id": 45,
+          "change_id": "dfdd7af6-6dda-4a98-8b73-a61ae465bfd9",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "review",
+          "revision": 26,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"dfdd7af6-6dda-4a98-8b73-a61ae465bfd9\"}",
+          "audit_seq": 467,
+          "global_seq": 1660
+        },
+        {
+          "id": 46,
+          "change_id": "5920c1c0-6822-407f-a399-e6e3c08543fd",
+          "store_type": "workspace",
+          "store_id": "default",
+          "action": "create",
+          "revision": 4,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"5920c1c0-6822-407f-a399-e6e3c08543fd\"}",
+          "audit_seq": 468,
+          "global_seq": 1661
+        },
+        {
+          "id": 47,
+          "change_id": "6b5690cd-642c-4f22-83f9-7eaae7c49abd",
+          "store_type": "soul",
+          "store_id": "default",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"6b5690cd-642c-4f22-83f9-7eaae7c49abd\"}",
+          "audit_seq": 469,
+          "global_seq": 1662
+        },
+        {
+          "id": 48,
+          "change_id": "3ed3ad3c-dae3-4209-a579-558fb0167f4d",
+          "store_type": "skill",
+          "store_id": "1d768fec477e522caa17fc2bad1acc55",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"3ed3ad3c-dae3-4209-a579-558fb0167f4d\"}",
+          "audit_seq": 470,
+          "global_seq": 1663
+        },
+        {
+          "id": 49,
+          "change_id": "565196d7-06a9-4f66-a43e-5bba3580c9ef",
+          "store_type": "skill",
+          "store_id": "1d768fec477e522caa17fc2bad1acc55",
+          "action": "update",
+          "revision": 2,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"565196d7-06a9-4f66-a43e-5bba3580c9ef\"}",
+          "audit_seq": 471,
+          "global_seq": 1664
+        },
+        {
+          "id": 50,
+          "change_id": "02887cc1-52c9-4f5e-8820-2caab7270e28",
+          "store_type": "skill",
+          "store_id": "1d768fec477e522caa17fc2bad1acc55",
+          "action": "update",
+          "revision": 3,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"02887cc1-52c9-4f5e-8820-2caab7270e28\"}",
+          "audit_seq": 472,
+          "global_seq": 1665
+        },
+        {
+          "id": 51,
+          "change_id": "ddf39b05-8e5a-4bfd-bd2e-f7ed215172c6",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 27,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"ddf39b05-8e5a-4bfd-bd2e-f7ed215172c6\"}",
+          "audit_seq": 473,
+          "global_seq": 1666
+        },
+        {
+          "id": 52,
+          "change_id": "8f7fbf9e-c13b-42ed-b091-d4ab61be919d",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "update",
+          "revision": 28,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"8f7fbf9e-c13b-42ed-b091-d4ab61be919d\"}",
+          "audit_seq": 474,
+          "global_seq": 1667
+        },
+        {
+          "id": 53,
+          "change_id": "chatcmpl-tool-896de0a60b0f7325",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 29,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"dfb71d64fa954070a736b1ce19cee774\",\"job_id\":\"725efa3429be4e0e9a9ae412d5300c09\",\"task_run_id\":\"b287a07fc67349a88ec25285fd5ec941\"}",
+          "audit_seq": 509,
+          "global_seq": 1782
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,conversation_id,status,current_attempt_no FROM task_runs ORDER BY created_at,id",
+      "rows": [
+        {
+          "id": "8dce8a7d89f845c2828b6bafc67d108c",
+          "conversation_id": "3c9b7f1de56a433ea9ba7e61facff4fd",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "21fb60f395fd4efda1b9a1f3f830047e",
+          "conversation_id": "089fdb0fadee46e0ad2beec244a88fd5",
+          "status": "interrupted",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "74efc21e61b246669e46ccd25bfeecac",
+          "conversation_id": "a4a4845214d24d129aacd194b85ed2cb",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "927d4c40e4e0481d9f784770ffd99013",
+          "conversation_id": "b2ae0ff698894793acae90479b99bac2",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "61a77891c15343e29e6462caae8ca829",
+          "conversation_id": "484573c537814dc28e11905f1950e0da",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "99324de42a40425e9fc63f14aace0a68",
+          "conversation_id": "484573c537814dc28e11905f1950e0da",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "1251feeef82c4103af98361da5193613",
+          "conversation_id": "484573c537814dc28e11905f1950e0da",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "36958eb207bb4a26931401462da67676",
+          "conversation_id": "484573c537814dc28e11905f1950e0da",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "5395908af27240c8961f89847af4cb3e",
+          "conversation_id": "484573c537814dc28e11905f1950e0da",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "81755ed6eeca4b1d96375d7c428951f0",
+          "conversation_id": "484573c537814dc28e11905f1950e0da",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "dec2f9220f054e1593c22faef7e2aa09",
+          "conversation_id": "484573c537814dc28e11905f1950e0da",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "f0fc9f8c678449559c05d8ae5588d815",
+          "conversation_id": "484573c537814dc28e11905f1950e0da",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "9dc2d3e294b24ee692a39a9c036d58d6",
+          "conversation_id": "484573c537814dc28e11905f1950e0da",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "a215c3e19e37498e847d25d6b138981c",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "0062392015994008bf54b8c485fbc6e5",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "b5c47a8f70b0409dbb9fb94615aa81fa",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "6d73dbe39f9e42308d59036c6697f4a7",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "74272fca778646b6b0cafe67883ea34c",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "5ac05bb5b8e6433e989a0b77396c0fab",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "d4195b0c6917419fa54d62b15a4d6838",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "7b0727c3c9b642dab4d16dd63c9ded03",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "d593c75e324e41a3b1b183db76ea1c2d",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "adc4061c17884e33abd5945a03bb337d",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "908583af8a014085be78f47b3ef53bc1",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "cbb3655e124f4732971aeaceb80a2033",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "c69baf0727f948268a9184429e7ea0c5",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "7f2f353cf14d4354aee28a6f7435c9ea",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "c691743c7270426ca0a0358d64fcba10",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "7bec9c7ec9214b7f85d2fc45c512944f",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "a1a2ab8435c84b1e98eab64caf6d3663",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "2a1e25fa37ed4aef81bb1fb06f0e6790",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "737a8f30fae04524a31cba8f7379b9ec",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "46c023b980674ce8a2ce12c6291c2ac7",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "073d754cfc514f9d958cf52bda49cc4b",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "5b838ea365df4250b99239e0b80be346",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "c5fdce8b92684e4d997388b503157a56",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "c583b5e6ada647ab8c0625e7692d1d52",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "858e12706f0e469c93ddd6a27f854fea",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "26c73139d689493bbb907402e55111c9",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "a051cc7d1a2f441ba5068010efcbdf6c",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "e5cf071bca1f4822a6aa79eb42bfedfc",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "f6d6870590794da192a4c4ddd3a8214a",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "6fca07b768fd473fbc2c65eb0e4e62b0",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "3528d2d08f484eceb8b6298e422f32e7",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "9f9fd0d64f744f669a372eaf0770714a",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "5f36099d488345759f66220c629cc66b",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "1f5e6ccf490e4d75a582b54e105e1a5d",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "04463c976bbc4e0f952f94fb57ef6dfa",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "8f86943c6dfd48e6a61dba3b9a2d159a",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "25682d5a81244ba89e96f06a619f8c98",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "ca240b4eee3448cfb445fac1cfd14619",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "301cd8e875404fd4b7969fcfff820b5d",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "a5ff0ae1a13741068ba943be96b3a4f3",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "7b676c9d1a4d4dc5bfefb369d76984fe",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "5a68dcc38b954d53b42a6febdd64c9d4",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "60c9a245b72948c79f3ab142dfb95054",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "8f6a7242c75a4426a03e9ac0bf1b249e",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "c8e91bb6b288427ebd2cc03367238b77",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "66b6e0690f90405785abe456ec8f4505",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "6e6ae34836a849819dd0c7265bd70585",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "27b9dac19960445685fb76f0050bbd24",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "e8bb509fb18e48bca9d3c001fe95fa07",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "fa972862bcde46cea63a646c9e60574a",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "958d51a5e7d84f80aa63ca29c275a598",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "fe9ba1934ed843a0ba410f132df21e5a",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "6301b2dd4f0a4810880d529ab7f76d61",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "c2bd840b4bfc43f1a0f5fc453a22c2c7",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "1f5c0680b1da4e0d92c918bfc48f1c3d",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "16146508c24043429cea3f50dfce1a57",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "91b34273b7f642d29b746dd41ff9f326",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "e6877c547bd84d149907e93c1eb123b9",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "9869630bf28548f8904b3ed575f5d558",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "7554521b8b0c4f49ae78014f888bcd2a",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "d7a2379da717411ebcf2a407289c961b",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "f80041ac05474da18299ab14bf3c23ad",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "52463f8158cd4da48b20e90bc666273d",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "283fe56269a04909a08eb81f02520f50",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "6bc03ccddb8c4f53b22e7d3b7f3a515f",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "54b7365fb7714c7489d970a0e297091a",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "6d08419ea8c44e24a244ab56807ef7a1",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "4bd289736402454b9ee897c75920098d",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "d810fa30ca7c4f888d32519a142cb3fc",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "5bf91548053f4e44aa0d53409b3ce464",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "4110bcde35c942d0a65dbb653050fcf3",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "53ea7b2367cb4bc9a0603637f4bd5d92",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "e335ab9702e34ff6ab5ba91aedf7402b",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "da711fbda1b2496bb12796e720633a1e",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "f81e504d14454957b859b2bb16b566d3",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "8ec43342cc2448c18067db370f2c889e",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "511b6aa72dd54410956a12500be2267a",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "335306e6d768426bb7f95432a2248a8d",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "fbe6e6ad40e442a992cf77b7b8c59c76",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "5cd3f179c77140e4b799e5b5d87d9400",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "2db55aaad53749d3aa3c6df3d2360040",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "8c6a5f62f8464670bebe4d717e006924",
+          "conversation_id": "2d71dc94bd354045b6e3d777bd6b315f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "e8e869f244454e4b87a2b4fb9b81696c",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "bb3080d03fee493bb3db7988403bba78",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "148949d05e90486392eeefbf50a8318f",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "ee62fa5b46624d35863bbe62d4f97998",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "b253751e53a049a496e04e634fdcc96c",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "346b1523547d4dcc842857945f3e9eb3",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "e22ed037003b4a9288f07321d354fd98",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "4bc5b321045b4872bbb5e85df82e0b80",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "b287a07fc67349a88ec25285fd5ec941",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "48ab977f51854d0fa8d68eeacbada9ee",
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "a5ed1e5aa9dd4ef5ae679eabb97004f5",
+          "conversation_id": "739df28d5055487c80a52ea019dc8c90",
+          "status": "completed",
+          "current_attempt_no": 2
+        },
+        {
+          "id": "c6ca4804514e49f28477011c3430972b",
+          "conversation_id": "eb2e11305da440deab4bfd851f700373",
+          "status": "cancelled",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "3d87070dce43476c9ac22d3e3ac3da32",
+          "conversation_id": "eb2e11305da440deab4bfd851f700373",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "f9b01d5baf29491bab07b7400a66c31f",
+          "conversation_id": "f1b555b732c941e689046e4de89d7f5d",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "2c57090f2a504f258dddc1802c46025a",
+          "conversation_id": "62cb402bab6c4c9dad88892ab1dbc3ac",
+          "status": "completed",
+          "current_attempt_no": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT conversation_id,sha256,global_seq FROM memory_snapshots ORDER BY created_at",
+      "rows": [
+        {
+          "conversation_id": "3c9b7f1de56a433ea9ba7e61facff4fd",
+          "sha256": "6039396f3d3734ffe13a290dbac4e273a16c1a3e7569a01d532e93c1c6f09f07",
+          "global_seq": 4
+        },
+        {
+          "conversation_id": "089fdb0fadee46e0ad2beec244a88fd5",
+          "sha256": "e1fb8813db9ff1d3632d6b31fd98319ce42c768fd07bfacde388bd1704f7b5e8",
+          "global_seq": 40
+        },
+        {
+          "conversation_id": "a4a4845214d24d129aacd194b85ed2cb",
+          "sha256": "c2b714ecc1785364003494a2d52437f0caa4160d3e1941f049a52ed36c6d6100",
+          "global_seq": 54
+        },
+        {
+          "conversation_id": "b2ae0ff698894793acae90479b99bac2",
+          "sha256": "786572c6f1dd6724954e53399d9e5121906cbd0be939664890c400a89c06d080",
+          "global_seq": 90
+        },
+        {
+          "conversation_id": "484573c537814dc28e11905f1950e0da",
+          "sha256": "14e7da0aefed372950f0182070da03925584eeaa4d487fc5707e2bce910253c3",
+          "global_seq": 113
+        },
+        {
+          "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+          "sha256": "e24fd15f634627769165e4ce01db668bf8d9454376be878c000b86d038d4bfdf",
+          "global_seq": 220
+        },
+        {
+          "conversation_id": "2d71dc94bd354045b6e3d777bd6b315f",
+          "sha256": "ba41fec749391f0689fad9f3f6ce591061ca1ca4c97ae4d8fc09489b652ce679",
+          "global_seq": 1623
+        },
+        {
+          "conversation_id": "739df28d5055487c80a52ea019dc8c90",
+          "sha256": "7d386bd9cf71984cff332b5f91ea805d5d73a95960c7feceb564bb3e0aebca0c",
+          "global_seq": 1796
+        },
+        {
+          "conversation_id": "eb2e11305da440deab4bfd851f700373",
+          "sha256": "fa08a7e166865f3fe48809d0c76e11441544215f2cab014a31fb7e43e57a2e90",
+          "global_seq": 1839
+        },
+        {
+          "conversation_id": "f1b555b732c941e689046e4de89d7f5d",
+          "sha256": "3c473372ea0b8c6ce4113c79d320f600988a4253a47722ef480c9bd05028c339",
+          "global_seq": 1878
+        },
+        {
+          "conversation_id": "62cb402bab6c4c9dad88892ab1dbc3ac",
+          "sha256": "09568355473f9bff4be93fe2653be81c7ee225810e0315231b49f5504159488d",
+          "global_seq": 1936
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,conversation_id,event_global_seq,source_global_seq,sha256,before_tokens,after_tokens FROM context_checkpoints ORDER BY event_global_seq",
+      "rows": []
+    },
+    {
+      "sql": "SELECT MAX(global_seq) AS event_watermark FROM run_events",
+      "rows": [
+        {
+          "event_watermark": 2001
+        }
+      ]
+    },
+    {
+      "sql": "PRAGMA foreign_key_check",
+      "rows": []
+    }
+  ],
+  "audit": {
+    "ok": true,
+    "checked_count": 566,
+    "reason": null
+  },
+  "files": [
+    {
+      "path": "USER.md",
+      "sha256": "bbdb7e1be3d1e9e5edc683d36fe159adc01ae2f552427892524ea8636f2b084c",
+      "mtime_ns": "1791028432367890584"
+    },
+    {
+      "path": "agents/default/archive/user/owner/53d901637d8d43738af583243ce4700e/entry.md",
+      "sha256": "9aec1c9330a55013203f49181075d8e0964b251db8bceb7b8897fc07898f1902",
+      "mtime_ns": "1791028432353157642"
+    },
+    {
+      "path": "agents/default/soul.md",
+      "sha256": "9e5b2690d132b30a6f31aa99acc8744f689e549e021d1a2bce90a0feb0a5c777",
+      "mtime_ns": "1791028432354524644"
+    },
+    {
+      "path": "agents/skill-validator/archive/skill/a1f47f9ceffb5abea944e55653b922b6/14722f0815d842e7b56a76a4a5c81f0d/entry.md",
+      "sha256": "7faadf89f8e82b8541a8b7517d56260d80bc1ccec1827de76b76e328af8e8ca6",
+      "mtime_ns": "1791028432346391838"
+    },
+    {
+      "path": "agents/skill-validator/archive/skill/a1f47f9ceffb5abea944e55653b922b6/14722f0815d842e7b56a76a4a5c81f0d/references/source.md",
+      "sha256": "e12bc57c6cec2083ac4c0d91efe62d5774fb157401a5a99aad1bd999ab737761",
+      "mtime_ns": "1791028432348608509"
+    },
+    {
+      "path": "agents/skill-validator/archive/user/owner/53d901637d8d43738af583243ce4700e/entry.md",
+      "sha256": "9aec1c9330a55013203f49181075d8e0964b251db8bceb7b8897fc07898f1902",
+      "mtime_ns": "1791028432349787011"
+    },
+    {
+      "path": "agents/skill-validator/soul.md",
+      "sha256": "17b2d42a72238599ad9f0d18bda01e9d1771fae2f33ba60aaa62e4f5c71ca88d",
+      "mtime_ns": "1791028432351911348"
+    },
+    {
+      "path": "archive/user/owner/9cfec0885e7f4da9890f75f90b49f6f7/entry.md",
+      "sha256": "291ffb3a5bc9decf023ebfbcba12326446683bf3917e9514ea5aeba1e943e8bb",
+      "mtime_ns": "1791028432343934542"
+    },
+    {
+      "path": "archive/user/owner/d68d9128745f446a84483e5b1c06ce8d/entry.md",
+      "sha256": "195da3ef44a3dd45656fae54e04a1b435f947cdac1818950dcd487d51689c996",
+      "mtime_ns": "1791028432342786249"
+    },
+    {
+      "path": "conversations/f1b555b732c941e689046e4de89d7f5d/materials/材料01.md",
+      "sha256": "f8d5ec5ee9c9828da709b027a364854e563733c6e5d3ddc35471f45721bf2bf8",
+      "mtime_ns": "1791028468767925585"
+    },
+    {
+      "path": "conversations/f1b555b732c941e689046e4de89d7f5d/materials/材料05.md",
+      "sha256": "4725c2876735952d13da7b52ca11b7e5c1c3244c7ccade2162cc0aea725c31ba",
+      "mtime_ns": "1791028468772348635"
+    },
+    {
+      "path": "conversations/f1b555b732c941e689046e4de89d7f5d/materials/材料09.md",
+      "sha256": "5ec7f7a04c2f288e2f6ab861407b934e9d3305a15007c7fa50d02350141f68e0",
+      "mtime_ns": "1791028468773437470"
+    },
+    {
+      "path": "conversations/f1b555b732c941e689046e4de89d7f5d/materials/材料13.md",
+      "sha256": "43df16ae983df345d2c382dffab57fa407bda768d652953e1248287f04f11408",
+      "mtime_ns": "1791028468774707889"
+    },
+    {
+      "path": "conversations/f1b555b732c941e689046e4de89d7f5d/materials/材料17.md",
+      "sha256": "11fe1a3822270f8dbafe1aaf61daf3513852f24ac2464afda353fd4083ca5065",
+      "mtime_ns": "1791028468775778557"
+    },
+    {
+      "path": "skills/0a08c4379abf5ecc9f023ecacdfa3adc/SKILL.md",
+      "sha256": "15354537c3b128cafb35df24a8a403a82b44712590d4473676c4cbc2054fc879",
+      "mtime_ns": "1791028432372360300"
+    },
+    {
+      "path": "skills/1a71e0ece171461bacd71f839d61870c/SKILL.md",
+      "sha256": "8e20738154b22d6577f6bc22a2e6feed8de7f07e8b850ed2426d02670056fba3",
+      "mtime_ns": "1791028432376904683"
+    },
+    {
+      "path": "skills/1a71e0ece171461bacd71f839d61870c/references/checklist.md",
+      "sha256": "c351c780e6b3fa59548c3b3a5fb23e0680c66031aaf82ec16fbdd652adf2990e",
+      "mtime_ns": "1791028432376632849"
+    },
+    {
+      "path": "skills/1d768fec477e522caa17fc2bad1acc55/SKILL.md",
+      "sha256": "a314895405db31cfee8e733ac50dc382b0c72640c87517fb90431df51a74cdc9",
+      "mtime_ns": "1791028432374425929"
+    },
+    {
+      "path": "skills/1d768fec477e522caa17fc2bad1acc55/references/checklist.md",
+      "sha256": "d1262e0651d047b2ab57295c38bc678d393f4c93043a43d6b368fa83cca19aeb",
+      "mtime_ns": "1791028432373495469"
+    },
+    {
+      "path": "skills/245764c196435094b6bbf93ab55a0d4d/SKILL.md",
+      "sha256": "5f685e3ea0e18b555e746bcc3c77dc232b8da635742b6b9d0d42e7f3565d41ea",
+      "mtime_ns": "1791028432371715591"
+    },
+    {
+      "path": "skills/245764c196435094b6bbf93ab55a0d4d/references/source.md",
+      "sha256": "e12bc57c6cec2083ac4c0d91efe62d5774fb157401a5a99aad1bd999ab737761",
+      "mtime_ns": "1791028432371440257"
+    },
+    {
+      "path": "skills/51ade6c509fa5cdb9590d48bc14cd8de/SKILL.md",
+      "sha256": "ffe2d862171a63b51d1b2c1796e0eb4204d1c770ada74b2a54ef95b2cc7ee455",
+      "mtime_ns": "1791028432368873169"
+    },
+    {
+      "path": "skills/8e855a6e55665350af3ef33ba8ea3ce5/SKILL.md",
+      "sha256": "cadc1d77eafa6a142787c736b69beb78d01c7483233d234818b4cb230b6de93f",
+      "mtime_ns": "1791028432370618172"
+    },
+    {
+      "path": "skills/8e855a6e55665350af3ef33ba8ea3ce5/references/source.md",
+      "sha256": "c62990b4fa03cb541443081c406e6f90147a3fc7a866e23f42d2a9f4c9f94e5b",
+      "mtime_ns": "1791028432370370214"
+    },
+    {
+      "path": "skills/a1f47f9ceffb5abea944e55653b922b6/SKILL.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mtime_ns": "1791011765399846614"
+    },
+    {
+      "path": "skills/a1f47f9ceffb5abea944e55653b922b6/references/source.md",
+      "sha256": "e12bc57c6cec2083ac4c0d91efe62d5774fb157401a5a99aad1bd999ab737761",
+      "mtime_ns": "1791028432375381597"
+    },
+    {
+      "path": "workspaces/default/MEMORY.md",
+      "sha256": "af3eaf256528672486e0c60ef27563098d43c1381c523718fbcafa369ebe281f",
+      "mtime_ns": "1791028432356296856"
+    },
+    {
+      "path": "USER.meta.json",
+      "sha256": "9506bc50a9b79671df58af56793b10975839b193cfa28add0ed7901ed004425b",
+      "mtime_ns": "1791028432377415809"
+    },
+    {
+      "path": "agents/default/archive/user/owner/53d901637d8d43738af583243ce4700e/entry.meta.json",
+      "sha256": "73ec1457fae5609ff39ae69d1a05799846bb09a522b368d1c885166fe3c28160",
+      "mtime_ns": "1791028432353658851"
+    },
+    {
+      "path": "agents/default/soul.meta.json",
+      "sha256": "8edcfe8f7568a7d053e196fbd25abf6ead26db6cb279a460c7fe1336e5c810f6",
+      "mtime_ns": "1791028432354277477"
+    },
+    {
+      "path": "agents/skill-validator/archive/skill/a1f47f9ceffb5abea944e55653b922b6/14722f0815d842e7b56a76a4a5c81f0d/entry.meta.json",
+      "sha256": "716a4c8f17cfec6b4a5610a11d182c7da4d62f36dc90e523686828b28656eba1",
+      "mtime_ns": "1791028432346987631"
+    },
+    {
+      "path": "agents/skill-validator/archive/user/owner/53d901637d8d43738af583243ce4700e/entry.meta.json",
+      "sha256": "53c9391c790da9eac55de1f889e194919d5b482d9cb18a44bb00065562ea7b06",
+      "mtime_ns": "1791028432350380137"
+    },
+    {
+      "path": "agents/skill-validator/soul.meta.json",
+      "sha256": "6baf9dfc0bb15b8d01e61bd3d3015d8c8f14e9412a000800fa6fbba097a140c2",
+      "mtime_ns": "1791028432351220680"
+    },
+    {
+      "path": "archive/user/owner/9cfec0885e7f4da9890f75f90b49f6f7/entry.meta.json",
+      "sha256": "f6e08f2bb9cff872238bed0e598efab0ebb88878c18044974a4d75b9a45cdffe",
+      "mtime_ns": "1791028432344333251"
+    },
+    {
+      "path": "archive/user/owner/d68d9128745f446a84483e5b1c06ce8d/entry.meta.json",
+      "sha256": "61c696185bf11775f85397da71a0fcf5087f296d14693ce38ccd02ba83ecdaf4",
+      "mtime_ns": "1791028432343246500"
+    },
+    {
+      "path": "skills/0a08c4379abf5ecc9f023ecacdfa3adc/SKILL.meta.json",
+      "sha256": "b1606083dc31fd9eb7e8d8ae63fa4c6214375209bed22d530550316c1623f7fd",
+      "mtime_ns": "1791028432372130550"
+    },
+    {
+      "path": "skills/1a71e0ece171461bacd71f839d61870c/SKILL.meta.json",
+      "sha256": "32563e6fbb20b89d01e53be2383f7edf0b94f9a839c20e8694b49aa77e523a3f",
+      "mtime_ns": "1791028432376024682"
+    },
+    {
+      "path": "skills/1d768fec477e522caa17fc2bad1acc55/SKILL.meta.json",
+      "sha256": "21f37f9fe88d81f81485dab8bc9e55f0365282671299dacd706671d2ff73df9c",
+      "mtime_ns": "1791028432373014885"
+    },
+    {
+      "path": "skills/245764c196435094b6bbf93ab55a0d4d/SKILL.meta.json",
+      "sha256": "377264e70968cfaf60d6bf17511cc448ab6e59e2964bb442d3bad2bcee6a80a9",
+      "mtime_ns": "1791028432371056423"
+    },
+    {
+      "path": "skills/51ade6c509fa5cdb9590d48bc14cd8de/SKILL.meta.json",
+      "sha256": "20c0841abd2ead43dfa211148aa2b6ea72f6fc5bf72779902021dd1d848c5038",
+      "mtime_ns": "1791028432368561502"
+    },
+    {
+      "path": "skills/8e855a6e55665350af3ef33ba8ea3ce5/SKILL.meta.json",
+      "sha256": "f53126cbff26f71e15eeb17c9399795a27091a45eede7f47223d7db7f6d903ab",
+      "mtime_ns": "1791028432369952296"
+    },
+    {
+      "path": "skills/a1f47f9ceffb5abea944e55653b922b6/SKILL.meta.json",
+      "sha256": "cc5134131b7044b2c28e0f98fccd98e220adb72110bb7e0898c90fb506277302",
+      "mtime_ns": "1791028432374891846"
+    },
+    {
+      "path": "workspaces/default/MEMORY.meta.json",
+      "sha256": "f5105384f61ab1b8ddc429e82c244eb50b1540869f40094ca752f4a334ab8ba4",
+      "mtime_ns": "1791028432355999605"
+    },
+    {
+      "path": "conversations/089fdb0fadee46e0ad2beec244a88fd5/memory-snapshot.json",
+      "sha256": "e1fb8813db9ff1d3632d6b31fd98319ce42c768fd07bfacde388bd1704f7b5e8",
+      "mtime_ns": "1791028432361133156"
+    },
+    {
+      "path": "conversations/2d71dc94bd354045b6e3d777bd6b315f/memory-snapshot.json",
+      "sha256": "ba41fec749391f0689fad9f3f6ce591061ca1ca4c97ae4d8fc09489b652ce679",
+      "mtime_ns": "1791028432364599912"
+    },
+    {
+      "path": "conversations/3c9b7f1de56a433ea9ba7e61facff4fd/memory-snapshot.json",
+      "sha256": "6039396f3d3734ffe13a290dbac4e273a16c1a3e7569a01d532e93c1c6f09f07",
+      "mtime_ns": "1791028432366377832"
+    },
+    {
+      "path": "conversations/484573c537814dc28e11905f1950e0da/memory-snapshot.json",
+      "sha256": "14e7da0aefed372950f0182070da03925584eeaa4d487fc5707e2bce910253c3",
+      "mtime_ns": "1791028432365573747"
+    },
+    {
+      "path": "conversations/62cb402bab6c4c9dad88892ab1dbc3ac/memory-snapshot.json",
+      "sha256": "09568355473f9bff4be93fe2653be81c7ee225810e0315231b49f5504159488d",
+      "mtime_ns": "1791028492488306593"
+    },
+    {
+      "path": "conversations/739df28d5055487c80a52ea019dc8c90/memory-snapshot.json",
+      "sha256": "7d386bd9cf71984cff332b5f91ea805d5d73a95960c7feceb564bb3e0aebca0c",
+      "mtime_ns": "1791028435836533998"
+    },
+    {
+      "path": "conversations/a4a4845214d24d129aacd194b85ed2cb/memory-snapshot.json",
+      "sha256": "c2b714ecc1785364003494a2d52437f0caa4160d3e1941f049a52ed36c6d6100",
+      "mtime_ns": "1791028432361936741"
+    },
+    {
+      "path": "conversations/b2ae0ff698894793acae90479b99bac2/memory-snapshot.json",
+      "sha256": "786572c6f1dd6724954e53399d9e5121906cbd0be939664890c400a89c06d080",
+      "mtime_ns": "1791028432363096326"
+    },
+    {
+      "path": "conversations/dfb71d64fa954070a736b1ce19cee774/memory-snapshot.json",
+      "sha256": "e24fd15f634627769165e4ce01db668bf8d9454376be878c000b86d038d4bfdf",
+      "mtime_ns": "1791028432367249917"
+    },
+    {
+      "path": "conversations/eb2e11305da440deab4bfd851f700373/memory-snapshot.json",
+      "sha256": "fa08a7e166865f3fe48809d0c76e11441544215f2cab014a31fb7e43e57a2e90",
+      "mtime_ns": "1791028459435289753"
+    },
+    {
+      "path": "conversations/f1b555b732c941e689046e4de89d7f5d/memory-snapshot.json",
+      "sha256": "3c473372ea0b8c6ce4113c79d320f600988a4253a47722ef480c9bd05028c339",
+      "mtime_ns": "1791028468798169096"
+    },
+    {
+      "path": "workspaces/default/c11-recovery/recovered.txt",
+      "sha256": "ccb690f4def6fb38ba4372daeef399ba7f8e5b33c31a59f63492f8622a632ace",
+      "mtime_ns": "1791028448842664393"
+    },
+    {
+      "path": "workspaces/default/m1-09-source.txt",
+      "sha256": "585d6aee8832dacfa26d1d5d063798b1c8a1839824bfecb987974775b315a815",
+      "mtime_ns": "1791028432356741023"
+    }
+  ],
+  "all_checks_passed": true
+}

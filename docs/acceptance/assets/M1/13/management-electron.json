@@ -1,0 +1,224 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-memory-1791028433581",
+  "screenshots": [
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-memory-1791028433581/memory-skill.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-memory-1791028433581/memory-user.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-memory-1791028433581/memory-background.png"
+  ],
+  "operations": [
+    "create-user",
+    "pin-archive-restore",
+    "ledger-restore",
+    "risk-review",
+    "工作区记忆",
+    "员工 soul",
+    "support-file-failure-corrected",
+    "create-skill",
+    "conflict-draft-retained",
+    "keyboard-focus",
+    "real-background-approval-notification-refresh"
+  ],
+  "background_job": {
+    "job_id": "c03652bdb8b44ee293d32442088f7ba2",
+    "approval_id": "41c21e4392e44c679f0be08bdb38768b",
+    "approved_status": "allowed",
+    "actual_save_result": "committed",
+    "final_status": "cancelled",
+    "source_conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+    "new_frontend_task_run_id": "c1afcd6a3c0946ebb586ee10aff70e48",
+    "ledger": [
+      {
+        "id": 53,
+        "change_id": "chatcmpl-tool-ab730ede575f934b",
+        "global_seq": 1786,
+        "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"dfb71d64fa954070a736b1ce19cee774\",\"job_id\":\"c03652bdb8b44ee293d32442088f7ba2\",\"task_run_id\":\"81cc5427c6f24e86a4dc1eece3b0f5f4\"}",
+        "after_text": "长期汇报偏好为简洁中文。\n\n§\n\n汇报标题固定带\"核验标记\"（具体标记值由当次任务给定，逐次变化，不固定）。\n\n§\n\n陈旧核验偏好：保留来源信息。\n\n§\n\n固定核验偏好：保留核验编号。\n\n§\n\n管理财务核验：付款金额为 300 元。\n\n§\n\n必须保留的冲突草稿：核查所有来源。\n\n§\n\n桌面财务核验：付款金额为 400 元。\n\n§\n\n真实并发编辑核验条目。\n\n§\n\n汇报末尾保留来源标识（当前值 a9df7bfd1e53）。"
+      }
+    ]
+  },
+  "queries": [
+    {
+      "sql": "SELECT store_type,store_id,entry_hash,state,needs_review,text FROM memory_entries WHERE text LIKE '桌面%'",
+      "rows": [
+        {
+          "store_type": "workspace",
+          "store_id": "default",
+          "entry_hash": "c92ed1a62caa9d1d12cf9d1fec13d258962286f68645065a91d27d42ac88bdae",
+          "state": "active",
+          "needs_review": 0,
+          "text": "桌面核验事实：材料保存在当前工作区。"
+        },
+        {
+          "store_type": "soul",
+          "store_id": "default",
+          "entry_hash": "9e5b2690d132b30a6f31aa99acc8744f689e549e021d1a2bce90a0feb0a5c777",
+          "state": "active",
+          "needs_review": 0,
+          "text": "桌面核验教训：先确认材料来源。"
+        },
+        {
+          "store_type": "skill",
+          "store_id": "e5a8000557445423842759261c5d159d",
+          "entry_hash": "7430919e75d6bdccf7353817d45969a6ed3136b3f025a96e6286eb8680a4564e",
+          "state": "active",
+          "needs_review": 0,
+          "text": "桌面材料核验\n读取材料，核对来源，再保存编号。"
+        },
+        {
+          "store_type": "user",
+          "store_id": "owner",
+          "entry_hash": "f98c3c2ccbb759d7c5192d1ebfa22304d3a53aad65e7dd0a05c61461ad1ea038",
+          "state": "active",
+          "needs_review": 0,
+          "text": "桌面财务核验：付款金额为 400 元。"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,store_type,action,global_seq,source FROM memory_ledger ORDER BY id DESC LIMIT 20",
+      "rows": [
+        {
+          "id": 53,
+          "store_type": "user",
+          "action": "create",
+          "global_seq": 1786,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"dfb71d64fa954070a736b1ce19cee774\",\"job_id\":\"c03652bdb8b44ee293d32442088f7ba2\",\"task_run_id\":\"81cc5427c6f24e86a4dc1eece3b0f5f4\"}"
+        },
+        {
+          "id": 52,
+          "store_type": "user",
+          "action": "update",
+          "global_seq": 1667,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"8bc59c40-7f23-462e-8f8d-5283d61b4a19\"}"
+        },
+        {
+          "id": 51,
+          "store_type": "user",
+          "action": "create",
+          "global_seq": 1666,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"4c957e30-9ff6-420d-9456-ef14ffd1b9b4\"}"
+        },
+        {
+          "id": 50,
+          "store_type": "skill",
+          "action": "update",
+          "global_seq": 1665,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"4ca51406-a035-43e3-8a63-092b85c32bef\"}"
+        },
+        {
+          "id": 49,
+          "store_type": "skill",
+          "action": "update",
+          "global_seq": 1664,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"1887a0dd-b80a-4a22-ac6c-5821f5a07ba3\"}"
+        },
+        {
+          "id": 48,
+          "store_type": "skill",
+          "action": "create",
+          "global_seq": 1663,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"2d521bf2-6c33-4f2e-ad62-d7e40fdcf4d8\"}"
+        },
+        {
+          "id": 47,
+          "store_type": "soul",
+          "action": "create",
+          "global_seq": 1662,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"3ad6b88c-16b6-4cfd-85e5-b49d013463db\"}"
+        },
+        {
+          "id": 46,
+          "store_type": "workspace",
+          "action": "create",
+          "global_seq": 1661,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"dd0f7e98-127d-4459-9346-8501115ac20a\"}"
+        },
+        {
+          "id": 45,
+          "store_type": "user",
+          "action": "review",
+          "global_seq": 1660,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"7207be82-4f7a-4ba1-8a2c-29deed4da379\"}"
+        },
+        {
+          "id": 44,
+          "store_type": "user",
+          "action": "create",
+          "global_seq": 1659,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"601eccec-c734-43f0-ad02-701fdc31eb0e\"}"
+        },
+        {
+          "id": 43,
+          "store_type": "user",
+          "action": "rollback",
+          "global_seq": 1658,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"ef9b1157-b384-4094-ab1a-777cb866e706\"}"
+        },
+        {
+          "id": 42,
+          "store_type": "user",
+          "action": "update",
+          "global_seq": 1657,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"67559e5c-fc85-4ef7-a561-f91d7716edd9\"}"
+        },
+        {
+          "id": 41,
+          "store_type": "user",
+          "action": "restore",
+          "global_seq": 1656,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"74e7fca9-1e66-4e22-8add-29a8aec6c41c\"}"
+        },
+        {
+          "id": 40,
+          "store_type": "user",
+          "action": "archive",
+          "global_seq": 1655,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"ee8efdab-f3c9-428a-a3ad-1d74a8e908ff\"}"
+        },
+        {
+          "id": 39,
+          "store_type": "user",
+          "action": "pin",
+          "global_seq": 1654,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"fd8b37c3-3c8a-45a1-b246-d8b426a7c8c7\"}"
+        },
+        {
+          "id": 38,
+          "store_type": "user",
+          "action": "create",
+          "global_seq": 1653,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"27f90a79-184b-4a94-af37-245c9fab7be1\"}"
+        },
+        {
+          "id": 37,
+          "store_type": "workspace",
+          "action": "create",
+          "global_seq": 1652,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"96094647bc1b47cc9a12fded516f7c49\"}"
+        },
+        {
+          "id": 36,
+          "store_type": "user",
+          "action": "archive",
+          "global_seq": 1649,
+          "source": "{\"actor_id\":\"6e428e02d5b24bed91bf8b5b8791ff7f\",\"actor_type\":\"curator\",\"job_id\":\"6e428e02d5b24bed91bf8b5b8791ff7f\"}"
+        },
+        {
+          "id": 35,
+          "store_type": "skill",
+          "action": "update",
+          "global_seq": 1646,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"0a3aeb2c666e4e1481ebdbe395cef24b\"}"
+        },
+        {
+          "id": 34,
+          "store_type": "skill",
+          "action": "create",
+          "global_seq": 1645,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"d3dd4fda029743f592e4f5ea47b3e771\"}"
+        }
+      ]
+    }
+  ],
+  "all_checks_passed": true
+}

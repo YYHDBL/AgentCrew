@@ -1,0 +1,21 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-final-view-1791029279428",
+  "screenshots": [
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-final-view-1791029279428/user.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-final-view-1791029279428/workspace.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-final-view-1791029279428/soul.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-final-view-1791029279428/chinese-search.png"
+  ],
+  "operations": [
+    "USER 记忆",
+    "工作区记忆",
+    "员工 soul",
+    "中文检索：资料",
+    "中文检索：项目资"
+  ],
+  "search_model_calls": {
+    "before": 26,
+    "after": 26
+  },
+  "all_checks_passed": true
+}

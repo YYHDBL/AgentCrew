@@ -7,7 +7,8 @@ from typing import Any, AsyncIterator
 
 import httpx
 from openai import AsyncOpenAI, omit
-from openai.lib.streaming.chat import AsyncChatCompletionStream
+from openai.lib.streaming.chat import ChatCompletionStreamState
+from openai.types.chat import ChatCompletionChunk
 
 from .base import Slot
 from .glm_anthropic import SlotConfig
@@ -58,6 +59,11 @@ def chat_tools(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
     }} for tool in tools]
 
 
+def normalize_chat_chunk(chunk: ChatCompletionChunk) -> ChatCompletionChunk:
+    # 增量中的 null 表示没有提供更新，空字符串仍保留；原始响应保持完整。
+    return ChatCompletionChunk.model_validate(chunk.model_dump(exclude_none=True))
+
+
 class OpenAICompatibleProvider:
     def __init__(self, slots: dict[str, SlotConfig], *, client: httpx.AsyncClient,
                  session_id: str | None = None):
@@ -90,24 +96,25 @@ class OpenAICompatibleProvider:
         started: set[int] = set()
         reasoning: list[str] = []
         raw_stream = await client.chat.completions.create(**request, stream=True)
-        async with AsyncChatCompletionStream(raw_stream=raw_stream,
-                                             response_format=omit, input_tools=omit) as stream:
-            async for event in stream:
-                if event.type == "content.delta":
-                    yield StreamEvent(type="text_delta", text=event.delta)
-                elif event.type == "refusal.delta":
-                    yield StreamEvent(type="text_delta", text=event.delta)
-                elif event.type == "tool_calls.function.arguments.delta":
-                    if event.index not in started:
-                        started.add(event.index)
-                        yield StreamEvent(type="tool_call_started", tool_name=event.name)
-                elif event.type == "chunk":
-                    for choice in event.chunk.choices:
-                        delta = getattr(choice.delta, "reasoning_content", None)
-                        if delta:
-                            reasoning.append(delta)
-                            yield StreamEvent(type="thinking_delta", text=delta)
-            completion = await stream.get_final_completion()
+        state = ChatCompletionStreamState(response_format=omit, input_tools=omit)
+        async with raw_stream:
+            async for chunk in raw_stream:
+                for event in state.handle_chunk(normalize_chat_chunk(chunk)):
+                    if event.type == "content.delta":
+                        yield StreamEvent(type="text_delta", text=event.delta)
+                    elif event.type == "refusal.delta":
+                        yield StreamEvent(type="text_delta", text=event.delta)
+                    elif event.type == "tool_calls.function.arguments.delta":
+                        if event.index not in started:
+                            started.add(event.index)
+                            yield StreamEvent(type="tool_call_started", tool_name=event.name)
+                    elif event.type == "chunk":
+                        for choice in event.chunk.choices:
+                            delta = getattr(choice.delta, "reasoning_content", None)
+                            if delta:
+                                reasoning.append(delta)
+                                yield StreamEvent(type="thinking_delta", text=delta)
+            completion = state.get_final_completion()
         choice = completion.choices[0]
         if choice.finish_reason not in ("stop", "tool_calls"):
             raise ValueError(f"Chat Completions 未正常结束：{choice.finish_reason}")

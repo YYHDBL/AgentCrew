@@ -1,0 +1,355 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-compound-1791027542277",
+  "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+  "checkpoints": [
+    {
+      "id": "ec1f98ab50824726add73b7eb3281812",
+      "event_global_seq": 358,
+      "source_global_seq": 356,
+      "before_tokens": 511418,
+      "after_tokens": 363854,
+      "sha256": "d80f8a3cd7b2d308796fc184f62c6bd2cab322075c86b1371e6e2c1ba2c4ee13"
+    },
+    {
+      "id": "3f9a2143500343cfb86d575b8a3028a9",
+      "event_global_seq": 404,
+      "source_global_seq": 402,
+      "before_tokens": 505389,
+      "after_tokens": 360635,
+      "sha256": "26450f222b2011cb01c987b32e9e1c665bf14ee96d8bccc9437dfb4b42def6e7"
+    },
+    {
+      "id": "43e73337aead454b860f60bc063f85c0",
+      "event_global_seq": 466,
+      "source_global_seq": 464,
+      "before_tokens": 511922,
+      "after_tokens": 331674,
+      "sha256": "0a64d2ed28dae14403964502f0059ba26abfa881625a7824a453f05102fca8eb"
+    },
+    {
+      "id": "cb669b55874e4b2a9de61833f80a7de1",
+      "event_global_seq": 512,
+      "source_global_seq": 510,
+      "before_tokens": 483030,
+      "after_tokens": 343416,
+      "sha256": "25e28146d1365e6b99a1069f1efc1bc11f1e3f497087377cd5dd03b520ba5f41"
+    }
+  ],
+  "screenshots": [
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-compound-1791027542277/memory-interrupted.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-compound-1791027542277/compound-completed.png"
+  ],
+  "task_run_id": "522f7dff9afa43d29d7e0df649c4556d",
+  "result": {
+    "observed_prepared": {
+      "change_id": "chatcmpl-tool-87f5db71f0d7bc54",
+      "status": "prepared"
+    },
+    "killed_pid": 38097,
+    "old_port": 60842,
+    "new_port": 61397,
+    "final": {
+      "status": "completed",
+      "current_attempt_no": 2
+    },
+    "ledger": [
+      {
+        "id": 8,
+        "change_id": "chatcmpl-tool-87f5db71f0d7bc54",
+        "global_seq": 566,
+        "audit_seq": 151,
+        "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"6018b39c95f9457c8836930dba028b9f\",\"task_run_id\":\"522f7dff9afa43d29d7e0df649c4556d\"}"
+      }
+    ],
+    "memory_event_count": 1,
+    "write_file_side_effects": 1,
+    "memory_after_recovery": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mtime_ns": "1791027590523699083"
+    },
+    "snapshot_before": {
+      "sha256": "63cf6375eb8cc7f6686b1b0450d191d229ab364c4b4cd44670abc41e764a98bf",
+      "mtime_ns": "1791027542292963954"
+    },
+    "snapshot_after": {
+      "sha256": "63cf6375eb8cc7f6686b1b0450d191d229ab364c4b4cd44670abc41e764a98bf",
+      "mtime_ns": "1791027542292963954"
+    },
+    "file": {
+      "sha256": "20ca41d34921b50206e0b9dafceeb8d09affdb6a9102d092bd57bd99d8e6d4cb",
+      "mtime_ns": "1791027615282334472"
+    },
+    "events": [
+      {
+        "global_seq": 546,
+        "seq": 1,
+        "type": "run.queued"
+      },
+      {
+        "global_seq": 547,
+        "seq": 2,
+        "type": "run.started"
+      },
+      {
+        "global_seq": 548,
+        "seq": 3,
+        "type": "step.started"
+      },
+      {
+        "global_seq": 549,
+        "seq": 4,
+        "type": "llm.request_started"
+      },
+      {
+        "global_seq": 550,
+        "seq": 5,
+        "type": "context.budget_checked",
+        "payload": {
+          "context_window": 1000000,
+          "counting_method": "tokenizers/official-deepseek-v4.1",
+          "history_tokens": 345003,
+          "model": "deepseek-v4.1-flash",
+          "output_reserved": 8192,
+          "scope": {
+            "agent_id": "skill-validator",
+            "owner_id": "owner",
+            "workspace_id": "default"
+          },
+          "system_tokens": 2657,
+          "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+          "tool_result_tokens": 0,
+          "total_input_tokens": 347660
+        }
+      },
+      {
+        "global_seq": 551,
+        "seq": 6,
+        "type": "llm.request_done"
+      },
+      {
+        "global_seq": 552,
+        "seq": 7,
+        "type": "step.completed"
+      },
+      {
+        "global_seq": 553,
+        "seq": 8,
+        "type": "tool.prepared"
+      },
+      {
+        "global_seq": 554,
+        "seq": 9,
+        "type": "tool.dispatched"
+      },
+      {
+        "global_seq": 555,
+        "seq": 10,
+        "type": "artifact.created"
+      },
+      {
+        "global_seq": 556,
+        "seq": 11,
+        "type": "artifact.ready"
+      },
+      {
+        "global_seq": 557,
+        "seq": 12,
+        "type": "tool.result_externalized"
+      },
+      {
+        "global_seq": 558,
+        "seq": 13,
+        "type": "tool.completed"
+      },
+      {
+        "global_seq": 559,
+        "seq": 14,
+        "type": "step.started"
+      },
+      {
+        "global_seq": 560,
+        "seq": 15,
+        "type": "llm.request_started"
+      },
+      {
+        "global_seq": 561,
+        "seq": 16,
+        "type": "context.budget_checked",
+        "payload": {
+          "context_window": 1000000,
+          "counting_method": "tokenizers/official-deepseek-v4.1",
+          "history_tokens": 345085,
+          "model": "deepseek-v4.1-flash",
+          "output_reserved": 8192,
+          "scope": {
+            "agent_id": "skill-validator",
+            "owner_id": "owner",
+            "workspace_id": "default"
+          },
+          "system_tokens": 2657,
+          "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+          "tool_result_tokens": 738,
+          "total_input_tokens": 348480
+        }
+      },
+      {
+        "global_seq": 562,
+        "seq": 17,
+        "type": "llm.request_done"
+      },
+      {
+        "global_seq": 563,
+        "seq": 18,
+        "type": "step.completed"
+      },
+      {
+        "global_seq": 564,
+        "seq": 19,
+        "type": "tool.prepared"
+      },
+      {
+        "global_seq": 565,
+        "seq": 20,
+        "type": "tool.dispatched"
+      },
+      {
+        "global_seq": 567,
+        "seq": 21,
+        "type": "run.interrupted"
+      },
+      {
+        "global_seq": 568,
+        "seq": 22,
+        "type": "tool.completed"
+      },
+      {
+        "global_seq": 569,
+        "seq": 23,
+        "type": "run.resumed"
+      },
+      {
+        "global_seq": 570,
+        "seq": 24,
+        "type": "step.started"
+      },
+      {
+        "global_seq": 571,
+        "seq": 25,
+        "type": "llm.request_started"
+      },
+      {
+        "global_seq": 572,
+        "seq": 26,
+        "type": "context.budget_checked",
+        "payload": {
+          "context_window": 1000000,
+          "counting_method": "tokenizers/official-deepseek-v4.1",
+          "history_tokens": 348158,
+          "model": "deepseek-v4.1-flash",
+          "output_reserved": 8192,
+          "scope": {
+            "agent_id": "skill-validator",
+            "owner_id": "owner",
+            "workspace_id": "default"
+          },
+          "system_tokens": 2733,
+          "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+          "tool_result_tokens": 821,
+          "total_input_tokens": 351712
+        }
+      },
+      {
+        "global_seq": 573,
+        "seq": 27,
+        "type": "llm.request_done"
+      },
+      {
+        "global_seq": 574,
+        "seq": 28,
+        "type": "step.completed"
+      },
+      {
+        "global_seq": 575,
+        "seq": 29,
+        "type": "tool.prepared"
+      },
+      {
+        "global_seq": 576,
+        "seq": 30,
+        "type": "permission.requested"
+      },
+      {
+        "global_seq": 577,
+        "seq": 31,
+        "type": "permission.resolved"
+      },
+      {
+        "global_seq": 578,
+        "seq": 32,
+        "type": "tool.dispatched"
+      },
+      {
+        "global_seq": 579,
+        "seq": 33,
+        "type": "artifact.created"
+      },
+      {
+        "global_seq": 580,
+        "seq": 34,
+        "type": "artifact.ready"
+      },
+      {
+        "global_seq": 581,
+        "seq": 35,
+        "type": "tool.completed"
+      },
+      {
+        "global_seq": 582,
+        "seq": 36,
+        "type": "step.started"
+      },
+      {
+        "global_seq": 583,
+        "seq": 37,
+        "type": "llm.request_started"
+      },
+      {
+        "global_seq": 584,
+        "seq": 38,
+        "type": "context.budget_checked",
+        "payload": {
+          "context_window": 1000000,
+          "counting_method": "tokenizers/official-deepseek-v4.1",
+          "history_tokens": 348251,
+          "model": "deepseek-v4.1-flash",
+          "output_reserved": 8192,
+          "scope": {
+            "agent_id": "skill-validator",
+            "owner_id": "owner",
+            "workspace_id": "default"
+          },
+          "system_tokens": 2733,
+          "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+          "tool_result_tokens": 888,
+          "total_input_tokens": 351872
+        }
+      },
+      {
+        "global_seq": 585,
+        "seq": 39,
+        "type": "llm.request_done"
+      },
+      {
+        "global_seq": 586,
+        "seq": 40,
+        "type": "step.completed"
+      },
+      {
+        "global_seq": 587,
+        "seq": 41,
+        "type": "run.completed"
+      }
+    ]
+  },
+  "all_checks_passed": true
+}

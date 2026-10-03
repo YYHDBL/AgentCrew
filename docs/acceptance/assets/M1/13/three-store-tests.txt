@@ -1,0 +1,1 @@
+{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-final-view-1791029279428","operations":5,"all_checks_passed":true}

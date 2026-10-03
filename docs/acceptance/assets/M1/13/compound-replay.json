@@ -1,0 +1,36 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-compound-1791027542277",
+  "task_run_id": "522f7dff9afa43d29d7e0df649c4556d",
+  "file_before_restart": {
+    "sha256": "20ca41d34921b50206e0b9dafceeb8d09affdb6a9102d092bd57bd99d8e6d4cb",
+    "mtime_ns": "1791027615282334472"
+  },
+  "write_file_ledger": [
+    {
+      "call_id": "chatcmpl-tool-aadbed340bd3327a",
+      "status": "completed",
+      "dispatched_at": "2026-10-03T11:40:15.044693+00:00",
+      "completed_at": "2026-10-03T11:40:15.293804+00:00",
+      "input_hash": "efc084918ab3995cc688942f9730259597a6270d6a2a70848d7c443eb2d5d6de"
+    }
+  ],
+  "actual_event_counts": [
+    {
+      "type": "tool.prepared",
+      "count": 1
+    },
+    {
+      "type": "tool.dispatched",
+      "count": 1
+    },
+    {
+      "type": "tool.completed",
+      "count": 1
+    }
+  ],
+  "file_after_restart_and_refresh": {
+    "sha256": "20ca41d34921b50206e0b9dafceeb8d09affdb6a9102d092bd57bd99d8e6d4cb",
+    "mtime_ns": "1791027615282334472"
+  },
+  "all_checks_passed": true
+}

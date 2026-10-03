@@ -4,6 +4,7 @@ import { cp, mkdir, writeFile, readFile } from 'node:fs/promises'
 import { resolve, basename } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import { randomUUID } from 'node:crypto'
+import { execFileSync } from 'node:child_process'
 
 const directory = resolve('.artifacts', `m1-memory-${Date.now()}`)
 await mkdir(directory, { recursive: true })
@@ -169,7 +170,13 @@ try {
   const pending = await data(`/memory/jobs/${job.id}`)
   const approval = pending.approvals.find((item) => item.status === 'pending')
   await page.locator('.details-scroll .memory-approval').getByRole('button', { name: '本次允许', exact: true }).last().click()
-  await waitFor(() => counterDb.prepare("SELECT COUNT(*) AS count FROM memory_ledger WHERE json_extract(source,'$.job_id')=?").get(job.id), (row) => row.count >= 1)
+  const backgroundResult = await waitFor(async () => {
+    const button = page.locator('.details-scroll .memory-approval').getByRole('button', { name: '本次允许', exact: true }).last()
+    if (await button.count() && await button.isEnabled()) await button.click()
+    const ledger = counterDb.prepare("SELECT COUNT(*) AS count FROM memory_ledger WHERE json_extract(source,'$.job_id')=?").get(job.id)
+    return { ...ledger, status: counterDb.prepare('SELECT status FROM memory_jobs WHERE id=?').get(job.id).status }
+  }, (row) => row.count >= 1 || ['completed', 'failed', 'cancelled', 'interrupted'].includes(row.status))
+  assert.notEqual(backgroundResult.status, 'failed')
   const allowed = counterDb.prepare('SELECT status FROM memory_job_approvals WHERE id=?').get(approval.id)
   assert.equal(allowed.status, 'allowed')
   await page.getByRole('textbox', { name: '任务指令', exact: true }).fill('新的前台指令：停止本次后台继续执行，请直接确认已收到新的任务。')
@@ -186,6 +193,7 @@ try {
   await page.getByText('记住了', { exact: true }).first().waitFor()
   await waitFor(() => page.getByRole('button', { name: '新建条目', exact: true }).isEnabled(), Boolean)
   result.background_job = { job_id: job.id, approval_id: approval.id, approved_status: allowed.status,
+    actual_save_result: backgroundResult.count ? 'committed' : 'no-save',
     final_status: counterDb.prepare('SELECT status FROM memory_jobs WHERE id=?').get(job.id).status,
     source_conversation_id: counter.conversation_id,
     new_frontend_task_run_id: cancellingTask.id,
@@ -204,4 +212,16 @@ try {
 } finally {
   await writeFile(`${directory}/memory-output.json`, JSON.stringify(result, null, 2))
   await app.close()
+}
+
+if (process.argv.includes('--final')) {
+  const finalDirectory = resolve('.artifacts', `m1-final-${Date.now()}`)
+  await mkdir(finalDirectory, { recursive: true })
+  execFileSync(process.execPath, ['tests/m1-compound-recovery.mjs'], { stdio: 'inherit' })
+  execFileSync(process.execPath, ['tests/m1-m0-regression.mjs'], { stdio: 'inherit' })
+  execFileSync(resolve('../backend/.venv/bin/python'), [resolve('../scripts/memory/verify_final_memory.py'),
+    '--seed-data-dir', resolve('../data/m1-store-validation-04'), '--data-dir', `${finalDirectory}/data`,
+    '--output', `${finalDirectory}/memory-http.json`], { stdio: 'inherit' })
+  execFileSync(process.execPath, ['tests/m1-final-memory-view.mjs', `${finalDirectory}/data`, `${finalDirectory}/memory-http.json`],
+    { stdio: 'inherit' })
 }

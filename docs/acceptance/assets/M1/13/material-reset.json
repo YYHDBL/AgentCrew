@@ -1,0 +1,320 @@
+{
+  "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+  "workspace_id": "default",
+  "agent_id": "skill-validator",
+  "change": {
+    "change_id": "8c347d13acd94f94b072957cba095d5c",
+    "ledger_id": 9,
+    "store_type": "workspace",
+    "store_id": "default",
+    "entry_id": null,
+    "entry_hash": null,
+    "revision": 3,
+    "global_seq": 592,
+    "idempotent_replay": false
+  },
+  "entries": [
+    {
+      "entry_id": "a620f89caaee46388add704005371631",
+      "entry_hash": "73d7dedc41a456f7183e89004cafff87fda65c26518f0ac128ac91c2a68cd0bf",
+      "text": "贯穿核验临时材料00：保留原始编号。"
+    },
+    {
+      "entry_id": "c72ee4634bf04a7aad35f84de6c8dfde",
+      "entry_hash": "2e44b0e04cc5e271b4e7f8d236ecceeeaa3dfe0e745974c025df117d554ae7d5",
+      "text": "贯穿核验临时材料01：保留原始编号。"
+    },
+    {
+      "entry_id": "5fb6078302ae4ed5b5f0edd5faa20fb4",
+      "entry_hash": "dd14d92f2af435427d1e9f86baf799b035d58962b1ad058314a360333d61b3aa",
+      "text": "贯穿核验临时材料02：保留原始编号。"
+    },
+    {
+      "entry_id": "0ca74d1c310e4f678c91e0ca68f2e7ff",
+      "entry_hash": "b53f97cc8df9e71ec782f30bc46b72cd7a0674c75aa14fb1747b8f5b6742a999",
+      "text": "贯穿核验临时材料03：保留原始编号。"
+    },
+    {
+      "entry_id": "665dfc7835af40bcbf0d42dc8ecdbe74",
+      "entry_hash": "59cfe61cc64510c4e4da385be7777311ab6fc0a020637f2da4bb28417ea2bcf3",
+      "text": "贯穿核验临时材料04：保留原始编号。"
+    },
+    {
+      "entry_id": "936ff05c40f54e60912a9ac3e680f046",
+      "entry_hash": "1cac2741d41d3c741acc90cd59e919e1915398b8f2f57c79bbcd23ae2bf5d94c",
+      "text": "贯穿核验临时材料05：保留原始编号。"
+    },
+    {
+      "entry_id": "cd065cdace3a4aa285b310f695b70fd7",
+      "entry_hash": "1c5e95ccd3c56a1b501bd72e9c971cf7ee757c94513f9f6930c8c345750da19b",
+      "text": "贯穿核验临时材料06：保留原始编号。"
+    },
+    {
+      "entry_id": "f0bab124e44344d3a2c3bfb87d91f121",
+      "entry_hash": "8ca3d6305bb6ca0a6ed784a9736402af38c229860ca6db7f3b78f77e4733340a",
+      "text": "贯穿核验临时材料07：保留原始编号。"
+    },
+    {
+      "entry_id": "d6aef076558a4340bd1168c8c95d029e",
+      "entry_hash": "385ff4bba3bdc736c5ef3a34b5596427d9853dbbb6f752fb9621267bfdd254e4",
+      "text": "贯穿核验临时材料08：保留原始编号。"
+    },
+    {
+      "entry_id": "19416aaf51684a73b455df1f9eb056fe",
+      "entry_hash": "44b7dc23bd5ed0f5f972f384bdf43e4f451cdfc03713836853b82ac7adcc4ab2",
+      "text": "贯穿核验临时材料09：保留原始编号。"
+    },
+    {
+      "entry_id": "bb739a478a914fb196a36eea5e0d4724",
+      "entry_hash": "8391ad1894a51e63e365d4ee4f513c50ec37e71685f15fb9127b7f1b50556b69",
+      "text": "贯穿核验临时材料10：保留原始编号。"
+    },
+    {
+      "entry_id": "3a2c26f086f74a18abb73a4bb3b7d44e",
+      "entry_hash": "7f3ea9ac0056fbac44d207872d190a013c196c8affa95e8f906c89fc1c44bbbb",
+      "text": "贯穿核验临时材料11：保留原始编号。"
+    },
+    {
+      "entry_id": "c9d1493e7956413c88e3aa577ac60649",
+      "entry_hash": "32858fba676fddc2c9b6913d9837db9997119e41f048a070db20cfb408077ce0",
+      "text": "贯穿核验临时材料12：保留原始编号。"
+    },
+    {
+      "entry_id": "8a7f216805d04e598cc6bff427dab7d9",
+      "entry_hash": "2684df53e2e22c64dc9cd89e4739beb5c1564dcdcfb19fbaeefe1c291b20f57f",
+      "text": "贯穿核验临时材料13：保留原始编号。"
+    },
+    {
+      "entry_id": "6e3f1fbfcc584cc9b73ceeea8a98c3a9",
+      "entry_hash": "01df9b7d282a790646414122a3a93340ec39d76fed23d7ef43fba6594423fa8a",
+      "text": "贯穿核验临时材料14：保留原始编号。"
+    },
+    {
+      "entry_id": "5cc848698cf34b9fb9dbd43bc3791d8d",
+      "entry_hash": "3f70d568ec603d7675a042492a304d4c8be669c013d89776e0da6dd45494352b",
+      "text": "贯穿核验临时材料15：保留原始编号。"
+    },
+    {
+      "entry_id": "6b2facd26a3545a7ab9f8085e51d8f2c",
+      "entry_hash": "06e84f2aca4f2e096a0422c0e4caf9b1139c9a57767edd06cb2849ed64d62257",
+      "text": "贯穿核验临时材料16：保留原始编号。"
+    },
+    {
+      "entry_id": "c413f15556a846a78a65e78f8ab99818",
+      "entry_hash": "9b918bfb398e5ba6f848e2cdf803ad5082fe02e369d59285439ed075f2352ad8",
+      "text": "贯穿核验临时材料17：保留原始编号。"
+    },
+    {
+      "entry_id": "77c6fe6d1b1b414b9602aff1a7e7179d",
+      "entry_hash": "23005f4c2dd6f19ccbd19618c08612afb8754fd2d8772ff7dba26e77c555e275",
+      "text": "贯穿核验临时材料18：保留原始编号。"
+    },
+    {
+      "entry_id": "dcd7523af1b34833a32105399e4c3346",
+      "entry_hash": "e22ceaeea672b6c70ca316280a3d2e4a084dd6d4f4e1db814ac80ceb6cf27a30",
+      "text": "贯穿核验临时材料19：保留原始编号。"
+    },
+    {
+      "entry_id": "721a19daf01a422caee4c292942bfd66",
+      "entry_hash": "aa958a242f731965753d6677f1c220f36452813332ad8d6ff720c4b945abb1b5",
+      "text": "贯穿核验临时材料20：保留原始编号。"
+    },
+    {
+      "entry_id": "5baa10b685b2428c89c473e6b7db0368",
+      "entry_hash": "8ead22c7b8d92beb30fee43c1215fda756de2575a1229383e518307db9f6011b",
+      "text": "贯穿核验临时材料21：保留原始编号。"
+    },
+    {
+      "entry_id": "5a39534064b140ffad5abf42a2f19ea0",
+      "entry_hash": "445302f4c2d0f38c530da93bdd24bf65a1dca3295916cfe64cd6d4a73ee7ad94",
+      "text": "贯穿核验临时材料22：保留原始编号。"
+    },
+    {
+      "entry_id": "593123a179454b2988b8e5a913857120",
+      "entry_hash": "bfa5ef804e457ce504a5b38c20cb1559f95ab40c7a7c1ce4a297e5d90ddca6f7",
+      "text": "贯穿核验临时材料23：保留原始编号。"
+    },
+    {
+      "entry_id": "da1a891abe2b48cc8096f83ef5f3cdc9",
+      "entry_hash": "0f4199aa68bd5be07b3e639efe0ea804a802d7db2ebe32521d2d13b46d04ef25",
+      "text": "贯穿核验临时材料24：保留原始编号。"
+    },
+    {
+      "entry_id": "ccb4767b96d54b16a070ce99bcbf5705",
+      "entry_hash": "9a948daef8d950d8434e840e785a799d3486722eae5727c80d647529c10cc0ea",
+      "text": "贯穿核验临时材料25：保留原始编号。"
+    },
+    {
+      "entry_id": "b2858a683e7a4b54beb002900ec11da7",
+      "entry_hash": "b6a670485ab2281101138a68992ac1bc4cb4c31ce5f27de87eef2841dc09aa72",
+      "text": "贯穿核验临时材料26：保留原始编号。"
+    },
+    {
+      "entry_id": "4e19fd2b0c824481976c58fb3ffd4bbb",
+      "entry_hash": "f458f4850f384354f0d672b51269edeb10ddf0d734d7767e07919bd6d3ee99d2",
+      "text": "贯穿核验临时材料27：保留原始编号。"
+    },
+    {
+      "entry_id": "d0cfb339d5ad43a28b230191eb37b4c7",
+      "entry_hash": "05391a38e54c9c44c16e9f75b04d093847d606ea35f41cfdbc817dfa1f0e0469",
+      "text": "贯穿核验临时材料28：保留原始编号。"
+    },
+    {
+      "entry_id": "a708a7d130a04905a9dd9b061ca647e0",
+      "entry_hash": "40342116f6b80e506b56224d167f83c4a1193d2fc1709d71202aad510a672bab",
+      "text": "贯穿核验临时材料29：保留原始编号。"
+    },
+    {
+      "entry_id": "a5672147cdcc4464a4e0fab7cdad6457",
+      "entry_hash": "9111c464f79314307e2d18e7fb73350bc47c66533d9b683077084f66d8d14f2a",
+      "text": "贯穿核验临时材料30：保留原始编号。"
+    },
+    {
+      "entry_id": "2a45a0cbf9194117a7d02be069b0c7e0",
+      "entry_hash": "2169bb4c35c57c3a93d52bf1aec897ff9c819211274815a4ab731d26882b8a13",
+      "text": "贯穿核验临时材料31：保留原始编号。"
+    },
+    {
+      "entry_id": "81f604dc8f3a4c40b7bb2c36160d0bf4",
+      "entry_hash": "c8d491725f031e300e7a0a34abe6ae0208ade1f0706a55e840ed5ff433393a65",
+      "text": "贯穿核验临时材料32：保留原始编号。"
+    },
+    {
+      "entry_id": "ef84d11927bd45de8fa6377010002f66",
+      "entry_hash": "e2488aaf5228da7530c4d17131fbdfcbc592307b10e450d739611c9aa6f61311",
+      "text": "贯穿核验临时材料33：保留原始编号。"
+    },
+    {
+      "entry_id": "fee9b064f3b04a9798a5c1620cb3dd64",
+      "entry_hash": "ad47f1b333449b224b36ebde1179c35d542a1731bb355be09dc216fc265a072d",
+      "text": "贯穿核验临时材料34：保留原始编号。"
+    },
+    {
+      "entry_id": "b9c0314d6ce24f549303e8d806882c3b",
+      "entry_hash": "db4c1de166bae538b6cc050ce6d888b2667a60b2de6909409aec5603afbbad19",
+      "text": "贯穿核验临时材料35：保留原始编号。"
+    },
+    {
+      "entry_id": "f3ba0a93c79445f2a57c7a40a0e5d159",
+      "entry_hash": "55f0cd1967a8c5fd29eb2b26a72a152ddc442f1f81aba49d70ffa1b4ac4c6c7d",
+      "text": "贯穿核验临时材料36：保留原始编号。"
+    },
+    {
+      "entry_id": "cbebf5df3dc54186a1feef923718a7da",
+      "entry_hash": "3f4403933f709a4f18e431afe29f46f483b797441198aa203771c818c70feb8b",
+      "text": "贯穿核验临时材料37：保留原始编号。"
+    },
+    {
+      "entry_id": "9fefc5db232a4683b3d81b66a30de1b5",
+      "entry_hash": "5b594eaad09d62904f4fc2067e3835968455793fde03e10b49d8606e461a2344",
+      "text": "贯穿核验临时材料38：保留原始编号。"
+    },
+    {
+      "entry_id": "597f4b2ec01a44fbb3b4971790448ade",
+      "entry_hash": "565eee261c85679cf4ab8225cf480ed119585141ac59c7fcb8a93585f1ed0ff2",
+      "text": "贯穿核验临时材料39：保留原始编号。"
+    },
+    {
+      "entry_id": "89b2132809094f3bb9e667b93749be18",
+      "entry_hash": "53c5243eb944a733b13ac30b5a688807087d3f9f0194e910f44e41c2870abd14",
+      "text": "贯穿核验临时材料40：保留原始编号。"
+    },
+    {
+      "entry_id": "03a059538ff443d4b318b1c5c87ad6a3",
+      "entry_hash": "8b875d8cfe1a928111815f9f3b9b96984be979946b5edb9a47e743a85973c679",
+      "text": "贯穿核验临时材料41：保留原始编号。"
+    },
+    {
+      "entry_id": "06f2fbde39704a46a3c00520cb56d232",
+      "entry_hash": "927607ffbd5d752cef27137aca182c695bd38a097a734f137cfe1c0f2559073c",
+      "text": "贯穿核验临时材料42：保留原始编号。"
+    },
+    {
+      "entry_id": "75bb62446095471d9ba86216edbb8e67",
+      "entry_hash": "d0193b0c739342846df50a318e335c48c73e27bffb76cca3e79d1fb75a7f9586",
+      "text": "贯穿核验临时材料43：保留原始编号。"
+    },
+    {
+      "entry_id": "c9808641a02f4dcbb515006941771b57",
+      "entry_hash": "5d4584f9ecda33ab3afd4222426aa6e867c09634fd39d25303ca1c23b589d739",
+      "text": "贯穿核验临时材料44：保留原始编号。"
+    },
+    {
+      "entry_id": "1e4667a9337a4b3fad7ce499134ffd97",
+      "entry_hash": "b5b2ad2376a5ed67fc66566c7558e78395b065e7930af408c9a3c99d883eb562",
+      "text": "贯穿核验临时材料45：保留原始编号。"
+    },
+    {
+      "entry_id": "c15c59cc7b2046269d08319f063b7335",
+      "entry_hash": "bf722e4e023f376a935f76dc7224c0be844d10aaae24616544f2f2535bb3ac8c",
+      "text": "贯穿核验临时材料46：保留原始编号。"
+    },
+    {
+      "entry_id": "6677e757e42147b2ad702641ed41ff5a",
+      "entry_hash": "db8dfdba8dd215a401dfc5dea6b63404711dfb8605ffc7b75fef1d9fc1c189bf",
+      "text": "贯穿核验临时材料47：保留原始编号。"
+    },
+    {
+      "entry_id": "35a19af3fe1041af88eb8cd87d64422a",
+      "entry_hash": "5ed2964c5b5b4f589b52f47769dae24f2adbaef2ebfafa51cc7d9c758a43017d",
+      "text": "贯穿核验临时材料48：保留原始编号。"
+    },
+    {
+      "entry_id": "dfd8859de0d54532b66f03b28cce8ad0",
+      "entry_hash": "2a29fbc11faab8f5552071a9be0164261ed04309ad7aaeb815a36fa0c8d046d7",
+      "text": "贯穿核验临时材料49：保留原始编号。"
+    },
+    {
+      "entry_id": "579777e67c5d473bb259ee04c1568b70",
+      "entry_hash": "6c778996f44ab7050cea457479172c8b7fc218c71ebc02097ae0bb8fc1b6399f",
+      "text": "贯穿核验临时材料50：保留原始编号。"
+    },
+    {
+      "entry_id": "ac82fcf9e4f34ac3aca4ada301ab9bc5",
+      "entry_hash": "bd25880140662d752d3f5da57f9be38d50c4f2f8631f8861015f199dcab43863",
+      "text": "贯穿核验临时材料51：保留原始编号。"
+    },
+    {
+      "entry_id": "40828fe5ef184620937e48a48d0fdbae",
+      "entry_hash": "baa46c9329df79847500e178ec2ab09e84a0d85a93f731ec922ad1cdce035b3d",
+      "text": "贯穿核验临时材料52：保留原始编号。"
+    },
+    {
+      "entry_id": "3dee011a65ba40ed8e469e5290ce9697",
+      "entry_hash": "f4ac5cb4555070c38b682d9b7b3181b129b7f372ee483158f282c15b27889ba2",
+      "text": "贯穿核验临时材料53：保留原始编号。"
+    },
+    {
+      "entry_id": "13d728c9b8bd4e7ea0b7ee1e36bfb257",
+      "entry_hash": "0c4a49d100735f93be6e7d4044892d647a66f86c19eee7c377476e9fdd254c5a",
+      "text": "贯穿核验临时材料54：保留原始编号。"
+    },
+    {
+      "entry_id": "7f0ad53c318f46c8b47fdaf939829d68",
+      "entry_hash": "7db5233ee87525fafa755e2ce6d959c4ed6a154d2d23ad3fa72531ff6ea6ac3f",
+      "text": "贯穿核验临时材料55：保留原始编号。"
+    },
+    {
+      "entry_id": "7d97d9047a5f42869348dca6249c436c",
+      "entry_hash": "249f813e159acd4b2ad569abd91548b26cde22d2dd4ae727a12f1281b7a64f45",
+      "text": "贯穿核验临时材料56：保留原始编号。"
+    },
+    {
+      "entry_id": "b325b9b8d5944885a2d1c1c314f99e8a",
+      "entry_hash": "9915b4bf5244ab96eda1491e252f232a71385cf0e80f8aebd5fb557e9ee494d0",
+      "text": "贯穿核验临时材料57：保留原始编号。"
+    },
+    {
+      "entry_id": "5101927784cb453592a647d56eecbd8d",
+      "entry_hash": "885cae14ebd03f3ffded5cd58a75070ad6f2ccef539fda11dea5e554cddf09c1",
+      "text": "贯穿核验临时材料58：保留原始编号。"
+    },
+    {
+      "entry_id": "2f4d8a2d0342417cbed2255d1a2ae553",
+      "entry_hash": "73cc9900c77c0200adb775e8397dad40d78f860663e18bdeedf76cc5d25a5112",
+      "text": "贯穿核验临时材料59：保留原始编号。"
+    }
+  ],
+  "memory_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m1-material-reset-memory/workspaces/default/MEMORY.md",
+  "memory_sha256": "ffd49fcbc5fb9087e5210eb796d5b4ff2ffeb1ad3409c8e64510cae5eee67e35"
+}

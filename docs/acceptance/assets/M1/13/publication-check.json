@@ -1,0 +1,204 @@
+{
+  "configured_keys_checked": 1,
+  "credential_matches": 0,
+  "files": [
+    {
+      "path": "docs/acceptance/assets/M1/13/backend-tests.txt",
+      "bytes": 1197,
+      "sha256": "bfc4f6d69c503f893e24ea6243833f009ca5eb684e9d3280116688ac861b7cbf",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/background-notification.png",
+      "bytes": 212572,
+      "sha256": "3ff42e3656268038e5ac553dfe4329f51990f19eed899919471f6af83145f16e",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/build.txt",
+      "bytes": 829,
+      "sha256": "bf5acc8c4ea6e371a8f41d5e7be2e2539bb7ac76d1b0ac898bedd81ddf3bdb63",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/chinese-search.png",
+      "bytes": 439748,
+      "sha256": "d615097df6b76cd32b95eabd3bcc7b3a52aa6390e821685c108453410a02877e",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/compound-completed.png",
+      "bytes": 363299,
+      "sha256": "f72fa3d6aab533910fe0de56ee46ddbaa3b80e137a280d1bf3818c94560c5dfa",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/compound-interrupted.png",
+      "bytes": 362089,
+      "sha256": "179fbebe2784ffaf103e7857b280e285d2e323f79ff38f23732c7f122a0f14f4",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/compound-recovery.json",
+      "bytes": 9277,
+      "sha256": "81e897ef86c0f723b3452dc3897d8304d16352a7633686c3d6ee459c9ecd8b35",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/compound-replay.json",
+      "bytes": 1055,
+      "sha256": "80864bfac4fbcbc89812c384c26d9347978fe40452fe3c068efc1674c264e0db",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/compound-replay.png",
+      "bytes": 362832,
+      "sha256": "cd037aacbec5a6f61ac4cf5bbb6b551854d5a2953d59de557eb591b06c143392",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/compound-sql-audit.json",
+      "bytes": 65693,
+      "sha256": "dec4cb42cf98ff080e73a52c8564605fdc794b994ef714ed54d286d87637e188",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/desktop-tests.txt",
+      "bytes": 149,
+      "sha256": "b7f0255d77d3b07e281d424a834c531eddf134f99de90dcbed10010b51573701",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/final-memory-http.json",
+      "bytes": 398060,
+      "sha256": "5afef18cfe29796d704219fc402dbcd251e596db3038f788fa76304f53844ab5",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/http-sql-audit.json",
+      "bytes": 16499,
+      "sha256": "bc373f8451f5d8274678e351a17a896b053f719588d09e7a5eb2f0171271e926",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/m0-materials.png",
+      "bytes": 364339,
+      "sha256": "09257e280fbad0dbd5d8a717144f450ffc0f7c68c39edd7f8ef2e2d031aced5a",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/m0-queue.png",
+      "bytes": 331608,
+      "sha256": "a98cffb341ffcf585030a73ef940bafc453a8436d580965239d70a5efff0f919",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/m0-recovery.png",
+      "bytes": 402821,
+      "sha256": "856d8241fa16dc476c08dbe8ef691afcd236626738074cd123d194aa78c0ed3b",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/m0-regression.json",
+      "bytes": 208602,
+      "sha256": "9f2e0b95294870a40e59e07d168aa4489c445b4cfd21b580889dfbc5ad9c52c2",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/m0-replay.json",
+      "bytes": 1051,
+      "sha256": "8293293e9eadcc34540a24ba7df77bbb8c8cef797095ac8f4f090f67e26136b0",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/m0-replay.png",
+      "bytes": 395035,
+      "sha256": "816b20a8872ddc29c70b5336b663f8e0e49c6535982975e1c045ea66254c9fae",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/m0-sql-audit.json",
+      "bytes": 107853,
+      "sha256": "f3a8315b6822252e64f4a0868496d6b312e9e15ee4e0079757f9bf7f5935fd65",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/management-electron.json",
+      "bytes": 9160,
+      "sha256": "f82cf2e4c495325c9e40545466dc197813f998f838e9ed178c564eb33cd80dad",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/management-sql-audit.json",
+      "bytes": 102133,
+      "sha256": "c83fec2551a264a055055b708636f70e3a1fff1b7be9d8889ce37efbd903523f",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/material-reset.json",
+      "bytes": 13945,
+      "sha256": "698f88dfcd94af5de73029edf0d157511aa4c21bc9fcdc97c15bd2c621a402af",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/memory-http-tests.txt",
+      "bytes": 100,
+      "sha256": "3001696c333a6fc5b4690071b7218011f35f5521b15b9ff87924f01bd5d5d779",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/openapi.txt",
+      "bytes": 42,
+      "sha256": "6682792bf87a47f66a5d044d2c89e78949ba201c7f6784b5311af287f52fcb31",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/soul.png",
+      "bytes": 201940,
+      "sha256": "212058e778678317870cc69169438c9cee2bc820baadad917dcf368e26f53fa2",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/three-store-electron.json",
+      "bytes": 841,
+      "sha256": "18eaf102410fd16c93a8bc673a6a804522d972993bb41e4411fcc3257201756d",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/three-store-tests.txt",
+      "bytes": 152,
+      "sha256": "cafaef647fcd2889f3b8c94d38cbfe50938c5ccd88c1260664ee92c653459e00",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/typecheck.txt",
+      "bytes": 111,
+      "sha256": "47507bd31216f03b60b882cad65146eef0e5338222ab87f1769804bb2213169a",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/user.png",
+      "bytes": 262303,
+      "sha256": "40b7b652bd626b8a13e5a2b9e61b82be197e4dfd397aeb2c1b3fc684e2aa75d6",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/uv-sync.txt",
+      "bytes": 55,
+      "sha256": "1f741361e79e1daa96a9ed77332ea755f2a0a1c4578c376ab8e5aed46f337de0",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/view-sql-audit.json",
+      "bytes": 16499,
+      "sha256": "5888ee6800000525a9fbc6661d52fae9d2738a930cb7f4a22859dd380090a755",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/13/workspace.png",
+      "bytes": 202285,
+      "sha256": "e2814d3072a3ab40f2bb7a922571818a2174d312e028e8fd75f4be203a6062ac",
+      "credential_matches": 0
+    }
+  ]
+}

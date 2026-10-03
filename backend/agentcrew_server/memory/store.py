@@ -174,6 +174,7 @@ class MemoryStore:
             value = await asyncio.to_thread(self._load, store_type, store_id)
         if "error" in value:
             return value
+        used_characters = len(value["text"])
         entries = value["metadata"]["entries"]
         usage = {r["entry_id"]: dict(r) for r in self.db.read_conn.execute(
             "SELECT u.* FROM memory_usage u JOIN memory_entries e ON e.entry_id=u.entry_id WHERE e.store_type=? AND e.store_id=?", (store_type, store_id))}
@@ -187,7 +188,7 @@ class MemoryStore:
         return {**value, "metadata": {**value["metadata"], "entries": entries}, "entries": entries,
                 "sha256": value["text_sha256"] or sha256(b""),
                 "metadata_sha256": value["metadata_sha256"] or sha256(canonical(value["metadata"]).encode()),
-                "used_characters": len(value["text"]), "quota": self.quota(store_type), "at_global_seq": watermark}
+                "used_characters": used_characters, "quota": self.quota(store_type), "at_global_seq": watermark}
 
     def _replayed(self, change_id: str, request_hash: str, conn=None) -> dict | None:
         conn = conn if conn is not None else self.db.read_conn

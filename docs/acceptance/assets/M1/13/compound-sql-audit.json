@@ -1,0 +1,1697 @@
+{
+  "queries": [
+    {
+      "sql": "SELECT t.id,t.status,t.current_attempt_no,COUNT(DISTINCT s.id) AS projected_steps,(SELECT COUNT(*) FROM run_events e WHERE e.task_run_id=t.id AND e.type='step.started') AS started_steps FROM task_runs t LEFT JOIN steps s ON s.task_run_id=t.id GROUP BY t.id ORDER BY t.created_at,t.id",
+      "rows": [
+        {
+          "id": "8dce8a7d89f845c2828b6bafc67d108c",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 4,
+          "started_steps": 4
+        },
+        {
+          "id": "21fb60f395fd4efda1b9a1f3f830047e",
+          "status": "interrupted",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "74efc21e61b246669e46ccd25bfeecac",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 4,
+          "started_steps": 4
+        },
+        {
+          "id": "927d4c40e4e0481d9f784770ffd99013",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 3,
+          "started_steps": 3
+        },
+        {
+          "id": "a5dbbf6bc04545e5906293c4154cbae7",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "c185ad7049ab431bb1f5deee5550ddd3",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "b4a2dfab0b4c4089a2dd1044f3bf5efb",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "6032e4b87b3d45389f92a4048ca1f741",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "04772071f05f4353bfee95d5cf714cf5",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "26eac70a0eac4814b8c73938378ad167",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "5102d688add741feaba0d837464eebaf",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "51d0c8dd54614b5aa82c90077f199ab3",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "66d98869c6164886b2cd1fba818b6cc8",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "f961fd0842c74691bd1a70ee8b342394",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "a229b85da14541499dc126d83e8e5c26",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "841a2dc0eeb6497ead1f7cf93b884af0",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "621f64d8498241b19b6e083e95d02077",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "820b0ce21aa34c3b9bd863d022464ed4",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "9f97bdd8d6b744ed92a76a34fd95d786",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "1cafd096f15241bb8eb0ba3aedaececb",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "7d18d7f511be4d1c901d1c8adc705d3c",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "638919dd92f74fe1b6e9022f39aae907",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "9ba41926b2244005b1dcdae6a81922f7",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "e840320a03344ff9a6ffd826090e4a8d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "89bf27c530714b59af69b1e496c1417e",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "32e90b490e68460791aee45ba72555e3",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "b6b6060373b045e8ab2c73cf37e4302d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "af3be0552707482f8adf20faf4f01cf0",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "26ac824c7f044ba39c98c33aecf1c1a9",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "2be5c44dc78546039aa8c63083801d5b",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "b1597cd4ce1240eea0f22c58e11f6b7a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "cc8c80ea3bff48298471c9eb16f779ef",
+          "status": "completed",
+          "current_attempt_no": 2,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "b6522f5908ee4a6fa3f19bdac65f082b",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "b7dbcc1bd7f0447db6ee632a2697b401",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "92afec9b1d984afba5c1c02f813d5a2f",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "84d74ed3524341bbbc5169ad33f5d6f1",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "e9ba3960e69545e2996d9b1ff9bd103a",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "0900e54793804607a35006c56d6696bc",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "49ab1682bf3643f8abcb11db640c131d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "a8bdcf0752b747d8a08e4804f8090d15",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "0e80f1452fc742e7beb2f6b3f1163446",
+          "status": "completed",
+          "current_attempt_no": 2,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "522f7dff9afa43d29d7e0df649c4556d",
+          "status": "completed",
+          "current_attempt_no": 2,
+          "projected_steps": 4,
+          "started_steps": 4
+        }
+      ]
+    },
+    {
+      "sql": "SELECT t.id,COUNT(DISTINCT l.id) AS projected_calls,(SELECT COUNT(*) FROM run_events e WHERE e.task_run_id=t.id AND e.type='llm.request_started') AS started_calls FROM task_runs t LEFT JOIN steps s ON s.task_run_id=t.id LEFT JOIN llm_calls l ON l.step_id=s.id GROUP BY t.id ORDER BY t.created_at,t.id",
+      "rows": [
+        {
+          "id": "8dce8a7d89f845c2828b6bafc67d108c",
+          "projected_calls": 4,
+          "started_calls": 4
+        },
+        {
+          "id": "21fb60f395fd4efda1b9a1f3f830047e",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "74efc21e61b246669e46ccd25bfeecac",
+          "projected_calls": 4,
+          "started_calls": 4
+        },
+        {
+          "id": "927d4c40e4e0481d9f784770ffd99013",
+          "projected_calls": 3,
+          "started_calls": 3
+        },
+        {
+          "id": "a5dbbf6bc04545e5906293c4154cbae7",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "c185ad7049ab431bb1f5deee5550ddd3",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "b4a2dfab0b4c4089a2dd1044f3bf5efb",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "6032e4b87b3d45389f92a4048ca1f741",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "04772071f05f4353bfee95d5cf714cf5",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "26eac70a0eac4814b8c73938378ad167",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "5102d688add741feaba0d837464eebaf",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "51d0c8dd54614b5aa82c90077f199ab3",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "66d98869c6164886b2cd1fba818b6cc8",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "f961fd0842c74691bd1a70ee8b342394",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "a229b85da14541499dc126d83e8e5c26",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "841a2dc0eeb6497ead1f7cf93b884af0",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "621f64d8498241b19b6e083e95d02077",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "820b0ce21aa34c3b9bd863d022464ed4",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "9f97bdd8d6b744ed92a76a34fd95d786",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "1cafd096f15241bb8eb0ba3aedaececb",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "7d18d7f511be4d1c901d1c8adc705d3c",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "638919dd92f74fe1b6e9022f39aae907",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "9ba41926b2244005b1dcdae6a81922f7",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "e840320a03344ff9a6ffd826090e4a8d",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "89bf27c530714b59af69b1e496c1417e",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "32e90b490e68460791aee45ba72555e3",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "b6b6060373b045e8ab2c73cf37e4302d",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "af3be0552707482f8adf20faf4f01cf0",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "26ac824c7f044ba39c98c33aecf1c1a9",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "2be5c44dc78546039aa8c63083801d5b",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "b1597cd4ce1240eea0f22c58e11f6b7a",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "cc8c80ea3bff48298471c9eb16f779ef",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "b6522f5908ee4a6fa3f19bdac65f082b",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "b7dbcc1bd7f0447db6ee632a2697b401",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "92afec9b1d984afba5c1c02f813d5a2f",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "84d74ed3524341bbbc5169ad33f5d6f1",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "e9ba3960e69545e2996d9b1ff9bd103a",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "0900e54793804607a35006c56d6696bc",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "49ab1682bf3643f8abcb11db640c131d",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "a8bdcf0752b747d8a08e4804f8090d15",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "0e80f1452fc742e7beb2f6b3f1163446",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "522f7dff9afa43d29d7e0df649c4556d",
+          "projected_calls": 4,
+          "started_calls": 4
+        }
+      ]
+    },
+    {
+      "sql": "SELECT change_id,status,(SELECT COUNT(*) FROM memory_ledger l WHERE l.change_id=m.change_id) AS ledgers,(SELECT COUNT(*) FROM run_events e WHERE e.type IN ('memory.updated','memory.archived','skill.patched') AND json_extract(e.payload,'$.change_id')=m.change_id) AS memory_events FROM memory_changes m ORDER BY created_at,change_id",
+      "rows": [
+        {
+          "change_id": "c7ce3ba1871f466eb367aeab42133fc3",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "f7bf13ad4a514621886c7de638329952",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_x11z7birqz9e1ifzlxuteb1v",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "da71b17b12b34fbdbf1580434dc8b73b",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_rvlnhfl1eo1pib9genc6gsek",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_jjuymm6lulew0h3qff5ks4xs",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "c615e83b9a5e43968358c8e05136bd1c",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "chatcmpl-tool-87f5db71f0d7bc54",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,change_id,store_type,store_id,action,revision,source,audit_seq,global_seq FROM memory_ledger ORDER BY id",
+      "rows": [
+        {
+          "id": 1,
+          "change_id": "c7ce3ba1871f466eb367aeab42133fc3",
+          "store_type": "skill",
+          "store_id": "1a71e0ece171461bacd71f839d61870c",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"c7ce3ba1871f466eb367aeab42133fc3\"}",
+          "audit_seq": 1,
+          "global_seq": 1
+        },
+        {
+          "id": 2,
+          "change_id": "f7bf13ad4a514621886c7de638329952",
+          "store_type": "soul",
+          "store_id": "skill-validator",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"3c9b7f1de56a433ea9ba7e61facff4fd\",\"task_run_id\":\"8dce8a7d89f845c2828b6bafc67d108c\"}",
+          "audit_seq": 2,
+          "global_seq": 3
+        },
+        {
+          "id": 3,
+          "change_id": "call_00_x11z7birqz9e1ifzlxuteb1v",
+          "store_type": "skill",
+          "store_id": "1a71e0ece171461bacd71f839d61870c",
+          "action": "update",
+          "revision": 2,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"3c9b7f1de56a433ea9ba7e61facff4fd\",\"task_run_id\":\"8dce8a7d89f845c2828b6bafc67d108c\"}",
+          "audit_seq": 6,
+          "global_seq": 22
+        },
+        {
+          "id": 4,
+          "change_id": "da71b17b12b34fbdbf1580434dc8b73b",
+          "store_type": "skill",
+          "store_id": "1a71e0ece171461bacd71f839d61870c",
+          "action": "update",
+          "revision": 3,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"da71b17b12b34fbdbf1580434dc8b73b\"}",
+          "audit_seq": 12,
+          "global_seq": 51
+        },
+        {
+          "id": 5,
+          "change_id": "call_00_rvlnhfl1eo1pib9genc6gsek",
+          "store_type": "skill",
+          "store_id": "1a71e0ece171461bacd71f839d61870c",
+          "action": "update",
+          "revision": 4,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"a4a4845214d24d129aacd194b85ed2cb\",\"task_run_id\":\"74efc21e61b246669e46ccd25bfeecac\"}",
+          "audit_seq": 16,
+          "global_seq": 72
+        },
+        {
+          "id": 6,
+          "change_id": "call_00_jjuymm6lulew0h3qff5ks4xs",
+          "store_type": "skill",
+          "store_id": "0a08c4379abf5ecc9f023ecacdfa3adc",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"b2ae0ff698894793acae90479b99bac2\",\"task_run_id\":\"927d4c40e4e0481d9f784770ffd99013\"}",
+          "audit_seq": 22,
+          "global_seq": 105
+        },
+        {
+          "id": 7,
+          "change_id": "c615e83b9a5e43968358c8e05136bd1c",
+          "store_type": "workspace",
+          "store_id": "default",
+          "action": "batch",
+          "revision": 1,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"conversation_id\":\"6018b39c95f9457c8836930dba028b9f\",\"manual_edit_id\":\"c615e83b9a5e43968358c8e05136bd1c\"}",
+          "audit_seq": 139,
+          "global_seq": 537
+        },
+        {
+          "id": 8,
+          "change_id": "chatcmpl-tool-87f5db71f0d7bc54",
+          "store_type": "workspace",
+          "store_id": "default",
+          "action": "batch",
+          "revision": 2,
+          "source": "{\"actor_id\":\"skill-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"6018b39c95f9457c8836930dba028b9f\",\"task_run_id\":\"522f7dff9afa43d29d7e0df649c4556d\"}",
+          "audit_seq": 151,
+          "global_seq": 566
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,conversation_id,status,current_attempt_no FROM task_runs ORDER BY created_at,id",
+      "rows": [
+        {
+          "id": "8dce8a7d89f845c2828b6bafc67d108c",
+          "conversation_id": "3c9b7f1de56a433ea9ba7e61facff4fd",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "21fb60f395fd4efda1b9a1f3f830047e",
+          "conversation_id": "089fdb0fadee46e0ad2beec244a88fd5",
+          "status": "interrupted",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "74efc21e61b246669e46ccd25bfeecac",
+          "conversation_id": "a4a4845214d24d129aacd194b85ed2cb",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "927d4c40e4e0481d9f784770ffd99013",
+          "conversation_id": "b2ae0ff698894793acae90479b99bac2",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "a5dbbf6bc04545e5906293c4154cbae7",
+          "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "c185ad7049ab431bb1f5deee5550ddd3",
+          "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "b4a2dfab0b4c4089a2dd1044f3bf5efb",
+          "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "6032e4b87b3d45389f92a4048ca1f741",
+          "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "04772071f05f4353bfee95d5cf714cf5",
+          "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "26eac70a0eac4814b8c73938378ad167",
+          "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "5102d688add741feaba0d837464eebaf",
+          "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "51d0c8dd54614b5aa82c90077f199ab3",
+          "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "66d98869c6164886b2cd1fba818b6cc8",
+          "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "f961fd0842c74691bd1a70ee8b342394",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "a229b85da14541499dc126d83e8e5c26",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "841a2dc0eeb6497ead1f7cf93b884af0",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "621f64d8498241b19b6e083e95d02077",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "820b0ce21aa34c3b9bd863d022464ed4",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "9f97bdd8d6b744ed92a76a34fd95d786",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "1cafd096f15241bb8eb0ba3aedaececb",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "7d18d7f511be4d1c901d1c8adc705d3c",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "638919dd92f74fe1b6e9022f39aae907",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "9ba41926b2244005b1dcdae6a81922f7",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "e840320a03344ff9a6ffd826090e4a8d",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "89bf27c530714b59af69b1e496c1417e",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "32e90b490e68460791aee45ba72555e3",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "b6b6060373b045e8ab2c73cf37e4302d",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "af3be0552707482f8adf20faf4f01cf0",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "26ac824c7f044ba39c98c33aecf1c1a9",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "2be5c44dc78546039aa8c63083801d5b",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "b1597cd4ce1240eea0f22c58e11f6b7a",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "cc8c80ea3bff48298471c9eb16f779ef",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 2
+        },
+        {
+          "id": "b6522f5908ee4a6fa3f19bdac65f082b",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "b7dbcc1bd7f0447db6ee632a2697b401",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "92afec9b1d984afba5c1c02f813d5a2f",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "84d74ed3524341bbbc5169ad33f5d6f1",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "e9ba3960e69545e2996d9b1ff9bd103a",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "0900e54793804607a35006c56d6696bc",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "49ab1682bf3643f8abcb11db640c131d",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "a8bdcf0752b747d8a08e4804f8090d15",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "0e80f1452fc742e7beb2f6b3f1163446",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 2
+        },
+        {
+          "id": "522f7dff9afa43d29d7e0df649c4556d",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "status": "completed",
+          "current_attempt_no": 2
+        }
+      ]
+    },
+    {
+      "sql": "SELECT conversation_id,sha256,global_seq FROM memory_snapshots ORDER BY created_at",
+      "rows": [
+        {
+          "conversation_id": "3c9b7f1de56a433ea9ba7e61facff4fd",
+          "sha256": "6039396f3d3734ffe13a290dbac4e273a16c1a3e7569a01d532e93c1c6f09f07",
+          "global_seq": 4
+        },
+        {
+          "conversation_id": "089fdb0fadee46e0ad2beec244a88fd5",
+          "sha256": "e1fb8813db9ff1d3632d6b31fd98319ce42c768fd07bfacde388bd1704f7b5e8",
+          "global_seq": 40
+        },
+        {
+          "conversation_id": "a4a4845214d24d129aacd194b85ed2cb",
+          "sha256": "c2b714ecc1785364003494a2d52437f0caa4160d3e1941f049a52ed36c6d6100",
+          "global_seq": 54
+        },
+        {
+          "conversation_id": "b2ae0ff698894793acae90479b99bac2",
+          "sha256": "786572c6f1dd6724954e53399d9e5121906cbd0be939664890c400a89c06d080",
+          "global_seq": 90
+        },
+        {
+          "conversation_id": "54e29295199f40d3a1122f0c1d562acf",
+          "sha256": "ffe3477e45b1336933960b37038fc753bb565c1b5909f2e8f674fdb5552b6287",
+          "global_seq": 113
+        },
+        {
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "sha256": "63cf6375eb8cc7f6686b1b0450d191d229ab364c4b4cd44670abc41e764a98bf",
+          "global_seq": 211
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,conversation_id,event_global_seq,source_global_seq,sha256,before_tokens,after_tokens FROM context_checkpoints ORDER BY event_global_seq",
+      "rows": [
+        {
+          "id": "ec1f98ab50824726add73b7eb3281812",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "event_global_seq": 358,
+          "source_global_seq": 356,
+          "sha256": "d80f8a3cd7b2d308796fc184f62c6bd2cab322075c86b1371e6e2c1ba2c4ee13",
+          "before_tokens": 511418,
+          "after_tokens": 363854
+        },
+        {
+          "id": "3f9a2143500343cfb86d575b8a3028a9",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "event_global_seq": 404,
+          "source_global_seq": 402,
+          "sha256": "26450f222b2011cb01c987b32e9e1c665bf14ee96d8bccc9437dfb4b42def6e7",
+          "before_tokens": 505389,
+          "after_tokens": 360635
+        },
+        {
+          "id": "43e73337aead454b860f60bc063f85c0",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "event_global_seq": 466,
+          "source_global_seq": 464,
+          "sha256": "0a64d2ed28dae14403964502f0059ba26abfa881625a7824a453f05102fca8eb",
+          "before_tokens": 511922,
+          "after_tokens": 331674
+        },
+        {
+          "id": "cb669b55874e4b2a9de61833f80a7de1",
+          "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+          "event_global_seq": 512,
+          "source_global_seq": 510,
+          "sha256": "25e28146d1365e6b99a1069f1efc1bc11f1e3f497087377cd5dd03b520ba5f41",
+          "before_tokens": 483030,
+          "after_tokens": 343416
+        }
+      ]
+    },
+    {
+      "sql": "SELECT MAX(global_seq) AS event_watermark FROM run_events",
+      "rows": [
+        {
+          "event_watermark": 591
+        }
+      ]
+    },
+    {
+      "sql": "PRAGMA foreign_key_check",
+      "rows": []
+    }
+  ],
+  "audit": {
+    "ok": true,
+    "checked_count": 157,
+    "reason": null
+  },
+  "files": [
+    {
+      "path": "agents/skill-validator/archive/workspace/default/03a059538ff443d4b318b1c5c87ad6a3/entry.md",
+      "sha256": "8b875d8cfe1a928111815f9f3b9b96984be979946b5edb9a47e743a85973c679",
+      "mtime_ns": "1791027591202723986"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/06f2fbde39704a46a3c00520cb56d232/entry.md",
+      "sha256": "927607ffbd5d752cef27137aca182c695bd38a097a734f137cfe1c0f2559073c",
+      "mtime_ns": "1791027591216920310"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/0ca74d1c310e4f678c91e0ca68f2e7ff/entry.md",
+      "sha256": "b53f97cc8df9e71ec782f30bc46b72cd7a0674c75aa14fb1747b8f5b6742a999",
+      "mtime_ns": "1791027590583790791"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/13d728c9b8bd4e7ea0b7ee1e36bfb257/entry.md",
+      "sha256": "0c4a49d100735f93be6e7d4044892d647a66f86c19eee7c377476e9fdd254c5a",
+      "mtime_ns": "1791027591401097932"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/19416aaf51684a73b455df1f9eb056fe/entry.md",
+      "sha256": "44b7dc23bd5ed0f5f972f384bdf43e4f451cdfc03713836853b82ac7adcc4ab2",
+      "mtime_ns": "1791027590676766435"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/1e4667a9337a4b3fad7ce499134ffd97/entry.md",
+      "sha256": "b5b2ad2376a5ed67fc66566c7558e78395b065e7930af408c9a3c99d883eb562",
+      "mtime_ns": "1791027591261309654"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/2a45a0cbf9194117a7d02be069b0c7e0/entry.md",
+      "sha256": "2169bb4c35c57c3a93d52bf1aec897ff9c819211274815a4ab731d26882b8a13",
+      "mtime_ns": "1791027591040708307"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/2f4d8a2d0342417cbed2255d1a2ae553/entry.md",
+      "sha256": "73cc9900c77c0200adb775e8397dad40d78f860663e18bdeedf76cc5d25a5112",
+      "mtime_ns": "1791027591476427380"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/35a19af3fe1041af88eb8cd87d64422a/entry.md",
+      "sha256": "5ed2964c5b5b4f589b52f47769dae24f2adbaef2ebfafa51cc7d9c758a43017d",
+      "mtime_ns": "1791027591309257829"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/3a2c26f086f74a18abb73a4bb3b7d44e/entry.md",
+      "sha256": "7f3ea9ac0056fbac44d207872d190a013c196c8affa95e8f906c89fc1c44bbbb",
+      "mtime_ns": "1791027590706055707"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/3dee011a65ba40ed8e469e5290ce9697/entry.md",
+      "sha256": "f4ac5cb4555070c38b682d9b7b3181b129b7f372ee483158f282c15b27889ba2",
+      "mtime_ns": "1791027591386329026"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/40828fe5ef184620937e48a48d0fdbae/entry.md",
+      "sha256": "baa46c9329df79847500e178ec2ab09e84a0d85a93f731ec922ad1cdce035b3d",
+      "mtime_ns": "1791027591370266704"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/4e19fd2b0c824481976c58fb3ffd4bbb/entry.md",
+      "sha256": "f458f4850f384354f0d672b51269edeb10ddf0d734d7767e07919bd6d3ee99d2",
+      "mtime_ns": "1791027590962860987"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/5101927784cb453592a647d56eecbd8d/entry.md",
+      "sha256": "885cae14ebd03f3ffded5cd58a75070ad6f2ccef539fda11dea5e554cddf09c1",
+      "mtime_ns": "1791027591461325265"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/579777e67c5d473bb259ee04c1568b70/entry.md",
+      "sha256": "6c778996f44ab7050cea457479172c8b7fc218c71ebc02097ae0bb8fc1b6399f",
+      "mtime_ns": "1791027591339469767"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/593123a179454b2988b8e5a913857120/entry.md",
+      "sha256": "bfa5ef804e457ce504a5b38c20cb1559f95ab40c7a7c1ce4a297e5d90ddca6f7",
+      "mtime_ns": "1791027590902823820"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/597f4b2ec01a44fbb3b4971790448ade/entry.md",
+      "sha256": "565eee261c85679cf4ab8225cf480ed119585141ac59c7fcb8a93585f1ed0ff2",
+      "mtime_ns": "1791027591174157506"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/5a39534064b140ffad5abf42a2f19ea0/entry.md",
+      "sha256": "445302f4c2d0f38c530da93bdd24bf65a1dca3295916cfe64cd6d4a73ee7ad94",
+      "mtime_ns": "1791027590888347496"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/5baa10b685b2428c89c473e6b7db0368/entry.md",
+      "sha256": "8ead22c7b8d92beb30fee43c1215fda756de2575a1229383e518307db9f6011b",
+      "mtime_ns": "1791027590873217132"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/5cc848698cf34b9fb9dbd43bc3791d8d/entry.md",
+      "sha256": "3f70d568ec603d7675a042492a304d4c8be669c013d89776e0da6dd45494352b",
+      "mtime_ns": "1791027590781242238"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/5fb6078302ae4ed5b5f0edd5faa20fb4/entry.md",
+      "sha256": "dd14d92f2af435427d1e9f86baf799b035d58962b1ad058314a360333d61b3aa",
+      "mtime_ns": "1791027590567520511"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/665dfc7835af40bcbf0d42dc8ecdbe74/entry.md",
+      "sha256": "59cfe61cc64510c4e4da385be7777311ab6fc0a020637f2da4bb28417ea2bcf3",
+      "mtime_ns": "1791027590598010031"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/6677e757e42147b2ad702641ed41ff5a/entry.md",
+      "sha256": "db8dfdba8dd215a401dfc5dea6b63404711dfb8605ffc7b75fef1d9fc1c189bf",
+      "mtime_ns": "1791027591295108631"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/6b2facd26a3545a7ab9f8085e51d8f2c/entry.md",
+      "sha256": "06e84f2aca4f2e096a0422c0e4caf9b1139c9a57767edd06cb2849ed64d62257",
+      "mtime_ns": "1791027590796200436"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/6e3f1fbfcc584cc9b73ceeea8a98c3a9/entry.md",
+      "sha256": "01df9b7d282a790646414122a3a93340ec39d76fed23d7ef43fba6594423fa8a",
+      "mtime_ns": "1791027590765913665"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/721a19daf01a422caee4c292942bfd66/entry.md",
+      "sha256": "aa958a242f731965753d6677f1c220f36452813332ad8d6ff720c4b945abb1b5",
+      "mtime_ns": "1791027590857526184"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/75bb62446095471d9ba86216edbb8e67/entry.md",
+      "sha256": "d0193b0c739342846df50a318e335c48c73e27bffb76cca3e79d1fb75a7f9586",
+      "mtime_ns": "1791027591231494800"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/77c6fe6d1b1b414b9602aff1a7e7179d/entry.md",
+      "sha256": "23005f4c2dd6f19ccbd19618c08612afb8754fd2d8772ff7dba26e77c555e275",
+      "mtime_ns": "1791027590827297289"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/7d97d9047a5f42869348dca6249c436c/entry.md",
+      "sha256": "249f813e159acd4b2ad569abd91548b26cde22d2dd4ae727a12f1281b7a64f45",
+      "mtime_ns": "1791027591431590244"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/7f0ad53c318f46c8b47fdaf939829d68/entry.md",
+      "sha256": "7db5233ee87525fafa755e2ce6d959c4ed6a154d2d23ad3fa72531ff6ea6ac3f",
+      "mtime_ns": "1791027591416048338"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/81f604dc8f3a4c40b7bb2c36160d0bf4/entry.md",
+      "sha256": "c8d491725f031e300e7a0a34abe6ae0208ade1f0706a55e840ed5ff433393a65",
+      "mtime_ns": "1791027591056454672"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/89b2132809094f3bb9e667b93749be18/entry.md",
+      "sha256": "53c5243eb944a733b13ac30b5a688807087d3f9f0194e910f44e41c2870abd14",
+      "mtime_ns": "1791027591188686746"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/8a7f216805d04e598cc6bff427dab7d9/entry.md",
+      "sha256": "2684df53e2e22c64dc9cd89e4739beb5c1564dcdcfb19fbaeefe1c291b20f57f",
+      "mtime_ns": "1791027590750651300"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/936ff05c40f54e60912a9ac3e680f046/entry.md",
+      "sha256": "1cac2741d41d3c741acc90cd59e919e1915398b8f2f57c79bbcd23ae2bf5d94c",
+      "mtime_ns": "1791027590613902562"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/9fefc5db232a4683b3d81b66a30de1b5/entry.md",
+      "sha256": "5b594eaad09d62904f4fc2067e3835968455793fde03e10b49d8606e461a2344",
+      "mtime_ns": "1791027591159484267"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/a5672147cdcc4464a4e0fab7cdad6457/entry.md",
+      "sha256": "9111c464f79314307e2d18e7fb73350bc47c66533d9b683077084f66d8d14f2a",
+      "mtime_ns": "1791027591009001121"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/a620f89caaee46388add704005371631/entry.md",
+      "sha256": "73d7dedc41a456f7183e89004cafff87fda65c26518f0ac128ac91c2a68cd0bf",
+      "mtime_ns": "1791027590536807616"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/a708a7d130a04905a9dd9b061ca647e0/entry.md",
+      "sha256": "40342116f6b80e506b56224d167f83c4a1193d2fc1709d71202aad510a672bab",
+      "mtime_ns": "1791027590994087131"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/ac82fcf9e4f34ac3aca4ada301ab9bc5/entry.md",
+      "sha256": "bd25880140662d752d3f5da57f9be38d50c4f2f8631f8861015f199dcab43863",
+      "mtime_ns": "1791027591355179339"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/b2858a683e7a4b54beb002900ec11da7/entry.md",
+      "sha256": "b6a670485ab2281101138a68992ac1bc4cb4c31ce5f27de87eef2841dc09aa72",
+      "mtime_ns": "1791027590947476622"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/b325b9b8d5944885a2d1c1c314f99e8a/entry.md",
+      "sha256": "9915b4bf5244ab96eda1491e252f232a71385cf0e80f8aebd5fb557e9ee494d0",
+      "mtime_ns": "1791027591446431609"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/b9c0314d6ce24f549303e8d806882c3b/entry.md",
+      "sha256": "db4c1de166bae538b6cc050ce6d888b2667a60b2de6909409aec5603afbbad19",
+      "mtime_ns": "1791027591101344682"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/bb739a478a914fb196a36eea5e0d4724/entry.md",
+      "sha256": "8391ad1894a51e63e365d4ee4f513c50ec37e71685f15fb9127b7f1b50556b69",
+      "mtime_ns": "1791027590691783966"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/c15c59cc7b2046269d08319f063b7335/entry.md",
+      "sha256": "bf722e4e023f376a935f76dc7224c0be844d10aaae24616544f2f2535bb3ac8c",
+      "mtime_ns": "1791027591276234644"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/c413f15556a846a78a65e78f8ab99818/entry.md",
+      "sha256": "9b918bfb398e5ba6f848e2cdf803ad5082fe02e369d59285439ed075f2352ad8",
+      "mtime_ns": "1791027590810899592"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/c72ee4634bf04a7aad35f84de6c8dfde/entry.md",
+      "sha256": "2e44b0e04cc5e271b4e7f8d236ecceeeaa3dfe0e745974c025df117d554ae7d5",
+      "mtime_ns": "1791027590552643480"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/c9808641a02f4dcbb515006941771b57/entry.md",
+      "sha256": "5d4584f9ecda33ab3afd4222426aa6e867c09634fd39d25303ca1c23b589d739",
+      "mtime_ns": "1791027591246295665"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/c9d1493e7956413c88e3aa577ac60649/entry.md",
+      "sha256": "32858fba676fddc2c9b6913d9837db9997119e41f048a070db20cfb408077ce0",
+      "mtime_ns": "1791027590722523987"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/cbebf5df3dc54186a1feef923718a7da/entry.md",
+      "sha256": "3f4403933f709a4f18e431afe29f46f483b797441198aa203771c818c70feb8b",
+      "mtime_ns": "1791027591144929360"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/ccb4767b96d54b16a070ce99bcbf5705/entry.md",
+      "sha256": "9a948daef8d950d8434e840e785a799d3486722eae5727c80d647529c10cc0ea",
+      "mtime_ns": "1791027590932678174"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/cd065cdace3a4aa285b310f695b70fd7/entry.md",
+      "sha256": "1c5e95ccd3c56a1b501bd72e9c971cf7ee757c94513f9f6930c8c345750da19b",
+      "mtime_ns": "1791027590630931550"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/d0cfb339d5ad43a28b230191eb37b4c7/entry.md",
+      "sha256": "05391a38e54c9c44c16e9f75b04d093847d606ea35f41cfdbc817dfa1f0e0469",
+      "mtime_ns": "1791027590978305601"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/d6aef076558a4340bd1168c8c95d029e/entry.md",
+      "sha256": "385ff4bba3bdc736c5ef3a34b5596427d9853dbbb6f752fb9621267bfdd254e4",
+      "mtime_ns": "1791027590661608112"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/da1a891abe2b48cc8096f83ef5f3cdc9/entry.md",
+      "sha256": "0f4199aa68bd5be07b3e639efe0ea804a802d7db2ebe32521d2d13b46d04ef25",
+      "mtime_ns": "1791027590917883976"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/dcd7523af1b34833a32105399e4c3346/entry.md",
+      "sha256": "e22ceaeea672b6c70ca316280a3d2e4a084dd6d4f4e1db814ac80ceb6cf27a30",
+      "mtime_ns": "1791027590842422070"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/dfd8859de0d54532b66f03b28cce8ad0/entry.md",
+      "sha256": "2a29fbc11faab8f5552071a9be0164261ed04309ad7aaeb815a36fa0c8d046d7",
+      "mtime_ns": "1791027591324072986"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/ef84d11927bd45de8fa6377010002f66/entry.md",
+      "sha256": "e2488aaf5228da7530c4d17131fbdfcbc592307b10e450d739611c9aa6f61311",
+      "mtime_ns": "1791027591072053786"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/f0bab124e44344d3a2c3bfb87d91f121/entry.md",
+      "sha256": "8ca3d6305bb6ca0a6ed784a9736402af38c229860ca6db7f3b78f77e4733340a",
+      "mtime_ns": "1791027590645424790"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/f3ba0a93c79445f2a57c7a40a0e5d159/entry.md",
+      "sha256": "55f0cd1967a8c5fd29eb2b26a72a152ddc442f1f81aba49d70ffa1b4ac4c6c7d",
+      "mtime_ns": "1791027591127566164"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/fee9b064f3b04a9798a5c1620cb3dd64/entry.md",
+      "sha256": "ad47f1b333449b224b36ebde1179c35d542a1731bb355be09dc216fc265a072d",
+      "mtime_ns": "1791027591087006484"
+    },
+    {
+      "path": "agents/skill-validator/soul.md",
+      "sha256": "e7b0f97910d851d80995cc776f4e4b2b53d96cabe8742aeecec96f16106f2cfc",
+      "mtime_ns": "1791027542284410876"
+    },
+    {
+      "path": "skills/0a08c4379abf5ecc9f023ecacdfa3adc/SKILL.md",
+      "sha256": "15354537c3b128cafb35df24a8a403a82b44712590d4473676c4cbc2054fc879",
+      "mtime_ns": "1791027542300644365"
+    },
+    {
+      "path": "skills/1a71e0ece171461bacd71f839d61870c/SKILL.md",
+      "sha256": "5f21f6e1f752fe8d5d6dcf0e87de332f2bcde96b0123893915818be5ca8489ed",
+      "mtime_ns": "1791027542302581864"
+    },
+    {
+      "path": "skills/1a71e0ece171461bacd71f839d61870c/references/checklist.md",
+      "sha256": "c351c780e6b3fa59548c3b3a5fb23e0680c66031aaf82ec16fbdd652adf2990e",
+      "mtime_ns": "1791027542302246197"
+    },
+    {
+      "path": "workspaces/default/MEMORY.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mtime_ns": "1791027590523699083"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/03a059538ff443d4b318b1c5c87ad6a3/entry.meta.json",
+      "sha256": "0535a2aee50d0a15d4cc6b40975a0a7ca3873193865547584711366c4f10e2a3",
+      "mtime_ns": "1791027591209689023"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/06f2fbde39704a46a3c00520cb56d232/entry.meta.json",
+      "sha256": "369f2dda0fe461b9fcd6f2aaadb35678d7078d5dfdee8274c3dfa0a7c355c173",
+      "mtime_ns": "1791027591224074055"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/0ca74d1c310e4f678c91e0ca68f2e7ff/entry.meta.json",
+      "sha256": "58c47b565cde91e89e2ab5d500a8d6b4a535bdcc1036fd165b0f75137fddac8a",
+      "mtime_ns": "1791027590590753245"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/13d728c9b8bd4e7ea0b7ee1e36bfb257/entry.meta.json",
+      "sha256": "749108947d537ac23d7b3f242d40950f713eefd051e3378bff88b66b846002a2",
+      "mtime_ns": "1791027591408454594"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/19416aaf51684a73b455df1f9eb056fe/entry.meta.json",
+      "sha256": "274187aa47c8af6bf6801b3fcdbd538b1cf67437574697146070cff5e2bef12b",
+      "mtime_ns": "1791027590684790346"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/1e4667a9337a4b3fad7ce499134ffd97/entry.meta.json",
+      "sha256": "e2bc05228cedaf639e2c776bff5142b3f046134f96299bd1d24dc32cee416527",
+      "mtime_ns": "1791027591268936316"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/2a45a0cbf9194117a7d02be069b0c7e0/entry.meta.json",
+      "sha256": "f5d7f4c1a26a078e1d6ac7c3d64b26a42d98fa23c755ecdb1e8e9499ba926964",
+      "mtime_ns": "1791027591049234427"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/2f4d8a2d0342417cbed2255d1a2ae553/entry.meta.json",
+      "sha256": "9eea228aec1b17ca34fa9a2c0406b1d10bf809ecc16f15307282ae3e3403b29d",
+      "mtime_ns": "1791027591484371666"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/35a19af3fe1041af88eb8cd87d64422a/entry.meta.json",
+      "sha256": "4244685e7f026b9d015f3ff64f918f8f2a5eb870d6222ad7e9add3e0e5729b16",
+      "mtime_ns": "1791027591316543949"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/3a2c26f086f74a18abb73a4bb3b7d44e/entry.meta.json",
+      "sha256": "84c71e23cf7a82051b233e2afc268758d255cf6acafef41dbb2f03f8dc81cd07",
+      "mtime_ns": "1791027590714890367"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/3dee011a65ba40ed8e469e5290ce9697/entry.meta.json",
+      "sha256": "4242aed3df25cff94998655d36a9bd1de40c6a352641640a1dee425688aa2c35",
+      "mtime_ns": "1791027591393527562"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/40828fe5ef184620937e48a48d0fdbae/entry.meta.json",
+      "sha256": "6eb12f06177d95989055a89360d1fe53a30444c0643242907b2cfd0c56350983",
+      "mtime_ns": "1791027591377807032"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/4e19fd2b0c824481976c58fb3ffd4bbb/entry.meta.json",
+      "sha256": "e61181e60d8ce11142c9ff5d4ba3cc434e76023ede6861517706046411c01aa3",
+      "mtime_ns": "1791027590970736481"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/5101927784cb453592a647d56eecbd8d/entry.meta.json",
+      "sha256": "47be434e102e89d1a82afe81d8f8845e7ade76965aac892ad9db52199b293209",
+      "mtime_ns": "1791027591469162885"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/579777e67c5d473bb259ee04c1568b70/entry.meta.json",
+      "sha256": "98cc48e08e95a6383e5ae7d91af193cabbfe407d9e276ee42ccb667107f1dce6",
+      "mtime_ns": "1791027591347790261"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/593123a179454b2988b8e5a913857120/entry.meta.json",
+      "sha256": "b4227570d61d069b361f75cb043947991710faaea7b2d036bd0a9db3e05c0e45",
+      "mtime_ns": "1791027590909839315"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/597f4b2ec01a44fbb3b4971790448ade/entry.meta.json",
+      "sha256": "6574c61686af645e5b2259d541b04a3e35cc3e2e062795561cfd6bbe50bf9e83",
+      "mtime_ns": "1791027591181419293"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/5a39534064b140ffad5abf42a2f19ea0/entry.meta.json",
+      "sha256": "6716f5377a86b00d9dc598d316d70ea09a406fe9a100dd2d69d8f1a0dc0e2e32",
+      "mtime_ns": "1791027590895510242"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/5baa10b685b2428c89c473e6b7db0368/entry.meta.json",
+      "sha256": "a3c52064af49dcf2e80ee2c0e4b75fcf5fc0a6ad3142cee21f97def6c6adf1a9",
+      "mtime_ns": "1791027590880901710"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/5cc848698cf34b9fb9dbd43bc3791d8d/entry.meta.json",
+      "sha256": "94ca7d4c87bd4afc3b0357a29db7c6f4704dc34e43854e09ca6f3c9dda64c0e8",
+      "mtime_ns": "1791027590788829066"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/5fb6078302ae4ed5b5f0edd5faa20fb4/entry.meta.json",
+      "sha256": "ad2fed7bff37228f07feafd63e8ffeb9f6639222aa68887f2f2512b342151b19",
+      "mtime_ns": "1791027590576652130"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/665dfc7835af40bcbf0d42dc8ecdbe74/entry.meta.json",
+      "sha256": "a119c2575248cebc98ecb0da6152abc4215fa9a3a7069eaa6c5364b09433293a",
+      "mtime_ns": "1791027590605425360"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/6677e757e42147b2ad702641ed41ff5a/entry.meta.json",
+      "sha256": "90e8af839b1ce9deda460d63df9d23dc41c355111831e00dc472566ee588d8c9",
+      "mtime_ns": "1791027591302247876"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/6b2facd26a3545a7ab9f8085e51d8f2c/entry.meta.json",
+      "sha256": "cf52a6232b712758fd4db33c4639bbf38c96bce7fa02ba7ecca232977cf83a76",
+      "mtime_ns": "1791027590803658097"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/6e3f1fbfcc584cc9b73ceeea8a98c3a9/entry.meta.json",
+      "sha256": "ba6a88cd5c6092b74902778398a5b4b99faa354968aad7c3493ce1a5be5a9771",
+      "mtime_ns": "1791027590773184743"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/721a19daf01a422caee4c292942bfd66/entry.meta.json",
+      "sha256": "13fa5e83ce03d427bcac665eba5ceda8e6be0a3a1d3aa5e186ca0bec9f372e21",
+      "mtime_ns": "1791027590865710429"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/75bb62446095471d9ba86216edbb8e67/entry.meta.json",
+      "sha256": "88028c64b6ed7795e0adef0bcb29e943d128f26dd6fa7f3d562515fc5b390f3e",
+      "mtime_ns": "1791027591238694712"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/77c6fe6d1b1b414b9602aff1a7e7179d/entry.meta.json",
+      "sha256": "5150f8077102347bd6380b89e3888cf6a31cf22b24159810e238ed28ac8e83a6",
+      "mtime_ns": "1791027590835170200"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/7d97d9047a5f42869348dca6249c436c/entry.meta.json",
+      "sha256": "cee021246cbcb6287bf10fe6a425dd5a8ef08eadde63f443c1f951ff582869e6",
+      "mtime_ns": "1791027591438868489"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/7f0ad53c318f46c8b47fdaf939829d68/entry.meta.json",
+      "sha256": "ef965fa3df92553051ec63a4d4a1058e1f00658ce125680efdb7d564ab89f0e1",
+      "mtime_ns": "1791027591423767958"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/81f604dc8f3a4c40b7bb2c36160d0bf4/entry.meta.json",
+      "sha256": "b826e45a599b0ad3740222d7d21b13e21de0bb51c6b12c318ee3c8f0a665d81f",
+      "mtime_ns": "1791027591064525666"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/89b2132809094f3bb9e667b93749be18/entry.meta.json",
+      "sha256": "82223496137806c619637c08ad13268458b03d2bd4974cafa647a78a4fe0cfa5",
+      "mtime_ns": "1791027591195581950"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/8a7f216805d04e598cc6bff427dab7d9/entry.meta.json",
+      "sha256": "e674cd42881f95aca866a2b7c63cf77d318a9e23772b735b8e1aad2052451476",
+      "mtime_ns": "1791027590757938462"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/936ff05c40f54e60912a9ac3e680f046/entry.meta.json",
+      "sha256": "6e630ee3c2ea7f422482e9891765054615e22100bd268950d93e350a901275df",
+      "mtime_ns": "1791027590622168598"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/9fefc5db232a4683b3d81b66a30de1b5/entry.meta.json",
+      "sha256": "00fc0128738995bf7d9a123e04f6d277b15d44bc2fb77838c534a09ee19f7e7f",
+      "mtime_ns": "1791027591166694803"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/a5672147cdcc4464a4e0fab7cdad6457/entry.meta.json",
+      "sha256": "1365866df6e85ea8182bacc2a46973e5ba58fe7008eae295a1637ae558f09a91",
+      "mtime_ns": "1791027591016241866"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/a620f89caaee46388add704005371631/entry.meta.json",
+      "sha256": "821bb9d54b28ca2dd171355ba636c9b06498271a843720f6b774437c374c364d",
+      "mtime_ns": "1791027590545085527"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/a708a7d130a04905a9dd9b061ca647e0/entry.meta.json",
+      "sha256": "45b118113b424998683c7a76e8000478b0572df5ec822c9eaa13afea05a1e644",
+      "mtime_ns": "1791027591001830793"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/ac82fcf9e4f34ac3aca4ada301ab9bc5/entry.meta.json",
+      "sha256": "61683180a5f38c00f20cd704dc40d04eb9a1a393467fb3d98b62cee8f11dace7",
+      "mtime_ns": "1791027591362594792"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/b2858a683e7a4b54beb002900ec11da7/entry.meta.json",
+      "sha256": "904513cc35a0be253d8757cc1903580423cade80e9c83b58948918edb7eebeba",
+      "mtime_ns": "1791027590954927575"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/b325b9b8d5944885a2d1c1c314f99e8a/entry.meta.json",
+      "sha256": "0ab187130a4c0723aeb67b4cdd781d08ded35e49a220af99223642935fb93a10",
+      "mtime_ns": "1791027591453859479"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/b9c0314d6ce24f549303e8d806882c3b/entry.meta.json",
+      "sha256": "19d9d65b4b1874a73a1809efc3a5380de81dbb9646bc1f535053cb2f129911e3",
+      "mtime_ns": "1791027591114322631"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/bb739a478a914fb196a36eea5e0d4724/entry.meta.json",
+      "sha256": "516c1229ac88c20598bcf07c36f5bfb12955da751e5bbf26026f3634f9930bcc",
+      "mtime_ns": "1791027590698774128"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/c15c59cc7b2046269d08319f063b7335/entry.meta.json",
+      "sha256": "31d021b582e53994f4c609d44aa9f5958812adc5c4ff348fa9dde76fe1492bf2",
+      "mtime_ns": "1791027591283756555"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/c413f15556a846a78a65e78f8ab99818/entry.meta.json",
+      "sha256": "7fcab41e889a473dd3ca0ba53af6ecaced85ec28406be70759b4711d0b540258",
+      "mtime_ns": "1791027590819659669"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/c72ee4634bf04a7aad35f84de6c8dfde/entry.meta.json",
+      "sha256": "817df9cce9ec430fb77651efe40a95ff97689dcb04e7894ec44553a8be86a298",
+      "mtime_ns": "1791027590559896433"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/c9808641a02f4dcbb515006941771b57/entry.meta.json",
+      "sha256": "c132eee2280e3dde958bd433b13842d2ebfe0fd2f5e053d0c23cfc763cc016a4",
+      "mtime_ns": "1791027591254491326"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/c9d1493e7956413c88e3aa577ac60649/entry.meta.json",
+      "sha256": "a39dd5f7436cb8a7c661139fca666c1ee2a0039fd1cf8ca14eae6d4bc59ae477",
+      "mtime_ns": "1791027590741261224"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/cbebf5df3dc54186a1feef923718a7da/entry.meta.json",
+      "sha256": "89be55742af846859016fd0622abea067653d64335607c0f4ea9a6f31034dab0",
+      "mtime_ns": "1791027591152418813"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/ccb4767b96d54b16a070ce99bcbf5705/entry.meta.json",
+      "sha256": "b451ae4d441f3e0809a40cfa3dfa4897a9b77457796130888ecd1b21b427d2d5",
+      "mtime_ns": "1791027590939894294"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/cd065cdace3a4aa285b310f695b70fd7/entry.meta.json",
+      "sha256": "dd3c4d21a7155d23db8593f04a7f980e63e0acd14298c4e9b815a240663fb74e",
+      "mtime_ns": "1791027590638508878"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/d0cfb339d5ad43a28b230191eb37b4c7/entry.meta.json",
+      "sha256": "8d2ad93515602b331b2acc565a209163170c764af9d34876ac6047944a019d76",
+      "mtime_ns": "1791027590986659512"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/d6aef076558a4340bd1168c8c95d029e/entry.meta.json",
+      "sha256": "504429701c20e84af55852e945a3d49a050150257360d9868061c68c3f073aed",
+      "mtime_ns": "1791027590669293690"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/da1a891abe2b48cc8096f83ef5f3cdc9/entry.meta.json",
+      "sha256": "b6e194d88f3e953b49fe9151ec91107c98289497f142e5a0c6605be9b2800f7b",
+      "mtime_ns": "1791027590925027638"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/dcd7523af1b34833a32105399e4c3346/entry.meta.json",
+      "sha256": "e78f5bcc2e3aa71278808a36c9e8518f7a048253aad713aeecf9e24ec5ec9c9e",
+      "mtime_ns": "1791027590850349856"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/dfd8859de0d54532b66f03b28cce8ad0/entry.meta.json",
+      "sha256": "58742261cf48f7ed5b7c6400a869da9168b3541df8b1ec73d12bab475e728cd6",
+      "mtime_ns": "1791027591331956938"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/ef84d11927bd45de8fa6377010002f66/entry.meta.json",
+      "sha256": "458f7fa12b43d59b96fc1cb59c0fc0c27804d2ab86b9652cc5f2723b05c444f3",
+      "mtime_ns": "1791027591079670739"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/f0bab124e44344d3a2c3bfb87d91f121/entry.meta.json",
+      "sha256": "bce1236565f97adc33e5527304266ab549c970568e530c52dee74f5d0277bbbb",
+      "mtime_ns": "1791027590653620118"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/f3ba0a93c79445f2a57c7a40a0e5d159/entry.meta.json",
+      "sha256": "a5afb935816e70f0e23d7517541c67a2ca293c3120287b349d7605924c59d86e",
+      "mtime_ns": "1791027591137285949"
+    },
+    {
+      "path": "agents/skill-validator/archive/workspace/default/fee9b064f3b04a9798a5c1620cb3dd64/entry.meta.json",
+      "sha256": "80ef82fd92d9044761f72ed0d6882735da3cdbffc6caffb82a3bf5f5aeff8af2",
+      "mtime_ns": "1791027591094080604"
+    },
+    {
+      "path": "agents/skill-validator/soul.meta.json",
+      "sha256": "50f9a342ffd00b63e20f3408027243e461bcd5d04016c444e3eb88ff0f2e6b1a",
+      "mtime_ns": "1791027542284047002"
+    },
+    {
+      "path": "skills/0a08c4379abf5ecc9f023ecacdfa3adc/SKILL.meta.json",
+      "sha256": "b1606083dc31fd9eb7e8d8ae63fa4c6214375209bed22d530550316c1623f7fd",
+      "mtime_ns": "1791027542300300949"
+    },
+    {
+      "path": "skills/1a71e0ece171461bacd71f839d61870c/SKILL.meta.json",
+      "sha256": "0ce088b324f7aacd159a4423e314e8438e4e66f51e9f1ea8ebc896ab070ec621",
+      "mtime_ns": "1791027542301850073"
+    },
+    {
+      "path": "workspaces/default/MEMORY.meta.json",
+      "sha256": "d57db3a41a0d045a8707bdadbbb7b71e22c6420dd9e7fb77bb4a779b2ebadc91",
+      "mtime_ns": "1791027590529068871"
+    },
+    {
+      "path": "conversations/089fdb0fadee46e0ad2beec244a88fd5/memory-snapshot.json",
+      "sha256": "e1fb8813db9ff1d3632d6b31fd98319ce42c768fd07bfacde388bd1704f7b5e8",
+      "mtime_ns": "1791027542293916120"
+    },
+    {
+      "path": "conversations/3c9b7f1de56a433ea9ba7e61facff4fd/memory-snapshot.json",
+      "sha256": "6039396f3d3734ffe13a290dbac4e273a16c1a3e7569a01d532e93c1c6f09f07",
+      "mtime_ns": "1791027542299453866"
+    },
+    {
+      "path": "conversations/54e29295199f40d3a1122f0c1d562acf/memory-snapshot.json",
+      "sha256": "ffe3477e45b1336933960b37038fc753bb565c1b5909f2e8f674fdb5552b6287",
+      "mtime_ns": "1791027542296184743"
+    },
+    {
+      "path": "conversations/6018b39c95f9457c8836930dba028b9f/memory-snapshot.json",
+      "sha256": "63cf6375eb8cc7f6686b1b0450d191d229ab364c4b4cd44670abc41e764a98bf",
+      "mtime_ns": "1791027542292963954"
+    },
+    {
+      "path": "conversations/a4a4845214d24d129aacd194b85ed2cb/memory-snapshot.json",
+      "sha256": "c2b714ecc1785364003494a2d52437f0caa4160d3e1941f049a52ed36c6d6100",
+      "mtime_ns": "1791027542294629911"
+    },
+    {
+      "path": "conversations/b2ae0ff698894793acae90479b99bac2/memory-snapshot.json",
+      "sha256": "786572c6f1dd6724954e53399d9e5121906cbd0be939664890c400a89c06d080",
+      "mtime_ns": "1791027542295543452"
+    },
+    {
+      "path": "workspaces/default/m1-13/compound-once.txt",
+      "sha256": "20ca41d34921b50206e0b9dafceeb8d09affdb6a9102d092bd57bd99d8e6d4cb",
+      "mtime_ns": "1791027615282334472"
+    }
+  ],
+  "all_checks_passed": true
+}

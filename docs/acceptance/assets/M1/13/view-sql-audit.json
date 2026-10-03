@@ -1,0 +1,473 @@
+{
+  "queries": [
+    {
+      "sql": "SELECT t.id,t.status,t.current_attempt_no,COUNT(DISTINCT s.id) AS projected_steps,(SELECT COUNT(*) FROM run_events e WHERE e.task_run_id=t.id AND e.type='step.started') AS started_steps FROM task_runs t LEFT JOIN steps s ON s.task_run_id=t.id GROUP BY t.id ORDER BY t.created_at,t.id",
+      "rows": [
+        {
+          "id": "98184dd646a348978e476c994c97f45d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 3,
+          "started_steps": 3
+        },
+        {
+          "id": "bb75b95cc7e444b0abc6778b777bb14c",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 3,
+          "started_steps": 3
+        },
+        {
+          "id": "147ba7475663430886ee6c93c69e5081",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 3,
+          "started_steps": 3
+        },
+        {
+          "id": "0778b5bd1f6d49668ea7001e5d7eb9bb",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "17258e2b2d844bb7a15d2150cd5ed929",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "d3ad7f42e71c44feb19ff7f0f765d547",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 1,
+          "started_steps": 1
+        },
+        {
+          "id": "c491afb1bb8748b080ed96b1a9120632",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 2,
+          "started_steps": 2
+        },
+        {
+          "id": "b1890c13fd92430f81d9bed420cfd95c",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 7,
+          "started_steps": 7
+        },
+        {
+          "id": "5485b5c2c7d7477aab3073f4aa36bc8d",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "projected_steps": 4,
+          "started_steps": 4
+        }
+      ]
+    },
+    {
+      "sql": "SELECT t.id,COUNT(DISTINCT l.id) AS projected_calls,(SELECT COUNT(*) FROM run_events e WHERE e.task_run_id=t.id AND e.type='llm.request_started') AS started_calls FROM task_runs t LEFT JOIN steps s ON s.task_run_id=t.id LEFT JOIN llm_calls l ON l.step_id=s.id GROUP BY t.id ORDER BY t.created_at,t.id",
+      "rows": [
+        {
+          "id": "98184dd646a348978e476c994c97f45d",
+          "projected_calls": 3,
+          "started_calls": 3
+        },
+        {
+          "id": "bb75b95cc7e444b0abc6778b777bb14c",
+          "projected_calls": 3,
+          "started_calls": 3
+        },
+        {
+          "id": "147ba7475663430886ee6c93c69e5081",
+          "projected_calls": 3,
+          "started_calls": 3
+        },
+        {
+          "id": "0778b5bd1f6d49668ea7001e5d7eb9bb",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "17258e2b2d844bb7a15d2150cd5ed929",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "d3ad7f42e71c44feb19ff7f0f765d547",
+          "projected_calls": 1,
+          "started_calls": 1
+        },
+        {
+          "id": "c491afb1bb8748b080ed96b1a9120632",
+          "projected_calls": 2,
+          "started_calls": 2
+        },
+        {
+          "id": "b1890c13fd92430f81d9bed420cfd95c",
+          "projected_calls": 7,
+          "started_calls": 7
+        },
+        {
+          "id": "5485b5c2c7d7477aab3073f4aa36bc8d",
+          "projected_calls": 4,
+          "started_calls": 4
+        }
+      ]
+    },
+    {
+      "sql": "SELECT change_id,status,(SELECT COUNT(*) FROM memory_ledger l WHERE l.change_id=m.change_id) AS ledgers,(SELECT COUNT(*) FROM run_events e WHERE e.type IN ('memory.updated','memory.archived','skill.patched') AND json_extract(e.payload,'$.change_id')=m.change_id) AS memory_events FROM memory_changes m ORDER BY created_at,change_id",
+      "rows": [
+        {
+          "change_id": "call_00_1j72yo2kcfat5j3na0blli5e",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_3jge9la10gkdhhjwlwm6h7cy",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_se71atrn34y0y25emif45v6w",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "60e8e4465bf0457594ecbc935da0b762",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "977bf59f37844b8889bd4ca2b915db28",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "118313d675c449d0b04eab4a8eff057d",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "a80c4e80e97d4c168c66428668159347",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "f11f076ed74d41ea9da085a51f7f3cb6",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        },
+        {
+          "change_id": "call_00_jvh2aua0qvlbo6riy5tc3g4z",
+          "status": "committed",
+          "ledgers": 1,
+          "memory_events": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,change_id,store_type,store_id,action,revision,source,audit_seq,global_seq FROM memory_ledger ORDER BY id",
+      "rows": [
+        {
+          "id": 1,
+          "change_id": "call_00_1j72yo2kcfat5j3na0blli5e",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"memory-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"5f22a39654c54aeaa884780d7446c9ff\",\"task_run_id\":\"98184dd646a348978e476c994c97f45d\"}",
+          "audit_seq": 4,
+          "global_seq": 16
+        },
+        {
+          "id": 2,
+          "change_id": "call_00_3jge9la10gkdhhjwlwm6h7cy",
+          "store_type": "workspace",
+          "store_id": "default",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"memory-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"29a8d11356e64685af148b8bc13d5b29\",\"task_run_id\":\"bb75b95cc7e444b0abc6778b777bb14c\"}",
+          "audit_seq": 9,
+          "global_seq": 38
+        },
+        {
+          "id": 3,
+          "change_id": "call_00_se71atrn34y0y25emif45v6w",
+          "store_type": "soul",
+          "store_id": "memory-validator",
+          "action": "create",
+          "revision": 1,
+          "source": "{\"actor_id\":\"memory-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"8f4aad8f911b4419b617c41efaf22894\",\"task_run_id\":\"147ba7475663430886ee6c93c69e5081\"}",
+          "audit_seq": 14,
+          "global_seq": 60
+        },
+        {
+          "id": 4,
+          "change_id": "60e8e4465bf0457594ecbc935da0b762",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 2,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"60e8e4465bf0457594ecbc935da0b762\"}",
+          "audit_seq": 30,
+          "global_seq": 98
+        },
+        {
+          "id": 5,
+          "change_id": "977bf59f37844b8889bd4ca2b915db28",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 3,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"977bf59f37844b8889bd4ca2b915db28\"}",
+          "audit_seq": 31,
+          "global_seq": 99
+        },
+        {
+          "id": 6,
+          "change_id": "118313d675c449d0b04eab4a8eff057d",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "review",
+          "revision": 4,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"118313d675c449d0b04eab4a8eff057d\"}",
+          "audit_seq": 35,
+          "global_seq": 112
+        },
+        {
+          "id": 7,
+          "change_id": "a80c4e80e97d4c168c66428668159347",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 5,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"a80c4e80e97d4c168c66428668159347\"}",
+          "audit_seq": 61,
+          "global_seq": 207
+        },
+        {
+          "id": 8,
+          "change_id": "f11f076ed74d41ea9da085a51f7f3cb6",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "revision": 6,
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"f11f076ed74d41ea9da085a51f7f3cb6\"}",
+          "audit_seq": 62,
+          "global_seq": 208
+        },
+        {
+          "id": 9,
+          "change_id": "call_00_jvh2aua0qvlbo6riy5tc3g4z",
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "batch",
+          "revision": 7,
+          "source": "{\"actor_id\":\"memory-validator\",\"actor_type\":\"agent\",\"conversation_id\":\"ebb779438be24167a53ab22b536a7000\",\"task_run_id\":\"5485b5c2c7d7477aab3073f4aa36bc8d\"}",
+          "audit_seq": 67,
+          "global_seq": 228
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,conversation_id,status,current_attempt_no FROM task_runs ORDER BY created_at,id",
+      "rows": [
+        {
+          "id": "98184dd646a348978e476c994c97f45d",
+          "conversation_id": "5f22a39654c54aeaa884780d7446c9ff",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "bb75b95cc7e444b0abc6778b777bb14c",
+          "conversation_id": "29a8d11356e64685af148b8bc13d5b29",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "147ba7475663430886ee6c93c69e5081",
+          "conversation_id": "8f4aad8f911b4419b617c41efaf22894",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "0778b5bd1f6d49668ea7001e5d7eb9bb",
+          "conversation_id": "1b6dd3c6eff0435a8feddee117f6bcb6",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "17258e2b2d844bb7a15d2150cd5ed929",
+          "conversation_id": "946f0f0023924352a47fd00931baf132",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "d3ad7f42e71c44feb19ff7f0f765d547",
+          "conversation_id": "946f0f0023924352a47fd00931baf132",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "c491afb1bb8748b080ed96b1a9120632",
+          "conversation_id": "b396869f50a04fbab37ae90300be54e0",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "b1890c13fd92430f81d9bed420cfd95c",
+          "conversation_id": "9df4d564a98442d89cd12030e78988cc",
+          "status": "completed",
+          "current_attempt_no": 1
+        },
+        {
+          "id": "5485b5c2c7d7477aab3073f4aa36bc8d",
+          "conversation_id": "ebb779438be24167a53ab22b536a7000",
+          "status": "completed",
+          "current_attempt_no": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT conversation_id,sha256,global_seq FROM memory_snapshots ORDER BY created_at",
+      "rows": [
+        {
+          "conversation_id": "1b6dd3c6eff0435a8feddee117f6bcb6",
+          "sha256": "90c3b67ce735d43e8c93d245546e282c50893481b7f30f93a338c99501e74cd2",
+          "global_seq": 74
+        },
+        {
+          "conversation_id": "946f0f0023924352a47fd00931baf132",
+          "sha256": "dc46a1233a563b0790ae9d0aaf7f23c84e04799b8419d74eb15319ad6c433bac",
+          "global_seq": 102
+        },
+        {
+          "conversation_id": "b396869f50a04fbab37ae90300be54e0",
+          "sha256": "6f22d99b9f3be6c9884a0b1ca55fa406c1ccc0a5e4fa2806baa309c3524c71da",
+          "global_seq": 126
+        },
+        {
+          "conversation_id": "9df4d564a98442d89cd12030e78988cc",
+          "sha256": "d9b66b7e76c215cffc5e0dff78258c8fc6533d777b5eb3c2ed3d915944a7fe56",
+          "global_seq": 149
+        },
+        {
+          "conversation_id": "ebb779438be24167a53ab22b536a7000",
+          "sha256": "e242c8e49f348f8544cf9c025fd9797fd85f3dc0cd0ab5142b68549e7c1dab45",
+          "global_seq": 211
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,conversation_id,event_global_seq,source_global_seq,sha256,before_tokens,after_tokens FROM context_checkpoints ORDER BY event_global_seq",
+      "rows": []
+    },
+    {
+      "sql": "SELECT MAX(global_seq) AS event_watermark FROM run_events",
+      "rows": [
+        {
+          "event_watermark": 251
+        }
+      ]
+    },
+    {
+      "sql": "PRAGMA foreign_key_check",
+      "rows": []
+    }
+  ],
+  "audit": {
+    "ok": true,
+    "checked_count": 77,
+    "reason": null
+  },
+  "files": [
+    {
+      "path": "USER.md",
+      "sha256": "fcc0d0fb9b30211093a7fe27f073302aadc1b2b4b87b5166c3f7a697bf6e7225",
+      "mtime_ns": "1791029279443706254"
+    },
+    {
+      "path": "agents/memory-validator/archive/user/owner/967ff06c46434acf80d626c44151ebd1/entry.md",
+      "sha256": "ba657cdb1efd0ef41643eac0827d89bf9e1f946ad7b93ce601b53c5c4d0ebbed",
+      "mtime_ns": "1791029279432224259"
+    },
+    {
+      "path": "agents/memory-validator/archive/user/owner/e3265f15fb1643f491ea2698b7e5978b/entry.md",
+      "sha256": "c18b4ac606634cec12101cbf5a4161a0f87c98b36c4832b37b8279b449f164c4",
+      "mtime_ns": "1791029279433157585"
+    },
+    {
+      "path": "agents/memory-validator/soul.md",
+      "sha256": "9eeaacbb40c3895d1b760dd50809f742ce136518f3cdbd9b00564e9f4aee9f56",
+      "mtime_ns": "1791029279434962779"
+    },
+    {
+      "path": "workspaces/default/MEMORY.md",
+      "sha256": "a0a8e3ec8c61f511074d7dbd3fd7f800fcdbedead85504e2300405af6977e1b3",
+      "mtime_ns": "1791029279436145020"
+    },
+    {
+      "path": "USER.meta.json",
+      "sha256": "c07d83db8fb808ba9bd229a5a96af3cbbb1fc7498420622b6195699388557c78",
+      "mtime_ns": "1791029279443882377"
+    },
+    {
+      "path": "agents/memory-validator/archive/user/owner/967ff06c46434acf80d626c44151ebd1/entry.meta.json",
+      "sha256": "31dc4429cbaa327a96f203c7e4ac5f6a580acd4c6bb137872e595395e88d2216",
+      "mtime_ns": "1791029279432525882"
+    },
+    {
+      "path": "agents/memory-validator/archive/user/owner/e3265f15fb1643f491ea2698b7e5978b/entry.meta.json",
+      "sha256": "368c39cfa4f5b33bf11f88039b965b45b21b8422c306a3df3cb173d5fa74258c",
+      "mtime_ns": "1791029279434155077"
+    },
+    {
+      "path": "agents/memory-validator/soul.meta.json",
+      "sha256": "7de4e9e1df6fadc0706f7360e6b1bcb178d403670c5d4bcf597d8ff7f796c263",
+      "mtime_ns": "1791029279434686865"
+    },
+    {
+      "path": "workspaces/default/MEMORY.meta.json",
+      "sha256": "1f3e3aefb106a381c8d885b0cafc4b6f04414e5ef13b4a750187318314e901c4",
+      "mtime_ns": "1791029279435830773"
+    },
+    {
+      "path": "conversations/1b6dd3c6eff0435a8feddee117f6bcb6/memory-snapshot.json",
+      "sha256": "90c3b67ce735d43e8c93d245546e282c50893481b7f30f93a338c99501e74cd2",
+      "mtime_ns": "1791029279440258822"
+    },
+    {
+      "path": "conversations/946f0f0023924352a47fd00931baf132/memory-snapshot.json",
+      "sha256": "dc46a1233a563b0790ae9d0aaf7f23c84e04799b8419d74eb15319ad6c433bac",
+      "mtime_ns": "1791029279443455005"
+    },
+    {
+      "path": "conversations/9df4d564a98442d89cd12030e78988cc/memory-snapshot.json",
+      "sha256": "d9b66b7e76c215cffc5e0dff78258c8fc6533d777b5eb3c2ed3d915944a7fe56",
+      "mtime_ns": "1791029279441842143"
+    },
+    {
+      "path": "conversations/b396869f50a04fbab37ae90300be54e0/memory-snapshot.json",
+      "sha256": "6f22d99b9f3be6c9884a0b1ca55fa406c1ccc0a5e4fa2806baa309c3524c71da",
+      "mtime_ns": "1791029279442713720"
+    },
+    {
+      "path": "conversations/ebb779438be24167a53ab22b536a7000/memory-snapshot.json",
+      "sha256": "e242c8e49f348f8544cf9c025fd9797fd85f3dc0cd0ab5142b68549e7c1dab45",
+      "mtime_ns": "1791029279441028608"
+    }
+  ],
+  "all_checks_passed": true
+}

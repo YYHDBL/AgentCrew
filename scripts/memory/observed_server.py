@@ -1,6 +1,7 @@
 """真实 sidecar 验收入口，仅观察发出的模型 HTTP 请求。"""
 
 import hashlib
+import base64
 import json
 import os
 import sys
@@ -21,6 +22,15 @@ _observed_main_streams = set()
 
 
 def observe(frame, event, arg):
+    if (os.environ.get("MEMORY_RAW_RESPONSE_EVIDENCE") and event == "return"
+            and frame.f_globals.get("__name__") == "httpx._models" and frame.f_code.co_name == "aiter_bytes"):
+        response = frame.f_locals["self"]
+        request = response.request
+        chunk = frame.f_locals.get("chunk")
+        if request.method == "POST" and request.url.path.endswith("/chat/completions") and isinstance(chunk, bytes):
+            with Path(os.environ["MEMORY_RAW_RESPONSE_EVIDENCE"]).open("a", encoding="utf-8") as output:
+                output.write(json.dumps({"request_sha256": hashlib.sha256(request.content).hexdigest(),
+                    "bytes_base64": base64.b64encode(chunk).decode(), "observed_at": datetime.now(timezone.utc).isoformat()}) + "\n")
     if (os.environ.get("MEMORY_MAIN_STREAM_EVIDENCE") and event == "call"
             and frame.f_globals.get("__name__") == "agentcrew_server.run_manager"
             and frame.f_code.co_name == "<lambda>" and frame.f_back.f_code.co_name == "run_task"
