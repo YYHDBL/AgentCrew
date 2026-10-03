@@ -125,7 +125,7 @@ M1 的会话后台事件没有前台 `task_run_id/seq`；来源任务放入 payl
 | `governance.resource_changed` | GovernanceChange，加 `status: "active" \| "disabled" \| "archived"` | M2-02/11，更新真实资源与修订，禁用时取消相关调用 |
 | `governance.identity_changed` | GovernanceChange，加 `effective_user_id: string` | M2-03，演示标识签发审计；不改变其他请求身份 |
 | `governance.role_changed` | GovernanceChange，加 `user_id: string, role: "owner" \| "admin" \| "member", status: "active" \| "disabled"` | M2-03，重新查询当前权限并结束无权订阅 |
-| `governance.grant_changed` | GovernanceChange，加 `grantee_type: "user" \| "agent", grantee_id: string, revoked_at: string \| null` | M2-05，撤销后重新组装工具与索引，已派发调用取消并核验 |
+| `governance.grant_changed` | GovernanceChange，加 `grantee_type: "user" \| "agent", grantee_id: string, revoked_at: string \| null, capability_type: string, capability_id: string, revocation_changed?: boolean` | M2-05，实际撤销后重新组装工具与索引，已派发调用取消并核验；重复撤销旧记录的revocation_changed=false保留审计，不触发新Grant的执行取消 |
 | `governance.rule_changed` | GovernanceChange，加 `agent_id: string, tool_name: string, effect: "allow" \| "deny", revoked_at: string \| null` | M2-07，员工规则查询刷新，deny 优先 |
 | `governance.skill_version_published` | GovernanceChange，加 `version_id: string, version_no: integer, ledger_id: integer, sha256: string` | M2-04，change_id 关联 M1 skill.patched；恢复正文同样发布新版本 |
 | `governance.authorization_checked` | `{scope: GovernanceScope, actor_id: string, agent_id: string, allowed: boolean, reason: string, authorization_sha256: string, call_id?: string}` | M2-05/09，任务或尝试关联时保留其 task_run_id，明确当前有效权限 |

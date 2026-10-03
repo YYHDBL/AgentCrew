@@ -63,6 +63,7 @@ class RuntimeState:
     governance: object | None = None
     identities: object | None = None
     skill_versions: object | None = None
+    grants: object | None = None
 
     async def shutdown(self) -> None:
         """优雅关闭（§7 顺序；任务取消不写终态——run_manager.shutdown 在

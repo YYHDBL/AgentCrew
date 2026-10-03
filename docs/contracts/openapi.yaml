@@ -1229,7 +1229,7 @@ paths:
     get:
       operationId: listGrants
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-05
       x-domain-card: M2-05
       parameters:
         - { $ref: "#/components/parameters/GovernanceWorkspace" }
@@ -1256,7 +1256,7 @@ paths:
     post:
       operationId: createGrant
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-05
       x-domain-card: M2-05
       requestBody:
         required: true
@@ -1279,7 +1279,7 @@ paths:
     delete:
       operationId: revokeGrant
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-05
       x-domain-card: M2-05
       requestBody: *governance_change_body
       responses: *grant_responses

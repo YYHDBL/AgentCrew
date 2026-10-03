@@ -65,9 +65,18 @@ class MemoryCurator:
     async def startup(self):
         if not await asyncio.to_thread(self.jobs._idle):
             return []
-        scopes = self.db.read_conn.execute("SELECT workspace_id,agent_id FROM conversations UNION "
-            "SELECT workspace_id,agent_id FROM memory_skills UNION SELECT store_id,'default' FROM memory_stores WHERE store_type='workspace' "
-            "UNION SELECT 'default',store_id FROM memory_stores WHERE store_type='soul'").fetchall()
+        if hasattr(self.jobs, "identities"):
+            scopes = self.db.read_conn.execute("""SELECT a.workspace_id,a.id FROM agents a JOIN workspaces w ON w.id=a.workspace_id
+                WHERE a.status='active' AND w.status='active' AND (
+                    EXISTS(SELECT 1 FROM conversations c WHERE c.agent_id=a.id) OR
+                    EXISTS(SELECT 1 FROM memory_skills s WHERE s.agent_id=a.id) OR
+                    EXISTS(SELECT 1 FROM memory_stores s WHERE s.store_type='soul' AND s.store_id=a.id) OR
+                    EXISTS(SELECT 1 FROM memory_stores s WHERE s.store_type='workspace' AND s.store_id=a.workspace_id))
+                ORDER BY a.workspace_id,a.id""").fetchall()
+        else:
+            scopes = self.db.read_conn.execute("SELECT workspace_id,agent_id FROM conversations UNION "
+                "SELECT workspace_id,agent_id FROM memory_skills UNION SELECT store_id,'default' FROM memory_stores WHERE store_type='workspace' "
+                "UNION SELECT 'default',store_id FROM memory_stores WHERE store_type='soul'").fetchall()
         if not scopes and self.db.read_conn.execute("SELECT 1 FROM memory_stores WHERE store_type='user'").fetchone():
             scopes = [("default", "default")]
         created, boot = [], uuid.uuid4().hex

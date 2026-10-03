@@ -22,6 +22,8 @@ def publish(source, destination):
         "SELECT conversation_id,workspace_id,agent_id,credential_owner_id,effective_user_id FROM governance_conversations ORDER BY conversation_id",
         "SELECT task_run_id,effective_user_id,credential_owner_id,agent_revision FROM task_governance ORDER BY task_run_id",
         "SELECT job_id,effective_user_id,credential_owner_id FROM job_governance ORDER BY job_id",
+        "SELECT id,resource_type,resource_id,grantee_type,grantee_id,revision,revoked_at FROM grants ORDER BY created_at,id",
+        "SELECT call_id,task_run_id,tool_name,status,input_hash,dispatched_at,completed_at FROM tool_calls ORDER BY prepared_at,call_id",
         "SELECT id,task_run_id,attempt_no,status FROM run_attempts ORDER BY started_at,id",
         "SELECT global_seq,type,task_run_id FROM run_events ORDER BY global_seq",
         "SELECT seq,actor_type,actor_id,action,resource_type,resource_id,prev_hash,hash FROM audit_log ORDER BY seq"]

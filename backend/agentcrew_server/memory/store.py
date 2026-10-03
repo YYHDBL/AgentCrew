@@ -78,6 +78,11 @@ class MemoryStore:
             self.identities.agent(caller, identity.agent_id, identity.workspace_id)
             if identity.conversation_id:
                 self.identities.conversation(caller, identity.conversation_id)
+            if store_type == "skill" and hasattr(self, "grants"):
+                current = self.identities.current(caller)
+                if identity.actor_type != "user" or current["role"] == "member":
+                    if not self.skill_versions.permitted(identity, store_id):
+                        return failure("OUT_OF_SCOPE", "技能当前授权或资源状态已经失效")
         if any(not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value) for value in (identity.workspace_id, identity.agent_id)):
             return failure("OUT_OF_SCOPE", "工作区和员工身份包含非法路径字符")
         expected = {"user": "owner", "workspace": identity.workspace_id, "soul": identity.agent_id}
@@ -397,6 +402,8 @@ class MemoryStore:
                 self.identities.agent(caller, identity.agent_id, identity.workspace_id, conn)
                 if identity.actor_type == "user":
                     self.identities.require(caller, "manage", identity.workspace_id, conn)
+                if plan["store_type"] == "skill" and hasattr(self, "grants"):
+                    self.grants.check_skill_change(conn, identity, plan["store_id"])
             replayed = self._replayed(change_id, request_hash, conn)
             if replayed is not None:
                 return replayed

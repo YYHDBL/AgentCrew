@@ -69,6 +69,8 @@ class WorkContext:
     protected: list[Any] = field(default_factory=list)      # 受保护路径（realpath）
     artifacts_dir: Any = None                               # Path：外部化工件落盘处
     allowed_hosts: list[str] = field(default_factory=list)
+    enforce_http_hosts: bool = False
+    connector_id: str | None = None
     task_run_id: str = ""
     job_id: str | None = None
     emit: EventSink | None = None        # 事件出口（tool.*/artifact.*/question.*）

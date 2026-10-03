@@ -29,7 +29,7 @@ import asyncio
 import json
 import logging
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -222,6 +222,9 @@ class ApprovalService:
                 if decision in ("allow_always", "reject_always"):
                     workspace_id = self.identities.resources.get("agent", agent_id, conn)["workspace_id"]
                     self.identities.require(request_identity, "manage", workspace_id, conn)
+            if hasattr(self, "grants"):
+                call = conn.execute("SELECT tool_name,input FROM tool_calls WHERE call_id=?", (call_id,)).fetchone()
+                self.grants.check_tool(task_run_id, call[0], json.loads(call[1]), conn)
             first = self._resolution_row(conn, call_id)
             if first is not None:
                 conn.execute("COMMIT")  # 只读事务（并发窗口内已有首次决定）
@@ -306,6 +309,13 @@ class ApprovalService:
                        agent_id: str, invocation: ToolInvocation,
                        ctx: WorkContext) -> Any:
         """带闸门执行一次工具：事件落库（emit 接 EventStore）+ 三级闸门。"""
+        ctx = replace(ctx, approved_calls=set())
+        if hasattr(self, "grants"):
+            view = self.grants.check_tool(task_run_id, invocation.name, invocation.input)
+            if "selected_connector" in view:
+                ctx.connector_id = view["selected_connector"]["id"]
+                ctx.allowed_hosts = list(view["selected_connector"]["config"]["allowed_hosts"])
+                ctx.enforce_http_hosts = True
         loop = asyncio.get_running_loop()
         future: asyncio.Future = loop.create_future()
         ih = input_hash(invocation.input)

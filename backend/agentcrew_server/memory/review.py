@@ -213,6 +213,8 @@ class MemoryReview:
                 if values is None:
                     return failure("NOT_FOUND", "后台审批不存在")
                 row = dict(zip((column[0] for column in cursor.description), values))
+                if hasattr(self.jobs, "grants"):
+                    self.jobs.grants.check_tool(job["task_run_id"], row["tool"], json.loads(row["input"]), conn)
                 if row["input_hash"] != digest or row["status"] == "expired" or job["status"] in {"cancelled", "interrupted", "failed"}:
                     return failure("APPROVAL_STALE", "后台审批已经失效或参数不一致")
                 if row["decision"]:
@@ -232,19 +234,19 @@ class MemoryReview:
             future.set_result(decision)
         return result
 
-    async def cancel(self, job_id):
+    async def cancel(self, job_id, *, reason="人类用户取消后台作业"):
         async with self.jobs._gate:
             job = self.jobs.get(job_id)
             if job is None:
                 return failure("NOT_FOUND", "后台作业不存在")
             current = self.jobs._current
             if current is not None and current.get_name() == f"memory-job:{job_id}" and not current.done():
-                self.jobs._reason = "人类用户取消后台作业"
+                self.jobs._reason = reason
                 self.jobs._cancel_scope.cancel()
                 _done, pending = await asyncio.wait({current}, timeout=2)
                 if pending:
                     raise TimeoutError("后台作业未在两秒内完成取消")
-            await self.jobs._status(job_id, "cancelled", "人类用户取消后台作业")
+            await self.jobs._status(job_id, "cancelled", reason)
             self.jobs._slots.pop(job_id, None)
             return self.view(job_id)
 

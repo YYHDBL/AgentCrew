@@ -15,6 +15,7 @@ HTTP_SCHEMA = {
     "properties": {
         "method": {"type": "string", "description": "HTTP 方法（默认 GET）"},
         "url": {"type": "string", "description": "目标 URL"},
+        "connector_id": {"type": "string", "description": "已授权HTTP连接器标识"},
         "headers": {"type": "object", "description": "附加请求头"},
         "body": {"type": "string", "description": "请求体"},
     },
@@ -26,7 +27,7 @@ HTTP_TIMEOUT_S = 30.0
 async def _http_request(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     url = inv.input.get("url", "")
     allowed, reason = host_allowed(url, ctx.allowed_hosts)
-    if not allowed and inv.call_id not in ctx.approved_calls:
+    if not allowed and (ctx.enforce_http_hosts or inv.call_id not in ctx.approved_calls):
         # allowed_hosts 是预授权清单（M0 默认空 = 全部需审批）；本次调用
         # 已经三级闸门（人工/规则）授权的，执行器不再硬拒（外审回稿 S02）
         return ToolResult(ok=False, error=f"HOST_NOT_ALLOWED：{reason}")

@@ -1,0 +1,41 @@
+{
+  "task_run_id": "e26db3b40c6743c2ad40638dc63d8bab",
+  "new_task_id": "87991174e0744bc588a47637edacb8fb",
+  "approval": {
+    "always_scope_preview": "example.com",
+    "input_hash": "a55b4c5f900b42aba5ad4eebf2c789d84c7c018b7cce0d9f72502d6a8dd57187",
+    "options": [
+      "allow_once",
+      "allow_always",
+      "reject_once",
+      "reject_always"
+    ],
+    "risk": "medium",
+    "target": "https://example.com",
+    "tool": "http_request",
+    "tool_call_id": "call_00_bcr2x7h80vd1alu7b4o3hqqz"
+  },
+  "grant": {
+    "id": "2a574a78c1915000a23996806e66b2cd",
+    "resource_type": "connector",
+    "resource_id": "office-http",
+    "grantee_type": "agent",
+    "grantee_id": "xiaowen",
+    "granted_by_user_id": "owner",
+    "created_at": "2026-10-03T16:06:11.471760+00:00",
+    "revoked_at": "2026-10-03T16:06:25.321920+00:00",
+    "revision": 2,
+    "change_id": "seed-http",
+    "workspace_id": "office"
+  },
+  "historical_binding": {
+    "agent_spec": "{\"connector_ids\": [\"office-http\"], \"model_slot\": \"main\", \"position\": \"办公助理\", \"skill_ids\": [\"c7b7146c6ea65788b6d4161a4982f34b\", \"7fb6db7a69e75931b85594e05ed43d2b\"]}",
+    "skill_versions": "{\"7fb6db7a69e75931b85594e05ed43d2b\":\"314222aa9401532b96ae08867bc734a5\",\"c7b7146c6ea65788b6d4161a4982f34b\":\"ce7f36c35b735d43a30a8a4b0b4c0f3b\"}"
+  },
+  "new_requests": [
+    {
+      "payload": "{\"authorization_sha256\": \"c05b24ce83cdd15680e0448935cee629ec1ebcd9f6f42f8b9801deabe4cee167\", \"llm_call_id\": \"ec2ed4a174fc43529342ed3e80d663c6\", \"model\": \"deepseek-v4.1-flash\", \"retry_no\": 0, \"step_id\": \"02978aaa20e04c05a6bf1fc169130936\", \"tool_names\": [\"read_file\", \"write_file\", \"bash\", \"memory_write\", \"session_search\", \"skill_view\", \"skill_patch\", \"ask_user\"]}"
+    }
+  ],
+  "dispatched_count": 0
+}

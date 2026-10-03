@@ -120,6 +120,7 @@ class SkillVersions:
         return {"items": sorted(items, key=lambda item: (item["name"], item["id"]))}
 
     async def task_view(self, identity, name, file, call_id, reader):
+        self.memory.identities.task(identity.task_run_id)
         bindings = self.task_bindings(identity)
         selected = next(((skill_id, self.version(version_id)) for skill_id, version_id in bindings.items()
             if self.version(version_id)["metadata"]["name"] == name), None)

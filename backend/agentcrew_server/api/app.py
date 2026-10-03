@@ -28,6 +28,7 @@ from .memory import install_memory_routes
 from .sse import install_sse_routes
 from .identity import install_identity_routes
 from .skill_versions import install_skill_version_routes
+from .grants import install_grant_routes
 from ..governance.resources import GovernanceError
 
 # 诊断模式下仍然可用的端点（§1：仅 health 与诊断端点）
@@ -119,6 +120,7 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         install_identity_routes(app, runtime)
     if runtime.skill_versions is not None:
         install_skill_version_routes(app, runtime)
+        install_grant_routes(app, runtime)
 
     @app.exception_handler(GovernanceError)
     async def governance_error(_: Request, exc: GovernanceError):

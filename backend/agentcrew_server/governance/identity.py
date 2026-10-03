@@ -260,6 +260,8 @@ class Identities:
             return RequestIdentity("owner", memory_identity.actor_id, memory_identity.actor_id != "owner")
         if memory_identity.job_id:
             row = self.db.read_conn.execute("SELECT credential_owner_id,effective_user_id FROM job_governance WHERE job_id=?", (memory_identity.job_id,)).fetchone()
+        elif memory_identity.task_run_id is None and memory_identity.conversation_id:
+            row = self.db.read_conn.execute("SELECT credential_owner_id,effective_user_id FROM governance_conversations WHERE conversation_id=?", (memory_identity.conversation_id,)).fetchone()
         else:
             row = self.db.read_conn.execute("SELECT credential_owner_id,effective_user_id FROM task_governance WHERE task_run_id=?", (memory_identity.task_run_id,)).fetchone()
         if row is None:

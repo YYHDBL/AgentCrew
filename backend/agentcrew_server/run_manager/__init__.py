@@ -195,6 +195,13 @@ class RunManager:
             self._on_event(item)
 
     def _on_event(self, event) -> None:
+        if hasattr(self, "grants") and event.type in {RunEventType.GOVERNANCE_GRANT_CHANGED,
+                RunEventType.GOVERNANCE_ROLE_CHANGED, RunEventType.GOVERNANCE_RESOURCE_CHANGED}:
+            for task_id, active in tuple(self._runs.items()):
+                if self.grants.affects(event, task_id):
+                    active.fail_reason = "AUTHORIZATION_REVOKED：当前执行授权已经变化"
+                    active.task.cancel()
+            return
         if event.type in (RunEventType.RUN_QUEUED, RunEventType.RUN_RESUMED):
             self._spawn(event.task_run_id, event.conversation_id,
                         resume=event.type == RunEventType.RUN_RESUMED)
@@ -275,12 +282,16 @@ class RunManager:
             folders = [f["path"] for f in
                        json.loads(conv["folders_json"] or "[]")]
             tools = self._scheduler.registry.schemas()
+            authorization = None
+            if hasattr(self, "grants"):
+                tools, authorization = self.grants.schemas(task_run_id, tools)
             system = SYSTEM_PROMPT + "\n\n" + env_block(
                 datetime.now(), scope["workspace_dir"],
                 scope["materials_dir"], folders, conv["workspace_id"])
-            return (slot, tools, system, conv["agent_id"],
-                    context_fingerprint(system, tools,
-                                        self._model_config(slot)))
+            fingerprint = context_fingerprint(system, tools, self._model_config(slot))
+            if authorization is not None:
+                fingerprint["authorization_sha256"] = authorization["sha256"]
+            return slot, tools, system, conv["agent_id"], fingerprint
 
         slot, tools, system, agent, fingerprint = await asyncio.to_thread(build_all)
         if self._snapshots is not None:
@@ -299,9 +310,12 @@ class RunManager:
                 fingerprint["skill_versions"] = self._memory.skill_versions.task_bindings(identity)
             system += "\n\n" + memory_block
             bound_versions = fingerprint.get("skill_versions")
+            authorization_sha = fingerprint.get("authorization_sha256")
             fingerprint = context_fingerprint(system, tools, self._model_config(slot))
             if bound_versions is not None:
                 fingerprint["skill_versions"] = bound_versions
+            if authorization_sha is not None:
+                fingerprint["authorization_sha256"] = authorization_sha
             fingerprint.update(memory_snapshot_id=snapshot["snapshot_id"], memory_snapshot_sha256=snapshot["sha256"],
                                memory_block_sha256=sha256(memory_block.encode()))
         return slot, tools, system, agent, fingerprint
@@ -432,8 +446,16 @@ class RunManager:
                     ctx=ctx)
 
             async def before_request() -> None:
+                nonlocal tools
                 if hasattr(self, "identities"):
                     self.identities.task(task_run_id)
+                if hasattr(self, "grants"):
+                    tools, authorization = self.grants.schemas(task_run_id, self._scheduler.registry.schemas())
+                    await sink("governance.authorization_checked", {
+                        "actor_id": authorization["actor_id"], "agent_id": run.agent_id, "allowed": True,
+                        "reason": "当前角色、资源及Grant已核查", "authorization_sha256": authorization["sha256"],
+                        "scope": self.identities.resources.scope("agent", run.agent_id, self._db.read_conn),
+                        "tool_names": [schema["name"] for schema in tools]})
                 if self._checkpoints is not None:
                     await self._checkpoints.maybe_compact(
                         conversation_id=conversation_id, task_run_id=task_run_id,
@@ -587,6 +609,14 @@ class RunManager:
                                  conversation_id: str) -> None:
         rows = await asyncio.to_thread(self._dispatched_calls, task_run_id)
         for call_id in rows:
+            if hasattr(self, "grants"):
+                row = self._db.read_conn.execute("SELECT tool_name,side_effect_class FROM tool_calls WHERE call_id=?", (call_id,)).fetchone()
+                if row[0] == "write_file" and row[1] == "verifiable":
+                    verified = await asyncio.to_thread(self._recovery._verify_write_file, task_run_id, conversation_id, call_id)
+                    if verified:
+                        await self._emit(task_run_id, conversation_id, "tool.completed",
+                            {"call_id": call_id, "output": "已核验真实文件内容SHA", "output_summary": "授权变化后真实文件效果已核验"})
+                        continue
             await self._emit(task_run_id, conversation_id,
                              "tool.pending_verification",
                              {"call_id": call_id})

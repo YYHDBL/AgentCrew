@@ -77,6 +77,12 @@ class MemoryJobs:
             if event is None:
                 await self._sub.wait_for_data()
                 continue
+            if hasattr(self, "grants") and event.type in {RunEventType.GOVERNANCE_GRANT_CHANGED,
+                    RunEventType.GOVERNANCE_ROLE_CHANGED, RunEventType.GOVERNANCE_RESOURCE_CHANGED}:
+                for row in self.db.read_conn.execute("SELECT id,task_run_id,workspace_id,agent_id FROM memory_jobs WHERE status IN ('queued','running','waiting_approval')").fetchall():
+                    if self.grants.affects_job(event, row[0]):
+                        await self.review.cancel(row[0], reason="AUTHORIZATION_REVOKED：当前作业授权已经变化")
+                continue
             if event.type == RunEventType.RUN_COMPLETED:
                 await self.enqueue(event.global_seq)
             await self.review.consume(event.global_seq)
@@ -212,6 +218,19 @@ class MemoryJobs:
 
     def _call_tx(self, conn, job_id, event_type, payload):
         with conn:
+            if hasattr(self, "grants") and str(event_type) in {"tool.dispatched", "llm.request_started"}:
+                job = self._job(conn, job_id)
+                from agentcrew_core.governance import RequestIdentity
+                actor = conn.execute("SELECT credential_owner_id,effective_user_id FROM job_governance WHERE job_id=?", (job_id,)).fetchone()
+                if actor is None:
+                    raise ValueError("后台调用缺少发起身份")
+                self.identities.job(RequestIdentity(actor[0], actor[1], actor[0] != actor[1]), job_id, conn)
+                if str(event_type) == "tool.dispatched":
+                    prepared = conn.execute("SELECT payload FROM memory_job_calls WHERE job_id=? AND type='tool.prepared' AND json_extract(payload,'$.call_id')=? ORDER BY ordinal DESC LIMIT 1", (job_id, payload["call_id"])).fetchone()
+                    if prepared is None:
+                        raise ValueError("后台派发缺少已准备调用")
+                    call = json.loads(prepared[0])
+                    self.grants.check_tool(job["task_run_id"], call["tool_name"], call["input"], conn)
             ordinal = conn.execute("SELECT COALESCE(MAX(ordinal),0)+1 FROM memory_job_calls WHERE job_id=?", (job_id,)).fetchone()[0]
             conn.execute("INSERT INTO memory_job_calls VALUES(?,?,?,?,?)", (job_id, ordinal, str(event_type), redact(canonical(payload)), now()))
             if event_type == RunEventType.LLM_REQUEST_DONE:
