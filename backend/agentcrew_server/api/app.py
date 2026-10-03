@@ -23,6 +23,7 @@ from .runs import install_run_routes
 from .sessions import install_session_routes
 from .settings import install_settings_routes
 from .memory_jobs import install_memory_job_routes
+from .memory import install_memory_routes
 from .sse import install_sse_routes
 
 # 诊断模式下仍然可用的端点（§1：仅 health 与诊断端点）
@@ -94,6 +95,8 @@ def create_app(runtime: RuntimeState) -> FastAPI:
     )
     install_error_handlers(app)
     install_sse_routes(app, runtime)
+    if runtime.memory is not None:
+        install_memory_routes(app, runtime)
     if runtime.memory_jobs is not None:
         install_memory_job_routes(app, runtime)
     if runtime.approvals is not None:

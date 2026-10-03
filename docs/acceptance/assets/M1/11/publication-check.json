@@ -1,0 +1,30 @@
+{
+  "configured_keys_checked": 1,
+  "credential_matches": 0,
+  "files": [
+    {
+      "path": "docs/acceptance/assets/M1/11/openapi.txt",
+      "bytes": 42,
+      "sha256": "6682792bf87a47f66a5d044d2c89e78949ba201c7f6784b5311af287f52fcb31",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/11/targeted-tests.txt",
+      "bytes": 99,
+      "sha256": "bed30290b0739950626199cf041a99c1cbc0e3960fb4cbd2e21ceaa78f6a5160",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/11/management-http.json",
+      "bytes": 588219,
+      "sha256": "a7d21cc6238f9cac7c63d0e57a82c898c3c3c2ce678f6622c436d9920447a5f7",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/11/backend-tests.txt",
+      "bytes": 1197,
+      "sha256": "fa0d522b186c10f3b23658d898d49a800f6daccedf464f245ffbe22e3c020239",
+      "credential_matches": 0
+    }
+  ]
+}

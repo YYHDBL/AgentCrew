@@ -366,7 +366,7 @@ components:
         change_id: { type: string }
         store_type: { type: string, enum: [user, workspace, soul, skill] }
         store_id: { type: string }
-        action: { type: string, enum: [create, update, archive, restore, pin, unpin, review, rollback, batch] }
+        action: { type: string, enum: [create, update, archive, restore, pin, unpin, review, rollback, batch, stale] }
         before_text: { type: [string, "null"] }
         after_text: { type: [string, "null"] }
         before_metadata: { type: object, additionalProperties: true }
@@ -418,6 +418,16 @@ components:
               tool: { type: string, enum: [memory_write, skill_patch] }
               input: { type: object, additionalProperties: true }
               status: { type: string, enum: [pending, allowed, rejected, expired] }
+        calls:
+          type: array
+          items:
+            type: object
+            required: [ordinal, type, payload, created_at]
+            properties:
+              ordinal: { type: integer, minimum: 1 }
+              type: { type: string }
+              payload: { type: object, additionalProperties: true }
+              created_at: { type: string, format: date-time }
     MemorySearchHit:
       type: object
       required: [id, kind, text, source, created_at]
@@ -990,6 +1000,8 @@ paths:
     parameters:
       - { $ref: "#/components/parameters/MemoryStoreType" }
       - { $ref: "#/components/parameters/MemoryStoreId" }
+      - { $ref: "#/components/parameters/MemoryWorkspace" }
+      - { $ref: "#/components/parameters/MemoryAgent" }
     get:
       operationId: readMemoryStore
       tags: [memory]
@@ -1033,6 +1045,8 @@ paths:
     parameters:
       - { $ref: "#/components/parameters/MemoryStoreType" }
       - { $ref: "#/components/parameters/MemoryStoreId" }
+      - { $ref: "#/components/parameters/MemoryWorkspace" }
+      - { $ref: "#/components/parameters/MemoryAgent" }
       - { name: entry_hash, in: path, required: true, schema: { type: string, pattern: "^[a-f0-9]{64}$" } }
     patch:
       operationId: editMemoryEntry
@@ -1066,6 +1080,8 @@ paths:
     parameters:
       - { $ref: "#/components/parameters/MemoryStoreType" }
       - { $ref: "#/components/parameters/MemoryStoreId" }
+      - { $ref: "#/components/parameters/MemoryWorkspace" }
+      - { $ref: "#/components/parameters/MemoryAgent" }
       - { name: entry_hash, in: path, required: true, schema: { type: string, pattern: "^[a-f0-9]{64}$" } }
       - { name: action, in: path, required: true, schema: { type: string, enum: [pin, unpin, archive, restore] } }
     post:
@@ -1086,6 +1102,8 @@ paths:
     parameters:
       - { $ref: "#/components/parameters/MemoryStoreType" }
       - { $ref: "#/components/parameters/MemoryStoreId" }
+      - { $ref: "#/components/parameters/MemoryWorkspace" }
+      - { $ref: "#/components/parameters/MemoryAgent" }
       - { name: entry_hash, in: path, required: true, schema: { type: string, pattern: "^[a-f0-9]{64}$" } }
     post:
       operationId: reviewMemoryEntry
@@ -1109,6 +1127,8 @@ paths:
       x-domain-card: M1-02
       summary: 完整前后状态按 id 降序分页，after 绑定同库范围且排他
       parameters:
+        - { $ref: "#/components/parameters/MemoryWorkspace" }
+        - { $ref: "#/components/parameters/MemoryAgent" }
         - { name: store_type, in: query, required: true, schema: { type: string, enum: [user, workspace, soul, skill] } }
         - { name: store_id, in: query, required: true, schema: { type: string, minLength: 1 } }
         - { $ref: "#/components/parameters/MemoryLimit" }
@@ -1137,6 +1157,8 @@ paths:
       x-domain-card: M1-02
       summary: 恢复指定账本的 before 正文、metadata 和文件，追加新账本
       parameters:
+        - { $ref: "#/components/parameters/MemoryWorkspace" }
+        - { $ref: "#/components/parameters/MemoryAgent" }
         - { name: id, in: path, required: true, schema: { type: integer, minimum: 1 } }
       requestBody:
         required: true
@@ -1241,6 +1263,8 @@ paths:
       x-domain-card: M1-05
       summary: 读取支撑文件，拒绝路径穿越、目录外符号链接及未授权 Skill
       parameters:
+        - { $ref: "#/components/parameters/MemoryWorkspace" }
+        - { $ref: "#/components/parameters/MemoryAgent" }
         - { name: id, in: path, required: true, schema: { type: string } }
         - { name: file, in: query, required: true, schema: { type: string, minLength: 1 } }
       responses:
@@ -1290,6 +1314,9 @@ paths:
                       items: { type: array, items: { $ref: "#/components/schemas/MemoryJob" } }
                       next_after: { type: [string, "null"] }
   /api/memory/jobs/{id}:
+    parameters:
+      - { name: workspace_id, in: query, schema: { type: string, minLength: 1 }, description: 可选当前范围，必须与 agent_id 同时提供并匹配作业 }
+      - { name: agent_id, in: query, schema: { type: string, minLength: 1 } }
     get:
       operationId: readMemoryJob
       tags: [memory]
@@ -1301,6 +1328,9 @@ paths:
         <<: *memory_errors
         "200": { $ref: "#/components/responses/MemoryJobEnvelope" }
   /api/memory/jobs/{id}/cancel:
+    parameters:
+      - { name: workspace_id, in: query, schema: { type: string, minLength: 1 }, description: 可选当前范围，必须与 agent_id 同时提供并匹配作业 }
+      - { name: agent_id, in: query, schema: { type: string, minLength: 1 } }
     post:
       operationId: cancelMemoryJob
       tags: [memory]
@@ -1313,6 +1343,9 @@ paths:
         <<: *memory_errors
         "200": { $ref: "#/components/responses/MemoryJobEnvelope" }
   /api/memory/jobs/{id}/approvals/{approval_id}:
+    parameters:
+      - { name: workspace_id, in: query, schema: { type: string, minLength: 1 }, description: 可选当前范围，必须与 agent_id 同时提供并匹配作业 }
+      - { name: agent_id, in: query, schema: { type: string, minLength: 1 } }
     post:
       operationId: decideMemoryJobApproval
       tags: [memory]

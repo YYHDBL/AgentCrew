@@ -20,6 +20,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from ..memory.snapshots import MemorySnapshotError
 from ..tool_outputs import ArtifactIntegrityError
 from ..memory.checkpoints import CheckpointCorrupt
+from agentcrew_core.memory.pagination import MemoryCursorError
 
 log = logging.getLogger("agentcrew.api.errors")
 
@@ -34,6 +35,18 @@ class ErrorCode(str, Enum):
     APPROVAL_STALE = "APPROVAL_STALE"                  # 409 审批已被不同决定处理
     IDEMPOTENCY_CONFLICT = "IDEMPOTENCY_CONFLICT"
     SYSTEM_BUSY = "SYSTEM_BUSY"
+    ENTRY_HASH_CONFLICT = "ENTRY_HASH_CONFLICT"
+    REVISION_CONFLICT = "REVISION_CONFLICT"
+    PATCH_CONFLICT = "PATCH_CONFLICT"
+    EXTERNAL_MODIFICATION = "EXTERNAL_MODIFICATION"
+    QUOTA_EXCEEDED = "QUOTA_EXCEEDED"
+    SAVE_SKIPPED = "SAVE_SKIPPED"
+    READ_REQUIRED = "READ_REQUIRED"
+    REVIEW_REQUIRED = "REVIEW_REQUIRED"
+    JOB_NOT_RUNNING = "JOB_NOT_RUNNING"
+    CREDENTIAL_REJECTED = "CREDENTIAL_REJECTED"
+    REVIEW_FORBIDDEN = "REVIEW_FORBIDDEN"
+    STORE_RECOVERING = "STORE_RECOVERING"
     PENDING_VERIFICATION = "PENDING_VERIFICATION"      # 409 resume 被待核验阻塞
     REPLAY_CORRUPT = "REPLAY_CORRUPT"                  # 409 重放遇损坏事件行（C9）
     QUEUE_EMPTY = "QUEUE_EMPTY"                        # 409 继续队列时无指令
@@ -58,6 +71,18 @@ DEFAULT_STATUS: dict[ErrorCode, int] = {
     ErrorCode.APPROVAL_STALE: 409,
     ErrorCode.IDEMPOTENCY_CONFLICT: 409,
     ErrorCode.SYSTEM_BUSY: 409,
+    ErrorCode.ENTRY_HASH_CONFLICT: 409,
+    ErrorCode.REVISION_CONFLICT: 409,
+    ErrorCode.PATCH_CONFLICT: 409,
+    ErrorCode.EXTERNAL_MODIFICATION: 409,
+    ErrorCode.QUOTA_EXCEEDED: 409,
+    ErrorCode.SAVE_SKIPPED: 409,
+    ErrorCode.READ_REQUIRED: 409,
+    ErrorCode.REVIEW_REQUIRED: 409,
+    ErrorCode.JOB_NOT_RUNNING: 409,
+    ErrorCode.CREDENTIAL_REJECTED: 422,
+    ErrorCode.REVIEW_FORBIDDEN: 403,
+    ErrorCode.STORE_RECOVERING: 503,
     ErrorCode.PENDING_VERIFICATION: 409,
     ErrorCode.REPLAY_CORRUPT: 409,
     ErrorCode.QUEUE_EMPTY: 409,
@@ -116,6 +141,13 @@ def error_response(
 
 
 def install_error_handlers(app) -> None:
+    @app.exception_handler(UnicodeDecodeError)
+    async def _memory_encoding_error(_: Request, exc: UnicodeDecodeError) -> JSONResponse:
+        return error_response(ErrorCode.EXTERNAL_MODIFICATION, "持久化文件的 UTF-8 校验失败",
+            detail={"encoding": exc.encoding, "start": exc.start, "end": exc.end})
+    @app.exception_handler(MemoryCursorError)
+    async def _memory_cursor_error(_: Request, exc: MemoryCursorError) -> JSONResponse:
+        return error_response(ErrorCode.VALIDATION_ERROR, str(exc))
     @app.exception_handler(ArtifactIntegrityError)
     async def _artifact_integrity_error(_: Request, exc: ArtifactIntegrityError) -> JSONResponse:
         return error_response(ErrorCode.REPLAY_CORRUPT,

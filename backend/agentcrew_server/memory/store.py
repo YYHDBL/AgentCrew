@@ -135,8 +135,12 @@ class MemoryStore:
         path = self.path(store_type, store_id)
         if path.is_symlink() or any(parent.is_symlink() for parent in path.parents):
             return failure("OUT_OF_SCOPE", "记忆路径不能使用符号链接")
+        metadata_path = path.with_suffix(".meta.json")
+        if metadata_path.is_symlink() or any(parent.is_symlink() for parent in metadata_path.parents) or \
+                metadata_path.exists() and not metadata_path.is_file() or path.exists() and not path.is_file():
+            return failure("EXTERNAL_MODIFICATION", "记忆正文或 metadata 路径已被外部替换")
         text = self._file_text(path)
-        metadata = self._file_text(path.with_suffix(".meta.json"))
+        metadata = self._file_text(metadata_path)
         row = self.db.read_conn.execute("SELECT * FROM memory_stores WHERE store_type=? AND store_id=?", (store_type, store_id)).fetchone()
         if row is None:
             if text is not None or metadata is not None:
@@ -152,6 +156,8 @@ class MemoryStore:
                 target = path.parent / relative
                 if target.is_symlink() or any(parent.is_symlink() for parent in target.parents):
                     return failure("OUT_OF_SCOPE", "Skill 支撑文件不能使用符号链接", file=relative)
+                if target.exists() and not target.is_file():
+                    return failure("EXTERNAL_MODIFICATION", "Skill 支撑文件已被外部替换", file=relative)
                 content = self._file_text(target)
                 if content is None or sha256(content.encode()) != digest:
                     return failure("EXTERNAL_MODIFICATION", "Skill 支撑文件与持久化校验值不一致", file=relative)

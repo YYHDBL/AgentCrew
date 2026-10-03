@@ -249,7 +249,9 @@ class MemoryReview:
         return {**{key: job[key] for key in ("id", "kind", "status", "conversation_id", "task_run_id",
             "trigger_global_seq", "model", "config_version", "error", "created_at", "finished_at")},
             "usage": json.loads(job["usage"]), "report": json.loads(job["report"]) if job["report"] else None,
-            "trigger_global_seq": job["trigger_global_seq"] or 0, "approvals": self.approvals(job_id)}
+            "trigger_global_seq": job["trigger_global_seq"] or 0, "approvals": self.approvals(job_id),
+            "calls": [{**dict(row), "payload": json.loads(row["payload"])} for row in self.db.read_conn.execute(
+                "SELECT ordinal,type,payload,created_at FROM memory_job_calls WHERE job_id=? ORDER BY ordinal", (job_id,))]}
 
     def _resolved_tx(self, conn, job, approval_id, decision, actor):
         event = self.jobs.events.append_in_tx(conn, task_run_id=None, conversation_id=job["conversation_id"],

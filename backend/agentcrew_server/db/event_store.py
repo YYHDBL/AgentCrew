@@ -82,6 +82,15 @@ class EventStore:
         ).fetchone()
         return int(row[0])
 
+    @staticmethod
+    def _context_scope(conn, kind, conversation_id, payload):
+        if kind not in {RunEventType.CONTEXT_COMPACTED, RunEventType.CONTEXT_BUDGET_CHECKED} or conversation_id is None:
+            return payload
+        row = conn.execute("SELECT workspace_id,agent_id FROM conversations WHERE id=?", (conversation_id,)).fetchone()
+        if row is None:
+            raise ValueError("上下文事件缺少真实会话范围")
+        return {**payload, "scope": {"owner_id": "owner", "workspace_id": row[0], "agent_id": row[1]}}
+
     def _append_tx(
         self,
         conn: sqlite3.Connection,
@@ -103,6 +112,7 @@ class EventStore:
             # COMMIT 处如实失败（走下面的回滚路径）
             conn.execute("PRAGMA defer_foreign_keys=ON")
             seq = self._next_seq(conn, task_run_id)
+            payload = self._context_scope(conn, type, conversation_id, payload)
             cursor = conn.execute(
                 "INSERT INTO run_events (id, task_run_id, seq, conversation_id,"
                 " agent_run_id, attempt_no, type, payload, created_at)"
@@ -167,6 +177,7 @@ class EventStore:
         # 的投影稍后创建（调用方复合事务里事件先插、投影后建）
         conn.execute("PRAGMA defer_foreign_keys=ON")
         seq = self._next_seq(conn, task_run_id)
+        payload = self._context_scope(conn, type, conversation_id, payload)
         cursor = conn.execute(
             "INSERT INTO run_events (id, task_run_id, seq, conversation_id,"
             " agent_run_id, attempt_no, type, payload, created_at)"

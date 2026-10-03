@@ -118,7 +118,8 @@ class MemorySkills:
                     "files": sorted(value["metadata"].get("files", {})), **({"file": file} if file is not None else {})}
 
     async def change(self, identity, name, *, action, change_id, expected_revision, basis,
-                     description=None, text=None, old_text=None, new_text=None, files=None):
+                     description=None, text=None, old_text=None, new_text=None, files=None,
+                     entry_hash=None, management_request=None):
         if not self._name(name) or action not in {"create", "patch", "edit"} or type(expected_revision) is not int or expected_revision < 0:
             return failure("VALIDATION_ERROR", "Skill 名称、动作及预期修订无效")
         denied = await asyncio.to_thread(self.store._authorize, identity, "workspace", identity.workspace_id)
@@ -135,6 +136,8 @@ class MemorySkills:
             store_id = previous[0] if previous else assigned_id if action == "create" else row["id"] if row else assigned_id
             request_context = {"name": name, "action": action, "text": text, "old_text": old_text, "new_text": new_text,
                                "description": description, "files": files}
+            if management_request is not None:
+                request_context.update(entry_hash=entry_hash, management_request=management_request)
             request_hash = self.store.request_hash(identity, "skill", store_id, expected_revision, basis, request_context=request_context)
             replayed = self.store._replayed(change_id, request_hash)
             if replayed is not None:
@@ -153,6 +156,9 @@ class MemorySkills:
             if before["revision"] != expected_revision:
                 return await self.store._record_failure(identity, change_id, request_hash,
                     failure("REVISION_CONFLICT", "预期修订已经陈旧", current_revision=before["revision"]))
+            if entry_hash is not None and not any(entry["entry_hash"] == entry_hash for entry in before["metadata"]["entries"]):
+                return await self.store._record_failure(identity, change_id, request_hash,
+                    failure("NOT_FOUND", "Skill 条目哈希已经不存在"))
             if action == "create" and (expected_revision != 0 or (row and not previous)):
                 return failure("REVISION_CONFLICT", "创建目标已经存在")
             if action != "create" and not row:

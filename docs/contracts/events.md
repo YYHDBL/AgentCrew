@@ -93,6 +93,8 @@
 
 M1 的会话后台事件没有前台 `task_run_id/seq`；来源任务放入 payload 的 `source_task_run_id`。人工管理及启动治理事件允许没有 conversation_id，使用 payload.scope 定义当前 owner/workspace/agent 范围；会话事件流只返回所属会话，记忆管理流只返回当前身份可读范围。所有事件沿用提交后的全局水位和排他续播，不修改前台任务状态及等待计数。M1-02 持久化与事件写入同事务，M1-11 实际验证 HTTP/SSE，M1-12 验证界面重放。
 
+`GET /api/memory/stream` 使用实际已登记的 workspace_id/agent_id：USER 变更属于当前所有者共享范围，workspace 变更向同工作区发送，soul、Skill、后台作业及会话上下文事件同时匹配工作区和员工。订阅注册后固定已提交 head，补播到 head 后按排他 global_seq 接收实时事件；范围过滤之前不向客户端发送正文或依据。新上下文预算与压缩事件由 EventStore 从真实会话记录补充 scope；旧上下文事件补播读取关联会话范围，不修改历史载荷。
+
 `MemoryScope = {owner_id: string, workspace_id: string | null, agent_id: string | null}`。`ChangePayload = {change_id: string, ledger_id: integer, store_type: "user" | "workspace" | "soul" | "skill", store_id: string, entry_id: string | null, entry_hash: string | null, revision: integer, action: string, summary: string, scope: MemoryScope, source_task_run_id: string | null, job_id: string | null}`。摘要最多200字符并执行凭据脱敏；正文及 metadata 的完整前后状态由账本保存。
 
 | 事件 | 必填 payload | 实施与消费 |
