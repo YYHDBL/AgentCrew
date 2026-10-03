@@ -115,7 +115,23 @@ M1 的会话后台事件没有前台 `task_run_id/seq`；来源任务放入 payl
 后台模型请求和工具明细保存为独立作业记录，使用 job_id/call_id 和来源 global_seq 查询。新前台消息两秒内取消 aux、审批和流，已准备变更遵循 [ADR-011](../decisions/ADR-011-memory-lifecycle.md) 的恢复协议。M1-13 核对记录数量、文件 SHA/mtime、副作用次数和两级审计。
 
 ## 治理（M2，governance §6）
-`governance.grant_changed / governance.rule_changed`
+
+治理事件由业务服务与审计在同一写通道事务追加，提交后按 global_seq 发布。组织事件没有 task_run_id/seq；其 resource_id、change_id 与 audit_seq 直接关联权威业务记录。`GovernanceScope = {org_id: string, workspace_id: string | null, agent_id: string | null, owner_id: string | null}`。scope 在写入时由真实关联生成。owner 可查看本组织，admin 限登记工作区，member 限自身可见员工及自身 actor 记录；组织角色事件仅 owner 和受影响成员可读。过滤在发送正文之前执行，补播和实时推送逐次核查当前权限，撤权后的 SSE 在心跳复查或新事件前关闭。
+
+`GovernanceChange = {change_id: string, resource_type: string, resource_id: string, revision: integer, actor_id: string, credential_owner_id: string, audit_seq: integer, scope: GovernanceScope}`。载荷不包含凭据、identity_token、连接器认证头或 Skill 正文；正文通过已鉴权资源 API 读取。新增字段先按本契约登记，再实施；客户端忽略未知事件类型。
+
+| 事件 | payload schema | 实施及影响 |
+|---|---|---|
+| `governance.resource_changed` | GovernanceChange，加 `status: "active" \| "disabled" \| "archived"` | M2-02/11，更新真实资源与修订，禁用时取消相关调用 |
+| `governance.identity_changed` | GovernanceChange，加 `effective_user_id: string` | M2-03，演示标识签发审计；不改变其他请求身份 |
+| `governance.role_changed` | GovernanceChange，加 `user_id: string, role: "owner" \| "admin" \| "member", status: "active" \| "disabled"` | M2-03，重新查询当前权限并结束无权订阅 |
+| `governance.grant_changed` | GovernanceChange，加 `grantee_type: "user" \| "agent", grantee_id: string, revoked_at: string \| null` | M2-05，撤销后重新组装工具与索引，已派发调用取消并核验 |
+| `governance.rule_changed` | GovernanceChange，加 `agent_id: string, tool_name: string, effect: "allow" \| "deny", revoked_at: string \| null` | M2-07，员工规则查询刷新，deny 优先 |
+| `governance.skill_version_published` | GovernanceChange，加 `version_id: string, version_no: integer, ledger_id: integer, sha256: string` | M2-04，change_id 关联 M1 skill.patched；恢复正文同样发布新版本 |
+| `governance.authorization_checked` | `{scope: GovernanceScope, actor_id: string, agent_id: string, allowed: boolean, reason: string, authorization_sha256: string, call_id?: string}` | M2-05/09，任务或尝试关联时保留其 task_run_id，明确当前有效权限 |
+| `governance.audit_verified` | GovernanceChange，加 `internal: object, anchor: object` | M2-10，仅可信链可追加成功验证；失败切入只读诊断，原断点保留 |
+
+治理拒绝使用现有工具失败事件及审计 action=permission.denied。审批请求/决定增加有效 actor、真实 credential_owner_id、agent_id、resource_id 和 authorization_sha256；相同决定重试返回首次记录，失去活动执行方的旧卡返回409并展示失效。run.started/resumed 的 context_fingerprint 增加任务配置修订、skill_versions 和 authorization_sha256，恢复不改写历史尝试。
 
 ## 定时与审计（M3/P5，cron-and-audit §3）
 `cron.job_fired / cron.job_missed / cron.job_skipped / cron.job_failed / audit.reported`

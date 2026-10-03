@@ -3,7 +3,7 @@
 > 模块深潜 #3 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（G1–G2 对齐，其余直接设计）**
 > 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)（Q14 B 档 / Q4 真实执行）、[02-Harness与Session事件模型](./harness-session.md)（审批事件、工具三态）、[03-Memory系统详设](./memory-system.md)（skill 账本）
 > 参考源码：`workMate/openwork/ee/packages/den-db/src/schema/sharables/`（config_object + grant 表族）、`workMate/ZCode/apps/zcode-cli/packages/core/src/permission/`、`workMate/AionUi`（四选项契约）、`workMate/learn-workbuddy/s23_audit_sandbox/`
-> 实施任务：[M2 安全与治理实施卡](../tasks/M2-cards.md)，13 张卡均未开始，依赖 M1 收口确认。
+> 实施任务：[M2 安全与治理实施卡](../tasks/M2-cards.md)，依照 [所有者开工授权](../acceptance/M2-start-authorization.md) 进入实施；M1 人工验收与收口确认仍待完成。
 
 ---
 
@@ -17,6 +17,8 @@
 ---
 
 ## 1. 资源模型（建表）
+
+M2 实施使用 [ADR-012](../decisions/ADR-012-governance-boundaries.md) 的关联、请求身份、操作矩阵和当前授权规则。每个请求固定有效身份，工作区成员范围与 user→agent Grant 共同限制访问；服务分配数据目录，资源保留历史修订，删除使用禁用或归档。任务配置及技能版本单独绑定，会话三库继续冻结，恢复和后续派发使用当前权限。接口具体字段使用 OpenAPI v0.5，实施及真实 HTTP 归属见 [M2 操作矩阵](../contracts/m2-operations.md)。
 
 ```
 organizations(id PK, name, slug UNIQUE, created_at)

@@ -1,11 +1,11 @@
 # M2 · 安全与治理实施任务卡
 
-> 日期：2026-10-01 ｜ 状态：13 张卡均未开始 ｜ 代码依据：desktop-shell `9f6bc47`
+> 日期：2026-10-03 ｜ 状态：M2-01 已完成，M2-02 实施中，其余卡片未开始 ｜ 代码依据：desktop-shell `acec42e`
 > 设计依据：[权限治理详设](../architecture/governance.md)、[Harness 与 Session](../architecture/harness-session.md)、[M1 实施卡](./M1-cards.md)、[ADR-008](../decisions/ADR-008-tool-admission-and-sandbox.md)、[F009 数字员工与授权管理](../features/F009-employee-and-governance.md)。
 
 ## 领取与交付约定
 
-M2 功能实施在 M1 通过验收并获得所有者收口确认后开始。按照 M2-01 至 M2-13 顺序领取，每张卡提交真实验收记录、提交并推送后领取下一张。本文只交付实施任务卡；13 张卡均未开始，不代表接口或界面已经可用。
+所有者于 2026-10-03 明确授权暂缓 M1 人工验收并立即进入 M2，开工依据见 [M2 开工授权](../acceptance/M2-start-authorization.md)。M1-01 至 M1-13 实施与自动验收完成，八项贯穿验收 8/8、后端 535 项测试通过及 M0 回归通过；M1 人工验收与收口确认仍待完成。按照 M2-01 至 M2-13 顺序领取，每张卡提交真实验收记录、提交并推送后领取下一张。卡片实际状态仅按实施与验收证据更新。
 
 每张卡交付代码、必要回归和 `docs/acceptance/M2-XX.md`；公开证据进入 `docs/acceptance/assets/M2/XX/`。真实运行数据、升级快照、凭据及中间结果存入已忽略的工作目录，不使用 `/tmp`。公开 SQL、JSON、截图和日志必须脱敏，截图发布前逐张检查。失败写明实际状态、归属卡片及返工建议。
 
@@ -39,8 +39,8 @@ M2 功能实施在 M1 通过验收并获得所有者收口确认后开始。按�
 
 | 卡片 | 负责范围 | 前置卡片 | 主要负责者 | 状态 |
 |---|---|---|---|---|
-| M2-01 | 契约、安全语义与作用域 | M1 收口确认 | 后端，前端共同核对 | 未开始 |
-| M2-02 | 资源数据、旧库迁移与种子组织 | M2-01 | 后端 | 未开始 |
+| M2-01 | 契约、安全语义与作用域 | 所有者 M2 开工授权 | 后端，前端共同核对 | 已完成，见 [验收](../acceptance/M2-01.md) |
+| M2-02 | 资源数据、旧库迁移与种子组织 | M2-01 | 后端 | 实施中 |
 | M2-03 | 本地认证、演示身份与 RBAC | M2-02 | 后端 | 未开始 |
 | M2-04 | Skill 不可变版本与 M1 账本接入 | M2-02、M2-03 | 后端 | 未开始 |
 | M2-05 | Grant、能力隔离与实时撤销 | M2-03、M2-04 | 后端 | 未开始 |
@@ -82,7 +82,7 @@ flowchart TD
 
 ## M2-01 · 契约、安全语义与作用域
 
-**依赖与范围。** M1 收口确认。本卡交付跨层决策和契约，由后端维护，前端核对管理状态；不提前创建空业务模块。更新 `docs/contracts/openapi.yaml`、`docs/contracts/events.md`、`docs/architecture/governance.md`、`docs/architecture/harness-session.md`，在 `docs/decisions/` 记录必要 ADR。
+**依赖与范围。** 所有者 M2 开工授权已经满足；M1 人工验收与收口确认仍待完成。本卡交付跨层决策和契约，由后端维护，前端核对管理状态；不提前创建空业务模块。更新 `docs/contracts/openapi.yaml`、`docs/contracts/events.md`、`docs/architecture/governance.md`、`docs/architecture/harness-session.md`，在 `docs/decisions/` 记录必要 ADR。
 
 **实施内容。** 完整定义组织、工作区、用户、成员角色、员工、技能版本、连接器、grant 和权限规则的身份与关联。明确 owner/admin/member 操作矩阵、成员会话归属、跨工作区访问、资源禁用、并发修订及删除保留历史。补齐成员查询、当前身份、演示身份切换、治理资源 CRUD、授予撤销、规则回收、审计过滤/校验/导出、备份恢复接口，逐个指定实现卡片；每项 operation 都有真实 HTTP 验收。
 

@@ -9,9 +9,11 @@
 openapi: 3.1.0
 info:
   title: AgentCrew Sidecar API
-  version: 0.4.0-draft
+  version: 0.5.0-draft
   description: |
     单用户本地 sidecar。M0 操作带完整请求/响应/错误 schema；
+    M2 操作定义当前身份、资源、授权、审计和诊断边界；实施归属见 x-domain-card。
+    演示身份通过服务端签发的 X-AgentCrew-Identity 标识固定于每个请求。
     p3/p5 操作 schema 随对应切片细化（当前为方向性描述）。
 servers:
   - url: http://127.0.0.1:{port}
@@ -19,6 +21,8 @@ servers:
       port: { default: "8710" }
 security:
   - bearerToken: []
+  - bearerToken: []
+    demoIdentity: []
 tags:
   - { name: tasks, description: 任务（会话）与指令 }
   - { name: materials, description: 任务材料与访问范围（F001） }
@@ -30,11 +34,14 @@ tags:
   - { name: runs, description: 执行记录与事件（F002/F008） }
   - { name: settings, description: 后端运行配置 }
   - { name: memory, description: 三库、Skill、审核、账本与后台作业（M1-11 实施） }
+  - { name: governance, description: 当前身份、资源、Grant、角色和权限规则（M2） }
+  - { name: audit, description: 审计查询、两级验证和受控诊断恢复（M2） }
   - { name: cron, description: 定时任务（F007，phase p5） }
 
 components:
   securitySchemes:
     bearerToken: { type: http, scheme: bearer }
+    demoIdentity: { type: apiKey, in: header, name: X-AgentCrew-Identity, description: 服务端签发的演示身份标识，Bearer仍然必需 }
   schemas:
     Error:
       type: object
@@ -110,6 +117,7 @@ components:
       type: object
       required: [instruction]
       properties:
+        workspace_id: { type: string, default: default, description: 真实登记且当前身份可访问的工作区 }
         agent_id: { type: string }
         instruction: { type: string, minLength: 1 }
         client_request_id: { type: string, description: 幂等键——网络重试不产生重复任务（v0.3） }
@@ -468,7 +476,278 @@ components:
         basis: { type: string, minLength: 1 }
         conversation_id: { type: [string, "null"] }
         files: { type: object, additionalProperties: { type: string } }
+    GovernanceChangeRequest:
+      type: object
+      required: [change_id, expected_revision]
+      properties:
+        change_id: { type: string, minLength: 1, maxLength: 128 }
+        expected_revision: { type: integer, minimum: 0 }
+    Identity:
+      type: object
+      required: [credential_owner_id, effective_user_id, name, org_id, role, demo, workspace_ids]
+      properties:
+        credential_owner_id: { type: string }
+        effective_user_id: { type: string }
+        name: { type: string }
+        org_id: { type: string }
+        role: { type: string, enum: [owner, admin, member] }
+        demo: { type: boolean }
+        workspace_ids: { type: array, items: { type: string } }
+    DemoIdentityRequest:
+      type: object
+      additionalProperties: false
+      required: [user_id, change_id]
+      properties:
+        user_id: { type: string, minLength: 1 }
+        change_id: { type: string, minLength: 1, maxLength: 128 }
+    GovernanceResource:
+      type: object
+      required: [id, name, status, revision, created_at]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        org_id: { type: string }
+        workspace_id: { type: string }
+        data_dir: { type: string, description: 服务分配的工作区目录 }
+        status: { type: string, enum: [active, disabled, archived] }
+        revision: { type: integer, minimum: 1 }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        spec: { $ref: "#/components/schemas/AgentSpec" }
+        description: { type: string, maxLength: 60 }
+        source: { type: string, enum: [user, agent, system] }
+        current_version_id: { type: [string, "null"] }
+        type: { type: string, enum: [http, mcp] }
+        config: { $ref: "#/components/schemas/ConnectorConfig" }
+        credential_configured: { type: boolean }
+    WorkspaceRequest:
+      allOf:
+        - { $ref: "#/components/schemas/GovernanceChangeRequest" }
+        - type: object
+          required: [name]
+          properties:
+            name: { type: string, minLength: 1, maxLength: 80 }
+            status: { type: string, enum: [active, disabled, archived] }
+    AgentSpec:
+      type: object
+      additionalProperties: false
+      required: [position, model_slot, skill_ids, connector_ids]
+      properties:
+        position: { type: string, minLength: 1, maxLength: 2000 }
+        model_slot: { type: string, enum: [main, aux] }
+        skill_ids: { type: array, uniqueItems: true, items: { type: string } }
+        connector_ids: { type: array, uniqueItems: true, items: { type: string } }
+    AgentRequest:
+      allOf:
+        - { $ref: "#/components/schemas/GovernanceChangeRequest" }
+        - type: object
+          required: [workspace_id, name, spec]
+          properties:
+            workspace_id: { type: string }
+            name: { type: string, minLength: 1, maxLength: 80 }
+            status: { type: string, enum: [active, disabled, archived] }
+            spec: { $ref: "#/components/schemas/AgentSpec" }
+    GovernanceResourcePatch:
+      allOf:
+        - { $ref: "#/components/schemas/GovernanceChangeRequest" }
+        - type: object
+          properties:
+            name: { type: string, minLength: 1, maxLength: 80 }
+            status: { type: string, enum: [active, disabled, archived] }
+            spec: { $ref: "#/components/schemas/AgentSpec" }
+            description: { type: string, maxLength: 60 }
+            config: { $ref: "#/components/schemas/ConnectorConfig" }
+            credential: { type: [string, "null"], writeOnly: true, description: 服务端绑定认证信息；null清除，缺省不变 }
+    Membership:
+      type: object
+      required: [id, org_id, user_id, name, role, status, revision, workspace_ids]
+      properties:
+        id: { type: string }
+        org_id: { type: string }
+        user_id: { type: string }
+        name: { type: string }
+        role: { type: string, enum: [owner, admin, member] }
+        status: { type: string, enum: [active, disabled] }
+        revision: { type: integer, minimum: 1 }
+        workspace_ids: { type: array, items: { type: string } }
+    MembershipRoleRequest:
+      allOf:
+        - { $ref: "#/components/schemas/GovernanceChangeRequest" }
+        - type: object
+          required: [role]
+          properties:
+            role: { type: string, enum: [owner, admin, member] }
+            status: { type: string, enum: [active, disabled] }
+    WorkspaceMemberRequest:
+      allOf:
+        - { $ref: "#/components/schemas/GovernanceChangeRequest" }
+        - type: object
+          required: [enabled]
+          properties:
+            enabled: { type: boolean }
+    GovernanceSkillCreate:
+      allOf:
+        - { $ref: "#/components/schemas/SkillCreateRequest" }
+    SkillVersionRequest:
+      allOf:
+        - { $ref: "#/components/schemas/MemoryChangeRequest" }
+        - type: object
+          properties:
+            restore_version_id: { type: string, description: 恢复该版本正文与支撑文件，追加新版本；不能与text/files同时提供 }
+    SkillVersion:
+      type: object
+      required: [id, skill_id, version_no, change_id, ledger_id, content, metadata, files, sha256, created_by, created_at]
+      properties:
+        id: { type: string }
+        skill_id: { type: string }
+        version_no: { type: integer, minimum: 1 }
+        change_id: { type: string }
+        ledger_id: { type: integer }
+        content: { type: string }
+        metadata: { type: object, additionalProperties: true }
+        files: { type: array, items: { $ref: "#/components/schemas/MemoryLedgerFile" } }
+        sha256: { type: string, pattern: "^[a-f0-9]{64}$" }
+        created_by: { type: string }
+        created_at: { type: string, format: date-time }
+    ConnectorToolPolicy:
+      type: object
+      additionalProperties: false
+      required: [read_only, destructive, risk_level, needs_approval]
+      properties:
+        read_only: { type: boolean }
+        destructive: { type: boolean }
+        risk_level: { type: string, enum: [low, medium, high] }
+        needs_approval: { type: boolean }
+        timeout_ms: { type: integer, minimum: 1, maximum: 300000, default: 60000 }
+    ConnectorConfig:
+      type: object
+      additionalProperties: false
+      required: [allowed_hosts, allowed_ports, allow_loopback]
+      properties:
+        url: { type: string, format: uri }
+        allowed_hosts: { type: array, uniqueItems: true, items: { type: string, minLength: 1 } }
+        allowed_ports: { type: array, uniqueItems: true, items: { type: integer, minimum: 1, maximum: 65535 } }
+        allow_loopback: { type: boolean, default: false }
+        transport: { type: string, enum: [stdio, streamable_http] }
+        command: { type: string, description: stdio 固定管理员批准的可执行路径 }
+        args: { type: array, items: { type: string } }
+        credential_header: { type: string, default: Authorization }
+        tool_policies: { type: object, additionalProperties: { $ref: "#/components/schemas/ConnectorToolPolicy" } }
+        idempotent_endpoints:
+          type: array
+          items:
+            type: object
+            required: [method, path, guarantee]
+            properties:
+              method: { type: string, enum: [POST, PUT, PATCH, DELETE] }
+              path: { type: string }
+              guarantee: { type: string, minLength: 1, description: 上游真实去重承诺及验证依据 }
+    ConnectorRequest:
+      allOf:
+        - { $ref: "#/components/schemas/GovernanceChangeRequest" }
+        - type: object
+          required: [workspace_id, name, type, config]
+          properties:
+            workspace_id: { type: string }
+            name: { type: string, minLength: 1, maxLength: 80 }
+            type: { type: string, enum: [http, mcp] }
+            config: { $ref: "#/components/schemas/ConnectorConfig" }
+            credential: { type: string, writeOnly: true }
+    GrantRequest:
+      type: object
+      additionalProperties: false
+      required: [change_id, resource_type, resource_id, grantee_type, grantee_id]
+      properties:
+        change_id: { type: string, minLength: 1, maxLength: 128 }
+        resource_type: { type: string, enum: [skill, connector, agent] }
+        resource_id: { type: string }
+        grantee_type: { type: string, enum: [agent, user] }
+        grantee_id: { type: string }
+    Grant:
+      allOf:
+        - { $ref: "#/components/schemas/GrantRequest" }
+        - type: object
+          required: [id, workspace_id, revision, granted_by_user_id, created_at, revoked_at]
+          properties:
+            id: { type: string }
+            workspace_id: { type: string }
+            revision: { type: integer, minimum: 1 }
+            granted_by_user_id: { type: string }
+            created_at: { type: string, format: date-time }
+            revoked_at: { type: [string, "null"], format: date-time }
+    PermissionRuleRequest:
+      type: object
+      additionalProperties: false
+      required: [change_id, tool_name, pattern, effect]
+      properties:
+        change_id: { type: string, minLength: 1, maxLength: 128 }
+        tool_name: { type: string }
+        pattern: { type: string, minLength: 1, description: 路径为规范化目录；bash为完整命令；HTTP为连接器约束内域名 }
+        effect: { type: string, enum: [allow, deny] }
+    PermissionRule:
+      allOf:
+        - { $ref: "#/components/schemas/PermissionRuleRequest" }
+        - type: object
+          required: [id, agent_id, revision, created_by_user_id, created_at, revoked_at]
+          properties:
+            id: { type: string }
+            agent_id: { type: string }
+            revision: { type: integer, minimum: 1 }
+            created_by_user_id: { type: string }
+            created_at: { type: string, format: date-time }
+            revoked_at: { type: [string, "null"], format: date-time }
+    AuditRecord:
+      type: object
+      required: [seq, ts, actor_type, actor_id, action, resource_type, resource_id, detail, prev_hash, hash]
+      properties:
+        seq: { type: integer, minimum: 1 }
+        ts: { type: string, format: date-time }
+        actor_type: { type: string, enum: [user, agent, system, curator] }
+        actor_id: { type: string }
+        action: { type: string }
+        resource_type: { type: [string, "null"] }
+        resource_id: { type: [string, "null"] }
+        detail: { type: object, additionalProperties: true, description: 已脱敏，包含真实及有效身份和范围 }
+        prev_hash: { type: string }
+        hash: { type: string }
+    AuditVerification:
+      type: object
+      required: [ok, internal, anchor]
+      properties:
+        ok: { type: boolean }
+        internal:
+          type: object
+          required: [ok, checked_rows, broken_at, reason]
+          properties:
+            ok: { type: boolean }
+            checked_rows: { type: integer, minimum: 0 }
+            broken_at: { type: [integer, "null"] }
+            reason: { type: [string, "null"] }
+        anchor:
+          type: object
+          required: [ok, status, seq, hash]
+          properties:
+            ok: { type: boolean }
+            status: { type: string, enum: [verified, empty, missing, malformed, mismatch] }
+            seq: { type: [integer, "null"] }
+            hash: { type: [string, "null"] }
+    DiagnosticBackup:
+      type: object
+      required: [id, kind, created_at, verified, database_sha256, anchor_seq, anchor_hash]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [database, directory] }
+        created_at: { type: string, format: date-time }
+        verified: { type: boolean }
+        database_sha256: { type: string }
+        anchor_seq: { type: integer }
+        anchor_hash: { type: string }
   parameters:
+    GovernanceId: { name: id, in: path, required: true, schema: { type: string, minLength: 1 } }
+    GovernanceWorkspace: { name: workspace_id, in: query, schema: { type: string, minLength: 1 } }
+    GovernanceLimit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+    GovernanceAfter: { name: after, in: query, schema: { type: string, minLength: 1 }, description: 排他游标绑定有效身份、范围、过滤及稳定排序 }
+    DemoIdentity: { name: X-AgentCrew-Identity, in: header, schema: { type: string, minLength: 1 }, description: 服务端签发标识，未知或失效返回401；缺省使用真实owner }
     MemoryStoreType: { name: store_type, in: path, required: true, schema: { type: string, enum: [user, workspace, soul, skill] } }
     MemoryStoreId: { name: store_id, in: path, required: true, schema: { type: string, minLength: 1 } }
     MemoryLimit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
@@ -476,6 +755,29 @@ components:
     MemoryWorkspace: { name: workspace_id, in: query, required: true, schema: { type: string, minLength: 1 } }
     MemoryAgent: { name: agent_id, in: query, required: true, schema: { type: string, minLength: 1 } }
   responses:
+    GovernanceResourceEnvelope:
+      description: 真实资源及修订，凭据只返回configured状态
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data]
+            properties:
+              data: { $ref: "#/components/schemas/GovernanceResource" }
+    GovernanceResourcePage:
+      description: 当前身份可见资源的稳定分页
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data]
+            properties:
+              data:
+                type: object
+                required: [items, next_after]
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/GovernanceResource" } }
+                  next_after: { type: [string, "null"] }
     MemoryChangeEnvelope:
       description: 已提交完整变更，重试返回首次提交标识
       content:
@@ -510,6 +812,679 @@ x-memory-error-responses: &memory_errors
   "503": { $ref: "#/components/responses/ErrEnvelope" }
 
 paths:
+  /api/identity:
+    get:
+      operationId: readIdentity
+      tags: [governance]
+      x-implementation-card: M2-03
+      x-domain-card: M2-03
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 请求固定的有效身份及当前角色
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Identity" }
+  /api/identity/demo:
+    post:
+      operationId: issueDemoIdentity
+      tags: [governance]
+      x-implementation-card: M2-03
+      x-domain-card: M2-03
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DemoIdentityRequest" }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 已认证真实owner签发的演示身份；返回标识仅用于该窗口
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [identity, identity_token]
+                    properties:
+                      identity: { $ref: "#/components/schemas/Identity" }
+                      identity_token: { type: string, description: 不得写入公开日志或证据 }
+  /api/organization:
+    get:
+      operationId: readOrganization
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-02
+      responses:
+        <<: *memory_errors
+        "200": { $ref: "#/components/responses/GovernanceResourceEnvelope" }
+    patch:
+      operationId: editOrganization
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-03
+      summary: owner修改组织，禁用保留历史并禁止后续业务
+      requestBody: &resource_patch_body
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GovernanceResourcePatch" }
+      responses:
+        <<: *memory_errors
+        "200": { $ref: "#/components/responses/GovernanceResourceEnvelope" }
+  /api/memberships:
+    get:
+      operationId: listMemberships
+      tags: [governance]
+      x-implementation-card: M2-03
+      x-domain-card: M2-03
+      parameters: &governance_page_parameters
+        - { $ref: "#/components/parameters/GovernanceLimit" }
+        - { $ref: "#/components/parameters/GovernanceAfter" }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: owner读取本组织；其他身份仅读取自身成员
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items, next_after]
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/Membership" } }
+                      next_after: { type: [string, "null"] }
+  /api/memberships/{id}/role:
+    parameters: &governance_id_parameters
+      - { $ref: "#/components/parameters/GovernanceId" }
+    patch:
+      operationId: editMembershipRole
+      tags: [governance]
+      x-implementation-card: M2-03
+      x-domain-card: M2-03
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MembershipRoleRequest" }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 已更新角色及成员状态；最后有效owner禁止降权或禁用
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Membership" }
+  /api/workspaces/{id}/members/{user_id}:
+    parameters:
+      - { $ref: "#/components/parameters/GovernanceId" }
+      - { name: user_id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: editWorkspaceMembership
+      tags: [governance]
+      x-implementation-card: M2-03
+      x-domain-card: M2-03
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkspaceMemberRequest" }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: owner登记或回收工作区访问
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [workspace_id, user_id, enabled, revision]
+                    properties:
+                      workspace_id: { type: string }
+                      user_id: { type: string }
+                      enabled: { type: boolean }
+                      revision: { type: integer, minimum: 1 }
+  /api/workspaces:
+    get:
+      operationId: listWorkspaces
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-02
+      parameters: *governance_page_parameters
+      responses: &resource_page_responses
+        <<: *memory_errors
+        "200": { $ref: "#/components/responses/GovernanceResourcePage" }
+    post:
+      operationId: createWorkspace
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-02
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkspaceRequest" }
+      responses: &resource_create_responses
+        <<: *memory_errors
+        "200": { $ref: "#/components/responses/GovernanceResourceEnvelope" }
+  /api/workspaces/{id}:
+    parameters: *governance_id_parameters
+    get:
+      operationId: readWorkspace
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-02
+      responses: *resource_create_responses
+    patch:
+      operationId: editWorkspace
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-02
+      requestBody: *resource_patch_body
+      responses: *resource_create_responses
+    delete:
+      operationId: disableWorkspace
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-02
+      requestBody: &governance_change_body
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GovernanceChangeRequest" }
+      responses: *resource_create_responses
+  /api/agents:
+    get:
+      operationId: listAgents
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-05
+      parameters: &workspace_page_parameters
+        - { $ref: "#/components/parameters/GovernanceWorkspace" }
+        - { $ref: "#/components/parameters/GovernanceLimit" }
+        - { $ref: "#/components/parameters/GovernanceAfter" }
+      responses: *resource_page_responses
+    post:
+      operationId: createAgent
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-02
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AgentRequest" }
+      responses: *resource_create_responses
+  /api/agents/{id}:
+    parameters: *governance_id_parameters
+    get:
+      operationId: readAgent
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-05
+      responses: *resource_create_responses
+    patch:
+      operationId: editAgent
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-02
+      requestBody: *resource_patch_body
+      responses: *resource_create_responses
+    delete:
+      operationId: disableAgent
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-05
+      requestBody: *governance_change_body
+      responses: *resource_create_responses
+  /api/skills:
+    get:
+      operationId: listGovernanceSkills
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-04
+      parameters: *workspace_page_parameters
+      responses: *resource_page_responses
+    post:
+      operationId: createGovernanceSkill
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-04
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GovernanceSkillCreate" }
+      responses: *resource_create_responses
+  /api/skills/{id}:
+    parameters: *governance_id_parameters
+    get:
+      operationId: readGovernanceSkill
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-04
+      responses: *resource_create_responses
+    patch:
+      operationId: editGovernanceSkill
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-04
+      requestBody: *resource_patch_body
+      responses: *resource_create_responses
+    delete:
+      operationId: archiveGovernanceSkill
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-04
+      requestBody: *governance_change_body
+      responses: *resource_create_responses
+  /api/skills/{id}/versions:
+    parameters: *governance_id_parameters
+    get:
+      operationId: listSkillVersions
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-04
+      parameters: *governance_page_parameters
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 不可变历史版本，按version_no降序
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items, next_after]
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/SkillVersion" } }
+                      next_after: { type: [string, "null"] }
+    post:
+      operationId: publishSkillVersion
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-04
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SkillVersionRequest" }
+      responses: &skill_version_responses
+        <<: *memory_errors
+        "200":
+          description: 版本正文与支撑文件；恢复旧正文产生新版本
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/SkillVersion" }
+  /api/skills/{id}/versions/{version_id}:
+    parameters:
+      - { $ref: "#/components/parameters/GovernanceId" }
+      - { name: version_id, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: readSkillVersion
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-04
+      responses: *skill_version_responses
+  /api/connectors:
+    get:
+      operationId: listConnectors
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-06
+      parameters: *workspace_page_parameters
+      responses: *resource_page_responses
+    post:
+      operationId: createConnector
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-06
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConnectorRequest" }
+      responses: *resource_create_responses
+  /api/connectors/{id}:
+    parameters: *governance_id_parameters
+    get:
+      operationId: readConnector
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-06
+      responses: *resource_create_responses
+    patch:
+      operationId: editConnector
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-06
+      requestBody: *resource_patch_body
+      responses: *resource_create_responses
+    delete:
+      operationId: disableConnector
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-06
+      requestBody: *governance_change_body
+      responses: *resource_create_responses
+  /api/connectors/{id}/validate:
+    parameters: *governance_id_parameters
+    post:
+      operationId: validateConnector
+      tags: [governance]
+      x-implementation-card: M2-06
+      x-domain-card: M2-06
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 真实服务响应或SDK工具发现；连接失败明确返回错误
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [connector_id, ok, tools]
+                    properties:
+                      connector_id: { type: string }
+                      ok: { type: boolean }
+                      status_code: { type: integer }
+                      tools:
+                        type: array
+                        items:
+                          type: object
+                          required: [name, parameters]
+                          properties:
+                            name: { type: string }
+                            parameters: { type: object, additionalProperties: true }
+  /api/grants:
+    get:
+      operationId: listGrants
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-05
+      parameters:
+        - { $ref: "#/components/parameters/GovernanceWorkspace" }
+        - { $ref: "#/components/parameters/GovernanceLimit" }
+        - { $ref: "#/components/parameters/GovernanceAfter" }
+        - { name: revoked, in: query, schema: { type: boolean, default: false } }
+        - { name: grantee_id, in: query, schema: { type: string } }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 当前身份范围内授权及撤销状态
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items, next_after]
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/Grant" } }
+                      next_after: { type: [string, "null"] }
+    post:
+      operationId: createGrant
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-05
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GrantRequest" }
+      responses: &grant_responses
+        <<: *memory_errors
+        "200":
+          description: 持久化授权及修订，相同请求返回首次记录
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/Grant" }
+  /api/grants/{id}:
+    parameters: *governance_id_parameters
+    delete:
+      operationId: revokeGrant
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-05
+      requestBody: *governance_change_body
+      responses: *grant_responses
+  /api/agents/{id}/permission-rules:
+    parameters: *governance_id_parameters
+    get:
+      operationId: listPermissionRules
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-07
+      parameters:
+        - { $ref: "#/components/parameters/GovernanceLimit" }
+        - { $ref: "#/components/parameters/GovernanceAfter" }
+        - { name: revoked, in: query, schema: { type: boolean, default: false } }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 员工授权规则及来源，deny优先
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items, next_after]
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/PermissionRule" } }
+                      next_after: { type: [string, "null"] }
+    post:
+      operationId: createPermissionRule
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-07
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PermissionRuleRequest" }
+      responses: &rule_responses
+        <<: *memory_errors
+        "200":
+          description: 已保存规范化规则，人工规则不扩大强制边界
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/PermissionRule" }
+  /api/agents/{id}/permission-rules/{rule_id}:
+    parameters:
+      - { $ref: "#/components/parameters/GovernanceId" }
+      - { name: rule_id, in: path, required: true, schema: { type: string } }
+    delete:
+      operationId: revokePermissionRule
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-07
+      requestBody: *governance_change_body
+      responses: *rule_responses
+  /api/governance/stream:
+    get:
+      operationId: streamGovernanceEvents
+      tags: [governance]
+      x-implementation-card: M2-11
+      x-domain-card: M2-05
+      parameters:
+        - { $ref: "#/components/parameters/GovernanceWorkspace" }
+        - { name: from, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        <<: *memory_errors
+        "200": { description: "text/event-stream，当前身份可见范围；撤权结束订阅，沿用排他global_seq与控制帧" }
+  /api/audit:
+    get:
+      operationId: listAudit
+      tags: [audit]
+      x-implementation-card: M2-10
+      x-domain-card: M2-10
+      parameters: &audit_parameters
+        - { $ref: "#/components/parameters/GovernanceWorkspace" }
+        - { $ref: "#/components/parameters/GovernanceLimit" }
+        - { $ref: "#/components/parameters/GovernanceAfter" }
+        - { name: actor, in: query, schema: { type: string } }
+        - { name: action, in: query, schema: { type: string } }
+        - { name: resource, in: query, schema: { type: string }, description: resource_type或resource_type:resource_id }
+      responses:
+        <<: *memory_errors
+        "200": &audit_page_response
+          description: 脱敏审计记录按seq降序；member仅自身actor
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items, next_after]
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/AuditRecord" } }
+                      next_after: { type: [string, "null"] }
+  /api/audit/export:
+    get:
+      operationId: exportAudit
+      tags: [audit]
+      x-implementation-card: M2-10
+      x-domain-card: M2-10
+      parameters: *audit_parameters
+      responses:
+        <<: *memory_errors
+        "200": *audit_page_response
+  /api/audit/verify:
+    post:
+      operationId: verifyAudit
+      tags: [audit]
+      x-implementation-card: M2-10
+      x-domain-card: M2-10
+      responses:
+        <<: *memory_errors
+        "200":
+          description: owner执行两级校验；失败进入只读诊断，损坏链禁止追加验证审计
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/AuditVerification" }
+  /api/diagnostics/backups:
+    get:
+      operationId: listDiagnosticBackups
+      tags: [audit]
+      x-implementation-card: M2-10
+      x-domain-card: M2-10
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 服务管理的备份；恢复前重新验证SHA及两级审计
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/DiagnosticBackup" } }
+    post:
+      operationId: createDiagnosticBackup
+      tags: [audit]
+      x-implementation-card: M2-10
+      x-domain-card: M2-10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [change_id, kind]
+              properties:
+                change_id: { type: string, minLength: 1 }
+                kind: { type: string, enum: [database, directory] }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 正常模式创建并验证备份；诊断期间禁止创建
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/DiagnosticBackup" }
+  /api/diagnostics/restore:
+    post:
+      operationId: restoreDiagnosticBackup
+      tags: [audit]
+      x-implementation-card: M2-10
+      x-domain-card: M2-10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [backup_id, change_id]
+              properties:
+                backup_id: { type: string, minLength: 1 }
+                change_id: { type: string, minLength: 1 }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 受控恢复保留损坏材料；重启并通过完整验证后才能恢复业务
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [backup_id, restart_required, preserved_path]
+                    properties:
+                      backup_id: { type: string }
+                      restart_required: { type: boolean, const: true }
+                      preserved_path: { type: string }
   /api/health:
     get:
       tags: [tasks]
