@@ -35,6 +35,7 @@ import httpx
 
 from agentcrew_core.events import RunEventType
 from agentcrew_core.memory import sha256
+from agentcrew_core.memory.budget import ContextBudgetError
 from agentcrew_core.loop import (
     LoopDeps,
     LoopGates,
@@ -56,6 +57,7 @@ from agentcrew_core.tools.scheduler import (
 
 from ..bus import Subscription, Topic
 from ..providers import ConfiguredProvider, bind_slot
+from ..memory.tokenizer import TOKENIZER_FIELDS
 from ..memory.snapshots import MemorySnapshotError
 
 if TYPE_CHECKING:
@@ -237,6 +239,7 @@ class RunManager:
             "model": cfg.model,
             "base_url": cfg.base_url,
             "max_tokens": cfg.max_tokens,
+            **{field: getattr(cfg, field) for field in TOKENIZER_FIELDS},
             "api_key_sha256": input_hash(
                 {"api_key": cfg.api_key})[:16],
         }
@@ -340,10 +343,11 @@ class RunManager:
                 ctx.memory_skills = self._memory_skills.run_tool
 
             async def sink(event_type: str, payload: dict) -> None:
-                await self._emit(task_run_id, conversation_id,
+                return await self._emit(task_run_id, conversation_id,
                                  event_type, payload, attempt_no=attempt_no)
 
             ctx.emit = sink
+            provider.budget_sink = sink
 
             if resume:
                 # C9 §7：attempt 行已由 run.resumed 投影建立，不重发
@@ -464,6 +468,18 @@ class RunManager:
             _log.exception("run.crash task=%s", task_run_id)
             terminal = "failed"
             fail_reason = f"internal:{type(e).__name__}"
+            causes = [e]
+            while causes:
+                cause = causes.pop()
+                if isinstance(cause, BaseExceptionGroup):
+                    causes.extend(cause.exceptions)
+                elif isinstance(cause, ContextBudgetError):
+                    fail_reason = str(cause)
+                    break
+                elif isinstance(cause, OSError) and "artifacts" in str(cause):
+                    fail_reason = "ARTIFACT_WRITE_FAILED"
+                elif isinstance(cause, RuntimeError) and "EXTERNALIZATION_UNAVAILABLE" in str(cause):
+                    fail_reason = "EXTERNALIZATION_UNAVAILABLE"
             try:
                 # F2 防线：兜底补发前查终态事件是否已在库
                 if not await self._terminal_event_exists(task_run_id):

@@ -10,13 +10,18 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import logging
+import socket
 from pathlib import Path
 
+import httpx
 import pytest
+import uvicorn
 
 from agentcrew_core.events import RunEventType as T
 from agentcrew_core.events.reducer import INITIAL_STATE, reduce
-from agentcrew_core.tools import ToolScheduler, build_default_registry
+from agentcrew_core.tools import ToolInvocation, ToolScheduler, build_default_registry
+from agentcrew_server.api.app import create_app
 from agentcrew_server.approvals import ApprovalService
 from agentcrew_server.bus import EventBus
 from agentcrew_server.config import load_config
@@ -28,6 +33,7 @@ from agentcrew_server.db.write_channel import WriteChannel
 from agentcrew_server.questions import QuestionService
 from agentcrew_server.recovery import RecoveryService
 from agentcrew_server.run_manager import RunManager
+from agentcrew_server.runtime import RuntimeState
 from agentcrew_server.sessions import SessionError, SessionService
 from agentcrew_server.settings import SettingsService
 
@@ -366,6 +372,63 @@ def test_resume_blocked_by_corrupt_event_row(asm: Assembly):
     asyncio.run(scenario())
 
 
+def test_resume_http_rejects_modified_and_missing_large_artifact(asm: Assembly):
+    async def scenario():
+        conv_id, task_id = await _running_task(asm)
+        source = asm.data_dir / "workspaces" / "default" / "large.txt"
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_text("真实恢复工件内容。" * 8000, encoding="utf-8")
+        context = asm.sessions.build_work_context(conv_id, task_id)
+        result = await asm.approvals.run_tool(task_run_id=task_id,
+            conversation_id=conv_id, agent_id="default",
+            invocation=ToolInvocation("large-artifact-07", "read_file",
+                                      {"path": str(source)}), ctx=context)
+        assert result.ok and result.artifact_path
+        artifact = Path(result.artifact_path)
+        assert hashlib.sha256(artifact.read_bytes()).hexdigest() == result.details["sha256"]
+        await asm.store.append(task_run_id=task_id, conversation_id=conv_id,
+                               type=T.RUN_INTERRUPTED, payload={"reason": "进程实际停止后等待恢复"})
+
+        runtime = RuntimeState(log=logging.getLogger("test.artifact.resume"),
+            data_dir=asm.data_dir, db=asm.db, write_channel=asm.channel,
+            token="real-http-artifact-test", bus=asm.bus, event_store=asm.store,
+            approvals=asm.approvals, scheduler=asm.approvals.scheduler,
+            settings=asm.settings, sessions=asm.sessions, questions=asm.questions,
+            run_manager=asm.run_manager, recovery=asm.recovery)
+        listener = socket.socket()
+        listener.bind(("127.0.0.1", 0))
+        listener.listen()
+        port = listener.getsockname()[1]
+        server = uvicorn.Server(uvicorn.Config(create_app(runtime), host="127.0.0.1",
+                                               port=port, log_level="error"))
+        running = asyncio.create_task(server.serve(sockets=[listener]))
+        try:
+            for _ in range(100):
+                if server.started:
+                    break
+                await asyncio.sleep(0.05)
+            assert server.started
+            async with httpx.AsyncClient(base_url=f"http://127.0.0.1:{port}",
+                    headers={"Authorization": "Bearer real-http-artifact-test"}) as client:
+                artifact.write_text("外部修改", encoding="utf-8")
+                modified = await client.post(f"/api/task-runs/{task_id}/resume")
+                assert modified.status_code == 409
+                assert modified.json()["error"]["code"] == "REPLAY_CORRUPT"
+                assert modified.json()["error"]["detail"]["reason"] == "ARTIFACT_HASH_MISMATCH"
+                artifact.unlink()
+                missing = await client.post(f"/api/task-runs/{task_id}/resume")
+                assert missing.status_code == 409
+                assert missing.json()["error"]["code"] == "REPLAY_CORRUPT"
+                assert missing.json()["error"]["detail"]["reason"] == "ARTIFACT_MISSING"
+                assert asm.read("SELECT status FROM task_runs WHERE id=?", (task_id,))[0] == "interrupted"
+        finally:
+            server.should_exit = True
+            await running
+            listener.close()
+
+    asyncio.run(scenario())
+
+
 def test_resume_rejects_wrong_status(asm: Assembly):
     async def scenario():
         created = await asm.sessions.create_conversation(
@@ -480,4 +543,3 @@ def test_reducer_accepts_cancel_from_idle_after_c9():
                               {"item_id": "i1", "text": "x"},
                               task_run_id=None))
     assert reduce(state2, ev(T.RUN_CANCELLED)).queue_paused is True
-

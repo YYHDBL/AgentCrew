@@ -12,6 +12,8 @@ dependencies = [
     "openai>=2,<3",
     "markdown-it-py>=4,<5",
     "jsonschema>=4,<5",
+    "tokenizers>=0.22,<0.23",
+    "huggingface-hub>=0.35,<1",
 ]
 
 [dependency-groups]

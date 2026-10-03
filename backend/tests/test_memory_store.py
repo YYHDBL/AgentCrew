@@ -213,7 +213,8 @@ def test_generic_write_and_bash_keep_memory_protected(storage):
     path = storage.data_dir / "workspaces" / "ws"
     path.mkdir(parents=True)
     async def check():
-        ctx = WorkContext(scope=[storage.data_dir], cwd=path, protected=build_protected_paths(storage.data_dir), artifacts_dir=storage.data_dir / "artifacts")
+        from agentcrew_server.tool_outputs import ToolOutputStore
+        ctx = WorkContext(scope=[storage.data_dir], cwd=path, protected=build_protected_paths(storage.data_dir), artifacts_dir=storage.data_dir / "artifacts", output_store=ToolOutputStore())
         scheduler = ToolScheduler(build_default_registry())
         for name in ("MEMORY.md", "MEMORY.meta.json", "../future/MEMORY.md", "../future/MEMORY.meta.json", "../future/memory.md"):
             (path.parent / "future").mkdir(exist_ok=True)

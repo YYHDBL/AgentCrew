@@ -18,6 +18,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from ..memory.snapshots import MemorySnapshotError
+from ..tool_outputs import ArtifactIntegrityError
 
 log = logging.getLogger("agentcrew.api.errors")
 
@@ -110,6 +111,13 @@ def error_response(
 
 
 def install_error_handlers(app) -> None:
+    @app.exception_handler(ArtifactIntegrityError)
+    async def _artifact_integrity_error(_: Request, exc: ArtifactIntegrityError) -> JSONResponse:
+        return error_response(ErrorCode.REPLAY_CORRUPT,
+            "恢复工件完整性核验失败，任务保持中断状态",
+            detail={"warnings": [str(exc)], "reason": exc.reason,
+                    "artifact_path": str(exc.path)})
+
     @app.exception_handler(MemorySnapshotError)
     async def _memory_snapshot_error(_: Request, exc: MemorySnapshotError) -> JSONResponse:
         value = exc.result

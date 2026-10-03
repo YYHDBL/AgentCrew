@@ -65,11 +65,13 @@ class Assembly:
 
 
 def _ctx(a: Assembly, tmp_path: Path) -> WorkContext:
+    from agentcrew_server.tool_outputs import ToolOutputStore
+
     scope = tmp_path / "ws"
     scope.mkdir(exist_ok=True)
     return WorkContext(
         scope=[scope], protected=[], artifacts_dir=tmp_path / "art",
-        task_run_id=RUN,
+        task_run_id=RUN, output_store=ToolOutputStore(),
     )
 
 

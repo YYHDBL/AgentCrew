@@ -483,6 +483,7 @@ HANDLERS: dict[RunEventType, Handler] = {
     RunEventType.PERMISSION_REQUESTED: _noop,
     RunEventType.PERMISSION_RESOLVED: _noop,
     RunEventType.CONTEXT_COMPACTED: _noop,
+    RunEventType.CONTEXT_BUDGET_CHECKED: _noop,
     RunEventType.TOOL_RESULT_EXTERNALIZED: _noop,
     RunEventType.MEMORY_UPDATED: _noop,
     RunEventType.MEMORY_ARCHIVED: _noop,

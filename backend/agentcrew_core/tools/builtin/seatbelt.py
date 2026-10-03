@@ -1,4 +1,4 @@
-"""Seatbelt 最小 profile（ADR-008）与流式限额泵。纯搬移自 builtin.py。"""
+"""Seatbelt 最小 profile（ADR-008）与子进程管道读取。"""
 
 from __future__ import annotations
 
@@ -36,14 +36,10 @@ def seatbelt_profile(scope_realpaths: list[str],
 def _sandboxed_argv(profile: str, command: str) -> list[str]:
     return ["/usr/bin/sandbox-exec", "-p", profile, "/bin/sh", "-c", command]
 
-async def _pump(stream, buf: bytearray, cap: int) -> bool:
-    """流式读取子进程输出到 cap 字节为止（S04）：不再先整读后截断——
-    `yes | head -c 4G` 类命令不会把内存吃满。返回是否触顶。"""
+async def _pump(stream, output) -> None:
+    """完整读取管道，服务层缓冲超过内存阈值后自动保存到文件。"""
     while True:
         chunk = await stream.read(65536)
         if not chunk:
-            return False
-        room = cap - len(buf)
-        if room <= 0:
-            return True
-        buf.extend(chunk[:room])
+            return
+        await asyncio.to_thread(output.write, chunk)

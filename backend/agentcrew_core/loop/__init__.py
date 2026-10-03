@@ -18,6 +18,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import sys
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -258,7 +259,12 @@ async def run_task(messages: list[dict], deps: LoopDeps) -> LoopResult:
                         break
             finally:
                 # 终态时序①：模型流已关闭（break 后生成器仍挂起，必须显式关）
+                raised = sys.exception()
                 await stream.aclose()
+                if raised is not None and not isinstance(raised, asyncio.CancelledError):
+                    await deps.emit("llm.request_failed", {
+                        "llm_call_id": llm_call_id, "step_id": step_id,
+                        "error": type(raised).__name__, "retry_no": retry_no})
             if error is None:
                 break
             await deps.emit("llm.request_failed", {

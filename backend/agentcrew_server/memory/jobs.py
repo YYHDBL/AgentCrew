@@ -151,6 +151,7 @@ class MemoryJobs:
             messages = [user_text_message(redact(canonical(material)))]
             async def sink(event_type, payload):
                 await self.events.channel.execute(lambda conn: self._call_tx(conn, job_id, event_type, payload))
+            provider.budget_sink = sink
             async def forbidden(call):
                 raise ValueError(f"任务摘要禁止调用工具：{call.name}")
             result = await run_task(messages, LoopDeps(

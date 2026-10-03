@@ -23,7 +23,7 @@ class ToolMetadata:
     concurrent_safe: bool
     side_effect_class: SideEffectClass
     timeout_ms: int = 60_000
-    max_output_bytes: int = 100_000
+    max_output_bytes: int = 32 * 1024
 
 
 @dataclass(frozen=True)
@@ -42,6 +42,8 @@ class ToolResult:
     artifact_path: str | None = None      # 外部化工件指针
     error: str | None = None              # OUT_OF_SCOPE / PROTECTED_PATH / TIMEOUT…
     details: dict[str, Any] = field(default_factory=dict)
+    output_source: Any = None
+    stderr_source: Any = None
 
 
 ToolExecute = Callable[[ToolInvocation, "WorkContext"], Awaitable[ToolResult]]
@@ -78,3 +80,6 @@ class WorkContext:
     memory_writer: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
     memory_search: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
     memory_skills: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
+    output_store: Any = None
+    source_global_seq: int = 0
+    readable_artifacts: dict[str, str | None] = field(default_factory=dict)

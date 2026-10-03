@@ -332,7 +332,7 @@ class ApprovalService:
 
     def _make_emit(self, task_run_id: str, conversation_id: str):
         async def sink(event_type: str, payload: dict) -> None:
-            await self._store.append(
+            return await self._store.append(
                 task_run_id=task_run_id, conversation_id=conversation_id,
                 type=RunEventType(event_type), payload=payload,
             )

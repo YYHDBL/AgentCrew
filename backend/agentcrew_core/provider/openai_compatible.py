@@ -51,6 +51,13 @@ def chat_messages(messages: list[dict[str, Any]],
     return result
 
 
+def chat_tools(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [{"type": "function", "function": {
+        "name": tool["name"], "description": tool.get("description", ""),
+        "parameters": tool["input_schema"],
+    }} for tool in tools]
+
+
 class OpenAICompatibleProvider:
     def __init__(self, slots: dict[str, SlotConfig], *, client: httpx.AsyncClient,
                  session_id: str | None = None):
@@ -77,10 +84,7 @@ class OpenAICompatibleProvider:
             "stream_options": {"include_usage": True},
         }
         if tools:
-            request["tools"] = [{"type": "function", "function": {
-                "name": tool["name"], "description": tool.get("description", ""),
-                "parameters": tool["input_schema"],
-            }} for tool in tools]
+            request["tools"] = chat_tools(tools)
         if thinking is not None:
             request["extra_body"] = {"thinking": thinking}
         started: set[int] = set()

@@ -1,13 +1,14 @@
-"""http_request：allowed_hosts 判定 + 外部幂等键 + 流式限额读取。纯搬移。"""
+"""http_request：主机范围、外部幂等键和完整响应流保存。"""
 
 from __future__ import annotations
+
+import asyncio
+import sys
 
 import httpx
 
 from ..judgment import host_allowed
 from ..metadata import ToolInvocation, ToolResult, WorkContext
-from .externalize import (HARD_OUTPUT_LIMIT, INLINE_OUTPUT_LIMIT,
-                         _externalize)
 
 HTTP_SCHEMA = {
     "type": "object",
@@ -34,34 +35,23 @@ async def _http_request(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
     headers.setdefault(  # 外部幂等键由 (task_run_id, call_id) 派生（v1.3）
         "Idempotency-Key", f"{ctx.task_run_id}:{inv.call_id}")
     body = inv.input.get("body")
-    buf = bytearray()
-    truncated = False
-    async with httpx.AsyncClient(timeout=HTTP_TIMEOUT_S) as client:
-        # 流式读取至硬上限即止（S04）：不先整读再截断
-        async with client.stream(
-            method, url, headers=headers, content=body,
-        ) as resp:
-            status_code = resp.status_code
-            content_type = resp.headers.get("content-type", "")
-            async for chunk in resp.aiter_bytes():
-                room = HARD_OUTPUT_LIMIT - len(buf)
-                if room <= 0:
-                    truncated = True
-                    break
-                buf.extend(chunk[:room])
-    text = bytes(buf).decode("utf-8", errors="replace")
-    pointer = await _externalize(ctx, inv.call_id, text)
-    if pointer is None and len(text.encode("utf-8")) > INLINE_OUTPUT_LIMIT \
-            and ctx.artifacts_dir is None:
-        return ToolResult(ok=False, error="EXTERNALIZATION_UNAVAILABLE",
-                          details={"status_code": status_code})
+    if ctx.output_store is None:
+        raise RuntimeError("EXTERNALIZATION_UNAVAILABLE：缺少工具工件服务")
+    buf = ctx.output_store.capture(ctx.artifacts_dir)
+    try:
+        async with httpx.AsyncClient(timeout=HTTP_TIMEOUT_S) as client:
+            async with client.stream(method, url, headers=headers, content=body) as resp:
+                status_code = resp.status_code
+                content_type = resp.headers.get("content-type", "")
+                async for chunk in resp.aiter_bytes():
+                    await asyncio.to_thread(buf.write, chunk)
+    finally:
+        if sys.exception() is not None:
+            buf.close()
     ok = 200 <= status_code < 300
     return ToolResult(
         ok=ok,
-        output=(text if pointer is None else
-                f"[输出超限，已外部化] {pointer}"),
-        artifact_path=pointer,
+        output_source=buf,
         error=None if ok else f"HTTP_{status_code}",
-        details={"status_code": status_code, "content_type": content_type,
-                 **({"truncated": True} if truncated else {})},
+        details={"status_code": status_code, "content_type": content_type},
     )

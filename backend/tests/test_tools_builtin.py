@@ -18,6 +18,7 @@ from agentcrew_core.tools import (
     new_call_id,
 )
 from agentcrew_core.tools.scheduler import ToolScheduler
+from agentcrew_server.tool_outputs import ToolOutputStore
 
 
 @pytest.fixture
@@ -41,6 +42,7 @@ def env(tmp_path):
         scope=[scope], protected=build_protected_paths(data, home),
         artifacts_dir=tmp_path / "artifacts", task_run_id="run-t",
         emit=sink,
+        output_store=ToolOutputStore(),
     )
     ctx.events = events  # 测试观察口（事件出口收到的原始序列）
     return ctx
@@ -289,7 +291,8 @@ def test_bash_protected_path_in_scope_denied_read_and_write(tmp_path):
     (scope / "data" / "agentcrew.db").write_text("DB")
     ctx = WorkContext(scope=[scope],
                       protected=build_protected_paths(scope / "data", home),
-                      artifacts_dir=tmp_path / "art", task_run_id="run-t")
+                      artifacts_dir=tmp_path / "art", task_run_id="run-t",
+                      output_store=ToolOutputStore())
     scheduler = ToolScheduler(build_default_registry())
     db = scope / "data" / "agentcrew.db"
     _, r_write = run(_invoke(scheduler, "bash",
@@ -349,9 +352,8 @@ def test_bash_seatbelt_blocks_network_with_local_control(scheduler, env):
 def test_externalization_unavailable_errors(scheduler, env):
     """artifacts_dir 未配置且输出超 32KB：明确报错，绝不内联塞给上下文。"""
     env.artifacts_dir = None
-    _, result = run(_invoke(scheduler, "bash", {"command": "seq 1 20000"}, env))
-    assert not result.ok and result.error == "EXTERNALIZATION_UNAVAILABLE"
-    assert len(result.output.encode()) <= 32 * 1024 + 200  # 无超限内容内联
+    with pytest.raises(RuntimeError, match="EXTERNALIZATION_UNAVAILABLE"):
+        run(_invoke(scheduler, "bash", {"command": "seq 1 20000"}, env))
 
 
 def test_http_prepared_event_redacts_credentials(scheduler, env, local_http):

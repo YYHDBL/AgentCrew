@@ -1,0 +1,80 @@
+{
+  "observed_at": "2026-10-02T04:18:31.965688+00:00",
+  "calls": [
+    {
+      "slot": "aux",
+      "tools_declared": 0,
+      "model": "deepseek-v4.1-flash",
+      "session_id": "6313c30051454a72af6a90584610156a",
+      "stream_events": 4,
+      "budget": {
+        "model": "deepseek-v4.1-flash",
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "system_tokens": 6,
+        "history_tokens": 13,
+        "tool_result_tokens": 0,
+        "output_reserved": 8192,
+        "total_input_tokens": 19
+      },
+      "usage": {
+        "input_tokens": 19,
+        "output_tokens": 2
+      },
+      "input_token_difference": 0,
+      "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+      "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+    },
+    {
+      "slot": "main",
+      "tools_declared": 0,
+      "model": "deepseek-v4.1-flash",
+      "session_id": "2fccf2c1995d4766b06bff3711c8474b",
+      "stream_events": 35,
+      "budget": {
+        "model": "deepseek-v4.1-flash",
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "system_tokens": 31,
+        "history_tokens": 13,
+        "tool_result_tokens": 0,
+        "output_reserved": 8192,
+        "total_input_tokens": 44
+      },
+      "usage": {
+        "input_tokens": 44,
+        "output_tokens": 53
+      },
+      "input_token_difference": 0,
+      "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+      "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+    },
+    {
+      "slot": "main",
+      "tools_declared": 9,
+      "model": "deepseek-v4.1-flash",
+      "session_id": "04965634228f4d1dbeefb14544dd7e18",
+      "stream_events": 5,
+      "budget": {
+        "model": "deepseek-v4.1-flash",
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "system_tokens": 1548,
+        "history_tokens": 13,
+        "tool_result_tokens": 0,
+        "output_reserved": 8192,
+        "total_input_tokens": 1561
+      },
+      "usage": {
+        "input_tokens": 1557,
+        "output_tokens": 4
+      },
+      "input_token_difference": -4,
+      "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+      "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+    }
+  ]
+}

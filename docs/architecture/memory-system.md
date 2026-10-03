@@ -95,7 +95,7 @@ data/
 3. 仍超预算 → aux 模型**结构化模板摘要**（历史任务/目标/约束偏好/已完成动作（含工具名）/当前状态），**迭代更新式**（已有摘要则改写而非重生成）
 4. 发 `context.compacted`（payload: 压缩前后 token、被摘要条数）；原文全部保留在事件流，可回查
 
-**工具结果外部化**（独立于压缩，工具完成时即判）：输出 > `max_output_bytes` → 落 `data/artifacts/<task_run_id>/` 文件，上下文只留前 2KB + 指针。
+**工具结果外部化**（独立于压缩，工具完成时即判）：输出超过工具的 `max_output_bytes` 或现有 32KiB 内联阈值时，完整结果写入 `data/artifacts/<task_run_id>/`，上下文保留前 2KB 与可校验指针。
 
 ## 6. 检索：session_search 工具
 

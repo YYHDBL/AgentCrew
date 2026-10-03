@@ -21,11 +21,13 @@ import json
 import logging
 import re
 import uuid
+from dataclasses import replace
 
 from jsonschema import Draft202012Validator
 
 from .judgment import bash_readonly
 from .metadata import Tool, ToolInvocation, ToolMetadata, ToolResult, WorkContext
+from .builtin.externalize import _externalize
 
 _log = logging.getLogger("agentcrew.tools")
 
@@ -119,6 +121,7 @@ class ToolScheduler:
         if not _CALL_ID_PATTERN.fullmatch(invocation.call_id or ""):
             return ToolResult(ok=False, error="INVALID_CALL_ID",
                               details={"call_id": invocation.call_id[:40]})
+        ctx = replace(ctx)
         # 入口即做不可变快照（外审回稿 F04）：审批哈希绑定的是快照，此后
         # 对原 dict 的任何修改都不影响 prepared/闸门/执行三处的一致性
         invocation = ToolInvocation(
@@ -209,10 +212,7 @@ class ToolScheduler:
         except asyncio.TimeoutError:
             result = ToolResult(ok=False, error="TIMEOUT",
                                 details={"timeout_ms": meta.timeout_ms})
-        except Exception as e:  # noqa: BLE001 —— 工具异常收敛为结果，不崩任务
-            _log.exception("tool.failed %s", meta.name)
-            result = ToolResult(ok=False, error=f"TOOL_CRASH:{type(e).__name__}",
-                                details={"message": str(e)[:200]})
+        await _externalize(ctx, invocation.call_id, result, meta.max_output_bytes)
         payload = {
             "call_id": invocation.call_id,
             # §2.3 持久化契约：事件必须携带完整工具输出（≤32KB 内联；超出由
@@ -239,7 +239,9 @@ class ToolScheduler:
         if ctx.emit is None:
             return True
         try:
-            await ctx.emit(event_type, payload)
+            event = await ctx.emit(event_type, payload)
+            if event_type == "tool.dispatched" and event is not None:
+                ctx.source_global_seq = event.global_seq
             return True
         except Exception:  # noqa: BLE001
             _log.exception("tool.emit_failed %s", event_type)

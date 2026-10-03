@@ -2,10 +2,9 @@
 
 - replay_messages：从 run_events 行重放重建消息上下文。唯一原料是
   llm.request_done 载荷（回复全文 + 全部 tool_use 块 + thinking 签名，
-  v1.7）与 tool.* 终态事件；超限输出按 §2.3 读工件（read_artifact 注入，
-  缺失 → "工件缺失"占位降级，任务继续）——判定按 **artifact_path 字段**
-  驱动（不匹配文案：bash/read_file/http_request 指针文案不同，failed 也
-  可能带工件）；
+  v1.7）与 tool.* 终态事件；M1 带 SHA 的工件沿用事件中的前缀和指针，
+  完整性由服务层先核验。既有工件仍通过 read_artifact 读取，缺失时
+  返回明确占位与告警；
 - side_effect_ledger：副作用账本两段系统提示的文本（§7）；ask_user 的
   已答/未答事实与重放共用 question_answers（单一事实源）；
 - file_hash_matches：verifiable 类启动核验（文件存在且 sha256 一致）。
@@ -91,6 +90,8 @@ def replay_messages(
 
     def read_externalized(p: dict) -> str:
         """§2.3：带 artifact_path 的输出读工件；缺失 → 占位降级（继续）。"""
+        if (p.get("details") or {}).get("sha256") and "prefix_bytes" in p["details"]:
+            return p["output"]
         real = reader(p["artifact_path"])
         if real is None:
             warn(f"工件缺失：{p['artifact_path']}（该工具输出降级为占位）")

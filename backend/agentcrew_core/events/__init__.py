@@ -66,6 +66,7 @@ class RunEventType(StrEnum):
 
     # 上下文管理（M1 起启用，占位）
     CONTEXT_COMPACTED = "context.compacted"
+    CONTEXT_BUDGET_CHECKED = "context.budget_checked"
     TOOL_RESULT_EXTERNALIZED = "tool.result_externalized"
 
     MEMORY_UPDATED = "memory.updated"

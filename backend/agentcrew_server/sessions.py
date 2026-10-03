@@ -303,6 +303,14 @@ class SessionService:
         materials.mkdir(parents=True, exist_ok=True)
         folders = [Path(f["path"]) for f in json.loads(conv["folders_json"] or "[]")]
         scope = [workspace, materials] + [f.resolve() for f in folders]
+        from .tool_outputs import ToolOutputStore
+
+        readable = self._db.read_conn.execute(
+            "SELECT a.path,json_extract(e.payload,'$.sha256') FROM artifacts a "
+            "JOIN task_runs t ON t.id=a.task_run_id LEFT JOIN run_events e "
+            "ON e.task_run_id=t.id AND e.type='tool.result_externalized' "
+            "AND json_extract(e.payload,'$.artifact_path')=a.path "
+            "WHERE t.conversation_id=? AND a.status='ready'", (conversation_id,)).fetchall()
         return WorkContext(
             scope=scope,
             protected=build_protected_paths(self._data_dir, Path.home()),
@@ -310,6 +318,8 @@ class SessionService:
                            if task_run_id else None),
             task_run_id=task_run_id or "",
             cwd=workspace,
+            output_store=ToolOutputStore(),
+            readable_artifacts={str(Path(path).resolve()): digest for path, digest in readable},
         )
 
     # ── 创建会话（首条指令 + 材料导入，F001）──────────────────────

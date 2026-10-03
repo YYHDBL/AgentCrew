@@ -178,6 +178,12 @@ def validate(cfg: Mapping[str, Any]) -> None:
             raise ConfigError(f"models.{slot}.base_url：openai-compatible 需要配置请求地址")
         if "max_tokens" in entry:
             _require_int(cfg, f"models.{slot}.max_tokens", 1)
+        if "context_window" in entry:
+            _require_int(cfg, f"models.{slot}.context_window", 1)
+        for field in ("context_window_source", "tokenizer_repository", "tokenizer_revision",
+                      "tokenizer_sha256", "prompt_format"):
+            if field in entry:
+                _require_str(cfg, f"models.{slot}.{field}")
 
 
 class Config:

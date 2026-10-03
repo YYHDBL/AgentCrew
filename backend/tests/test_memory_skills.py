@@ -20,6 +20,7 @@ from agentcrew_server.db.write_channel import WriteChannel
 from agentcrew_server.memory.skills import MemorySkills
 from agentcrew_server.memory.snapshots import MemorySnapshots
 from agentcrew_server.memory.store import MemoryIdentity, MemoryStore
+from agentcrew_server.tool_outputs import ToolOutputStore
 
 
 @pytest.fixture
@@ -216,7 +217,8 @@ def test_registered_tools_and_generic_protection(services):
     async def check():
         registry = build_default_registry()
         context = WorkContext(task_run_id="task-c1", memory_skills=skills.run_tool, scope=[store.data_dir], cwd=store.data_dir,
-            protected=build_protected_paths(store.data_dir), artifacts_dir=store.data_dir / "artifacts")
+            protected=build_protected_paths(store.data_dir), artifacts_dir=store.data_dir / "artifacts",
+            output_store=ToolOutputStore())
         scheduler = ToolScheduler(registry)
         read = await scheduler.run(ToolInvocation("read", "skill_view", {"name": "资料整理"}), context)
         assert read.ok and read.details["revision"] == 0

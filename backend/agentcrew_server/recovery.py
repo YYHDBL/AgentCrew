@@ -338,6 +338,17 @@ class RecoveryService:
         rows = self._db.read_conn.execute(
             "SELECT seq, type, payload FROM run_events WHERE task_run_id=?"
             " ORDER BY seq", (task_run_id,)).fetchall()
+        from .tool_outputs import ToolOutputStore
+
+        for _, event_type, payload in rows:
+            if event_type in ("tool.completed", "tool.failed"):
+                record = json.loads(payload)
+                details = record.get("details") or {}
+                if record.get("artifact_path") and details.get("sha256") and "prefix_bytes" in details:
+                    ToolOutputStore.verify(Path(record["artifact_path"]), details["sha256"], details["size_bytes"])
+                if stderr_artifact := details.get("stderr_artifact"):
+                    ToolOutputStore.verify(Path(stderr_artifact["artifact_path"]),
+                        stderr_artifact["sha256"], stderr_artifact["size_bytes"])
         result = replay_messages(
             [tuple(r) for r in rows],
             read_artifact=self._read_artifact,

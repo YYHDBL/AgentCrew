@@ -1,13 +1,10 @@
-"""五个内置工具（harness-session §6.1 五件套 / ADR-008 / v1.7 语义）。
+"""内置工具注册表：基础五件套、三库、会话检索和 Skill 操作。
 
-一工具一文件（pi 模式，C8 外审回稿附加提交：纯文件搬移，逻辑零改动）：
-read_file（分页读）/ write_file（O_NOFOLLOW 钉父目录 + 原子写 + artifact
-事件）/ bash（Seatbelt 最小 profile + env 白名单 + 超时/取消杀组）/
-http_request（allowed_hosts + 外部幂等键）/ ask_user（交互原语）；
-共享件 externalize（路径硬检/大输出外部化）与 seatbelt（SBPL/进程组）。
+read_file（分页读）/ write_file（原子写）/ bash（Seatbelt）/
+http_request（外部幂等键）/ ask_user（交互）及记忆、Skill 工具。
+共享件 externalize 执行范围检查并调用服务层保存大型输出。
 
-模块级汇出保持拆分前的引用面（`from agentcrew_core.tools.builtin import
-…` 的既有调用方不受影响）。
+模块级汇出保持现有调用路径。
 """
 
 from __future__ import annotations
@@ -16,7 +13,6 @@ from ..metadata import Tool, ToolMetadata
 from .ask_user import ASK_USER_SCHEMA, _ask_user
 from .bash import BASH_SCHEMA, _bash
 from .externalize import (
-    HARD_OUTPUT_LIMIT,
     INLINE_OUTPUT_LIMIT,
     _check_path,
     _externalize,

@@ -48,9 +48,9 @@ source 保存 `actor_type/actor_id`、真实 `conversation_id/task_run_id/job_id
 
 ## Token 依据、预算及检查点
 
-模型槽新增 `context_window/context_window_source/tokenizer_repository/tokenizer_revision/tokenizer_sha256/prompt_format/max_tokens`。窗口来自供应商能力或官方模型配置，token 计数使用对应的成熟 tokenizer 与供应商消息模板，覆盖角色、system、工具 schema、参数、thinking、请求和结果结构。模型名称或协议变更必须重新核对来源，缺少确定依据返回 `TOKENIZER_UNAVAILABLE/MODEL_WINDOW_UNKNOWN`，拒绝请求。公开证据只包含模型、计数方法、版本及哈希。
+模型槽新增 `context_window/context_window_source/tokenizer_repository/tokenizer_revision/tokenizer_sha256/prompt_format/max_tokens`。当前已核对的 OpenCode Go 模型与端点绑定固定描述符；显式配置的描述符同样须逐字段核验。窗口来自供应商能力或官方模型配置，token 计数使用对应的成熟 tokenizer 与供应商消息模板，覆盖角色、system、工具 schema、参数、thinking、请求和结果结构。模型名称或协议变更必须重新核对来源，缺少确定依据返回 `TOKENIZER_UNAVAILABLE/MODEL_WINDOW_UNKNOWN`，拒绝请求。公开证据只包含模型、计数方法、版本及哈希。
 
-当前 DeepSeek V4.1 Flash 的官方 [模型配置](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/config.json) 给出 max_position_embeddings=1048576；实际服务窗口还需核对 [OpenCode Go 模型 metadata](https://opencode.ai/zen/go/v1/models)。官方 [编码说明](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/encoding/README.md) 定义消息和工具模板；M1-07 使用发布的 tokenizer 及编码实现，验证完整请求与供应商 usage 的差异并记录确定性计数依据。模型仓库版本及文件 SHA 固定在配置，运行时不执行未经核对的远程代码。接口使用 [OpenCode Go 要求](https://opencode.ai/docs/go/#where-can-i-use-it) 的 User-Agent 及按会话稳定的 x-opencode-session，后台作业保留所属会话标识。
+DeepSeek V4.1 Flash 的官方 [模型配置](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/config.json) 在 `text_config.max_position_embeddings` 给出 1048576；实际 OpenCode Go 服务使用 [提供商模型元数据](https://models.dev/api.json) 的 1000000 token 窗口及 384000 token 输出上限。官方 [编码说明](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/blob/main/encoding/README.md) 定义消息和工具模板；M1-07 使用发布的 tokenizer 及编码实现，验证完整请求与供应商 usage 的差异并记录确定性计数依据。模型仓库版本及文件 SHA 固定在配置，运行时先核对完整 SHA 再加载官方编码文件。接口使用 [OpenCode Go 要求](https://opencode.ai/docs/go/#where-can-i-use-it) 的 User-Agent 及按会话稳定的 x-opencode-session，后台作业保留所属会话标识。
 
 system 与工具声明最多占窗口 15%，历史含摘要分配窗口 60%，最新工具结果和输出保留至少 25%。工具结果从历史单独计数，历史工具请求/结果配对不拆散；所有输入加 max_tokens 必须≤实际窗口。输出预算超出保留区、system 超限或保护内容无法容纳时报告 `CONTEXT_BUDGET_EXCEEDED`，不调用模型。
 

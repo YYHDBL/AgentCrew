@@ -28,11 +28,13 @@ from typing import Any
 from .config import DEFAULTS, Config, ConfigError, apply_env, load_config, merge_config
 from .db.audit import SNAPSHOT_EVERY, append_audit, snapshot_chain_head
 from .db.write_channel import WriteChannel
+from .memory.tokenizer import TOKENIZER_FIELDS
+from .providers import bind_slot
 
 _log = logging.getLogger("agentcrew.settings")
 
 _ALLOWED_TOP_KEYS = {"models", "gates", "limits", "api_key_clear"}
-_ALLOWED_SLOT_FIELDS = {"provider", "model", "base_url", "api_key", "max_tokens"}
+_ALLOWED_SLOT_FIELDS = {"provider", "model", "base_url", "api_key", "max_tokens", *TOKENIZER_FIELDS}
 _ALLOWED_GATES = {"max_steps", "stall_seconds", "repeat_limit",
                   "global_concurrency", "token_budget"}
 _ALLOWED_LIMITS = {"max_files", "max_file_mb", "max_folders"}
@@ -83,6 +85,7 @@ class SettingsService:
         models: dict[str, Any] = {}
         for slot in ("main", "aux"):
             entry = cfg.get("models", {}).get(slot, {})
+            bound = bind_slot(entry)
             key = entry.get("api_key", "") or ""
             env_sourced = any(p.startswith(f"models.{slot}.")
                               for p in self._config.env_fields)
@@ -92,6 +95,8 @@ class SettingsService:
                 "api_key_configured": bool(key),
                 "api_key_hint": key[-4:] if key else "",
                 "effective_source": "env" if env_sourced else "file",
+                "max_tokens": entry.get("max_tokens", 4096),
+                **{field: getattr(bound, field) or None for field in TOKENIZER_FIELDS},
             }
         return {
             "config_version": str(self._file_object().get("config_version", 0)),
