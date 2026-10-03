@@ -60,6 +60,7 @@ class RuntimeState:
     snapshots: "MemorySnapshots | None" = None
     memory_search: "MemorySearch | None" = None
     memory_jobs: "MemoryJobs | None" = None
+    governance: object | None = None
 
     async def shutdown(self) -> None:
         """优雅关闭（§7 顺序；任务取消不写终态——run_manager.shutdown 在

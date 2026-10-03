@@ -66,6 +66,9 @@ def create_app(runtime: RuntimeState) -> FastAPI:
             for result in results:
                 if "error" in result:
                     raise RuntimeError(f"记忆启动恢复失败：{result}")
+        if runtime.governance is not None and runtime.diagnostic is None:
+            from ..governance.seed import seed
+            await seed(runtime.governance, runtime.memory)
         if runtime.snapshots is not None and runtime.diagnostic is None:
             await runtime.snapshots.recover()
         if runtime.recovery is not None:

@@ -11,6 +11,7 @@ from agentcrew_server.db.migrations import (
     Migration,
     MigrationConflictError,
     MigrationFailedError,
+    MIGRATIONS,
     run_migrations,
 )
 
@@ -36,11 +37,11 @@ def test_fresh_apply_creates_all_13_tables(tmp_path):
     db = _make_db(tmp_path)
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "applied"
-    assert result.applied_versions == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    assert result.applied_versions == list(range(1, MIGRATIONS[-1].version + 1))
     assert result.snapshot_path and Path(result.snapshot_path).exists()
     assert _EXPECTED_TABLES <= _tables(db)
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 10
+    assert version == MIGRATIONS[-1].version
     db.close()
 
 
@@ -58,32 +59,30 @@ def test_run_twice_idempotent(tmp_path):
 def test_downgrade_refused_with_both_versions(tmp_path):
     db = _make_db(tmp_path)
     run_migrations(db.write_conn, tmp_path / "backups")
+    future = MIGRATIONS[-1].version + 1
     db.write_conn.execute(
-        "INSERT INTO schema_migrations (version, name, applied_at) VALUES (11, '来自未来版本', 'x')"
+        "INSERT INTO schema_migrations (version, name, applied_at) VALUES (?, '来自未来版本', 'x')", (future,)
     )
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "conflict"
     assert isinstance(result.error, MigrationConflictError)
-    assert "v11" in str(result.error) and "v10" in str(result.error)
+    assert f"v{future}" in str(result.error) and f"v{MIGRATIONS[-1].version}" in str(result.error)
     db.close()
 
 
-def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
+def test_mid_failure_rolls_back_that_migration(tmp_path):
     db = _make_db(tmp_path)
     run_migrations(db.write_conn, tmp_path / "backups")
     bad = Migration(
-        version=11,
+        version=MIGRATIONS[-1].version + 1,
         name="故意非法",
         statements=("CREATE TABLE should_not_exist (id TEXT",),  # 语法错误
     )
-    monkeypatch.setattr(
-        migrations_module, "MIGRATIONS", migrations_module.MIGRATIONS + (bad,)
-    )
     with pytest.raises(MigrationFailedError):
-        run_migrations(db.write_conn, tmp_path / "backups")
+        migrations_module._apply_migration(db.write_conn, bad)
     # 该迁移事务整体撤销：既有版本及业务表保持完整。
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 10
+    assert version == MIGRATIONS[-1].version
     assert "should_not_exist" not in _tables(db)
     assert "conversations" in _tables(db)
     db.close()
@@ -92,9 +91,13 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
 def test_snapshot_keeps_last_three(tmp_path):
     db = _make_db(tmp_path)
     backups = tmp_path / "backups"
-    for fake in range(5):
+    for number in range(5):
         (backups).mkdir(exist_ok=True)
-        (backups / f"db-v0-old{fake}.sqlite").write_bytes(b"fake")
+        old = sqlite3.connect(backups / f"db-v0-old{number}.sqlite")
+        old.execute("CREATE TABLE saved_record(id INTEGER PRIMARY KEY)")
+        old.execute("INSERT INTO saved_record VALUES(?)", (number,))
+        old.commit()
+        old.close()
     run_migrations(db.write_conn, backups)  # 触发新快照 + 清理
     remaining = sorted(p.name for p in backups.glob("db-v*.sqlite"))
     assert len(remaining) == 3
@@ -155,7 +158,7 @@ def test_upgrade_preserves_events_and_global_seq(tmp_path):
     assert [r[0] for r in before] == [1, 2, 3]
 
     result = m.run_migrations(conn, tmp_path / "backups")
-    assert result.status == "applied" and result.applied_versions == [2, 3, 4, 5, 6, 7, 8, 9, 10]
+    assert result.status == "applied" and result.applied_versions == list(range(2, MIGRATIONS[-1].version + 1))
     after = conn.execute(
         "SELECT global_seq, id, task_run_id FROM run_events"
         " ORDER BY global_seq").fetchall()
@@ -204,11 +207,11 @@ def test_upgrade_nine_preserves_background_foreign_keys(tmp_path):
     before = {table: db.read_conn.execute(f"SELECT * FROM {table}").fetchall() for table in tables}
     try:
         result = run_migrations(db.write_conn, tmp_path / "backups")
-        assert result.applied_versions == [10]
+        assert result.applied_versions == list(range(10, MIGRATIONS[-1].version + 1))
         assert db.read_conn.execute("PRAGMA foreign_key_check").fetchall() == []
         assert db.write_conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
         assert {table: db.read_conn.execute(f"SELECT * FROM {table}").fetchall() for table in tables} == before
-        bad = Migration(11, "外键不完整的迁移", ("DELETE FROM memory_jobs",), rebuild_foreign_keys=True)
+        bad = Migration(MIGRATIONS[-1].version + 1, "外键不完整的迁移", ("DELETE FROM memory_jobs",), rebuild_foreign_keys=True)
         with pytest.raises(MigrationFailedError, match="外键校验失败"):
             migrations_module._apply_migration(db.write_conn, bad)
         assert db.write_conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1

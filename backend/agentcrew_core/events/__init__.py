@@ -78,6 +78,14 @@ class RunEventType(StrEnum):
     MEMORY_APPROVAL_REQUESTED = "memory.approval_requested"
     MEMORY_APPROVAL_RESOLVED = "memory.approval_resolved"
     MEMORY_CURATED = "memory.curated"
+    GOVERNANCE_RESOURCE_CHANGED = "governance.resource_changed"
+    GOVERNANCE_IDENTITY_CHANGED = "governance.identity_changed"
+    GOVERNANCE_ROLE_CHANGED = "governance.role_changed"
+    GOVERNANCE_GRANT_CHANGED = "governance.grant_changed"
+    GOVERNANCE_RULE_CHANGED = "governance.rule_changed"
+    GOVERNANCE_SKILL_VERSION_PUBLISHED = "governance.skill_version_published"
+    GOVERNANCE_AUTHORIZATION_CHECKED = "governance.authorization_checked"
+    GOVERNANCE_AUDIT_VERIFIED = "governance.audit_verified"
 
 
 @dataclass(frozen=True)

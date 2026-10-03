@@ -56,6 +56,7 @@ from .lifecycle import run_startup_hooks
 from .logging_setup import setup_logging, shutdown_logging
 from .runtime import DiagnosticInfo, RuntimeState
 from .secrets import register_secret
+from .governance.resources import Resources
 
 READY_MARKER = "AGENTCREW_READY"
 DEFAULT_PORT = 8710
@@ -362,6 +363,7 @@ def main(argv: list[str] | None = None) -> int:
             settings=settings, sessions=sessions,
             questions=questions, run_manager=run_manager,
             recovery=recovery, memory=memory, snapshots=snapshots, memory_search=memory_search, memory_jobs=memory_jobs,
+            governance=Resources(db, event_store, data_dir),
         )
         log.info("startup.bus 事件总线就绪（队列上限 1000，SSE 连接上限 32）")
         log.info(

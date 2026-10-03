@@ -1,0 +1,59 @@
+{
+  "process_exit": -9,
+  "boundary": "CREATE TABLE demo_identities",
+  "version_after_sigkill": 10,
+  "partial_organizations_after_sigkill": 0,
+  "queries": [
+    {
+      "sql": "SELECT version,name FROM schema_migrations ORDER BY version",
+      "rows": [
+        {
+          "version": 1,
+          "name": "M0 初始建表"
+        },
+        {
+          "version": 2,
+          "name": "C7 客户端幂等键"
+        },
+        {
+          "version": 3,
+          "name": "M1 三库与记忆账本"
+        },
+        {
+          "version": 4,
+          "name": "M1 会话快照与注入统计"
+        },
+        {
+          "version": 5,
+          "name": "M1 trigram 检索与使用去重"
+        },
+        {
+          "version": 6,
+          "name": "M1 Skill 生命周期与读取修订"
+        },
+        {
+          "version": 7,
+          "name": "M1 辅助作业与唯一任务摘要"
+        },
+        {
+          "version": 8,
+          "name": "M1 上下文压缩检查点"
+        },
+        {
+          "version": 9,
+          "name": "M1 后台提炼与独立审批"
+        },
+        {
+          "version": 10,
+          "name": "M1 确定性遗忘治理"
+        },
+        {
+          "version": 11,
+          "name": "M2 治理资源与授权"
+        }
+      ]
+    }
+  ],
+  "second_migration_status": "up_to_date",
+  "foreign_key_violations": []
+}

@@ -12,5 +12,4 @@ import logging
 
 
 def run_startup_hooks(log: logging.Logger) -> None:
-    log.debug("startup.step 种子检查：M2 交付（跳过）")
-    log.info("startup.hooks 后置步骤完成（种子 M2）")
+    log.debug("startup.step 治理种子在记忆意图恢复后经写通道登记")

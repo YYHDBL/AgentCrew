@@ -494,6 +494,15 @@ HANDLERS: dict[RunEventType, Handler] = {
     RunEventType.MEMORY_APPROVAL_REQUESTED: _noop,
     RunEventType.MEMORY_APPROVAL_RESOLVED: _noop,
     RunEventType.MEMORY_CURATED: _noop,
+    # 治理数据是业务事实，执行投影不从事件重建这些资源。
+    RunEventType.GOVERNANCE_RESOURCE_CHANGED: _noop,
+    RunEventType.GOVERNANCE_IDENTITY_CHANGED: _noop,
+    RunEventType.GOVERNANCE_ROLE_CHANGED: _noop,
+    RunEventType.GOVERNANCE_GRANT_CHANGED: _noop,
+    RunEventType.GOVERNANCE_RULE_CHANGED: _noop,
+    RunEventType.GOVERNANCE_SKILL_VERSION_PUBLISHED: _noop,
+    RunEventType.GOVERNANCE_AUTHORIZATION_CHECKED: _noop,
+    RunEventType.GOVERNANCE_AUDIT_VERIFIED: _noop,
     # C8：question.* 驱动 task_runs 派生态 waiting_user（计数器仍在内存 FSM）
     RunEventType.QUESTION_REQUESTED: _question_requested,
     RunEventType.QUESTION_ANSWERED: _question_answered,
