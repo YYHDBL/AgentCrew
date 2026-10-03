@@ -299,6 +299,7 @@ class MemoryStore:
             action = {"add": "create", "edit": "update"}.get(action, action)
             plan = await asyncio.to_thread(self._plan, identity, before, entries, text, basis, now, change_id, restored_ledger_id, action, restored_files,
                                            metadata_updates, support_files)
+            plan["request_context"] = request_context
             task = asyncio.create_task(self._prepare_and_finish(change_id, request_hash, plan))
             with CancelScope(shield=True):
                 try:
@@ -390,12 +391,23 @@ class MemoryStore:
     def _prepare_tx(self, conn, change_id, request_hash, plan):
         with conn:
             conn.execute("BEGIN IMMEDIATE")
+            if hasattr(self, "identities"):
+                identity = MemoryIdentity(**plan["identity"])
+                caller = self.identities.memory_actor(identity)
+                self.identities.agent(caller, identity.agent_id, identity.workspace_id, conn)
+                if identity.actor_type == "user":
+                    self.identities.require(caller, "manage", identity.workspace_id, conn)
             replayed = self._replayed(change_id, request_hash, conn)
             if replayed is not None:
                 return replayed
             row = conn.execute("SELECT revision FROM memory_stores WHERE store_type=? AND store_id=?", (plan["store_type"], plan["store_id"])).fetchone()
             if (row[0] if row else 0) != plan["before"]["revision"]:
                 return failure("REVISION_CONFLICT", "准备意图时修订发生变化")
+            if plan["store_type"] == "skill":
+                occupied = conn.execute("SELECT id FROM memory_skills WHERE workspace_id=? AND name=? AND id<>?",
+                    (plan["identity"]["workspace_id"], plan["after_metadata"]["name"], plan["store_id"])).fetchone()
+                if occupied:
+                    return failure("REVISION_CONFLICT", "同一工作区的技能名称已经存在")
             if plan["store_type"] == "skill" and plan["before"]["revision"] == 0:
                 metadata, actor = plan["after_metadata"], plan["identity"]
                 existing = conn.execute("SELECT id FROM memory_skills WHERE workspace_id=? AND agent_id=? AND name=?",
@@ -470,6 +482,7 @@ class MemoryStore:
             state = conn.execute("SELECT status,result FROM memory_changes WHERE change_id=?", (change_id,)).fetchone()
             if state[0] == "committed":
                 return {**json.loads(state[1]), "idempotent_replay": True}
+            previous_audit_seq = conn.execute("SELECT coalesce(max(seq),0) FROM audit_log").fetchone()[0]
             kind, store_id = plan["store_type"], plan["store_id"]
             text_sha = sha256(plan["after_text"].encode())
             meta_sha = sha256(canonical(plan["after_metadata"]).encode())
@@ -504,12 +517,17 @@ class MemoryStore:
             before_files = [{"path": f["path"], "content": f["before"], "sha256": f["before_sha256"]} for f in plan["files"]]
             after_files = [{"path": f["path"], "content": f["after"], "sha256": f["after_sha256"]} for f in plan["files"]]
             conn.execute("INSERT INTO memory_ledger VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (plan["ledger_id"], change_id, kind, store_id, plan["action"], plan["revision"], plan["before"]["text"], plan["after_text"], canonical(plan["before"]["metadata"]), canonical(plan["after_metadata"]), canonical(before_files), canonical(after_files), canonical(plan["source"]), plan["basis"], plan["restored_ledger_id"], audit_seq, event.global_seq, plan["created_at"]))
+            version_result, version_event = {}, None
+            if kind == "skill" and hasattr(self, "skill_versions"):
+                version_result, version_event, audit_seq = self.skill_versions.publish_in_tx(conn, plan)
             result = {"change_id": change_id, "ledger_id": plan["ledger_id"], "store_type": kind, "store_id": store_id,
                       "entry_id": payload["entry_id"], "entry_hash": payload["entry_hash"],
-                      "revision": plan["revision"], "global_seq": event.global_seq, "idempotent_replay": False}
+                      "revision": plan["revision"], "global_seq": event.global_seq, "idempotent_replay": False, **version_result}
             conn.execute("UPDATE memory_changes SET status='committed',result=?,committed_at=? WHERE change_id=?", (canonical(result), datetime.now(timezone.utc).isoformat(), change_id))
         self.events.publish(event)
-        if audit_seq % SNAPSHOT_EVERY == 0:
+        if version_event is not None:
+            self.events.publish(version_event)
+        if audit_seq // SNAPSHOT_EVERY > previous_audit_seq // SNAPSHOT_EVERY:
             snapshot_chain_head(conn, self.data_dir / "chain-head.txt")
         return result
 

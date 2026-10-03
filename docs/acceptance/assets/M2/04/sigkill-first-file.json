@@ -1,0 +1,54 @@
+{
+  "boundary": "first_file",
+  "process_exit": -9,
+  "recoveries": 2,
+  "version": {
+    "id": "8f19fffa1edd51f5b48670cc50f0c814",
+    "skill_id": "df710613c76a5fea97bd9f9919d66b8b",
+    "version_no": 1,
+    "change_id": "skill-version-sigkill",
+    "ledger_id": 4,
+    "content": "# 完整恢复流程\n核对原始材料与持久化版本。",
+    "metadata": {
+      "description": "核对正文、版本和完整文件",
+      "entries": [
+        {
+          "approved_at": null,
+          "approved_by": null,
+          "basis": "真实SIGKILL核查",
+          "created_at": "2026-10-03T15:05:25.985380+00:00",
+          "entry_hash": "4d9b81e61421da041e0453409659484aa0020e36d8c395b2bb9904baf272b707",
+          "entry_id": "d4ae0300ea6944d8bf3b42b3e7ab42d9",
+          "hits": 0,
+          "last_hit_at": null,
+          "needs_review": false,
+          "source": {
+            "actor_id": "owner",
+            "actor_type": "user",
+            "manual_edit_id": "skill-version-sigkill"
+          },
+          "state": "active",
+          "text": "# 完整恢复流程\n核对原始材料与持久化版本。"
+        }
+      ],
+      "files": {
+        "references/procedure.md": "6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882"
+      },
+      "name": "真实恢复流程",
+      "revision": 1
+    },
+    "files": [
+      {
+        "content": "核对原始来源",
+        "path": "references/procedure.md",
+        "sha256": "6b1ebff1f9c5478fd2150876d216bf86f04caba4a36fe26adf81f8f8cb922882"
+      }
+    ],
+    "sha256": "396f7841f35f919fca65722feb316a4bddfc1fa16e08a075b759e9cf64f3c320",
+    "created_by": "owner",
+    "created_at": "2026-10-03T15:05:25.985380+00:00"
+  },
+  "ledger_count": 1,
+  "version_event_count": 1,
+  "two_level_audit": true
+}

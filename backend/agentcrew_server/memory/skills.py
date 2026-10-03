@@ -41,6 +41,8 @@ class MemorySkills:
         denied = await asyncio.to_thread(self.store._authorize, identity, "workspace", identity.workspace_id)
         if denied:
             return denied
+        if identity.actor_type == "agent" and hasattr(self.store, "skill_versions"):
+            return self.store.skill_versions.task_index(identity)
         rows = self.db.read_conn.execute("SELECT c.*,s.revision,s.metadata FROM memory_skills c JOIN memory_stores s ON s.store_type='skill' AND s.store_id=c.id WHERE c.workspace_id=? AND c.agent_id=? ORDER BY c.name,c.id",
             (identity.workspace_id, identity.agent_id)).fetchall()
         items = []
@@ -77,6 +79,8 @@ class MemorySkills:
         if denied:
             return denied
         call_id = call_id or uuid.uuid4().hex
+        if identity.actor_type == "agent" and hasattr(self.store, "skill_versions"):
+            return await self.store.skill_versions.task_view(identity, name, file, call_id, self)
         async with self._names.setdefault((identity.workspace_id, identity.agent_id, name), asyncio.Lock()):
             row = self._find(identity, name)
             if row is None:

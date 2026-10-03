@@ -358,6 +358,8 @@ components:
         entry_id: { type: [string, "null"] }
         entry_hash: { type: [string, "null"] }
         idempotent_replay: { type: boolean }
+        version_id: { type: string, description: Skill发布对应的不可变版本 }
+        version_no: { type: integer, minimum: 1 }
     MemoryWriteRequest:
       allOf:
         - { $ref: "#/components/schemas/MemoryChangeRequest" }
@@ -458,6 +460,7 @@ components:
         name: { type: string }
         description: { type: string, maxLength: 60 }
         revision: { type: integer, minimum: 0 }
+        version_id: { type: string, description: 当前任务绑定版本 }
         state: { type: string, enum: [active, stale, archived, pinned] }
         hits: { type: integer, minimum: 0 }
         last_hit_at: { type: [string, "null"], format: date-time }
@@ -593,7 +596,7 @@ components:
         - { $ref: "#/components/schemas/MemoryChangeRequest" }
         - type: object
           properties:
-            restore_version_id: { type: string, description: 恢复该版本正文与支撑文件，追加新版本；不能与text/files同时提供 }
+            restore_version_id: { type: string, description: 恢复该版本正文与支撑文件，追加新版本；不能与text/files/name/description同时提供 }
     SkillVersion:
       type: object
       required: [id, skill_id, version_no, change_id, ledger_id, content, metadata, files, sha256, created_by, created_at]
@@ -1099,7 +1102,7 @@ paths:
     get:
       operationId: listSkillVersions
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-04
       x-domain-card: M2-04
       parameters: *governance_page_parameters
       responses:
@@ -1121,7 +1124,7 @@ paths:
     post:
       operationId: publishSkillVersion
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-04
       x-domain-card: M2-04
       requestBody:
         required: true
@@ -1146,7 +1149,7 @@ paths:
     get:
       operationId: readSkillVersion
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-04
       x-domain-card: M2-04
       responses: *skill_version_responses
   /api/connectors:

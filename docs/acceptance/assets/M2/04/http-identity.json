@@ -1,0 +1,1393 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/memory/skills",
+    "effective_user": "owner",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "change_id": "version-create-71ec3e810e52484283a7eb01b80d1ae7",
+      "expected_revision": 0,
+      "name": "版本核验-7e5c9c28",
+      "description": "核查来源并记录结果",
+      "text": "# 原始流程\n核查原始材料。",
+      "basis": "所有者提供的实际材料流程",
+      "files": {
+        "references/source.md": "原始来源",
+        "templates/checklist.md": "原始清单"
+      }
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "version-create-71ec3e810e52484283a7eb01b80d1ae7",
+        "ledger_id": 4,
+        "store_type": "skill",
+        "store_id": "9f3d5d02bdff5a5fb5b5b8a09a598b05",
+        "entry_id": "a21e6214f8d74db585be4e5f3e623511",
+        "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+        "revision": 1,
+        "global_seq": 19,
+        "idempotent_replay": false,
+        "version_id": "c65d74b25783566dbfdb11855096f426",
+        "version_no": 1
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/skills/9f3d5d02bdff5a5fb5b5b8a09a598b05/versions/c65d74b25783566dbfdb11855096f426",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "c65d74b25783566dbfdb11855096f426",
+        "skill_id": "9f3d5d02bdff5a5fb5b5b8a09a598b05",
+        "version_no": 1,
+        "change_id": "version-create-71ec3e810e52484283a7eb01b80d1ae7",
+        "ledger_id": 4,
+        "content": "# 原始流程\n核查原始材料。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "所有者提供的实际材料流程",
+              "created_at": "2026-10-03T15:05:25.065360+00:00",
+              "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+              "entry_id": "a21e6214f8d74db585be4e5f3e623511",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "version-create-71ec3e810e52484283a7eb01b80d1ae7"
+              },
+              "state": "active",
+              "text": "# 原始流程\n核查原始材料。"
+            }
+          ],
+          "files": {
+            "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+            "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          },
+          "name": "版本核验-7e5c9c28",
+          "revision": 1
+        },
+        "files": [
+          {
+            "content": "原始来源",
+            "path": "references/source.md",
+            "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+          },
+          {
+            "content": "原始清单",
+            "path": "templates/checklist.md",
+            "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          }
+        ],
+        "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.065360+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/9f3d5d02bdff5a5fb5b5b8a09a598b05/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "version-edit-d18e1d0d7ff9409a856c5161971695a3",
+      "expected_revision": 1,
+      "basis": "所有者更新完整材料",
+      "text": "# 更新流程\n核查来源和输出。",
+      "files": {
+        "references/source.md": "更新来源",
+        "templates/checklist.md": null,
+        "assets/new.md": "新的材料"
+      }
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "4697731afe115c93b3e1f01282a1b736",
+        "skill_id": "9f3d5d02bdff5a5fb5b5b8a09a598b05",
+        "version_no": 2,
+        "change_id": "version-edit-d18e1d0d7ff9409a856c5161971695a3",
+        "ledger_id": 5,
+        "content": "# 更新流程\n核查来源和输出。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "所有者更新完整材料",
+              "created_at": "2026-10-03T15:05:25.065360+00:00",
+              "entry_hash": "a3ac8aa3acc47a8231f4c201ee8596c499441d92bd39b4ec9ae8e9fac1f7d51d",
+              "entry_id": "a21e6214f8d74db585be4e5f3e623511",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "version-edit-d18e1d0d7ff9409a856c5161971695a3"
+              },
+              "state": "active",
+              "text": "# 更新流程\n核查来源和输出。"
+            }
+          ],
+          "files": {
+            "assets/new.md": "832f39ca9d2ef312c25a151023fd190d72ffa36fc1d20ab378cc3ac45bfc3d41",
+            "references/source.md": "de0e6877cfcba3c6f92b3a1fa59f387d724d1c150810783dcd2145e4336017e6"
+          },
+          "name": "版本核验-7e5c9c28",
+          "revision": 2
+        },
+        "files": [
+          {
+            "content": "更新来源",
+            "path": "references/source.md",
+            "sha256": "de0e6877cfcba3c6f92b3a1fa59f387d724d1c150810783dcd2145e4336017e6"
+          },
+          {
+            "content": "新的材料",
+            "path": "assets/new.md",
+            "sha256": "832f39ca9d2ef312c25a151023fd190d72ffa36fc1d20ab378cc3ac45bfc3d41"
+          }
+        ],
+        "sha256": "0b5439527e5f3b450440438751666381b57a974868e3a4cbc97c655c6b4c191a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.080516+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/9f3d5d02bdff5a5fb5b5b8a09a598b05/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "version-edit-d18e1d0d7ff9409a856c5161971695a3",
+      "expected_revision": 1,
+      "basis": "所有者更新完整材料",
+      "text": "# 更新流程\n核查来源和输出。",
+      "files": {
+        "references/source.md": "更新来源",
+        "templates/checklist.md": null,
+        "assets/new.md": "新的材料"
+      }
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "4697731afe115c93b3e1f01282a1b736",
+        "skill_id": "9f3d5d02bdff5a5fb5b5b8a09a598b05",
+        "version_no": 2,
+        "change_id": "version-edit-d18e1d0d7ff9409a856c5161971695a3",
+        "ledger_id": 5,
+        "content": "# 更新流程\n核查来源和输出。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "所有者更新完整材料",
+              "created_at": "2026-10-03T15:05:25.065360+00:00",
+              "entry_hash": "a3ac8aa3acc47a8231f4c201ee8596c499441d92bd39b4ec9ae8e9fac1f7d51d",
+              "entry_id": "a21e6214f8d74db585be4e5f3e623511",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "version-edit-d18e1d0d7ff9409a856c5161971695a3"
+              },
+              "state": "active",
+              "text": "# 更新流程\n核查来源和输出。"
+            }
+          ],
+          "files": {
+            "assets/new.md": "832f39ca9d2ef312c25a151023fd190d72ffa36fc1d20ab378cc3ac45bfc3d41",
+            "references/source.md": "de0e6877cfcba3c6f92b3a1fa59f387d724d1c150810783dcd2145e4336017e6"
+          },
+          "name": "版本核验-7e5c9c28",
+          "revision": 2
+        },
+        "files": [
+          {
+            "content": "更新来源",
+            "path": "references/source.md",
+            "sha256": "de0e6877cfcba3c6f92b3a1fa59f387d724d1c150810783dcd2145e4336017e6"
+          },
+          {
+            "content": "新的材料",
+            "path": "assets/new.md",
+            "sha256": "832f39ca9d2ef312c25a151023fd190d72ffa36fc1d20ab378cc3ac45bfc3d41"
+          }
+        ],
+        "sha256": "0b5439527e5f3b450440438751666381b57a974868e3a4cbc97c655c6b4c191a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.080516+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/9f3d5d02bdff5a5fb5b5b8a09a598b05/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "version-edit-d18e1d0d7ff9409a856c5161971695a3",
+      "expected_revision": 1,
+      "basis": "所有者更新完整材料",
+      "text": "不同内容",
+      "files": {
+        "references/source.md": "更新来源",
+        "templates/checklist.md": null,
+        "assets/new.md": "新的材料"
+      }
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "IDEMPOTENCY_CONFLICT",
+        "message": "change_id 已绑定不同原始请求"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/9f3d5d02bdff5a5fb5b5b8a09a598b05/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "stale-version",
+      "expected_revision": 1,
+      "basis": "所有者更新完整材料",
+      "text": "# 更新流程\n核查来源和输出。",
+      "files": {
+        "references/source.md": "更新来源",
+        "templates/checklist.md": null,
+        "assets/new.md": "新的材料"
+      }
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "REVISION_CONFLICT",
+        "message": "预期修订已经陈旧",
+        "detail": {
+          "current_revision": 2
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/9f3d5d02bdff5a5fb5b5b8a09a598b05/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "version-restore-56d7dc2a22e543dc9e0805b2d0ba2b38",
+      "expected_revision": 2,
+      "basis": "所有者恢复原始材料流程",
+      "restore_version_id": "c65d74b25783566dbfdb11855096f426"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "688922801c585ae3802e36dca1d85710",
+        "skill_id": "9f3d5d02bdff5a5fb5b5b8a09a598b05",
+        "version_no": 3,
+        "change_id": "version-restore-56d7dc2a22e543dc9e0805b2d0ba2b38",
+        "ledger_id": 6,
+        "content": "# 原始流程\n核查原始材料。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "所有者恢复原始材料流程",
+              "created_at": "2026-10-03T15:05:25.065360+00:00",
+              "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+              "entry_id": "a21e6214f8d74db585be4e5f3e623511",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "version-restore-56d7dc2a22e543dc9e0805b2d0ba2b38"
+              },
+              "state": "active",
+              "text": "# 原始流程\n核查原始材料。"
+            }
+          ],
+          "files": {
+            "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+            "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          },
+          "name": "版本核验-7e5c9c28",
+          "revision": 3
+        },
+        "files": [
+          {
+            "content": "原始来源",
+            "path": "references/source.md",
+            "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+          },
+          {
+            "content": "原始清单",
+            "path": "templates/checklist.md",
+            "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          }
+        ],
+        "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.099348+00:00"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/skills/9f3d5d02bdff5a5fb5b5b8a09a598b05/versions/c65d74b25783566dbfdb11855096f426",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "c65d74b25783566dbfdb11855096f426",
+        "skill_id": "9f3d5d02bdff5a5fb5b5b8a09a598b05",
+        "version_no": 1,
+        "change_id": "version-create-71ec3e810e52484283a7eb01b80d1ae7",
+        "ledger_id": 4,
+        "content": "# 原始流程\n核查原始材料。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "所有者提供的实际材料流程",
+              "created_at": "2026-10-03T15:05:25.065360+00:00",
+              "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+              "entry_id": "a21e6214f8d74db585be4e5f3e623511",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "version-create-71ec3e810e52484283a7eb01b80d1ae7"
+              },
+              "state": "active",
+              "text": "# 原始流程\n核查原始材料。"
+            }
+          ],
+          "files": {
+            "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+            "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          },
+          "name": "版本核验-7e5c9c28",
+          "revision": 1
+        },
+        "files": [
+          {
+            "content": "原始来源",
+            "path": "references/source.md",
+            "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+          },
+          {
+            "content": "原始清单",
+            "path": "templates/checklist.md",
+            "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          }
+        ],
+        "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.065360+00:00"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/skills/9f3d5d02bdff5a5fb5b5b8a09a598b05/versions?limit=2",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "688922801c585ae3802e36dca1d85710",
+            "skill_id": "9f3d5d02bdff5a5fb5b5b8a09a598b05",
+            "version_no": 3,
+            "change_id": "version-restore-56d7dc2a22e543dc9e0805b2d0ba2b38",
+            "ledger_id": 6,
+            "content": "# 原始流程\n核查原始材料。",
+            "metadata": {
+              "description": "核查来源并记录结果",
+              "entries": [
+                {
+                  "approved_at": null,
+                  "approved_by": null,
+                  "basis": "所有者恢复原始材料流程",
+                  "created_at": "2026-10-03T15:05:25.065360+00:00",
+                  "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+                  "entry_id": "a21e6214f8d74db585be4e5f3e623511",
+                  "hits": 0,
+                  "last_hit_at": null,
+                  "needs_review": false,
+                  "source": {
+                    "actor_id": "owner",
+                    "actor_type": "user",
+                    "manual_edit_id": "version-restore-56d7dc2a22e543dc9e0805b2d0ba2b38"
+                  },
+                  "state": "active",
+                  "text": "# 原始流程\n核查原始材料。"
+                }
+              ],
+              "files": {
+                "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+                "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+              },
+              "name": "版本核验-7e5c9c28",
+              "revision": 3
+            },
+            "files": [
+              {
+                "content": "原始来源",
+                "path": "references/source.md",
+                "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+              },
+              {
+                "content": "原始清单",
+                "path": "templates/checklist.md",
+                "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+              }
+            ],
+            "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+            "created_by": "owner",
+            "created_at": "2026-10-03T15:05:25.099348+00:00"
+          },
+          {
+            "id": "4697731afe115c93b3e1f01282a1b736",
+            "skill_id": "9f3d5d02bdff5a5fb5b5b8a09a598b05",
+            "version_no": 2,
+            "change_id": "version-edit-d18e1d0d7ff9409a856c5161971695a3",
+            "ledger_id": 5,
+            "content": "# 更新流程\n核查来源和输出。",
+            "metadata": {
+              "description": "核查来源并记录结果",
+              "entries": [
+                {
+                  "approved_at": null,
+                  "approved_by": null,
+                  "basis": "所有者更新完整材料",
+                  "created_at": "2026-10-03T15:05:25.065360+00:00",
+                  "entry_hash": "a3ac8aa3acc47a8231f4c201ee8596c499441d92bd39b4ec9ae8e9fac1f7d51d",
+                  "entry_id": "a21e6214f8d74db585be4e5f3e623511",
+                  "hits": 0,
+                  "last_hit_at": null,
+                  "needs_review": false,
+                  "source": {
+                    "actor_id": "owner",
+                    "actor_type": "user",
+                    "manual_edit_id": "version-edit-d18e1d0d7ff9409a856c5161971695a3"
+                  },
+                  "state": "active",
+                  "text": "# 更新流程\n核查来源和输出。"
+                }
+              ],
+              "files": {
+                "assets/new.md": "832f39ca9d2ef312c25a151023fd190d72ffa36fc1d20ab378cc3ac45bfc3d41",
+                "references/source.md": "de0e6877cfcba3c6f92b3a1fa59f387d724d1c150810783dcd2145e4336017e6"
+              },
+              "name": "版本核验-7e5c9c28",
+              "revision": 2
+            },
+            "files": [
+              {
+                "content": "更新来源",
+                "path": "references/source.md",
+                "sha256": "de0e6877cfcba3c6f92b3a1fa59f387d724d1c150810783dcd2145e4336017e6"
+              },
+              {
+                "content": "新的材料",
+                "path": "assets/new.md",
+                "sha256": "832f39ca9d2ef312c25a151023fd190d72ffa36fc1d20ab378cc3ac45bfc3d41"
+              }
+            ],
+            "sha256": "0b5439527e5f3b450440438751666381b57a974868e3a4cbc97c655c6b4c191a",
+            "created_by": "owner",
+            "created_at": "2026-10-03T15:05:25.080516+00:00"
+          }
+        ],
+        "next_after": "f9b64a8572f2d91389b7d53973c44920e1235600d8aab35aa694e1c156510e06:4697731afe115c93b3e1f01282a1b736"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/skills/9f3d5d02bdff5a5fb5b5b8a09a598b05/versions?limit=2&after=f9b64a8572f2d91389b7d53973c44920e1235600d8aab35aa694e1c156510e06:4697731afe115c93b3e1f01282a1b736",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "c65d74b25783566dbfdb11855096f426",
+            "skill_id": "9f3d5d02bdff5a5fb5b5b8a09a598b05",
+            "version_no": 1,
+            "change_id": "version-create-71ec3e810e52484283a7eb01b80d1ae7",
+            "ledger_id": 4,
+            "content": "# 原始流程\n核查原始材料。",
+            "metadata": {
+              "description": "核查来源并记录结果",
+              "entries": [
+                {
+                  "approved_at": null,
+                  "approved_by": null,
+                  "basis": "所有者提供的实际材料流程",
+                  "created_at": "2026-10-03T15:05:25.065360+00:00",
+                  "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+                  "entry_id": "a21e6214f8d74db585be4e5f3e623511",
+                  "hits": 0,
+                  "last_hit_at": null,
+                  "needs_review": false,
+                  "source": {
+                    "actor_id": "owner",
+                    "actor_type": "user",
+                    "manual_edit_id": "version-create-71ec3e810e52484283a7eb01b80d1ae7"
+                  },
+                  "state": "active",
+                  "text": "# 原始流程\n核查原始材料。"
+                }
+              ],
+              "files": {
+                "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+                "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+              },
+              "name": "版本核验-7e5c9c28",
+              "revision": 1
+            },
+            "files": [
+              {
+                "content": "原始来源",
+                "path": "references/source.md",
+                "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+              },
+              {
+                "content": "原始清单",
+                "path": "templates/checklist.md",
+                "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+              }
+            ],
+            "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+            "created_by": "owner",
+            "created_at": "2026-10-03T15:05:25.065360+00:00"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/memory/skills",
+    "effective_user": "owner",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "change_id": "version-create-b9d4d5d9c3484dbc8e607232a26d8fe1",
+      "expected_revision": 0,
+      "name": "版本核验-9f0b9b5d",
+      "description": "核查来源并记录结果",
+      "text": "# 原始流程\n核查原始材料。",
+      "basis": "所有者提供的实际材料流程",
+      "files": {
+        "references/source.md": "原始来源",
+        "templates/checklist.md": "原始清单"
+      }
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "version-create-b9d4d5d9c3484dbc8e607232a26d8fe1",
+        "ledger_id": 7,
+        "store_type": "skill",
+        "store_id": "4da0ba3826ec5bbeaf6528ea5ad5d968",
+        "entry_id": "c7471a5a64944cbf82d23cb6d6397ae2",
+        "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+        "revision": 1,
+        "global_seq": 25,
+        "idempotent_replay": false,
+        "version_id": "943c6a33b28b5458bbb3a50726eccf54",
+        "version_no": 1
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/skills/4da0ba3826ec5bbeaf6528ea5ad5d968/versions/943c6a33b28b5458bbb3a50726eccf54",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "943c6a33b28b5458bbb3a50726eccf54",
+        "skill_id": "4da0ba3826ec5bbeaf6528ea5ad5d968",
+        "version_no": 1,
+        "change_id": "version-create-b9d4d5d9c3484dbc8e607232a26d8fe1",
+        "ledger_id": 7,
+        "content": "# 原始流程\n核查原始材料。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "所有者提供的实际材料流程",
+              "created_at": "2026-10-03T15:05:25.115222+00:00",
+              "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+              "entry_id": "c7471a5a64944cbf82d23cb6d6397ae2",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "version-create-b9d4d5d9c3484dbc8e607232a26d8fe1"
+              },
+              "state": "active",
+              "text": "# 原始流程\n核查原始材料。"
+            }
+          ],
+          "files": {
+            "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+            "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          },
+          "name": "版本核验-9f0b9b5d",
+          "revision": 1
+        },
+        "files": [
+          {
+            "content": "原始来源",
+            "path": "references/source.md",
+            "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+          },
+          {
+            "content": "原始清单",
+            "path": "templates/checklist.md",
+            "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          }
+        ],
+        "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.115222+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/4da0ba3826ec5bbeaf6528ea5ad5d968/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "partial-version-c2c871338e1244d78f4cf19f3b49880c",
+      "expected_revision": 1,
+      "basis": "只更新支撑材料",
+      "files": {
+        "assets/partial.md": "真实追加材料"
+      }
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "d644f343776f578fad18b0a38258a05b",
+        "skill_id": "4da0ba3826ec5bbeaf6528ea5ad5d968",
+        "version_no": 2,
+        "change_id": "partial-version-c2c871338e1244d78f4cf19f3b49880c",
+        "ledger_id": 8,
+        "content": "# 原始流程\n核查原始材料。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "只更新支撑材料",
+              "created_at": "2026-10-03T15:05:25.115222+00:00",
+              "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+              "entry_id": "c7471a5a64944cbf82d23cb6d6397ae2",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "partial-version-c2c871338e1244d78f4cf19f3b49880c"
+              },
+              "state": "active",
+              "text": "# 原始流程\n核查原始材料。"
+            }
+          ],
+          "files": {
+            "assets/partial.md": "c050c03fb2f6e0bf4e7d0c47d46f521d0d43576781f58050093ca3bc7f5c2868",
+            "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+            "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          },
+          "name": "版本核验-9f0b9b5d",
+          "revision": 2
+        },
+        "files": [
+          {
+            "content": "真实追加材料",
+            "path": "assets/partial.md",
+            "sha256": "c050c03fb2f6e0bf4e7d0c47d46f521d0d43576781f58050093ca3bc7f5c2868"
+          },
+          {
+            "content": "原始来源",
+            "path": "references/source.md",
+            "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+          },
+          {
+            "content": "原始清单",
+            "path": "templates/checklist.md",
+            "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          }
+        ],
+        "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.127275+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/4da0ba3826ec5bbeaf6528ea5ad5d968/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "later-body-600b272933db47d6bfdf72903780cdda",
+      "expected_revision": 2,
+      "basis": "随后更新正文",
+      "text": "随后更新的完整正文。"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "9b0e8c1c143251728c19a76c757db0c1",
+        "skill_id": "4da0ba3826ec5bbeaf6528ea5ad5d968",
+        "version_no": 3,
+        "change_id": "later-body-600b272933db47d6bfdf72903780cdda",
+        "ledger_id": 9,
+        "content": "随后更新的完整正文。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "随后更新正文",
+              "created_at": "2026-10-03T15:05:25.115222+00:00",
+              "entry_hash": "2382efb6012ac54af29ed320f54f63697de187b86553404999d73158462a4023",
+              "entry_id": "c7471a5a64944cbf82d23cb6d6397ae2",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "later-body-600b272933db47d6bfdf72903780cdda"
+              },
+              "state": "active",
+              "text": "随后更新的完整正文。"
+            }
+          ],
+          "files": {
+            "assets/partial.md": "c050c03fb2f6e0bf4e7d0c47d46f521d0d43576781f58050093ca3bc7f5c2868",
+            "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+            "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          },
+          "name": "版本核验-9f0b9b5d",
+          "revision": 3
+        },
+        "files": [
+          {
+            "content": "真实追加材料",
+            "path": "assets/partial.md",
+            "sha256": "c050c03fb2f6e0bf4e7d0c47d46f521d0d43576781f58050093ca3bc7f5c2868"
+          },
+          {
+            "content": "原始来源",
+            "path": "references/source.md",
+            "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+          },
+          {
+            "content": "原始清单",
+            "path": "templates/checklist.md",
+            "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          }
+        ],
+        "sha256": "2382efb6012ac54af29ed320f54f63697de187b86553404999d73158462a4023",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.138698+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/4da0ba3826ec5bbeaf6528ea5ad5d968/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "partial-version-c2c871338e1244d78f4cf19f3b49880c",
+      "expected_revision": 1,
+      "basis": "只更新支撑材料",
+      "files": {
+        "assets/partial.md": "真实追加材料"
+      }
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "d644f343776f578fad18b0a38258a05b",
+        "skill_id": "4da0ba3826ec5bbeaf6528ea5ad5d968",
+        "version_no": 2,
+        "change_id": "partial-version-c2c871338e1244d78f4cf19f3b49880c",
+        "ledger_id": 8,
+        "content": "# 原始流程\n核查原始材料。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "只更新支撑材料",
+              "created_at": "2026-10-03T15:05:25.115222+00:00",
+              "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+              "entry_id": "c7471a5a64944cbf82d23cb6d6397ae2",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "partial-version-c2c871338e1244d78f4cf19f3b49880c"
+              },
+              "state": "active",
+              "text": "# 原始流程\n核查原始材料。"
+            }
+          ],
+          "files": {
+            "assets/partial.md": "c050c03fb2f6e0bf4e7d0c47d46f521d0d43576781f58050093ca3bc7f5c2868",
+            "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+            "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          },
+          "name": "版本核验-9f0b9b5d",
+          "revision": 2
+        },
+        "files": [
+          {
+            "content": "真实追加材料",
+            "path": "assets/partial.md",
+            "sha256": "c050c03fb2f6e0bf4e7d0c47d46f521d0d43576781f58050093ca3bc7f5c2868"
+          },
+          {
+            "content": "原始来源",
+            "path": "references/source.md",
+            "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+          },
+          {
+            "content": "原始清单",
+            "path": "templates/checklist.md",
+            "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          }
+        ],
+        "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.127275+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/4da0ba3826ec5bbeaf6528ea5ad5d968/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "idempotent-restore-25498a9864c24113b19178d3517f73d8",
+      "expected_revision": 3,
+      "basis": "恢复原始完整材料",
+      "restore_version_id": "943c6a33b28b5458bbb3a50726eccf54"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "b46a530ed55b59e8a246ecaee35c2b85",
+        "skill_id": "4da0ba3826ec5bbeaf6528ea5ad5d968",
+        "version_no": 4,
+        "change_id": "idempotent-restore-25498a9864c24113b19178d3517f73d8",
+        "ledger_id": 10,
+        "content": "# 原始流程\n核查原始材料。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "恢复原始完整材料",
+              "created_at": "2026-10-03T15:05:25.115222+00:00",
+              "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+              "entry_id": "c7471a5a64944cbf82d23cb6d6397ae2",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "idempotent-restore-25498a9864c24113b19178d3517f73d8"
+              },
+              "state": "active",
+              "text": "# 原始流程\n核查原始材料。"
+            }
+          ],
+          "files": {
+            "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+            "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          },
+          "name": "版本核验-9f0b9b5d",
+          "revision": 4
+        },
+        "files": [
+          {
+            "content": "原始来源",
+            "path": "references/source.md",
+            "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+          },
+          {
+            "content": "原始清单",
+            "path": "templates/checklist.md",
+            "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          }
+        ],
+        "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.153359+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/4da0ba3826ec5bbeaf6528ea5ad5d968/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "later-files-42c8c3c6e4744183af25387a024d194c",
+      "expected_revision": 4,
+      "basis": "随后再次修改文件清单",
+      "files": {
+        "assets/later.md": "随后追加的材料"
+      }
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "da677d5c00135ab5a4a583762218be8c",
+        "skill_id": "4da0ba3826ec5bbeaf6528ea5ad5d968",
+        "version_no": 5,
+        "change_id": "later-files-42c8c3c6e4744183af25387a024d194c",
+        "ledger_id": 11,
+        "content": "# 原始流程\n核查原始材料。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "随后再次修改文件清单",
+              "created_at": "2026-10-03T15:05:25.115222+00:00",
+              "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+              "entry_id": "c7471a5a64944cbf82d23cb6d6397ae2",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "later-files-42c8c3c6e4744183af25387a024d194c"
+              },
+              "state": "active",
+              "text": "# 原始流程\n核查原始材料。"
+            }
+          ],
+          "files": {
+            "assets/later.md": "aefbfb798823ff2383aff32949b6b6063c36448d2221294761855a38290ba50c",
+            "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+            "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          },
+          "name": "版本核验-9f0b9b5d",
+          "revision": 5
+        },
+        "files": [
+          {
+            "content": "随后追加的材料",
+            "path": "assets/later.md",
+            "sha256": "aefbfb798823ff2383aff32949b6b6063c36448d2221294761855a38290ba50c"
+          },
+          {
+            "content": "原始来源",
+            "path": "references/source.md",
+            "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+          },
+          {
+            "content": "原始清单",
+            "path": "templates/checklist.md",
+            "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          }
+        ],
+        "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.167323+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/4da0ba3826ec5bbeaf6528ea5ad5d968/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "idempotent-restore-25498a9864c24113b19178d3517f73d8",
+      "expected_revision": 3,
+      "basis": "恢复原始完整材料",
+      "restore_version_id": "943c6a33b28b5458bbb3a50726eccf54"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "b46a530ed55b59e8a246ecaee35c2b85",
+        "skill_id": "4da0ba3826ec5bbeaf6528ea5ad5d968",
+        "version_no": 4,
+        "change_id": "idempotent-restore-25498a9864c24113b19178d3517f73d8",
+        "ledger_id": 10,
+        "content": "# 原始流程\n核查原始材料。",
+        "metadata": {
+          "description": "核查来源并记录结果",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "恢复原始完整材料",
+              "created_at": "2026-10-03T15:05:25.115222+00:00",
+              "entry_hash": "2551faa540d4e35fa9e45db0b8f74e359c3d930de7176b907fbb5717c2f0ef25",
+              "entry_id": "c7471a5a64944cbf82d23cb6d6397ae2",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "idempotent-restore-25498a9864c24113b19178d3517f73d8"
+              },
+              "state": "active",
+              "text": "# 原始流程\n核查原始材料。"
+            }
+          ],
+          "files": {
+            "references/source.md": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1",
+            "templates/checklist.md": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          },
+          "name": "版本核验-9f0b9b5d",
+          "revision": 4
+        },
+        "files": [
+          {
+            "content": "原始来源",
+            "path": "references/source.md",
+            "sha256": "2b2ba4f76b1b3d3015cfa031cfac0a734fd464c9cec3ac51c8c38e58835542b1"
+          },
+          {
+            "content": "原始清单",
+            "path": "templates/checklist.md",
+            "sha256": "8dc178b7539ec47f947df1fabcf620f778fd6dff8c32dd23ff1c2e8fef3d7069"
+          }
+        ],
+        "sha256": "b2f479e39fc203d92f444a54a15f376d032773a55f9217e3cf120e056c674c8a",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.153359+00:00"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/memory/skills?workspace_id=office&agent_id=xiaowen",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "c7b7146c6ea65788b6d4161a4982f34b",
+            "workspace_id": "office",
+            "agent_id": "xiaowen",
+            "name": "Excel处理",
+            "description": "核对表头并处理表格材料",
+            "revision": 1,
+            "state": "active",
+            "hits": 0,
+            "last_hit_at": null
+          },
+          {
+            "id": "7fb6db7a69e75931b85594e05ed43d2b",
+            "workspace_id": "office",
+            "agent_id": "xiaowen",
+            "name": "文档模板",
+            "description": "核查来源并组织文档内容",
+            "revision": 1,
+            "state": "active",
+            "hits": 0,
+            "last_hit_at": null
+          },
+          {
+            "id": "9f3d5d02bdff5a5fb5b5b8a09a598b05",
+            "workspace_id": "office",
+            "agent_id": "xiaowen",
+            "name": "版本核验-7e5c9c28",
+            "description": "核查来源并记录结果",
+            "revision": 3,
+            "state": "active",
+            "hits": 0,
+            "last_hit_at": null
+          },
+          {
+            "id": "4da0ba3826ec5bbeaf6528ea5ad5d968",
+            "workspace_id": "office",
+            "agent_id": "xiaowen",
+            "name": "版本核验-9f0b9b5d",
+            "description": "核查来源并记录结果",
+            "revision": 5,
+            "state": "active",
+            "hits": 0,
+            "last_hit_at": null
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/skills/7fb6db7a69e75931b85594e05ed43d2b/versions",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "314222aa9401532b96ae08867bc734a5",
+            "skill_id": "7fb6db7a69e75931b85594e05ed43d2b",
+            "version_no": 1,
+            "change_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408",
+            "ledger_id": 2,
+            "content": "# 文档模板\n核对材料来源，按标题、正文和依据组织内容，保存后检查完整正文。",
+            "metadata": {
+              "description": "核查来源并组织文档内容",
+              "entries": [
+                {
+                  "approved_at": null,
+                  "approved_by": null,
+                  "basis": "所有者授权的演示种子技能",
+                  "created_at": "2026-10-03T15:05:24.544690+00:00",
+                  "entry_hash": "b432f048a72d0cda8b600746e31882afaba0a3b0eb165a80b847f874e6a5b9f0",
+                  "entry_id": "ad1184583fc5465482f538d0509af1ce",
+                  "hits": 0,
+                  "last_hit_at": null,
+                  "needs_review": false,
+                  "source": {
+                    "actor_id": "owner",
+                    "actor_type": "user",
+                    "manual_edit_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408"
+                  },
+                  "state": "active",
+                  "text": "# 文档模板\n核对材料来源，按标题、正文和依据组织内容，保存后检查完整正文。"
+                }
+              ],
+              "files": {},
+              "name": "文档模板",
+              "revision": 1
+            },
+            "files": [],
+            "sha256": "f1be3db5994809a26dd8863850ce696054cf190b753548a255d60fe7682fe2a8",
+            "created_by": "owner",
+            "created_at": "2026-10-03T15:05:24.544690+00:00"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "只用一句简短文字确认收到这条测试指令。",
+      "client_request_id": "331abd1c4ad043188e94ebb284f4ba3a"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "f8a58ec0f07f4925b5835c52be99b865",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-03T15:05:25.202211+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-skill-delivery/identity-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-skill-delivery/identity-http0/conversations/f8a58ec0f07f4925b5835c52be99b865/materials",
+          "folders": []
+        },
+        "task_run_id": "265842e78af74e148cf4c11233b7f8c4"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/7fb6db7a69e75931b85594e05ed43d2b/versions",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "template-update-a6aa402bc8fb4944ad9689edd78f0385",
+      "expected_revision": 1,
+      "basis": "所有者增加核验步骤",
+      "text": "# 文档模板\n核对来源并检查完整输出。"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "1332c5ccea105470ae18d1e612f5708d",
+        "skill_id": "7fb6db7a69e75931b85594e05ed43d2b",
+        "version_no": 2,
+        "change_id": "template-update-a6aa402bc8fb4944ad9689edd78f0385",
+        "ledger_id": 12,
+        "content": "# 文档模板\n核对来源并检查完整输出。",
+        "metadata": {
+          "description": "核查来源并组织文档内容",
+          "entries": [
+            {
+              "approved_at": null,
+              "approved_by": null,
+              "basis": "所有者增加核验步骤",
+              "created_at": "2026-10-03T15:05:24.544690+00:00",
+              "entry_hash": "b432f048a72d0cda8b600746e31882afaba0a3b0eb165a80b847f874e6a5b9f0",
+              "entry_id": "ad1184583fc5465482f538d0509af1ce",
+              "hits": 0,
+              "last_hit_at": null,
+              "needs_review": false,
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "template-update-a6aa402bc8fb4944ad9689edd78f0385"
+              },
+              "state": "active",
+              "text": "# 文档模板\n核对来源并检查完整输出。"
+            }
+          ],
+          "files": {},
+          "name": "文档模板",
+          "revision": 2
+        },
+        "files": [],
+        "sha256": "f1ee3ad12ed2ca09321a70cd3ec4c6c13efed970f03e01f9ee7782ad8e2b87d2",
+        "created_by": "owner",
+        "created_at": "2026-10-03T15:05:25.211735+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "只用一句简短文字确认收到这条测试指令。",
+      "client_request_id": "14d7b1c220d94b0781aaa4bca5b9089a"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "a791241bac9b4194b876354cdc4116c5",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-03T15:05:25.402356+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-skill-delivery/identity-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-skill-delivery/identity-http0/conversations/a791241bac9b4194b876354cdc4116c5/materials",
+          "folders": []
+        },
+        "task_run_id": "1f7e833e138a4ee4b81dd135dc5b3415"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "identity-233905f49a274947b13ec0008b56045f"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "lilei",
+          "name": "李蕾",
+          "org_id": "demo-org",
+          "role": "member",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/skills/7fb6db7a69e75931b85594e05ed43d2b/versions",
+    "effective_user": "lilei",
+    "request": {
+      "change_id": "member-version",
+      "expected_revision": 2,
+      "basis": "越权发布",
+      "text": "正文"
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前角色无权执行该操作"
+      }
+    }
+  }
+]

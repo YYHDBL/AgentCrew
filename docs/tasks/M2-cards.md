@@ -1,6 +1,6 @@
 # M2 · 安全与治理实施任务卡
 
-> 日期：2026-10-03 ｜ 状态：M2-01 至 M2-03 已完成，其余卡片未开始 ｜ 代码依据：desktop-shell `5d632a8`
+> 日期：2026-10-03 ｜ 状态：M2-01 至 M2-04 已完成，其余卡片未开始 ｜ 代码依据：desktop-shell `d9f3a85`
 > 设计依据：[权限治理详设](../architecture/governance.md)、[Harness 与 Session](../architecture/harness-session.md)、[M1 实施卡](./M1-cards.md)、[ADR-008](../decisions/ADR-008-tool-admission-and-sandbox.md)、[F009 数字员工与授权管理](../features/F009-employee-and-governance.md)。
 
 ## 领取与交付约定
@@ -42,7 +42,7 @@
 | M2-01 | 契约、安全语义与作用域 | 所有者 M2 开工授权 | 后端，前端共同核对 | 已完成，见 [验收](../acceptance/M2-01.md) |
 | M2-02 | 资源数据、旧库迁移与种子组织 | M2-01 | 后端 | 已完成，见 [验收](../acceptance/M2-02.md) |
 | M2-03 | 本地认证、演示身份与 RBAC | M2-02 | 后端 | 已完成，见 [验收](../acceptance/M2-03.md) |
-| M2-04 | Skill 不可变版本与 M1 账本接入 | M2-02、M2-03 | 后端 | 未开始 |
+| M2-04 | Skill 不可变版本与 M1 账本接入 | M2-02、M2-03 | 后端 | 已完成，见 [验收](../acceptance/M2-04.md) |
 | M2-05 | Grant、能力隔离与实时撤销 | M2-03、M2-04 | 后端 | 未开始 |
 | M2-06 | HTTP/MCP 连接器与执行边界 | M2-05 | 后端 | 未开始 |
 | M2-07 | 员工规则、审批与提权防线 | M2-03、M2-05、M2-06 | 后端 | 未开始 |

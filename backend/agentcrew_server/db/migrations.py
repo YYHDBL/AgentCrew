@@ -27,6 +27,7 @@ from .schema_v8 import V8_STATEMENTS
 from .schema_v9 import V9_STATEMENTS
 from .schema_v10 import V10_STATEMENTS
 from .schema_v11 import V11_STATEMENTS
+from .schema_v12 import V12_STATEMENTS
 
 _SNAPSHOT_KEEP = 3
 _BUSY_RETRIES = 3
@@ -52,6 +53,7 @@ MIGRATIONS: tuple[Migration, ...] = (
     Migration(version=9, name="M1 后台提炼与独立审批", statements=V9_STATEMENTS),
     Migration(version=10, name="M1 确定性遗忘治理", statements=V10_STATEMENTS, rebuild_foreign_keys=True),
     Migration(version=11, name="M2 治理资源与授权", statements=V11_STATEMENTS),
+    Migration(version=12, name="M2 任务技能版本绑定", statements=V12_STATEMENTS),
 )
 
 

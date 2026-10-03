@@ -27,6 +27,7 @@ from .memory_jobs import install_memory_job_routes
 from .memory import install_memory_routes
 from .sse import install_sse_routes
 from .identity import install_identity_routes
+from .skill_versions import install_skill_version_routes
 from ..governance.resources import GovernanceError
 
 # 诊断模式下仍然可用的端点（§1：仅 health 与诊断端点）
@@ -71,6 +72,8 @@ def create_app(runtime: RuntimeState) -> FastAPI:
     @asynccontextmanager
     async def lifespan(_: FastAPI):
         runtime.log.debug("http.lifespan startup")
+        if runtime.skill_versions is not None and runtime.db.read_conn.execute("SELECT 1 FROM governance_seed_steps WHERE id='legacy-identities'").fetchone():
+            runtime.memory.skill_versions = runtime.skill_versions
         if runtime.memory is not None and runtime.diagnostic is None:
             results = await runtime.memory.recover()
             for result in results:
@@ -80,6 +83,9 @@ def create_app(runtime: RuntimeState) -> FastAPI:
             from ..governance.seed import seed
             await seed(runtime.governance, runtime.memory)
             await runtime.identities.bind_legacy_tasks()
+            if runtime.skill_versions is not None:
+                runtime.memory.skill_versions = runtime.skill_versions
+                await runtime.skill_versions.register_history()
         if runtime.snapshots is not None and runtime.diagnostic is None:
             await runtime.snapshots.recover()
         if runtime.recovery is not None:
@@ -111,6 +117,8 @@ def create_app(runtime: RuntimeState) -> FastAPI:
     install_error_handlers(app)
     if runtime.governance is not None:
         install_identity_routes(app, runtime)
+    if runtime.skill_versions is not None:
+        install_skill_version_routes(app, runtime)
 
     @app.exception_handler(GovernanceError)
     async def governance_error(_: Request, exc: GovernanceError):

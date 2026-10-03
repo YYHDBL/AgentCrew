@@ -126,8 +126,9 @@ async def seed(resources, memory):
             def register(conn):
                 with conn:
                     conn.execute("BEGIN IMMEDIATE")
-                    conn.execute("INSERT INTO skills(id,workspace_id,name,description,source,created_at,updated_at) VALUES(?,?,?,?,'system',?,?)",
-                        (result["store_id"], workspace, skill_name, description, now(), now()))
+                    if conn.execute("SELECT 1 FROM skills WHERE id=?", (result["store_id"],)).fetchone() is None:
+                        conn.execute("INSERT INTO skills(id,workspace_id,name,description,source,created_at,updated_at) VALUES(?,?,?,?,'system',?,?)",
+                            (result["store_id"], workspace, skill_name, description, now(), now()))
                     _grant(conn, "skill", result["store_id"], "agent", agent, step)
                     spec = resources.get("agent", agent, conn)["spec"]
                     spec["skill_ids"].append(result["store_id"])

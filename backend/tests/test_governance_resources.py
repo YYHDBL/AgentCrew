@@ -105,7 +105,7 @@ def test_upgrade_real_history_snapshot_and_identity_mapping(tmp_path):
         old = {table: [tuple(row) for row in db.read_conn.execute(f"SELECT * FROM {table}")] for table in tables}
         files = {p: (hashlib.sha256(p.read_bytes()).hexdigest(), p.stat().st_mtime_ns) for p in tmp_path.rglob("*.md")}
         result = run_migrations(db.write_conn, tmp_path / "backups")
-        assert result.applied_versions == [11]
+        assert result.applied_versions == list(range(11, MIGRATIONS[-1].version + 1))
         snapshot = sqlite3.connect(result.snapshot_path)
         assert snapshot.execute("SELECT count(*) FROM memory_ledger").fetchone()[0] == 2
         snapshot.close()
@@ -152,7 +152,7 @@ def test_sigkill_migration_is_atomic(tmp_path):
         db = Database(tmp_path / "agentcrew.db")
         assert db.read_conn.execute("SELECT max(version) FROM schema_migrations").fetchone()[0] == 10
         assert db.read_conn.execute("SELECT count(*) FROM sqlite_master WHERE name='organizations'").fetchone()[0] == 0
-        assert run_migrations(db.write_conn, tmp_path / "backups").applied_versions == [11]
+        assert run_migrations(db.write_conn, tmp_path / "backups").applied_versions == list(range(11, MIGRATIONS[-1].version + 1))
         assert run_migrations(db.write_conn, tmp_path / "backups").status == "up_to_date"
         assert db.read_conn.execute("PRAGMA foreign_key_check").fetchall() == []
         evidence = {"process_exit": child.returncode, "boundary": "CREATE TABLE demo_identities",

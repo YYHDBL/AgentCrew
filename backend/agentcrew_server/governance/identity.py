@@ -7,7 +7,7 @@ import secrets
 from agentcrew_core.events import RunEventType
 from agentcrew_core.governance import RequestIdentity, role_allows
 from ..secrets import register_secret
-from .resources import GovernanceError, now
+from .resources import GovernanceError, canonical, now
 
 
 class Identities:
@@ -237,8 +237,10 @@ class Identities:
         identity = RequestIdentity(source["credential_owner_id"], source["effective_user_id"], source["effective_user_id"] != source["credential_owner_id"])
         self.conversation(identity, event.conversation_id, conn)
         agent = self.agent(identity, row[1], row[0], conn)
-        conn.execute("INSERT INTO task_governance VALUES(?,?,?,?,?,?,?)", (event.task_run_id, identity.effective_user_id,
-            identity.credential_owner_id, agent["revision"], json.dumps(agent["spec"], ensure_ascii=False), "{}", event.ts))
+        versions = self.resources.skill_versions.task_snapshot(conn, row[1], agent["spec"]) if hasattr(self.resources, "skill_versions") else {}
+        conn.execute("INSERT INTO task_governance(task_run_id,effective_user_id,credential_owner_id,agent_revision,agent_spec,skill_versions,created_at,skill_binding_version) VALUES(?,?,?,?,?,?,?,?)", (event.task_run_id, identity.effective_user_id,
+            identity.credential_owner_id, agent["revision"], json.dumps(agent["spec"], ensure_ascii=False), canonical(versions), event.ts,
+            int(hasattr(self.resources, "skill_versions"))))
 
     def bind_job(self, conn, job, identity=None):
         if conn.execute("SELECT 1 FROM job_governance WHERE job_id=?", (job["id"],)).fetchone():
@@ -269,7 +271,7 @@ class Identities:
             count = 0
             for row in conn.execute("SELECT t.id,g.effective_user_id,g.credential_owner_id,g.agent_id,c.agent_spec_snapshot,t.created_at FROM task_runs t JOIN governance_conversations g ON g.conversation_id=t.conversation_id JOIN conversations c ON c.id=g.conversation_id WHERE NOT EXISTS(SELECT 1 FROM task_governance b WHERE b.task_run_id=t.id)").fetchall():
                 agent = self.resources.get("agent", row[3], conn)
-                conn.execute("INSERT INTO task_governance VALUES(?,?,?,?,?,?,?)", (row[0], row[1], row[2], agent["revision"], row[4], "{}", row[5]))
+                conn.execute("INSERT INTO task_governance(task_run_id,effective_user_id,credential_owner_id,agent_revision,agent_spec,skill_versions,created_at) VALUES(?,?,?,?,?,?,?)", (row[0], row[1], row[2], agent["revision"], row[4], "{}", row[5]))
                 count += 1
             return {"id": "legacy-task-identities", "revision": 1, "task_count": count}, {"org_id": "demo-org", "workspace_id": None, "agent_id": None, "owner_id": "owner"}, {"status": "active"}
         return await self.resources.mutate(change_id="m2-legacy-task-identities", actor_id="owner", request={}, action="governance.task_identities_registered",

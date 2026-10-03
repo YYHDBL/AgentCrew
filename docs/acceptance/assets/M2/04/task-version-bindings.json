@@ -1,0 +1,13 @@
+{
+  "original_task_id": "265842e78af74e148cf4c11233b7f8c4",
+  "new_task_id": "1f7e833e138a4ee4b81dd135dc5b3415",
+  "original_binding": {
+    "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+    "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+  },
+  "new_binding": {
+    "7fb6db7a69e75931b85594e05ed43d2b": "1332c5ccea105470ae18d1e612f5708d",
+    "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+  },
+  "original_binding_preserved": true
+}

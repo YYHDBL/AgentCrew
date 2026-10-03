@@ -288,10 +288,22 @@ class RunManager:
             snapshot = await self._snapshots.ensure(conversation_id, task_run_id,
                 provider=ConfiguredProvider({"aux": aux}, client=self._http, session_id=conversation_id),
                 aux_model=aux.model, default_role=SYSTEM_PROMPT)
-            system += "\n\n" + snapshot["system_block"]
+            memory_block = snapshot["system_block"]
+            if hasattr(self._memory, "skill_versions"):
+                from agentcrew_core.memory import snapshot_prompt
+                from ..memory.store import MemoryIdentity, canonical
+                memory_block = snapshot_prompt(snapshot["stores"])
+                identity = MemoryIdentity(snapshot["scope"]["workspace_id"], agent, "agent", agent, conversation_id, task_run_id)
+                index = self._memory.skill_versions.task_index(identity)
+                system += "\n\n【当前任务已授权Skill版本索引；正文通过skill_view读取】\n" + canonical(index)
+                fingerprint["skill_versions"] = self._memory.skill_versions.task_bindings(identity)
+            system += "\n\n" + memory_block
+            bound_versions = fingerprint.get("skill_versions")
             fingerprint = context_fingerprint(system, tools, self._model_config(slot))
+            if bound_versions is not None:
+                fingerprint["skill_versions"] = bound_versions
             fingerprint.update(memory_snapshot_id=snapshot["snapshot_id"], memory_snapshot_sha256=snapshot["sha256"],
-                               memory_block_sha256=sha256(snapshot["system_block"].encode()))
+                               memory_block_sha256=sha256(memory_block.encode()))
         return slot, tools, system, agent, fingerprint
 
     async def start_resume(self, task_run_id: str, conversation_id: str,
