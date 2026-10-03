@@ -164,6 +164,8 @@ class MemoryReview:
 
     async def execute(self, job_id, invocation, context, scheduler):
         async with self._tool_locks.setdefault(job_id, asyncio.Lock()):
+            if hasattr(self.jobs, "identities"):
+                self.jobs.check_identity(job_id)
             return await scheduler.run(invocation, context)
 
     async def request_approval(self, job_id, invocation):
@@ -197,13 +199,15 @@ class MemoryReview:
             return approval_id
         return await self.jobs.events.channel.execute(tx)
 
-    async def decide(self, job_id, approval_id, decision, digest):
+    async def decide(self, job_id, approval_id, decision, digest, request_identity=None):
         if decision not in {"allow_once", "reject_once"}:
             return failure("VALIDATION_ERROR", "后台审批决定无效")
         def tx(conn):
             with conn:
                 conn.execute("BEGIN IMMEDIATE")
                 job = self.jobs._job(conn, job_id)
+                if request_identity is not None:
+                    self.jobs.identities.job(request_identity, job_id, conn)
                 cursor = conn.execute("SELECT * FROM memory_job_approvals WHERE id=? AND job_id=?", (approval_id, job_id))
                 values = cursor.fetchone()
                 if values is None:
@@ -216,7 +220,9 @@ class MemoryReview:
                 conn.execute("UPDATE memory_job_approvals SET status=?,decision=?,resolved_at=? WHERE id=?",
                     ("allowed" if decision == "allow_once" else "rejected", decision, now(), approval_id))
                 conn.execute("UPDATE memory_jobs SET status='running' WHERE id=?", (job_id,))
-                event, resolved_audit = self._resolved_tx(conn, job, approval_id, decision, "owner")
+                event, resolved_audit = self._resolved_tx(conn, job, approval_id, decision,
+                    request_identity.effective_user_id if request_identity else "owner", actor_type="user",
+                    credential_owner_id=request_identity.credential_owner_id if request_identity else "owner")
                 status_events, audit = self.jobs._record_tx(conn, job_id)
             self.jobs._publish(conn, [event, *status_events], audit, previous_audit_seq=resolved_audit - 1)
             return {"decision": decision}
@@ -253,11 +259,12 @@ class MemoryReview:
             "calls": [{**dict(row), "payload": json.loads(row["payload"])} for row in self.db.read_conn.execute(
                 "SELECT ordinal,type,payload,created_at FROM memory_job_calls WHERE job_id=? ORDER BY ordinal", (job_id,))]}
 
-    def _resolved_tx(self, conn, job, approval_id, decision, actor):
+    def _resolved_tx(self, conn, job, approval_id, decision, actor, *, actor_type="system", credential_owner_id=None):
         event = self.jobs.events.append_in_tx(conn, task_run_id=None, conversation_id=job["conversation_id"],
             type=T.MEMORY_APPROVAL_RESOLVED, payload={"job_id": job["id"], "approval_id": approval_id,
-                "decision": decision, "actor": actor, "scope": self.jobs._scope(job)})
-        audit = append_audit(conn, ts=event.ts, actor_type="user" if actor == "owner" else "system", actor_id=actor,
+                "decision": decision, "actor": actor, "scope": self.jobs._scope(job),
+                **({"credential_owner_id": credential_owner_id} if credential_owner_id else {})})
+        audit = append_audit(conn, ts=event.ts, actor_type=actor_type, actor_id=actor,
             action=event.type.value, resource_type="memory_approval", resource_id=approval_id, detail=canonical(event.payload))
         return event, audit
 
@@ -306,6 +313,8 @@ class MemoryReview:
     async def run(self, job_id):
         result_text = None
         try:
+            if hasattr(self.jobs, "identities"):
+                self.jobs.check_identity(job_id)
             slot = bind_slot(self.jobs._slots.pop(job_id))
             await self.jobs._status(job_id, "running")
             job = self.jobs.get(job_id)
@@ -324,6 +333,8 @@ class MemoryReview:
             provider.budget_sink = sink
             scheduler = self.scheduler(job)
             async def budget():
+                if hasattr(self.jobs, "identities"):
+                    self.jobs.check_identity(job_id)
                 counter = await asyncio.to_thread(load_counter, slot)
                 measured = await asyncio.to_thread(counter.measure, slot, messages, registry.schemas(),
                     system=REVIEW_SYSTEM, thinking={"type": "disabled"})

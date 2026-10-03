@@ -20,10 +20,11 @@ def install_approval_routes(app, runtime) -> None:
     service = runtime.approvals
 
     @app.post("/api/tool-approvals/{call_id}")
-    async def submit_decision(call_id: str, body: ApprovalDecisionRequest):
+    async def submit_decision(call_id: str, body: ApprovalDecisionRequest, request: Request):
         try:
             result = await service.submit(
-                call_id, body.decision, body.input_hash)
+                call_id, body.decision, body.input_hash,
+                request_identity=request.state.identity if runtime.governance is not None else None)
         except ApprovalNotFound:
             raise ApiError(ErrorCode.NOT_FOUND, f"审批不存在：{call_id}") from None
         except ApprovalStale as e:

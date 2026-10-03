@@ -73,6 +73,11 @@ class MemoryStore:
         raise ValueError("库类型或身份无效")
 
     def _authorize(self, identity: MemoryIdentity, store_type: str, store_id: str) -> dict | None:
+        if hasattr(self, "identities"):
+            caller = self.identities.memory_actor(identity)
+            self.identities.agent(caller, identity.agent_id, identity.workspace_id)
+            if identity.conversation_id:
+                self.identities.conversation(caller, identity.conversation_id)
         if any(not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value) for value in (identity.workspace_id, identity.agent_id)):
             return failure("OUT_OF_SCOPE", "工作区和员工身份包含非法路径字符")
         expected = {"user": "owner", "workspace": identity.workspace_id, "soul": identity.agent_id}
@@ -83,7 +88,7 @@ class MemoryStore:
         if store_type not in expected or store_id != expected[store_type]:
             return failure("OUT_OF_SCOPE", "记忆库不属于当前执行范围")
         if identity.actor_type == "user":
-            if identity.actor_id != "owner" or identity.task_run_id or identity.job_id:
+            if (not hasattr(self, "identities") and identity.actor_id != "owner") or identity.task_run_id or identity.job_id:
                 return failure("OUT_OF_SCOPE", "人工操作身份无效")
         elif identity.actor_type == "agent":
             if identity.actor_id != identity.agent_id or not identity.conversation_id:
@@ -230,6 +235,8 @@ class MemoryStore:
                      operations: list[dict] | None = None, restored_ledger_id: int | None = None,
                      skill: dict | None = None, support_files: dict | None = None,
                      request_context: dict | None = None) -> dict:
+        if hasattr(self, "identities") and identity.actor_type == "user":
+            self.identities.require(self.identities.memory_actor(identity), "manage", identity.workspace_id)
         denied = await asyncio.to_thread(self._authorize, identity, "workspace" if skill and expected_revision == 0 else store_type,
                                         identity.workspace_id if skill and expected_revision == 0 else store_id)
         if denied:
@@ -481,6 +488,7 @@ class MemoryStore:
             changed = [e for e in plan["after_metadata"]["entries"] if prior.get(e["entry_id"]) != e]
             single = changed[0] if len(changed) == 1 else None
             payload = {"change_id": change_id, "ledger_id": plan["ledger_id"], "store_type": kind, "store_id": store_id,
+                "credential_owner_id": "owner",
                 "revision": plan["revision"], "action": plan["action"], "source": plan["source"],
                 "entry_id": single["entry_id"] if single else None, "entry_hash": single["entry_hash"] if single else None,
                 "summary": redact(single["text"] if single else f"记忆库完成 {plan['action']}，修改 {len(changed)} 条记忆")[:200],

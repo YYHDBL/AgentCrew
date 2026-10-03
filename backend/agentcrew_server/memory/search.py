@@ -62,6 +62,13 @@ class MemorySearch:
             memory_match = "e.rowid IN (SELECT rowid FROM memory_fts WHERE memory_fts MATCH ?)" if len(query) >= 3 else "instr(e.text, ?) > 0"
             summary_match = "s.rowid IN (SELECT rowid FROM summaries_fts WHERE summaries_fts MATCH ?)" if len(query) >= 3 else "instr(s.text, ?) > 0"
             term = phrase if len(query) >= 3 else query
+            conversation_filter = ""
+            visible = []
+            if hasattr(self.store, "identities"):
+                caller = self.store.identities.memory_actor(identity)
+                visible = [row[0] for row in conn.execute("SELECT id FROM conversations WHERE workspace_id=? AND agent_id=?", (identity.workspace_id, identity.agent_id))
+                    if self.store.identities.visible_conversation(caller, row[0])]
+                conversation_filter = "AND c.id IN(SELECT value FROM json_each(?))"
             sql = f"""SELECT m.id,'message' AS kind,m.content AS text,m.created_at,
                 json_object('conversation_id',m.conversation_id,'task_run_id',m.task_run_id,
                     'message_id',m.id,'role',m.role,'workspace_id',c.workspace_id,
@@ -69,6 +76,7 @@ class MemorySearch:
                 NULL AS store_type,NULL AS store_id,NULL AS state
                 FROM messages m JOIN conversations c ON c.id=m.conversation_id
                 WHERE c.workspace_id=? AND c.agent_id=? AND {message_match}
+                    {conversation_filter}
                     AND memory_context_safe(m.content)
                 UNION ALL
                 SELECT e.entry_id,'memory',e.text,e.created_at,
@@ -86,9 +94,10 @@ class MemorySearch:
                 FROM session_summaries s JOIN conversations c ON c.id=s.conversation_id
                 JOIN task_runs t ON t.id=s.task_run_id
                 WHERE c.workspace_id=? AND c.agent_id=? AND t.status='completed'
-                    AND {summary_match} AND memory_context_safe(s.text)"""
-            params = [identity.workspace_id, identity.agent_id, term, canonical(allowed), term,
-                      identity.workspace_id, identity.agent_id, term]
+                    AND {summary_match} {conversation_filter} AND memory_context_safe(s.text)"""
+            access = [canonical(visible)] if conversation_filter else []
+            params = [identity.workspace_id, identity.agent_id, term, *access, canonical(allowed), term,
+                      identity.workspace_id, identity.agent_id, term, *access]
             where = ""
             if cursor:
                 position = conn.execute(f"SELECT created_at,id,kind FROM ({sql}) WHERE kind=? AND id=?",

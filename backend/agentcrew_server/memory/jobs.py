@@ -155,9 +155,20 @@ class MemoryJobs:
             else:
                 await self.review.run(job_id)
 
+    def check_identity(self, job_id):
+        from agentcrew_core.governance import RequestIdentity
+        row = self.db.read_conn.execute("SELECT effective_user_id,credential_owner_id FROM job_governance WHERE job_id=?", (job_id,)).fetchone()
+        if row is None:
+            raise ValueError("后台作业缺少发起身份")
+        job = self.get(job_id)
+        identity = RequestIdentity(row[1], row[0], row[0] != row[1])
+        self.identities.agent(identity, job["agent_id"], job["workspace_id"])
+
     async def _run_summary(self, job_id):
         result_text = None
         try:
+            if hasattr(self, "identities"):
+                self.check_identity(job_id)
             slot = bind_slot(self._slots.pop(job_id))
             await self._status(job_id, "running")
             job = await asyncio.to_thread(self.get, job_id)
@@ -173,10 +184,13 @@ class MemoryJobs:
             provider.budget_sink = sink
             async def forbidden(call):
                 raise ValueError(f"任务摘要禁止调用工具：{call.name}")
+            async def current_authorization():
+                if hasattr(self, "identities"):
+                    self.check_identity(job_id)
             result = await run_task(messages, LoopDeps(
                 request=lambda: provider.stream("aux", messages, [], thinking={"type": "disabled"}, system=SUMMARY_SYSTEM),
                 execute=forbidden, emit=sink, on_progress=lambda: None,
-                gates=LoopGates(max_steps=1), model=slot.model, model_slot="aux"))
+                gates=LoopGates(max_steps=1), model=slot.model, model_slot="aux", before_request=current_authorization))
             result_text = redact(result.final_text.strip())
             if result.status != "completed" or not 1 <= len(result_text) <= 200 or contains_credentials(result_text):
                 raise ValueError(f"真实 aux 摘要不符合契约：status={result.status},characters={len(result_text)},reason={result.reason}")
@@ -237,8 +251,10 @@ class MemoryJobs:
     def _scope(job):
         return {"owner_id": "owner", "workspace_id": job["workspace_id"], "agent_id": job["agent_id"]}
 
-    def _record_tx(self, conn, job_id):
+    def _record_tx(self, conn, job_id, identity=None):
         job = self._job(conn, job_id)
+        if hasattr(self, "identities"):
+            self.identities.bind_job(conn, job, identity)
         payload = {"job_id": job_id, "kind": job["kind"], "status": job["status"], "scope": self._scope(job),
                    "trigger_global_seq": job["trigger_global_seq"] or 0, "source_task_run_id": job["task_run_id"],
                    "model": job["model"], "config_version": job["config_version"], "usage": json.loads(job["usage"]), "error": job["error"]}

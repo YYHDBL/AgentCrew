@@ -4,7 +4,7 @@ import asyncio
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
-from fastapi import Query
+from fastapi import Query, Request
 
 from .errors import ApiError, ErrorCode
 from .memory import memory_scope_exists
@@ -42,10 +42,13 @@ def install_memory_job_routes(app, runtime):
             raise ApiError(ErrorCode.OUT_OF_SCOPE, "后台作业不属于当前工作区和员工")
 
     @app.post("/api/memory/curate/run", status_code=202)
-    async def start_curator(body: CurateRequest):
+    async def start_curator(body: CurateRequest, request: Request):
         if not await asyncio.to_thread(memory_scope_exists, runtime, body.workspace_id, body.agent_id):
             raise ApiError(ErrorCode.OUT_OF_SCOPE, "治理范围没有已登记的工作区和员工")
-        job_id = await runtime.memory_jobs.curator.enqueue(body.workspace_id, body.agent_id, body.client_request_id)
+        identity = request.state.identity if runtime.governance is not None else None
+        if identity is not None:
+            runtime.identities.agent(identity, body.agent_id, body.workspace_id)
+        job_id = await runtime.memory_jobs.curator.enqueue(body.workspace_id, body.agent_id, body.client_request_id, identity=identity)
         if isinstance(job_id, dict):
             _checked(job_id)
         return {"data": _checked(await asyncio.to_thread(review.view, job_id))}
@@ -64,8 +67,10 @@ def install_memory_job_routes(app, runtime):
 
     @app.post("/api/memory/jobs/{job_id}/approvals/{approval_id}")
     async def decide_job(job_id: str, approval_id: str, body: JobDecision,
+                         request: Request,
                          workspace_id: str | None = Query(default=None, min_length=1),
                          agent_id: str | None = Query(default=None, min_length=1)):
         await authorized_job(job_id, workspace_id, agent_id)
-        _checked(await review.decide(job_id, approval_id, body.decision, body.input_hash))
+        _checked(await review.decide(job_id, approval_id, body.decision, body.input_hash,
+            request_identity=request.state.identity if runtime.governance is not None else None))
         return {"data": _checked(await asyncio.to_thread(review.view, job_id))}

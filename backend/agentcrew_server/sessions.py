@@ -273,6 +273,8 @@ class SessionService:
     # ── scope / 材料目录 / 工作目录（S09 会话装配）─────────────────
 
     def _workspace_dir(self, workspace_id: str) -> Path:
+        if hasattr(self, "identities"):
+            return Path(self.identities.resources.get("workspace", workspace_id)["data_dir"])
         return (self._data_dir / "workspaces" / workspace_id).resolve()
 
     def _materials_dir(self, conversation_id: str) -> Path:
@@ -326,6 +328,7 @@ class SessionService:
 
     async def create_conversation(
         self, *, instruction: str, agent_id: str | None = None,
+        workspace_id: str = DEFAULT_WORKSPACE_ID, request_identity=None,
         client_request_id: str | None = None,
         import_files: list[str] | None = None,
         folders: list[str] | None = None,
@@ -333,6 +336,7 @@ class SessionService:
         if not client_request_id:
             return await self._create_conversation_once(
                 instruction=instruction, agent_id=agent_id,
+                workspace_id=workspace_id, request_identity=request_identity,
                 client_request_id=None, import_files=import_files,
                 folders=folders)
         # 幂等键串行（外审回稿）：查重在事务外、材料复制在前、插入在后——
@@ -342,25 +346,31 @@ class SessionService:
             existing = await asyncio.to_thread(
                 self._find_conversation_by_request_id, client_request_id)
             if existing is not None:
+                if request_identity is not None:
+                    self.identities.conversation(request_identity, existing["conversation"]["id"])
                 return existing  # 网络重试幂等：返回首次结果，不重复建
             return await self._create_conversation_once(
                 instruction=instruction, agent_id=agent_id,
+                workspace_id=workspace_id, request_identity=request_identity,
                 client_request_id=client_request_id,
                 import_files=import_files, folders=folders)
 
     async def _create_conversation_once(
         self, *, instruction: str, agent_id: str | None,
+        workspace_id: str, request_identity,
         client_request_id: str | None,
         import_files: list[str] | None, folders: list[str] | None,
     ) -> dict[str, Any]:
         async with self.foreground():
             return await self._create_foreground_conversation(
                 instruction=instruction, agent_id=agent_id,
+                workspace_id=workspace_id, request_identity=request_identity,
                 client_request_id=client_request_id,
                 import_files=import_files, folders=folders)
 
     async def _create_foreground_conversation(
         self, *, instruction: str, agent_id: str | None,
+        workspace_id: str, request_identity,
         client_request_id: str | None,
         import_files: list[str] | None, folders: list[str] | None,
     ) -> dict[str, Any]:
@@ -389,14 +399,20 @@ class SessionService:
             conn.execute("BEGIN IMMEDIATE")
             try:
                 conn.execute("PRAGMA defer_foreign_keys=ON")
+                if request_identity is not None:
+                    resource = self.identities.agent(request_identity, agent, workspace_id, conn)
                 conn.execute(
                     "INSERT INTO conversations (id, workspace_id, agent_id, status,"
                     " folders_json, client_request_id, created_at, updated_at)"
                     " VALUES (?, ?, ?, 'active', ?, ?, ?, ?)",
-                    (conv_id, DEFAULT_WORKSPACE_ID, agent,
+                    (conv_id, workspace_id, agent,
                      json.dumps(accepted, ensure_ascii=False), client_request_id,
                      ts, ts),
                 )
+                if request_identity is not None:
+                    conn.execute("INSERT INTO governance_conversations VALUES(?,?,?,?,?)", (conv_id, workspace_id, agent,
+                        request_identity.credential_owner_id, request_identity.effective_user_id))
+                    conn.execute("UPDATE conversations SET agent_spec_snapshot=? WHERE id=?", (json.dumps(resource["spec"], ensure_ascii=False), conv_id))
                 events.append(self._store.append_in_tx(
                     conn, task_run_id=task_id, conversation_id=conv_id,
                     type=RunEventType.RUN_QUEUED,
@@ -466,7 +482,7 @@ class SessionService:
     # ── 指令（直跑 / 入队 / 审批 409，D5）────────────────────────
 
     async def send_instruction(self, conversation_id: str, text: str,
-                               client_request_id: str | None = None
+                               client_request_id: str | None = None, request_identity=None
                                ) -> dict[str, Any]:
         async with await self._conv_lock(conversation_id):
             await asyncio.to_thread(self.conversation_or_404, conversation_id)
@@ -484,7 +500,9 @@ class SessionService:
                         task_run_id=task_id, conversation_id=conversation_id,
                         type=RunEventType.RUN_QUEUED,
                         payload={"instruction": text,
-                                 "client_request_id": client_request_id},
+                                 "client_request_id": client_request_id,
+                                 **({"request_identity": {"credential_owner_id": request_identity.credential_owner_id,
+                                     "effective_user_id": request_identity.effective_user_id}} if request_identity else {})},
                     )
                 return {"mode": "started", "queue_position": None,
                         "task_run_id": event.task_run_id}
@@ -503,7 +521,9 @@ class SessionService:
                         task_run_id=None, conversation_id=conversation_id,
                         type=RunEventType.QUEUE_ITEM_ENQUEUED,
                         payload={"item_id": item_id, "text": text,
-                                 "client_request_id": client_request_id},
+                                 "client_request_id": client_request_id,
+                                 **({"request_identity": {"credential_owner_id": request_identity.credential_owner_id,
+                                     "effective_user_id": request_identity.effective_user_id}} if request_identity else {})},
                     )
                 fsm2, _ = await asyncio.to_thread(
                     self._fsm_sync, conversation_id)

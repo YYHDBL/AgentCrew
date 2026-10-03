@@ -253,14 +253,17 @@ class RunManager:
 
     async def _emit(self, task_run_id: str, conversation_id: str,
                     event_type: str, payload: dict,
-                    attempt_no: int | None = 1):
+                    attempt_no: int | None = 1, extra_writes=None):
         return await self._store.append(
             task_run_id=task_run_id, conversation_id=conversation_id,
             type=RunEventType(event_type), payload=payload,
             attempt_no=attempt_no,
+            extra_writes=extra_writes,
         )
 
     async def _assemble_attempt(self, conversation_id: str, task_run_id: str):
+        if hasattr(self, "identities"):
+            self.identities.task(task_run_id)
         """attempt 装配：配置/环境块/工具 schema 在此刻绑定（v1.7 配置
         快照 + fingerprint）。initial 与 resume 共用（start_resume 发
         run.resumed 前取同一份指纹）。DB 读取全在线程内。"""
@@ -292,17 +295,26 @@ class RunManager:
         return slot, tools, system, agent, fingerprint
 
     async def start_resume(self, task_run_id: str, conversation_id: str,
-                           resume_reason: str, attempt_no: int) -> None:
+                           resume_reason: str, attempt_no: int, request_identity=None) -> None:
         """C9：发 run.resumed（含与 run.started 同源的指纹）→ 总线派发
         resume runner。校验已由 RecoveryService.resume 完成。"""
         _slot, _tools, _system, _agent, fingerprint = \
             await self._assemble_attempt(conversation_id, task_run_id)
+        def record_actor(conn, event):
+            from ..db.audit import append_audit
+            if request_identity is not None:
+                self.identities.conversation(request_identity, conversation_id, conn)
+                append_audit(conn, ts=event.ts, actor_type="user", actor_id=request_identity.effective_user_id,
+                    action="run.resume_requested", resource_type="task_run", resource_id=task_run_id,
+                    detail=json.dumps({"credential_owner_id": request_identity.credential_owner_id, "attempt_no": attempt_no,
+                        "scope": self.identities.resources.scope("agent", _agent, conn)}, ensure_ascii=False, sort_keys=True))
         await self._emit(task_run_id, conversation_id, "run.resumed", {
             "attempt_no": attempt_no,
             "attempt_id": uuid.uuid4().hex,
             "resume_reason": resume_reason,
             "context_fingerprint": fingerprint,
-        }, attempt_no=attempt_no)
+            **({"actor_id": request_identity.effective_user_id, "credential_owner_id": request_identity.credential_owner_id} if request_identity else {}),
+        }, attempt_no=attempt_no, extra_writes=record_actor)
 
     async def _runner(self, task_run_id: str, conversation_id: str,
                       *, resume: bool = False) -> None:
@@ -395,6 +407,8 @@ class RunManager:
                 self._watchdog(run, gates), name=f"watchdog:{task_run_id[:12]}")
 
             async def execute(call: ToolCall) -> ToolResult:
+                if hasattr(self, "identities"):
+                    self.identities.task(task_run_id)
                 if call.name == "ask_user":
                     return await self._ask_user_direct(
                         run, sink, ctx, call)
@@ -406,6 +420,8 @@ class RunManager:
                     ctx=ctx)
 
             async def before_request() -> None:
+                if hasattr(self, "identities"):
+                    self.identities.task(task_run_id)
                 if self._checkpoints is not None:
                     await self._checkpoints.maybe_compact(
                         conversation_id=conversation_id, task_run_id=task_run_id,
@@ -425,7 +441,7 @@ class RunManager:
                 gates=gates, model=slot.model,
                 start_ordinal=(await asyncio.to_thread(
                     self._next_ordinal, task_run_id) if resume else 1),
-                before_request=before_request if self._checkpoints is not None else None,
+                before_request=before_request if self._checkpoints is not None or hasattr(self, "identities") else None,
             )
             result = await run_task(messages, deps)
             if result.status == "completed":

@@ -13,7 +13,7 @@ from .sse import (_SSE_HEADERS, PING_INTERVAL_SECONDS, _data_frame, _resync_fram
                   _retry_hint, _shutdown_frame, _subscribe_or_503)
 
 
-def memory_batch(db, workspace, agent, cursor, head):
+def memory_batch(db, workspace, agent, cursor, head, identities=None, identity=None):
     rows = db.read_conn.execute("SELECT e.*,c.workspace_id AS context_workspace,c.agent_id AS context_agent "
         "FROM run_events e LEFT JOIN conversations c ON c.id=e.conversation_id WHERE e.global_seq>? AND e.global_seq<=? "
         "AND e.type IN (SELECT value FROM json_each(?)) ORDER BY e.global_seq LIMIT 200",
@@ -21,25 +21,35 @@ def memory_batch(db, workspace, agent, cursor, head):
     selected = []
     for row in rows:
         event = _row_to_event(row)
+        if identity is not None and event.conversation_id and not identities.visible_conversation(identity, event.conversation_id):
+            continue
+        if identity is not None and event.payload.get("job_id"):
+            job_owner = db.read_conn.execute("SELECT effective_user_id FROM job_governance WHERE job_id=?", (event.payload["job_id"],)).fetchone()
+            if identities.current(identity)["role"] != "owner" and (job_owner is None or job_owner[0] != identity.effective_user_id):
+                continue
         context_scope = {"owner_id": "owner", "workspace_id": row["context_workspace"], "agent_id": row["context_agent"]}
         if memory_event_visible(event.type, event.payload, workspace, agent, context_scope=context_scope):
             selected.append(event)
     return selected, rows[-1]["global_seq"] if rows else head
 
 
-async def memory_stream(runtime, sub, workspace, agent, start):
+async def memory_stream(runtime, sub, workspace, agent, start, identity=None):
     sub.bind_consumer()
     sent = cursor = start
     try:
         yield _retry_hint()
         head = await asyncio.to_thread(lambda: runtime.db.read_conn.execute("SELECT COALESCE(MAX(global_seq),0) FROM run_events").fetchone()[0])
         while cursor < head:
-            batch, cursor = await asyncio.to_thread(memory_batch, runtime.db, workspace, agent, cursor, head)
+            batch, cursor = await asyncio.to_thread(memory_batch, runtime.db, workspace, agent, cursor, head, runtime.identities, identity)
             for event in batch:
+                if identity is not None and not runtime.identities.visible_scope(identity, workspace, agent):
+                    return
                 sent = event.global_seq
                 sub.last_sent_global_seq = sent
                 yield _data_frame(event)
         while True:
+            if identity is not None and not runtime.identities.visible_scope(identity, workspace, agent):
+                return
             if sub.shutdown_requested:
                 yield _shutdown_frame(sent)
                 return
@@ -48,10 +58,19 @@ async def memory_stream(runtime, sub, workspace, agent, start):
                 return
             event = sub.take_nowait()
             if event is None:
-                await sub.wait_for_data()
+                if identity is None:
+                    await sub.wait_for_data()
+                else:
+                    await asyncio.sleep(0.25)
                 continue
             if event.global_seq <= max(start, head, sent):
                 continue
+            if identity is not None and event.conversation_id and not runtime.identities.visible_conversation(identity, event.conversation_id):
+                continue
+            if identity is not None and event.payload.get("job_id"):
+                job_owner = runtime.db.read_conn.execute("SELECT effective_user_id FROM job_governance WHERE job_id=?", (event.payload["job_id"],)).fetchone()
+                if runtime.identities.current(identity)["role"] != "owner" and (job_owner is None or job_owner[0] != identity.effective_user_id):
+                    continue
             sent = event.global_seq
             sub.last_sent_global_seq = sent
             yield _data_frame(event)
@@ -59,7 +78,7 @@ async def memory_stream(runtime, sub, workspace, agent, start):
         runtime.bus.unsubscribe(sub)
 
 
-def scoped_memory_response(runtime, workspace, agent, start):
+def scoped_memory_response(runtime, workspace, agent, start, identity=None):
     sub = _subscribe_or_503(runtime.bus, Topic("memory", workspace_id=workspace, agent_id=agent))
-    return EventSourceResponse(memory_stream(runtime, sub, workspace, agent, start),
+    return EventSourceResponse(memory_stream(runtime, sub, workspace, agent, start, identity),
         ping=PING_INTERVAL_SECONDS, headers=_SSE_HEADERS, shutdown_grace_period=1)

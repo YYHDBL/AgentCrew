@@ -4,7 +4,7 @@ import asyncio
 import json
 from typing import Annotated, Literal
 
-from fastapi import Depends, Path, Query
+from fastapi import Depends, Path, Query, Request
 from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
 from agentcrew_core.memory.pagination import memory_page
@@ -71,18 +71,21 @@ def checked(value):
 def install_memory_routes(app, runtime):
     store, skills = runtime.memory, MemorySkills(runtime.memory)
 
-    async def identity(workspace_id: str = Query(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9_-]+$"),
+    async def identity(request: Request, workspace_id: str = Query(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9_-]+$"),
                        agent_id: str = Query(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9_-]+$")):
-        if not await asyncio.to_thread(memory_scope_exists, runtime, workspace_id, agent_id):
+        if runtime.governance is not None:
+            runtime.identities.agent(request.state.identity, agent_id, workspace_id)
+        elif not await asyncio.to_thread(memory_scope_exists, runtime, workspace_id, agent_id):
             raise ApiError(ErrorCode.OUT_OF_SCOPE, "工作区和员工没有已登记的执行范围")
-        return MemoryIdentity(workspace_id, agent_id)
+        return MemoryIdentity(workspace_id, agent_id, actor_id=request.state.identity.effective_user_id if runtime.governance is not None else "owner")
 
     def source(scope, body):
-        return MemoryIdentity(scope.workspace_id, scope.agent_id, conversation_id=body.conversation_id)
+        return MemoryIdentity(scope.workspace_id, scope.agent_id, actor_id=scope.actor_id, conversation_id=body.conversation_id)
 
     @app.get("/api/memory/stream")
     async def stream_events(scope=Depends(identity), from_seq: int = Query(0, alias="from", ge=0)):
-        return scoped_memory_response(runtime, scope.workspace_id, scope.agent_id, from_seq)
+        return scoped_memory_response(runtime, scope.workspace_id, scope.agent_id, from_seq,
+            runtime.identities.memory_actor(scope) if runtime.governance is not None else None)
 
     async def skill_row(scope, skill_id):
         row = await asyncio.to_thread(lambda: runtime.db.read_conn.execute("SELECT * FROM memory_skills WHERE id=?", (skill_id,)).fetchone())
@@ -173,7 +176,7 @@ def install_memory_routes(app, runtime):
             for field in ("before_metadata", "after_metadata", "before_files", "after_files", "source"):
                 row[field] = json.loads(row[field])
         return {"data": memory_page(rows, {"kind": store_type, "id": store_id, "workspace": scope.workspace_id,
-            "agent": scope.agent_id, "order": "id DESC"}, limit, after, key="id")}
+            "agent": scope.agent_id, "actor": scope.actor_id, "order": "id DESC"}, limit, after, key="id")}
 
     @app.post("/api/memory/ledger/{ledger_id}/rollback")
     async def restore_ledger(ledger_id: Annotated[int, Path(ge=1, le=9223372036854775807)], body: MemoryChangeBody, scope=Depends(identity)):
@@ -195,11 +198,11 @@ def install_memory_routes(app, runtime):
                           after: str | None = Query(default=None, min_length=1)):
         value = checked(await skills.index(scope, archived=archived))
         return {"data": memory_page(value["items"], {"workspace": scope.workspace_id, "agent": scope.agent_id,
-            "archived": archived, "order": "name,id"}, limit, after, key="id")}
+            "archived": archived, "actor": scope.actor_id, "order": "name,id"}, limit, after, key="id")}
 
     @app.post("/api/memory/skills")
-    async def create_skill(body: SkillCreateBody):
-        scope = await identity(body.workspace_id, body.agent_id)
+    async def create_skill(body: SkillCreateBody, request: Request):
+        scope = await identity(request, body.workspace_id, body.agent_id)
         return {"data": checked(await skills.change(source(scope, body), body.name, action="create",
             change_id=body.change_id, expected_revision=body.expected_revision, basis=body.basis,
             description=body.description, text=body.text, files=body.files))}
@@ -222,6 +225,10 @@ def install_memory_routes(app, runtime):
             rows = runtime.db.read_conn.execute("SELECT id FROM memory_jobs WHERE workspace_id=? AND agent_id=? "
                 "AND (? IS NULL OR conversation_id=?) ORDER BY created_at DESC,id DESC",
                 (scope.workspace_id, scope.agent_id, conversation_id, conversation_id)).fetchall()
+            if runtime.governance is not None:
+                caller = runtime.identities.memory_actor(scope)
+                owner = runtime.identities.current(caller)["role"] == "owner"
+                rows = [row for row in rows if owner or runtime.db.read_conn.execute("SELECT 1 FROM job_governance WHERE job_id=? AND effective_user_id=?", (row[0], caller.effective_user_id)).fetchone()]
             return [runtime.memory_jobs.review.view(row[0]) for row in rows]
         return {"data": memory_page(await asyncio.to_thread(records), {"workspace": scope.workspace_id, "agent": scope.agent_id,
-            "conversation": conversation_id, "order": "created_at,id DESC"}, limit, after, key="id")}
+            "conversation": conversation_id, "actor": scope.actor_id, "order": "created_at,id DESC"}, limit, after, key="id")}

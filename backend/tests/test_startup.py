@@ -16,6 +16,7 @@ from pathlib import Path
 import fcntl
 
 import pytest
+from agentcrew_server.db.migrations import MIGRATIONS
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 PYTHON = sys.executable
@@ -153,7 +154,7 @@ def test_bad_migration_full_startup_enters_diagnostic_mode(tmp_path):
             has_bad = conn.execute(
                 "SELECT count(*) FROM sqlite_master WHERE name='nope'"
             ).fetchone()[0]
-            assert version == 10 and has_bad == 0
+            assert version == MIGRATIONS[-1].version and has_bad == 0
         finally:
             conn.close()
         proc.send_signal(signal.SIGTERM)

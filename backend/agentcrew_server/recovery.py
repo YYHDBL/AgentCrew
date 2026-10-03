@@ -277,7 +277,7 @@ class RecoveryService:
         return self._task_cwd(row[0]) if row else str(self._data_dir)
 
     async def submit_verification(self, call_id: str, verdict: str,
-                                  note: str | None) -> dict:
+                                  note: str | None, request_identity=None) -> dict:
         if verdict not in ("confirmed_executed", "confirmed_not_executed"):
             raise SessionError(ErrorCode.VALIDATION_ERROR,
                                f"非法核验决定：{verdict}")
@@ -300,6 +300,8 @@ class RecoveryService:
                     raise SessionError(ErrorCode.NOT_FOUND,
                                        f"调用不存在：{call_id}")
                 task_id, conversation_id, status = row
+                if request_identity is not None:
+                    self.identities.conversation(request_identity, conversation_id, conn)
                 if status != "pending_verification":
                     raise SessionError(
                         ErrorCode.INVALID_TRANSITION,
@@ -309,13 +311,14 @@ class RecoveryService:
                     conversation_id=conversation_id,
                     type=RunEventType.TOOL_VERIFICATION_SUBMITTED,
                     payload={"call_id": call_id, "verdict": verdict,
-                             "note": note},
+                             "note": note, "actor": request_identity.effective_user_id if request_identity else "owner",
+                             "credential_owner_id": request_identity.credential_owner_id if request_identity else "owner"},
                 ))
                 append_audit(
-                    conn, ts=_now(), actor_type="user", actor_id="owner",
+                    conn, ts=_now(), actor_type="user", actor_id=request_identity.effective_user_id if request_identity else "owner",
                     action=f"tool.verification:{verdict}",
                     resource_type="tool_call", resource_id=call_id,
-                    detail=json.dumps({"note": note or ""},
+                    detail=json.dumps({"note": note or "", "credential_owner_id": request_identity.credential_owner_id if request_identity else "owner"},
                                       ensure_ascii=False),
                 )
                 conn.execute("COMMIT")
@@ -375,7 +378,7 @@ class RecoveryService:
             return None
 
     async def resume(self, task_run_id: str,
-                     resume_reason: str | None) -> dict:
+                     resume_reason: str | None, request_identity=None) -> dict:
         assert self._run_manager is not None, "RunManager 未装配"
         # 首次读取仅用于定位会话（conversation_id 不变量，无校验语义）；
         # 行状态与全部前置校验在会话锁内**重读**（外审回稿 S2：锁外校验
@@ -392,6 +395,8 @@ class RecoveryService:
                 raise SessionError(ErrorCode.NOT_FOUND,
                                    f"任务不存在：{task_run_id}")
             conversation_id, status, attempt_no = row
+            if request_identity is not None:
+                self.identities.conversation(request_identity, conversation_id)
             if status not in ("interrupted", "waiting_verification"):
                 raise SessionError(
                     ErrorCode.INVALID_TRANSITION,
@@ -422,7 +427,7 @@ class RecoveryService:
                         detail={"warnings": result.warnings})
                 await self._run_manager.start_resume(
                     task_run_id, conversation_id,
-                    resume_reason or "user_requested", attempt_no + 1)
+                    resume_reason or "user_requested", attempt_no + 1, request_identity=request_identity)
         # K1：非 409 路径的降级告警（如工件缺失）返回调用方可见
         return {"warnings": list(result.warnings)}
 

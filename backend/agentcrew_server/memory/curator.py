@@ -32,7 +32,7 @@ class MemoryCurator:
             raise ValueError("成功治理时间缺少时区或位于未来")
         return current - previous >= timedelta(days=7)
 
-    async def enqueue(self, workspace, agent, client_request_id, *, startup=False):
+    async def enqueue(self, workspace, agent, client_request_id, *, startup=False, identity=None):
         if any(not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value) for value in (workspace, agent)) or \
                 not isinstance(client_request_id, str) or not 1 <= len(client_request_id) <= 128:
             return failure("VALIDATION_ERROR", "治理范围与请求标识无效")
@@ -55,7 +55,7 @@ class MemoryCurator:
                         "workspace_id,agent_id,model,config_version,config_snapshot,status,created_at) "
                         "VALUES(?,'curate',?,?,NULL,NULL,?,?,NULL,?,?,'queued',?)",
                         (job_id, key, source, workspace, agent, version, canonical({"mode": "deterministic", "time_basis": "UTC"}), now()))
-                    events, audit = self.jobs._record_tx(conn, job_id)
+                    events, audit = self.jobs._record_tx(conn, job_id, identity)
                 self.jobs._publish(conn, events, audit)
                 return job_id
             job_id = await self.jobs.events.channel.execute(tx)
@@ -92,6 +92,8 @@ class MemoryCurator:
             raise ValueError("治理执行必须绑定真实治理作业")
         report = {"checked": 0, "stale": [], "archived": [], "exempt": [], "changes": []}
         try:
+            if hasattr(self.jobs, "identities"):
+                self.jobs.check_identity(job_id)
             await self.jobs._status(job_id, "running")
             job = self.jobs.get(job_id)
             identity = MemoryIdentity(job["workspace_id"], job["agent_id"], "curator", job_id, job_id=job_id)

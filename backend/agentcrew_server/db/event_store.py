@@ -34,6 +34,8 @@ class EventStore:
     def __init__(self, channel: WriteChannel, publisher: Publisher | None = None):
         self._channel = channel
         self._publisher = publisher
+        self.task_preparer = None
+        self.authorization_checker = None
 
     @property
     def channel(self) -> WriteChannel:
@@ -112,6 +114,8 @@ class EventStore:
             # COMMIT 处如实失败（走下面的回滚路径）
             conn.execute("PRAGMA defer_foreign_keys=ON")
             seq = self._next_seq(conn, task_run_id)
+            if self.authorization_checker is not None:
+                self.authorization_checker(conn, type, task_run_id, payload)
             payload = self._context_scope(conn, type, conversation_id, payload)
             cursor = conn.execute(
                 "INSERT INTO run_events (id, task_run_id, seq, conversation_id,"
@@ -130,6 +134,8 @@ class EventStore:
                 attempt_no=attempt_no, agent_run_id=agent_run_id, ts=ts,
             )
             apply_projection(conn, event)
+            if self.task_preparer is not None:
+                self.task_preparer(conn, event)
             if extra_writes is not None:
                 extra_writes(conn, event)  # 抛异常 → 整体回滚（事件不落库）
             conn.execute("COMMIT")
@@ -177,6 +183,8 @@ class EventStore:
         # 的投影稍后创建（调用方复合事务里事件先插、投影后建）
         conn.execute("PRAGMA defer_foreign_keys=ON")
         seq = self._next_seq(conn, task_run_id)
+        if self.authorization_checker is not None:
+            self.authorization_checker(conn, type, task_run_id, payload)
         payload = self._context_scope(conn, type, conversation_id, payload)
         cursor = conn.execute(
             "INSERT INTO run_events (id, task_run_id, seq, conversation_id,"
@@ -195,4 +203,6 @@ class EventStore:
             attempt_no=attempt_no, agent_run_id=None, ts=ts,
         )
         apply_projection(conn, event)
+        if self.task_preparer is not None:
+            self.task_preparer(conn, event)
         return event

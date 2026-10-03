@@ -177,7 +177,7 @@ def test_v4_upgrade_indexes_real_existing_history_and_memory(tmp_path):
         message_id, _task = history(store, "升级之前保存的报销单和发票")
         asyncio.run(memory(store, "升级之前保存的报销单核查流程"))
         result = run_migrations(db.write_conn, tmp_path / "backups")
-        assert result.applied_versions == [5, 6, 7, 8, 9, 10]
+        assert result.applied_versions == list(range(5, MIGRATIONS[-1].version + 1))
         search = MemorySearch(store)
         hits = asyncio.run(search.search(MemoryIdentity("ws", "agent"), "报销单"))
         assert {h["kind"] for h in hits["items"]} == {"message", "memory"}

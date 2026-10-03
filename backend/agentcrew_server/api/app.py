@@ -10,7 +10,8 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from ..runtime import RuntimeState
@@ -25,6 +26,8 @@ from .settings import install_settings_routes
 from .memory_jobs import install_memory_job_routes
 from .memory import install_memory_routes
 from .sse import install_sse_routes
+from .identity import install_identity_routes
+from ..governance.resources import GovernanceError
 
 # 诊断模式下仍然可用的端点（§1：仅 health 与诊断端点）
 _DIAGNOSTIC_ALLOWED_PATHS = frozenset({"/api/health", "/api/diagnostics"})
@@ -58,6 +61,13 @@ class DiagnosticGuardMiddleware:
 
 
 def create_app(runtime: RuntimeState) -> FastAPI:
+    async def governance_access(request: Request):
+        if runtime.governance is None or request.url.path == "/api/health":
+            return
+        identity = runtime.identities.resolve(request.headers.get("X-AgentCrew-Identity"))
+        request.state.identity = identity
+        runtime.identities.authorize_request(request, identity)
+
     @asynccontextmanager
     async def lifespan(_: FastAPI):
         runtime.log.debug("http.lifespan startup")
@@ -69,6 +79,7 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         if runtime.governance is not None and runtime.diagnostic is None:
             from ..governance.seed import seed
             await seed(runtime.governance, runtime.memory)
+            await runtime.identities.bind_legacy_tasks()
         if runtime.snapshots is not None and runtime.diagnostic is None:
             await runtime.snapshots.recover()
         if runtime.recovery is not None:
@@ -95,8 +106,15 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         docs_url=None,
         redoc_url=None,
         openapi_url=None,
+        dependencies=[Depends(governance_access)],
     )
     install_error_handlers(app)
+    if runtime.governance is not None:
+        install_identity_routes(app, runtime)
+
+    @app.exception_handler(GovernanceError)
+    async def governance_error(_: Request, exc: GovernanceError):
+        return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status)
     install_sse_routes(app, runtime)
     if runtime.memory is not None:
         install_memory_routes(app, runtime)

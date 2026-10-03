@@ -1,0 +1,986 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/identity",
+    "effective_user": "owner",
+    "request": null,
+    "status": 401,
+    "response": {
+      "error": {
+        "code": "UNAUTHORIZED",
+        "message": "演示身份标识无效或已撤销"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/identity",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "credential_owner_id": "owner",
+        "effective_user_id": "owner",
+        "name": "所有者",
+        "org_id": "demo-org",
+        "role": "owner",
+        "demo": false,
+        "workspace_ids": [
+          "analytics",
+          "default",
+          "office"
+        ]
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "identity-6d012f2206414da595af8d9b4f810d53"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "lilei",
+          "name": "李蕾",
+          "org_id": "demo-org",
+          "role": "member",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/settings",
+    "effective_user": "lilei",
+    "request": {},
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前角色无权执行该操作"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/memory/curate/run",
+    "effective_user": "lilei",
+    "request": {},
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前角色无权执行该操作"
+      }
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/workspaces/office/members/lilei",
+    "effective_user": "lilei",
+    "request": {},
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前角色无权执行该操作"
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/memberships/membership-wangming/role",
+    "effective_user": "lilei",
+    "request": {
+      "role": "owner",
+      "change_id": "illegal-role",
+      "expected_revision": 1
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前角色无权执行该操作"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "lilei",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "测试",
+      "actor": "owner",
+      "role": "owner"
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "extra_forbidden",
+              "loc": [
+                "body",
+                "actor"
+              ],
+              "msg": "Extra inputs are not permitted",
+              "input": "owner"
+            },
+            {
+              "type": "extra_forbidden",
+              "loc": [
+                "body",
+                "role"
+              ],
+              "msg": "Extra inputs are not permitted",
+              "input": "owner"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/memberships/membership-owner/role",
+    "effective_user": "owner",
+    "request": {
+      "role": "member",
+      "change_id": "last-owner",
+      "expected_revision": 1
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "不能撤销最后一名有效所有者"
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/memberships/membership-wangming/role",
+    "effective_user": "owner",
+    "request": {
+      "role": "admin",
+      "change_id": "admin-role",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "membership-wangming",
+        "org_id": "demo-org",
+        "user_id": "wangming",
+        "name": "王明",
+        "role": "admin",
+        "status": "active",
+        "revision": 2,
+        "workspace_ids": [
+          "analytics",
+          "office"
+        ]
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/memberships/membership-wangming/role",
+    "effective_user": "owner",
+    "request": {
+      "role": "admin",
+      "change_id": "admin-role",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "membership-wangming",
+        "name": "王明",
+        "org_id": "demo-org",
+        "revision": 2,
+        "role": "admin",
+        "status": "active",
+        "user_id": "wangming",
+        "workspace_ids": [
+          "analytics",
+          "office"
+        ]
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/memberships/membership-wangming/role",
+    "effective_user": "owner",
+    "request": {
+      "role": "member",
+      "change_id": "admin-role",
+      "expected_revision": 1
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "IDEMPOTENCY_CONFLICT",
+        "message": "change_id 已绑定不同请求"
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/memberships/membership-wangming/role",
+    "effective_user": "owner",
+    "request": {
+      "role": "admin",
+      "change_id": "stale-role",
+      "expected_revision": 1
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "REVISION_CONFLICT",
+        "message": "成员修订已经改变"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "identity-db16d6584312492fbd69adde6f3bc320"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "lilei",
+          "name": "李蕾",
+          "org_id": "demo-org",
+          "role": "member",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "wangming",
+      "change_id": "identity-a7615dd847004c0c8714c04c146b0845"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "wangming",
+          "name": "王明",
+          "org_id": "demo-org",
+          "role": "admin",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/identity",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "credential_owner_id": "owner",
+        "effective_user_id": "owner",
+        "name": "所有者",
+        "org_id": "demo-org",
+        "role": "owner",
+        "demo": false,
+        "workspace_ids": [
+          "analytics",
+          "default",
+          "office"
+        ]
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/memberships?limit=1",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "membership-lilei",
+            "org_id": "demo-org",
+            "user_id": "lilei",
+            "role": "member",
+            "status": "active",
+            "revision": 1,
+            "created_at": "2026-10-03T14:14:34.578479+00:00",
+            "updated_at": "2026-10-03T14:14:34.578479+00:00",
+            "name": "李蕾",
+            "workspace_ids": [
+              "analytics",
+              "office"
+            ]
+          }
+        ],
+        "next_after": "c3613cbc8b8262ebbf30a6b8d81361ba818dca6f8952b8e4eca31e3ef4baa258:membership-lilei"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/memberships?limit=1&after=c3613cbc8b8262ebbf30a6b8d81361ba818dca6f8952b8e4eca31e3ef4baa258:membership-lilei",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "membership-owner",
+            "org_id": "demo-org",
+            "user_id": "owner",
+            "role": "owner",
+            "status": "active",
+            "revision": 1,
+            "created_at": "2026-10-03T14:14:34.578479+00:00",
+            "updated_at": "2026-10-03T14:14:34.578479+00:00",
+            "name": "所有者",
+            "workspace_ids": []
+          }
+        ],
+        "next_after": "c3613cbc8b8262ebbf30a6b8d81361ba818dca6f8952b8e4eca31e3ef4baa258:membership-owner"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/memberships?limit=1&after=c3613cbc8b8262ebbf30a6b8d81361ba818dca6f8952b8e4eca31e3ef4baa258:membership-lilei",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "分页游标与当前身份、范围、过滤或修订不一致"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/memberships",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "membership-lilei",
+            "org_id": "demo-org",
+            "user_id": "lilei",
+            "role": "member",
+            "status": "active",
+            "revision": 1,
+            "created_at": "2026-10-03T14:14:34.578479+00:00",
+            "updated_at": "2026-10-03T14:14:34.578479+00:00",
+            "name": "李蕾",
+            "workspace_ids": [
+              "analytics",
+              "office"
+            ]
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "identity-03ed2fed8b0a468087e17d87720ca475"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "lilei",
+          "name": "李蕾",
+          "org_id": "demo-org",
+          "role": "member",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "lilei",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "只用一句简短文字确认收到这条测试指令。",
+      "client_request_id": "97a91a49b5dd4f51b01d9cf71eed46d6"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "658ccc224a154f7881f31edc485ad131",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-03T14:14:34.735112+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-identity-public/identity-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-identity-public/identity-http0/conversations/658ccc224a154f7881f31edc485ad131/materials",
+          "folders": []
+        },
+        "task_run_id": "ece3b12961a84b4a8190f9ceab2b5c2b"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "只用一句简短文字确认收到这条测试指令。",
+      "client_request_id": "9ce8dd7e14fe4cf7b260b6e584498e92"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "90e3c680d3644b4a992c9b2d787c411e",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-03T14:14:34.738630+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-identity-public/identity-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-identity-public/identity-http0/conversations/90e3c680d3644b4a992c9b2d787c411e/materials",
+          "folders": []
+        },
+        "task_run_id": "9efbbe0c135b408cac60eee80e5e9f60"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/90e3c680d3644b4a992c9b2d787c411e/messages",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份不能访问其他成员的会话"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/90e3c680d3644b4a992c9b2d787c411e/scope",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份不能访问其他成员的会话"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/90e3c680d3644b4a992c9b2d787c411e/state",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份不能访问其他成员的会话"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/90e3c680d3644b4a992c9b2d787c411e/artifacts",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份不能访问其他成员的会话"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/90e3c680d3644b4a992c9b2d787c411e/stream",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份不能访问其他成员的会话"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9efbbe0c135b408cac60eee80e5e9f60/attempts",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份不能访问其他成员的会话"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9efbbe0c135b408cac60eee80e5e9f60/events?limit=2",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份不能访问其他成员的会话"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/task-runs/9efbbe0c135b408cac60eee80e5e9f60/cancel",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份不能访问其他成员的会话"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/task-runs/9efbbe0c135b408cac60eee80e5e9f60/resume",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份不能访问其他成员的会话"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations/90e3c680d3644b4a992c9b2d787c411e/queue/continue",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份不能访问其他成员的会话"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "lilei",
+    "request": {
+      "workspace_id": "default",
+      "agent_id": "default",
+      "instruction": "范围检查"
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前身份无权访问该工作区"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "658ccc224a154f7881f31edc485ad131",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-03T14:14:34.735112+00:00",
+          "state_badge": "running"
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/memory/search?workspace_id=office&agent_id=xiaowen&query=测试指令",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "msg-371da5cc29134ae89440a62ceb5c8a40",
+            "kind": "message",
+            "text": "只用一句简短文字确认收到这条测试指令。",
+            "created_at": "2026-10-03T14:14:34.735430+00:00",
+            "source": {
+              "conversation_id": "658ccc224a154f7881f31edc485ad131",
+              "task_run_id": "ece3b12961a84b4a8190f9ceab2b5c2b",
+              "message_id": "msg-371da5cc29134ae89440a62ceb5c8a40",
+              "role": "user",
+              "workspace_id": "office",
+              "agent_id": "xiaowen",
+              "conversation_status": "active"
+            },
+            "store_type": null,
+            "store_id": null,
+            "state": null
+          }
+        ],
+        "next_after": null,
+        "method": "trigram"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "identity-7bd186773c314600a4b32cb7b008c1dc"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "lilei",
+          "name": "李蕾",
+          "org_id": "demo-org",
+          "role": "member",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "lilei",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "只用一句简短文字确认收到这条测试指令。",
+      "client_request_id": "a541fb1d91a5490db1e5b6432d964b63"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "ac2bb5fe736649f08c0165bcd28baa43",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-03T14:14:35.166994+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-identity-public/identity-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-identity-public/identity-http0/conversations/ac2bb5fe736649f08c0165bcd28baa43/materials",
+          "folders": []
+        },
+        "task_run_id": "7e978bd139a74e94ac15e997f08ff90c"
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/memberships/membership-lilei/role",
+    "effective_user": "owner",
+    "request": {
+      "role": "member",
+      "status": "disabled",
+      "expected_revision": 1,
+      "change_id": "disable-member"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "membership-lilei",
+        "org_id": "demo-org",
+        "user_id": "lilei",
+        "name": "李蕾",
+        "role": "member",
+        "status": "disabled",
+        "revision": 2,
+        "workspace_ids": [
+          "analytics",
+          "office"
+        ]
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/identity",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 401,
+    "response": {
+      "error": {
+        "code": "UNAUTHORIZED",
+        "message": "当前成员资格已失效"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/identity",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "credential_owner_id": "owner",
+        "effective_user_id": "owner",
+        "name": "所有者",
+        "org_id": "demo-org",
+        "role": "owner",
+        "demo": false,
+        "workspace_ids": [
+          "analytics",
+          "default",
+          "office"
+        ]
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "disabled-member-demo"
+    },
+    "status": 401,
+    "response": {
+      "error": {
+        "code": "UNAUTHORIZED",
+        "message": "当前成员资格已失效"
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/memberships/membership-wangming/role",
+    "effective_user": "owner",
+    "request": {
+      "role": "owner",
+      "expected_revision": 2,
+      "change_id": "second-owner"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "membership-wangming",
+        "org_id": "demo-org",
+        "user_id": "wangming",
+        "name": "王明",
+        "role": "owner",
+        "status": "active",
+        "revision": 3,
+        "workspace_ids": [
+          "analytics",
+          "office"
+        ]
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "wangming",
+      "change_id": "identity-bd426128917c4578b87050e9288bbe6c"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "wangming",
+          "name": "王明",
+          "org_id": "demo-org",
+          "role": "owner",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "default",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "wangming",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "只用一句简短文字确认收到这条测试指令。",
+      "client_request_id": "1754e698ef3945038369de2b8bd6aecc"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "a3cb9b71b1d94f1c92e44a43b270a53d",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-03T14:14:35.442930+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-identity-public/identity-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-identity-public/identity-http0/conversations/a3cb9b71b1d94f1c92e44a43b270a53d/materials",
+          "folders": []
+        },
+        "task_run_id": "9c00b7a88e5a4f378704b5ee8f7c5ddc"
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/memberships/membership-owner/role",
+    "effective_user": "owner",
+    "request": {
+      "role": "member",
+      "expected_revision": 1,
+      "change_id": "credential-owner-demoted"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "membership-owner",
+        "org_id": "demo-org",
+        "user_id": "owner",
+        "name": "所有者",
+        "role": "member",
+        "status": "active",
+        "revision": 2,
+        "workspace_ids": []
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/identity",
+    "effective_user": "wangming",
+    "request": null,
+    "status": 401,
+    "response": {
+      "error": {
+        "code": "UNAUTHORIZED",
+        "message": "真实凭证所属者资格已失效"
+      }
+    }
+  }
+]

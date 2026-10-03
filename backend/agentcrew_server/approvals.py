@@ -172,7 +172,7 @@ class ApprovalService:
 
     # ── 决定提交（API 入口）──────────────────────────────────────
     async def submit(self, call_id: str, decision: str,
-                     client_input_hash: str | None = None) -> dict[str, Any]:
+                     client_input_hash: str | None = None, request_identity=None) -> dict[str, Any]:
         if decision not in DECISIONS:
             raise ApprovalStale(f"非法决定：{decision}")
         requested = await asyncio.to_thread(self._find_request, call_id)
@@ -190,7 +190,7 @@ class ApprovalService:
             lambda conn: self._decide_tx(
                 conn, call_id=call_id, decision=decision,
                 task_run_id=task_run_id, conversation_id=conversation_id,
-                payload=payload, agent_id=agent_id))
+                payload=payload, agent_id=agent_id, request_identity=request_identity))
         if outcome["kind"] == "existing":
             first_decision, decided_at = outcome["first"]
             if decision == first_decision:
@@ -213,9 +213,15 @@ class ApprovalService:
 
     def _decide_tx(self, conn, *, call_id: str, decision: str,
                    task_run_id: str, conversation_id: str, payload: dict,
-                   agent_id: str) -> dict[str, Any]:
+                   agent_id: str, request_identity=None) -> dict[str, Any]:
         conn.execute("BEGIN IMMEDIATE")
         try:
+            actor_id = request_identity.effective_user_id if request_identity is not None else "owner"
+            if request_identity is not None:
+                self.identities.conversation(request_identity, conversation_id, conn)
+                if decision in ("allow_always", "reject_always"):
+                    workspace_id = self.identities.resources.get("agent", agent_id, conn)["workspace_id"]
+                    self.identities.require(request_identity, "manage", workspace_id, conn)
             first = self._resolution_row(conn, call_id)
             if first is not None:
                 conn.execute("COMMIT")  # 只读事务（并发窗口内已有首次决定）
@@ -224,10 +230,11 @@ class ApprovalService:
                 conn, task_run_id=task_run_id,
                 conversation_id=conversation_id,
                 type=RunEventType.PERMISSION_RESOLVED,
-                payload={"tool_call_id": call_id, "decision": decision},
+                payload={"tool_call_id": call_id, "decision": decision, "actor_id": actor_id,
+                    "credential_owner_id": request_identity.credential_owner_id if request_identity else "owner"},
             )
             audit_seq = append_audit(
-                conn, ts=_now(), actor_type="user", actor_id="owner",
+                conn, ts=_now(), actor_type="user", actor_id=actor_id,
                 action=f"permission.resolved:{decision}",
                 resource_type="tool_call", resource_id=call_id,
                 detail=_detail(target=payload.get("target"),
@@ -240,12 +247,12 @@ class ApprovalService:
                 conn.execute(
                     "INSERT INTO agent_permission_rules (id, agent_id,"
                     " tool_name, pattern, effect, created_by_user_id, created_at)"
-                    " VALUES (?, ?, ?, ?, ?, 'owner', ?)",
+                    " VALUES (?, ?, ?, ?, ?, ?, ?)",
                     (uuid.uuid4().hex, agent_id, str(payload.get("tool") or ""),
-                     pattern, effect, _now()),
+                     pattern, effect, actor_id, _now()),
                 )
                 audit_seq = append_audit(
-                    conn, ts=_now(), actor_type="user", actor_id="owner",
+                    conn, ts=_now(), actor_type="user", actor_id=actor_id,
                     action="permission.rule.created",
                     resource_type="permission_rule", resource_id=call_id,
                     detail=_detail(tool=payload.get("tool"), pattern=pattern,

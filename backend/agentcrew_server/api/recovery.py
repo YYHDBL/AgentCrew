@@ -12,7 +12,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any
 
-from fastapi import Query
+from fastapi import Query, Request
 from pydantic import BaseModel
 
 from ..sessions import SessionError
@@ -36,17 +36,19 @@ def install_recovery_routes(app, runtime) -> None:
         return await asyncio.to_thread(query)
 
     @app.post("/api/tool-calls/{call_id}/verification")
-    async def submit_verification(call_id: str, body: VerificationRequest):
+    async def submit_verification(call_id: str, body: VerificationRequest, request: Request):
         try:
             return await recovery.submit_verification(
-                call_id, body.verdict, body.note)
+                call_id, body.verdict, body.note,
+                request_identity=request.state.identity if runtime.governance is not None else None)
         except SessionError as e:
             raise ApiError(e.code, str(e), detail=e.detail) from None
 
     @app.post("/api/task-runs/{task_run_id}/resume", status_code=202)
-    async def resume_task_run(task_run_id: str):
+    async def resume_task_run(task_run_id: str, request: Request):
         try:
-            outcome = await recovery.resume(task_run_id, resume_reason=None)
+            outcome = await recovery.resume(task_run_id, resume_reason=None,
+                request_identity=request.state.identity if runtime.governance is not None else None)
         except SessionError as e:
             raise ApiError(e.code, str(e), detail=e.detail) from None
         # K1：非 409 路径的降级告警（如工件缺失）随 202 返回调用方可见
