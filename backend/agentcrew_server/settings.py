@@ -33,11 +33,12 @@ from .providers import bind_slot
 
 _log = logging.getLogger("agentcrew.settings")
 
-_ALLOWED_TOP_KEYS = {"models", "gates", "limits", "api_key_clear"}
+_ALLOWED_TOP_KEYS = {"models", "gates", "limits", "memory", "api_key_clear"}
 _ALLOWED_SLOT_FIELDS = {"provider", "model", "base_url", "api_key", "max_tokens", *TOKENIZER_FIELDS}
 _ALLOWED_GATES = {"max_steps", "stall_seconds", "repeat_limit",
                   "global_concurrency", "token_budget"}
 _ALLOWED_LIMITS = {"max_files", "max_file_mb", "max_folders"}
+_ALLOWED_MEMORY = {"user_quota", "workspace_quota", "soul_quota", "write_approval"}
 # 运行期构造、PATCH 仅落盘待重启的字段（backend-service §4）
 _RESTART_REQUIRED_FIELDS = {"gates.global_concurrency"}
 
@@ -103,6 +104,7 @@ class SettingsService:
             "models": models,
             "gates": dict(cfg.get("gates", {})),
             "limits": dict(cfg.get("limits", {})),
+            "memory": dict(cfg["memory"]),
         }
 
     # ── 写侧（版本化 + 原子写 + 审计）───────────────────────────
@@ -176,7 +178,7 @@ class SettingsService:
                             raise ValueError(f"未知字段：models.{slot}.{field}")
                         touched.append(f"models.{slot}.{field}")
             else:
-                allowed = _ALLOWED_GATES if key == "gates" else _ALLOWED_LIMITS
+                allowed = {"gates": _ALLOWED_GATES, "limits": _ALLOWED_LIMITS, "memory": _ALLOWED_MEMORY}[key]
                 if not isinstance(value, dict):
                     raise ValueError(f"{key} 需要对象")
                 for field in value:

@@ -1,0 +1,41 @@
+{
+  "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+  "measured": {
+    "job_id": "861d9ffbcf0d4217b08da82e4670fb44",
+    "stream": {
+      "job_id": "861d9ffbcf0d4217b08da82e4670fb44",
+      "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+      "event": "actual_text_delta",
+      "monotonic": 251227.52339425,
+      "observed_at": "2026-10-03T06:33:30.318215+00:00"
+    },
+    "response_closed": [
+      {
+        "job_id": "861d9ffbcf0d4217b08da82e4670fb44",
+        "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+        "event": "response_closed",
+        "monotonic": 251227.577101333,
+        "observed_at": "2026-10-03T06:33:30.371922+00:00"
+      },
+      {
+        "job_id": "861d9ffbcf0d4217b08da82e4670fb44",
+        "conversation_id": "dfb71d64fa954070a736b1ce19cee774",
+        "event": "response_closed",
+        "monotonic": 251227.577792,
+        "observed_at": "2026-10-03T06:33:30.372612+00:00"
+      }
+    ],
+    "request_seconds": 0.056933874991955236,
+    "new_task_run_id": "2db55aaad53749d3aa3c6df3d2360040",
+    "state": {
+      "status": "cancelled",
+      "error": "前台指令到达，辅助作业已取消"
+    },
+    "changes_before": [],
+    "changes_after": [],
+    "observed_at": "2026-10-03T06:33:34.343027+00:00"
+  },
+  "observations": [],
+  "error": null,
+  "service_exit": 0
+}

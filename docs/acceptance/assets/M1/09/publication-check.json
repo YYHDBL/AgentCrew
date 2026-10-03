@@ -1,0 +1,54 @@
+{
+  "configured_keys_checked": 1,
+  "credential_matches": 0,
+  "files": [
+    {
+      "path": "docs/acceptance/assets/M1/09/review-http.json",
+      "bytes": 345539,
+      "sha256": "60242974a8b9476269aa171df2d9c541c54e744e433b6fc067d0c0c3e763fed8",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/09/stream-cancellation.json",
+      "bytes": 1337,
+      "sha256": "69efd95b825f60f1baa729813e8a6a13396b94672fa15edc0a941f47b7f6f7c3",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/09/controls-http.json",
+      "bytes": 178874,
+      "sha256": "ce1da5140c7bb1fa906a0d6e5597e0a45c874dc3d3f121a84a06ed0db60cd034",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/09/audit-boundaries.txt",
+      "bytes": 99,
+      "sha256": "24f1b11c34af4f067efca93ecdad1a085e0962b0dad538eb86c921f31b159e5e",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/09/controlled-skill-review.json",
+      "bytes": 3153,
+      "sha256": "7d3b0f773d973237cad09b0ec7efab9baac0fcca86e507a9486f4dbdfb97a9d5",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/09/openapi.txt",
+      "bytes": 42,
+      "sha256": "6682792bf87a47f66a5d044d2c89e78949ba201c7f6784b5311af287f52fcb31",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/09/targeted-tests.txt",
+      "bytes": 624,
+      "sha256": "31ce27e5440e64cf8f04723723cfd623c5f0f398e75c0c8ab8ed318c04a81e69",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/09/backend-tests.txt",
+      "bytes": 1197,
+      "sha256": "23440992401eb70e61c9e81e4d45286dd5219a4f2d6244b6dc337252ba02be54",
+      "credential_matches": 0
+    }
+  ]
+}

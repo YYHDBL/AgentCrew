@@ -10,6 +10,7 @@ import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from anyio import CancelScope
 
 from agentcrew_core.events import RunEventType
 from agentcrew_core.memory import QUOTAS, contains_credentials, context_entries, failure, material_risk, render_entries, sha256, transform
@@ -98,6 +99,12 @@ class MemoryStore:
             row = self.db.read_conn.execute("SELECT conversation_id FROM task_runs WHERE id=?", (identity.task_run_id,)).fetchone()
             if row is None or row[0] != identity.conversation_id:
                 return failure("OUT_OF_SCOPE", "记忆来源任务不属于当前会话")
+        if identity.job_id:
+            job = self.db.read_conn.execute("SELECT conversation_id,task_run_id,workspace_id,agent_id,status FROM memory_jobs WHERE id=?", (identity.job_id,)).fetchone()
+            if job is None or tuple(job[:4]) != (identity.conversation_id, identity.task_run_id, identity.workspace_id, identity.agent_id):
+                return failure("OUT_OF_SCOPE", "后台作业身份与记忆来源不一致")
+            if job[4] != "running":
+                return failure("JOB_NOT_RUNNING", "后台作业已经停止，禁止继续读写")
         return None
 
     def _pending(self, store_type: str, store_id: str):
@@ -275,10 +282,11 @@ class MemoryStore:
             plan = await asyncio.to_thread(self._plan, identity, before, entries, text, basis, now, change_id, restored_ledger_id, action, restored_files,
                                            metadata_updates, support_files)
             task = asyncio.create_task(self._prepare_and_finish(change_id, request_hash, plan))
-            try:
-                return await asyncio.shield(task)
-            finally:
-                await task
+            with CancelScope(shield=True):
+                try:
+                    return await asyncio.shield(task)
+                finally:
+                    await task
 
     @staticmethod
     def request_hash(identity, store_type, store_id, expected_revision, basis, *, operations=None,
@@ -512,7 +520,8 @@ class MemoryStore:
         row = self.db.read_conn.execute("SELECT workspace_id,agent_id,conversation_id FROM task_runs JOIN conversations ON conversations.id=task_runs.conversation_id WHERE task_runs.id=?", (context.task_run_id,)).fetchone()
         if row is None:
             return failure("OUT_OF_SCOPE", "记忆工具缺少真实任务身份")
-        identity = MemoryIdentity(row[0], row[1], "agent", row[1], row[2], context.task_run_id, user_turn_id=context.task_run_id)
+        identity = MemoryIdentity(row[0], row[1], "agent", row[1], row[2], context.task_run_id,
+            job_id=context.job_id, user_turn_id=context.job_id or context.task_run_id)
         target = invocation.input.get("target")
         store_id = {"user": "owner", "workspace": row[0], "soul": row[1]}.get(target)
         if store_id is None:

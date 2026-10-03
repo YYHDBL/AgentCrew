@@ -16,6 +16,7 @@ _observed_requests = set()
 _observed_searches = {}
 _observed_streams = set()
 _observed_summary_tasks = {}
+_observed_review_tasks = {}
 _observed_main_streams = set()
 
 
@@ -36,7 +37,7 @@ def observe(frame, event, arg):
             with Path(os.environ["MEMORY_MAIN_STREAM_EVIDENCE"]).open("a", encoding="utf-8") as output:
                 output.write(json.dumps(value, ensure_ascii=False) + "\n")
     if (os.environ.get("MEMORY_JOB_STREAM_EVIDENCE") and event == "call"
-            and frame.f_globals.get("__name__") == "agentcrew_server.memory.jobs"
+            and frame.f_globals.get("__name__") in {"agentcrew_server.memory.jobs", "agentcrew_server.memory.review"}
             and frame.f_code.co_name == "<lambda>" and frame.f_back.f_code.co_name == "run_task"
             and getattr(frame.f_back.f_locals.get("ev"), "type", None) == "text_delta"):
         emitter = frame.f_back.f_locals["deps"].emit
@@ -44,8 +45,12 @@ def observe(frame, event, arg):
         job_id = captured["job_id"]
         if job_id not in _observed_streams:
             _observed_streams.add(job_id)
-            job = captured["self"].get(job_id)
-            _observed_summary_tasks[job["task_run_id"]] = job_id
+            jobs = captured["self"] if frame.f_globals["__name__"].endswith(".jobs") else captured["self"].jobs
+            job = jobs.get(job_id)
+            if job["kind"] == "summary":
+                _observed_summary_tasks[job["task_run_id"]] = job_id
+            else:
+                _observed_review_tasks[(job["task_run_id"], job["kind"])] = job_id
             value = {"job_id": job_id, "conversation_id": job["conversation_id"], "event": "actual_text_delta", "monotonic": time.monotonic(),
                      "observed_at": datetime.now(timezone.utc).isoformat()}
             with Path(os.environ["MEMORY_JOB_STREAM_EVIDENCE"]).open("a", encoding="utf-8") as output:
@@ -57,10 +62,15 @@ def observe(frame, event, arg):
         if request.method != "POST" or not request.url.path.endswith("/chat/completions"):
             return
         body = json.loads(request.content)
-        if not body["messages"][0]["content"].startswith("你为已经完成的真实任务编写工作记录"):
+        system = body["messages"][0]["content"]
+        if system.startswith("你为已经完成的真实任务编写工作记录"):
+            material = json.loads(body["messages"][1]["content"])
+            job_id = _observed_summary_tasks.get(material["task_run_id"])
+        elif system.startswith("你负责检查已交付任务的持久化记忆"):
+            material = json.loads(body["messages"][1]["content"])
+            job_id = _observed_review_tasks.get((material["source_task_run_id"], material["kind"]))
+        else:
             return
-        material = json.loads(body["messages"][1]["content"])
-        job_id = _observed_summary_tasks.get(material["task_run_id"])
         if job_id in _observed_streams and response.is_closed:
             value = {"job_id": job_id, "conversation_id": request.headers.get("x-opencode-session"),
                      "event": "response_closed", "monotonic": time.monotonic(),

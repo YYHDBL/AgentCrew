@@ -70,6 +70,7 @@ class WorkContext:
     artifacts_dir: Any = None                               # Path：外部化工件落盘处
     allowed_hosts: list[str] = field(default_factory=list)
     task_run_id: str = ""
+    job_id: str | None = None
     emit: EventSink | None = None        # 事件出口（tool.*/artifact.*/question.*）
     ask_resolver: AskResolver | None = None  # ask_user 的回答通道（C8 接真实 HTTP）
     # 任务工作目录（S09，C7 会话装配提供）：read_file/write_file 的相对路径

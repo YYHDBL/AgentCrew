@@ -123,6 +123,6 @@ class MemorySearch:
             return failure("OUT_OF_SCOPE", "检索缺少真实任务身份")
         if set(invocation.input) - {"query", "archived", "limit", "after"}:
             return failure("VALIDATION_ERROR", "检索不能指定任务范围以外的参数")
-        identity = MemoryIdentity(row[0], row[1], "agent", row[1], row[2], context.task_run_id)
+        identity = MemoryIdentity(row[0], row[1], "agent", row[1], row[2], context.task_run_id, job_id=context.job_id)
         return await self.search(identity, invocation.input.get("query"), archived=invocation.input.get("archived", False),
             limit=invocation.input.get("limit", 20), after=invocation.input.get("after"), use_id=invocation.call_id)

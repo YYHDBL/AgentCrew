@@ -183,7 +183,8 @@ class MemorySkills:
         row = self.db.read_conn.execute("SELECT workspace_id,agent_id,conversation_id FROM task_runs JOIN conversations ON conversations.id=task_runs.conversation_id WHERE task_runs.id=?", (context.task_run_id,)).fetchone()
         if row is None:
             return failure("OUT_OF_SCOPE", "Skill 工具缺少真实任务身份")
-        identity = MemoryIdentity(row[0], row[1], "agent", row[1], row[2], context.task_run_id, user_turn_id=context.task_run_id)
+        identity = MemoryIdentity(row[0], row[1], "agent", row[1], row[2], context.task_run_id,
+            job_id=context.job_id, user_turn_id=context.job_id or context.task_run_id)
         value = invocation.input
         if invocation.name == "skill_view" or value.get("action") == "read":
             return await self.view(identity, value.get("name"), file=value.get("file"), call_id=invocation.call_id)

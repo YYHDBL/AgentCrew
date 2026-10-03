@@ -42,6 +42,8 @@ class MemoryJobs:
         self._slots = {}
         self._http = httpx.AsyncClient(timeout=180)
         self._sub = self._dispatch_task = self._worker_task = None
+        from .review import MemoryReview
+        self.review = MemoryReview(self)
 
     async def start(self):
         self._sub = self.bus.subscribe(Topic("all"), internal=True)
@@ -74,6 +76,7 @@ class MemoryJobs:
                 continue
             if event.type == RunEventType.RUN_COMPLETED:
                 await self.enqueue(event.global_seq)
+            await self.review.consume(event.global_seq)
             if event.type in {RunEventType.RUN_QUEUED, RunEventType.RUN_RESUMED, RunEventType.QUEUE_ITEM_ENQUEUED}:
                 async with self._gate:
                     await self._cancel("cancelled", "前台任务已经接收，辅助作业已取消")
@@ -142,7 +145,10 @@ class MemoryJobs:
 
     async def _run(self, job_id, cancel_scope):
         with cancel_scope:
-            await self._run_summary(job_id)
+            if self.get(job_id)["kind"] == "summary":
+                await self._run_summary(job_id)
+            else:
+                await self.review.run(job_id)
 
     async def _run_summary(self, job_id):
         result_text = None
@@ -190,8 +196,11 @@ class MemoryJobs:
             ordinal = conn.execute("SELECT COALESCE(MAX(ordinal),0)+1 FROM memory_job_calls WHERE job_id=?", (job_id,)).fetchone()[0]
             conn.execute("INSERT INTO memory_job_calls VALUES(?,?,?,?,?)", (job_id, ordinal, str(event_type), redact(canonical(payload)), now()))
             if event_type == RunEventType.LLM_REQUEST_DONE:
-                conn.execute("UPDATE memory_jobs SET usage=? WHERE id=?", (canonical({"input_tokens": payload["prompt_tokens"],
-                    "output_tokens": payload["completion_tokens"]}), job_id))
+                job = self._job(conn, job_id)
+                usage = json.loads(job["usage"])
+                usage["input_tokens"] += payload["prompt_tokens"]
+                usage["output_tokens"] += payload["completion_tokens"]
+                conn.execute("UPDATE memory_jobs SET usage=? WHERE id=?", (canonical(usage), job_id))
 
     async def complete(self, job_id, text):
         if not isinstance(text, str) or not 1 <= len(text) <= 200 or contains_credentials(text):
@@ -234,8 +243,9 @@ class MemoryJobs:
                                 resource_type="memory_job", resource_id=job_id, detail=canonical(payload))
         return [event], audit_seq
 
-    def _publish(self, conn, events, audit_seq):
-        if audit_seq % SNAPSHOT_EVERY == 0:
+    def _publish(self, conn, events, audit_seq, *, previous_audit_seq=None):
+        previous = audit_seq - 1 if previous_audit_seq is None else previous_audit_seq
+        if audit_seq // SNAPSHOT_EVERY > previous // SNAPSHOT_EVERY:
             snapshot_chain_head(conn, self.store.data_dir / "chain-head.txt")
         for event in events:
             self.events.publish(event)
@@ -249,10 +259,12 @@ class MemoryJobs:
                     raise LookupError("辅助作业不存在")
                 if old[0] in _TERMINAL:
                     return
+                previous_audit_seq = conn.execute("SELECT COALESCE(MAX(seq),0) FROM audit_log").fetchone()[0]
                 conn.execute("UPDATE memory_jobs SET status=?,error=?,report=?,finished_at=? WHERE id=?",
                     (status, error, canonical(report) if report is not None else None, now() if status in _TERMINAL else None, job_id))
+                expired = self.review.expire_tx(conn, job_id) if status in _TERMINAL else []
                 events, audit_seq = self._record_tx(conn, job_id)
-            self._publish(conn, events, audit_seq)
+            self._publish(conn, [*expired, *events], audit_seq, previous_audit_seq=previous_audit_seq)
         await self.events.channel.execute(tx)
 
     async def _cancel(self, status, reason):
@@ -277,6 +289,10 @@ class MemoryJobs:
             yield
 
     async def recover(self):
+        counted = self.db.read_conn.execute("SELECT global_seq FROM run_events WHERE global_seq>"
+            "(SELECT start_global_seq FROM memory_review_state WHERE id=1) ORDER BY global_seq").fetchall()
+        for row in counted:
+            await self.review.consume(row[0])
         unfinished = self.db.read_conn.execute("SELECT id FROM memory_jobs WHERE status IN ('queued','running','waiting_approval') ORDER BY created_at,id").fetchall()
         for row in unfinished:
             await self._status(row[0], "interrupted", "进程终止期间辅助作业未完成")
