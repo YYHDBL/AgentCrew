@@ -20,18 +20,73 @@ export async function connection(): Promise<{ url: string; headers: Record<strin
   return { url: `http://127.0.0.1:${port}`, headers: { Authorization: `Bearer ${token}` } }
 }
 
-export async function api<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
+export class ApiFailure extends Error {
+  constructor(message: string, public readonly code: string, public readonly status: number) { super(message) }
+}
+
+export async function api<T>(path: string, body?: unknown, signal?: AbortSignal, method?: string): Promise<T> {
   const { url, headers } = await connection()
   const response = await fetch(url + '/api' + path, {
-    method: body === undefined ? 'GET' : 'POST',
+    method: method ?? (body === undefined ? 'GET' : 'POST'),
     headers: { ...headers, 'Content-Type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body),
     signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000)
   })
   const text = await response.text()
   const envelope = text ? JSON.parse(text) : {}
-  if (!response.ok) throw new Error(envelope.error?.message ?? `请求失败（${response.status}）`)
+  if (!response.ok) throw new ApiFailure(envelope.error?.message ?? `请求失败（${response.status}）`, envelope.error?.code ?? 'CONNECTION_ERROR', response.status)
   return envelope.data as T
+}
+
+export function useMemoryEvents(workspace: string, agent: string, enabled: boolean): { events: Frame[]; status: string; error: string } {
+  const [events, setEvents] = useState<Frame[]>([])
+  const [status, setStatus] = useState('正在连接')
+  const [error, setError] = useState('')
+  useEffect(() => {
+    setEvents([]); setError('')
+    if (!enabled) return
+    const lifetime = new AbortController()
+    let stream: AbortController | undefined
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let cursor = 0
+    const run = async (): Promise<void> => {
+      let reset = false
+      try {
+        const { url, headers } = await connection()
+        if (lifetime.signal.aborted) return
+        const subscription = new AbortController()
+        stream = subscription
+        await fetchEventSource(`${url}/api/memory/stream?${new URLSearchParams({ workspace_id: workspace, agent_id: agent, from: String(cursor) })}`, {
+          headers, signal: subscription.signal, openWhenHidden: true,
+          async onopen(response) {
+            if (!response.ok || !response.headers.get('content-type')?.startsWith('text/event-stream')) throw new Error(`记忆事件订阅失败（${response.status}）`)
+            if (!lifetime.signal.aborted) { setStatus('已连接'); setError('') }
+          },
+          onmessage(message) {
+            if (lifetime.signal.aborted || !message.data || message.event === 'ping') return
+            if (message.event === 'resync') { reset = true; subscription.abort(); return }
+            if (message.event === 'shutdown') { subscription.abort(); return }
+            const frame = JSON.parse(message.data) as Frame
+            if (!Number.isSafeInteger(frame.global_seq) || typeof frame.type !== 'string') throw new Error('记忆事件信封无效')
+            if (frame.global_seq <= cursor) return
+            cursor = frame.global_seq
+            setEvents((previous) => [...previous, frame])
+          },
+          onerror(reason) { throw reason },
+          onclose() { throw new Error('记忆事件连接已关闭') }
+        })
+      } catch (reason) {
+        if (!lifetime.signal.aborted) setError(reason instanceof Error ? reason.message : String(reason))
+      }
+      if (lifetime.signal.aborted) return
+      if (reset) { cursor = 0; setEvents([]) }
+      setStatus('正在重新连接')
+      timer = setTimeout(() => { void run() }, reset ? 0 : 1000)
+    }
+    void run()
+    return () => { lifetime.abort(); stream?.abort(); clearTimeout(timer) }
+  }, [workspace, agent, enabled])
+  return { events, status, error }
 }
 
 export function useSession(id: string | null, revision = 0): {

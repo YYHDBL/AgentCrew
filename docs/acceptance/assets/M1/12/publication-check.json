@@ -1,0 +1,59 @@
+{
+  "configured_keys_checked": 1,
+  "credential_matches": 0,
+  "screenshots_reviewed": [
+    "user-memory.png",
+    "skill-files.png",
+    "background-refresh.png"
+  ],
+  "files": [
+    {
+      "path": "docs/acceptance/assets/M1/12/desktop-tests.txt",
+      "bytes": 149,
+      "sha256": "a20059e9972aed70ec2fc40790c2e67ea88a12e2f028b9cb66c9dc7dbba57274",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/12/skill-files.png",
+      "bytes": 167498,
+      "sha256": "7d0b7e41f0ec21441fa7a919be995269e574d4d01196dd69eaa0ef5a631d30c0",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/12/background-refresh.png",
+      "bytes": 227259,
+      "sha256": "d969d46406877e29541ce0affb45d356a117811d9f9b8ec37d4f3754d93cf978",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/12/electron-memory.json",
+      "bytes": 9189,
+      "sha256": "b7ec38e02277b5f50c91d4d4797965c7b502fe81e429e951aeeb968dc7bf953b",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/12/build.txt",
+      "bytes": 829,
+      "sha256": "2b640c50a3f76d22545d1e071995e3b605ca47208569271a1415fbdc3a370b27",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/12/user-memory.png",
+      "bytes": 209521,
+      "sha256": "646005b203bd4de418e9a00074289e49c0e13ade70c69029f777a6b8998f5555",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/12/typecheck.txt",
+      "bytes": 112,
+      "sha256": "484fe221355fdf2c2b81abc83c4baec5abf0bb1973e5773dcc03490432ab9f3a",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/12/sql-files-audit.json",
+      "bytes": 10960,
+      "sha256": "540a674b4d94a6a089680566ca4bea0bcd32cc7bb043aa19d48c01a5f98c5279",
+      "credential_matches": 0
+    }
+  ]
+}

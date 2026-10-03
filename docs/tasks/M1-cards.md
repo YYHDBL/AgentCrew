@@ -1,6 +1,6 @@
 # M1 · Memory 实施任务卡
 
-> 日期：2026-10-03 ｜ 状态：M1-01 至 M1-11 验收通过 ｜ 开工代码：desktop-shell `66f3df4`
+> 日期：2026-10-03 ｜ 状态：M1-01 至 M1-12 验收通过 ｜ 开工代码：desktop-shell `66f3df4`
 > 设计依据：[Memory 系统详设](../architecture/memory-system.md)、[Harness 与 Session](../architecture/harness-session.md)、[权限治理](../architecture/governance.md)、[设计决策记录](../decisions/alignment-record.md)。
 
 ## 领取与交付约定
@@ -43,7 +43,7 @@ Hermes 是 Memory 的主要参考对象。领取相关卡片时阅读相应实�
 | M1-09 | 后台提炼、路由、审批与取消 | M1-04、M1-05、M1-06、M1-08 | 后端 | [验收通过](../acceptance/M1-09.md) |
 | M1-10 | 确定性遗忘与归档治理 | M1-04、M1-05、M1-09 | 后端 | [验收通过](../acceptance/M1-10.md) |
 | M1-11 | 管理 API、鉴权与事件重放 | M1-02 至 M1-10 | 后端 | [验收通过](../acceptance/M1-11.md) |
-| M1-12 | 记忆管理界面与真实交互 | M1-11 | 前端 | 未开始 |
+| M1-12 | 记忆管理界面与真实交互 | M1-11 | 前端 | [验收通过](../acceptance/M1-12.md) |
 | M1-13 | 八项贯穿验收与 M0 回归 | M1-12 | 前端、后端共同验收 | 未开始 |
 
 ```mermaid

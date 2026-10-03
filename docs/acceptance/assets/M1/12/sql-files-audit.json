@@ -1,0 +1,286 @@
+{
+  "queries": [
+    {
+      "sql": "SELECT id,kind,status,task_run_id,model,config_version,usage FROM memory_jobs WHERE id=?",
+      "parameters": [
+        "725efa3429be4e0e9a9ae412d5300c09"
+      ],
+      "rows": [
+        {
+          "id": "725efa3429be4e0e9a9ae412d5300c09",
+          "kind": "memory_review",
+          "status": "cancelled",
+          "task_run_id": "b287a07fc67349a88ec25285fd5ec941",
+          "model": "deepseek-v4.1-flash",
+          "config_version": "5",
+          "usage": "{\"input_tokens\":72803,\"output_tokens\":4956}"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,status,current_attempt_no FROM task_runs WHERE id=?",
+      "parameters": [
+        "48ab977f51854d0fa8d68eeacbada9ee"
+      ],
+      "rows": [
+        {
+          "id": "48ab977f51854d0fa8d68eeacbada9ee",
+          "status": "completed",
+          "current_attempt_no": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT COALESCE(MAX(global_seq),0) AS global_seq FROM run_events",
+      "parameters": [],
+      "rows": [
+        {
+          "global_seq": 1794
+        }
+      ]
+    },
+    {
+      "sql": "SELECT COUNT(*) AS count FROM memory_ledger WHERE json_extract(source,?)=?",
+      "parameters": [
+        "$.job_id",
+        "725efa3429be4e0e9a9ae412d5300c09"
+      ],
+      "rows": [
+        {
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "USER.md",
+      "sha256": "bbdb7e1be3d1e9e5edc683d36fe159adc01ae2f552427892524ea8636f2b084c",
+      "mtime_ns": 1791019395927969147
+    },
+    {
+      "path": "USER.meta.json",
+      "sha256": "9506bc50a9b79671df58af56793b10975839b193cfa28add0ed7901ed004425b",
+      "mtime_ns": 1791019395928642021
+    },
+    {
+      "path": "agents/default/archive/user/owner/53d901637d8d43738af583243ce4700e/entry.md",
+      "sha256": "9aec1c9330a55013203f49181075d8e0964b251db8bceb7b8897fc07898f1902",
+      "mtime_ns": 1791019192667668403
+    },
+    {
+      "path": "agents/default/archive/user/owner/53d901637d8d43738af583243ce4700e/entry.meta.json",
+      "sha256": "73ec1457fae5609ff39ae69d1a05799846bb09a522b368d1c885166fe3c28160",
+      "mtime_ns": 1791019192667894319
+    },
+    {
+      "path": "agents/default/soul.md",
+      "sha256": "9e5b2690d132b30a6f31aa99acc8744f689e549e021d1a2bce90a0feb0a5c777",
+      "mtime_ns": 1791019197485831413
+    },
+    {
+      "path": "agents/default/soul.meta.json",
+      "sha256": "8edcfe8f7568a7d053e196fbd25abf6ead26db6cb279a460c7fe1336e5c810f6",
+      "mtime_ns": 1791019197486424996
+    },
+    {
+      "path": "agents/skill-validator/archive/skill/a1f47f9ceffb5abea944e55653b922b6/14722f0815d842e7b56a76a4a5c81f0d/entry.md",
+      "sha256": "7faadf89f8e82b8541a8b7517d56260d80bc1ccec1827de76b76e328af8e8ca6",
+      "mtime_ns": 1791019192662845157
+    },
+    {
+      "path": "agents/skill-validator/archive/skill/a1f47f9ceffb5abea944e55653b922b6/14722f0815d842e7b56a76a4a5c81f0d/entry.meta.json",
+      "sha256": "716a4c8f17cfec6b4a5610a11d182c7da4d62f36dc90e523686828b28656eba1",
+      "mtime_ns": 1791019192663095532
+    },
+    {
+      "path": "agents/skill-validator/archive/skill/a1f47f9ceffb5abea944e55653b922b6/14722f0815d842e7b56a76a4a5c81f0d/references/source.md",
+      "sha256": "e12bc57c6cec2083ac4c0d91efe62d5774fb157401a5a99aad1bd999ab737761",
+      "mtime_ns": 1791019192663608240
+    },
+    {
+      "path": "agents/skill-validator/archive/user/owner/53d901637d8d43738af583243ce4700e/entry.md",
+      "sha256": "9aec1c9330a55013203f49181075d8e0964b251db8bceb7b8897fc07898f1902",
+      "mtime_ns": 1791019192665077405
+    },
+    {
+      "path": "agents/skill-validator/archive/user/owner/53d901637d8d43738af583243ce4700e/entry.meta.json",
+      "sha256": "53c9391c790da9eac55de1f889e194919d5b482d9cb18a44bb00065562ea7b06",
+      "mtime_ns": 1791019192665461571
+    },
+    {
+      "path": "agents/skill-validator/soul.md",
+      "sha256": "17b2d42a72238599ad9f0d18bda01e9d1771fae2f33ba60aaa62e4f5c71ca88d",
+      "mtime_ns": 1791019192666658570
+    },
+    {
+      "path": "agents/skill-validator/soul.meta.json",
+      "sha256": "6baf9dfc0bb15b8d01e61bd3d3015d8c8f14e9412a000800fa6fbba097a140c2",
+      "mtime_ns": 1791019192666377654
+    },
+    {
+      "path": "archive/user/owner/9cfec0885e7f4da9890f75f90b49f6f7/entry.md",
+      "sha256": "291ffb3a5bc9decf023ebfbcba12326446683bf3917e9514ea5aeba1e943e8bb",
+      "mtime_ns": 1791019192660491076
+    },
+    {
+      "path": "archive/user/owner/9cfec0885e7f4da9890f75f90b49f6f7/entry.meta.json",
+      "sha256": "f6e08f2bb9cff872238bed0e598efab0ebb88878c18044974a4d75b9a45cdffe",
+      "mtime_ns": 1791019192660930534
+    },
+    {
+      "path": "archive/user/owner/d68d9128745f446a84483e5b1c06ce8d/entry.md",
+      "sha256": "195da3ef44a3dd45656fae54e04a1b435f947cdac1818950dcd487d51689c996",
+      "mtime_ns": 1791019196015105296
+    },
+    {
+      "path": "archive/user/owner/d68d9128745f446a84483e5b1c06ce8d/entry.meta.json",
+      "sha256": "61c696185bf11775f85397da71a0fcf5087f296d14693ce38ccd02ba83ecdaf4",
+      "mtime_ns": 1791019196015886295
+    },
+    {
+      "path": "conversations/089fdb0fadee46e0ad2beec244a88fd5/memory-snapshot.json",
+      "sha256": "e1fb8813db9ff1d3632d6b31fd98319ce42c768fd07bfacde388bd1704f7b5e8",
+      "mtime_ns": 1791019192671761940
+    },
+    {
+      "path": "conversations/2d71dc94bd354045b6e3d777bd6b315f/memory-snapshot.json",
+      "sha256": "ba41fec749391f0689fad9f3f6ce591061ca1ca4c97ae4d8fc09489b652ce679",
+      "mtime_ns": 1791019192674979812
+    },
+    {
+      "path": "conversations/3c9b7f1de56a433ea9ba7e61facff4fd/memory-snapshot.json",
+      "sha256": "6039396f3d3734ffe13a290dbac4e273a16c1a3e7569a01d532e93c1c6f09f07",
+      "mtime_ns": 1791019192676573936
+    },
+    {
+      "path": "conversations/484573c537814dc28e11905f1950e0da/memory-snapshot.json",
+      "sha256": "14e7da0aefed372950f0182070da03925584eeaa4d487fc5707e2bce910253c3",
+      "mtime_ns": 1791019192675803020
+    },
+    {
+      "path": "conversations/a4a4845214d24d129aacd194b85ed2cb/memory-snapshot.json",
+      "sha256": "c2b714ecc1785364003494a2d52437f0caa4160d3e1941f049a52ed36c6d6100",
+      "mtime_ns": 1791019192672645898
+    },
+    {
+      "path": "conversations/b2ae0ff698894793acae90479b99bac2/memory-snapshot.json",
+      "sha256": "786572c6f1dd6724954e53399d9e5121906cbd0be939664890c400a89c06d080",
+      "mtime_ns": 1791019192673659439
+    },
+    {
+      "path": "conversations/dfb71d64fa954070a736b1ce19cee774/memory-snapshot.json",
+      "sha256": "e24fd15f634627769165e4ce01db668bf8d9454376be878c000b86d038d4bfdf",
+      "mtime_ns": 1791019192677342935
+    },
+    {
+      "path": "skills/0a08c4379abf5ecc9f023ecacdfa3adc/SKILL.md",
+      "sha256": "15354537c3b128cafb35df24a8a403a82b44712590d4473676c4cbc2054fc879",
+      "mtime_ns": 1791019192683215888
+    },
+    {
+      "path": "skills/0a08c4379abf5ecc9f023ecacdfa3adc/SKILL.meta.json",
+      "sha256": "b1606083dc31fd9eb7e8d8ae63fa4c6214375209bed22d530550316c1623f7fd",
+      "mtime_ns": 1791019192682912555
+    },
+    {
+      "path": "skills/1a71e0ece171461bacd71f839d61870c/SKILL.md",
+      "sha256": "8e20738154b22d6577f6bc22a2e6feed8de7f07e8b850ed2426d02670056fba3",
+      "mtime_ns": 1791019192685520302
+    },
+    {
+      "path": "skills/1a71e0ece171461bacd71f839d61870c/SKILL.meta.json",
+      "sha256": "32563e6fbb20b89d01e53be2383f7edf0b94f9a839c20e8694b49aa77e523a3f",
+      "mtime_ns": 1791019192684813637
+    },
+    {
+      "path": "skills/1a71e0ece171461bacd71f839d61870c/references/checklist.md",
+      "sha256": "c351c780e6b3fa59548c3b3a5fb23e0680c66031aaf82ec16fbdd652adf2990e",
+      "mtime_ns": 1791019192685246178
+    },
+    {
+      "path": "skills/1d768fec477e522caa17fc2bad1acc55/SKILL.md",
+      "sha256": "a314895405db31cfee8e733ac50dc382b0c72640c87517fb90431df51a74cdc9",
+      "mtime_ns": 1791019197604793217
+    },
+    {
+      "path": "skills/1d768fec477e522caa17fc2bad1acc55/SKILL.meta.json",
+      "sha256": "21f37f9fe88d81f81485dab8bc9e55f0365282671299dacd706671d2ff73df9c",
+      "mtime_ns": 1791019197923201251
+    },
+    {
+      "path": "skills/1d768fec477e522caa17fc2bad1acc55/references/checklist.md",
+      "sha256": "d1262e0651d047b2ab57295c38bc678d393f4c93043a43d6b368fa83cca19aeb",
+      "mtime_ns": 1791019197922227835
+    },
+    {
+      "path": "skills/245764c196435094b6bbf93ab55a0d4d/SKILL.md",
+      "sha256": "5f685e3ea0e18b555e746bcc3c77dc232b8da635742b6b9d0d42e7f3565d41ea",
+      "mtime_ns": 1791019192681930097
+    },
+    {
+      "path": "skills/245764c196435094b6bbf93ab55a0d4d/SKILL.meta.json",
+      "sha256": "377264e70968cfaf60d6bf17511cc448ab6e59e2964bb442d3bad2bcee6a80a9",
+      "mtime_ns": 1791019192681154057
+    },
+    {
+      "path": "skills/245764c196435094b6bbf93ab55a0d4d/references/source.md",
+      "sha256": "e12bc57c6cec2083ac4c0d91efe62d5774fb157401a5a99aad1bd999ab737761",
+      "mtime_ns": 1791019192681604931
+    },
+    {
+      "path": "skills/51ade6c509fa5cdb9590d48bc14cd8de/SKILL.md",
+      "sha256": "ffe2d862171a63b51d1b2c1796e0eb4204d1c770ada74b2a54ef95b2cc7ee455",
+      "mtime_ns": 1791019192678885559
+    },
+    {
+      "path": "skills/51ade6c509fa5cdb9590d48bc14cd8de/SKILL.meta.json",
+      "sha256": "20c0841abd2ead43dfa211148aa2b6ea72f6fc5bf72779902021dd1d848c5038",
+      "mtime_ns": 1791019192678596517
+    },
+    {
+      "path": "skills/8e855a6e55665350af3ef33ba8ea3ce5/SKILL.md",
+      "sha256": "cadc1d77eafa6a142787c736b69beb78d01c7483233d234818b4cb230b6de93f",
+      "mtime_ns": 1791019192680734557
+    },
+    {
+      "path": "skills/8e855a6e55665350af3ef33ba8ea3ce5/SKILL.meta.json",
+      "sha256": "f53126cbff26f71e15eeb17c9399795a27091a45eede7f47223d7db7f6d903ab",
+      "mtime_ns": 1791019192679868558
+    },
+    {
+      "path": "skills/8e855a6e55665350af3ef33ba8ea3ce5/references/source.md",
+      "sha256": "c62990b4fa03cb541443081c406e6f90147a3fc7a866e23f42d2a9f4c9f94e5b",
+      "mtime_ns": 1791019192680397182
+    },
+    {
+      "path": "skills/a1f47f9ceffb5abea944e55653b922b6/SKILL.md",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mtime_ns": 1791011765399846614
+    },
+    {
+      "path": "skills/a1f47f9ceffb5abea944e55653b922b6/SKILL.meta.json",
+      "sha256": "cc5134131b7044b2c28e0f98fccd98e220adb72110bb7e0898c90fb506277302",
+      "mtime_ns": 1791019192683700221
+    },
+    {
+      "path": "skills/a1f47f9ceffb5abea944e55653b922b6/references/source.md",
+      "sha256": "e12bc57c6cec2083ac4c0d91efe62d5774fb157401a5a99aad1bd999ab737761",
+      "mtime_ns": 1791019192684137679
+    },
+    {
+      "path": "workspaces/default/MEMORY.md",
+      "sha256": "af3eaf256528672486e0c60ef27563098d43c1381c523718fbcafa369ebe281f",
+      "mtime_ns": 1791019197372940769
+    },
+    {
+      "path": "workspaces/default/MEMORY.meta.json",
+      "sha256": "f5105384f61ab1b8ddc429e82c244eb50b1540869f40094ca752f4a334ab8ba4",
+      "mtime_ns": 1791019197373862143
+    }
+  ],
+  "audit": {
+    "ok": true,
+    "checked_count": 513
+  }
+}

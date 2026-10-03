@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import { Button } from 'antd'
-import { api, useSession, type Conversation } from './session'
+import { api, useSession, useMemoryEvents, type Conversation } from './session'
 import { Chat, Details } from './Conversation'
+import { Memory, MemoryNotice, memoryNames, type MemoryKind } from './Memory'
 
 type NarrowPanel = 'tasks' | 'details' | null
 
@@ -15,12 +16,15 @@ export default function App(): JSX.Element {
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState('')
   const [revision, setRevision] = useState(0)
+  const [page, setPage] = useState<'tasks' | MemoryKind>(() => (sessionStorage.getItem('memory-page') as MemoryKind | null) ?? 'tasks')
   const submission = useRef<{ content: string; id: string } | null>(null)
   const session = useSession(selected, revision)
+  const currentAgent = selected ? conversations.find((item) => item.id === selected)?.agent_name ?? null : 'default'
   const state = session.snapshot
   const lastRun = session.events.filter((event) => event.type.startsWith("run.")).at(-1)
   const displayState = state?.state === "error" ? "failed" : state?.state === "idle" && ["run.failed", "run.interrupted"].includes(lastRun?.type ?? "") ? lastRun!.type.slice(4) : state?.state
   const choose = (id: string | null): void => {
+    setPage('tasks'); sessionStorage.removeItem('memory-page')
     setSelected(id); setActionError(''); setDraft(''); setFiles([]); setFolders([])
     submission.current = null
     if (id) sessionStorage.setItem('conversation', id)
@@ -61,6 +65,8 @@ export default function App(): JSX.Element {
   const [narrow, setNarrow] = useState(() => window.innerWidth < 1100)
   const [narrowPanel, setNarrowPanel] = useState<NarrowPanel>(null)
   const [connection, setConnection] = useState<'connecting' | 'connected' | 'reconnecting'>('connecting')
+  const memory = useMemoryEvents('default', currentAgent ?? '', connection === 'connected' && currentAgent !== null)
+  const showMemory = (kind: MemoryKind): void => { setPage(kind); sessionStorage.setItem('memory-page', kind); setNarrowPanel(null) }
   const sidebarButton = useRef<HTMLButtonElement>(null)
   const sidebarCloseButton = useRef<HTMLButtonElement>(null)
   const taskButton = useRef<HTMLButtonElement>(null)
@@ -198,14 +204,15 @@ export default function App(): JSX.Element {
         {sidebarOpen && (
           <nav className="navigation" aria-label="页面导航">
             <span className="nav-section">工作空间</span>
-            <span className="nav-current" aria-current="page" title="工作台">工作台</span>
+            <Button className={page === 'tasks' ? 'nav-current' : 'nav-link'} aria-current={page === 'tasks' ? 'page' : undefined} onClick={() => { setPage('tasks'); sessionStorage.removeItem('memory-page') }}>工作台</Button>
+            {(Object.keys(memoryNames) as MemoryKind[]).map((kind) => <Button key={kind} className={page === kind ? 'nav-current' : 'nav-link'} aria-current={page === kind ? 'page' : undefined} onClick={() => showMemory(kind)}>{memoryNames[kind]}</Button>)}
             <div className="nav-bottom">
               <Button ref={sidebarCloseButton} type="text" onClick={toggleSidebar} aria-label="收起侧栏">收起侧栏</Button>
             </div>
           </nav>
         )}
 
-        {showTasks && (
+        {showTasks && page === 'tasks' && (
           <aside className="task-list" id="task-list" aria-label="任务列表">
             <div className="panel-heading">
               <h2>最近任务</h2>
@@ -215,7 +222,7 @@ export default function App(): JSX.Element {
           </aside>
         )}
 
-        <main className="task-content">
+        {page !== 'tasks' ? currentAgent === null ? <main className="memory-page" aria-busy="true"><p role="status">正在读取当前员工与工作区。</p></main> : <Memory key={`${page}:${currentAgent}`} kind={page} workspace="default" agent={currentAgent} events={memory.events} connectionStatus={memory.status} /> : <main className="task-content">
           <div className="content-scroll">
             <div className="task-heading">
               <h1>{selected ? conversations.find((item) => item.id === selected)?.title || '任务对话' : '给数字员工交代一项工作'}</h1>
@@ -224,6 +231,7 @@ export default function App(): JSX.Element {
             <div className="notice" role="status">{selected ? `${session.status} · ${displayState ?? '正在加载'} · 等待审批 ${state?.waiting_approvals ?? 0} · 等待回答 ${state?.waiting_questions ?? 0}` : '输入任务指令，可以附加文件或授权文件夹。'}
               {displayState === 'interrupted' && lastRun?.task_run_id && <Button disabled={busy || connection !== 'connected' || session.status !== '已连接'} loading={busy} onClick={() => void action(`/task-runs/${lastRun.task_run_id}/resume`, {})}>恢复</Button>}
             </div>
+            <MemoryNotice events={memory.events} />
             {(actionError || session.error) && <p id="request-error" role="alert">{actionError || session.error}</p>}
             {selected ? <Chat events={session.events} replayedThrough={session.replayedThrough} /> : <div className="empty-workspace">
               <div className="empty-symbol" aria-hidden="true">＋</div>
@@ -255,9 +263,9 @@ export default function App(): JSX.Element {
               </div>
             </div>
           </div>
-        </main>
+        </main>}
 
-        {showDetails && (
+        {showDetails && page === 'tasks' && (
           <aside className="run-details" id="run-details" aria-label="运行详情">
             <div className="panel-heading">
               <h2>运行详情</h2>
