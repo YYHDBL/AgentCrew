@@ -77,6 +77,7 @@ class RunEventType(StrEnum):
     MEMORY_SUMMARY_CREATED = "memory.summary_created"
     MEMORY_APPROVAL_REQUESTED = "memory.approval_requested"
     MEMORY_APPROVAL_RESOLVED = "memory.approval_resolved"
+    MEMORY_CURATED = "memory.curated"
 
 
 @dataclass(frozen=True)

@@ -80,6 +80,8 @@
 | VALIDATION_ERROR | 422 | 请求体校验失败（框架校验异常统一信封，v1.2 补） |
 | APPROVAL_PENDING | 409 | 等待审批时发送指令 |
 | APPROVAL_STALE | 409 | 审批已被**不同决定**处理或 input_hash 不符（同决定重试 → 200 幂等返回首次结果，v1.1 明确） |
+| IDEMPOTENCY_CONFLICT | 409 | 同一请求标识对应的输入或治理范围发生变化 |
+| SYSTEM_BUSY | 409 | 前台任务、队列或辅助作业尚未空闲，无法受理治理 |
 | PENDING_VERIFICATION | 409 | resume/继续队列被待核验阻塞（detail 含清单） |
 | QUEUE_EMPTY / QUEUE_PAUSED | 409 | 继续队列时无指令 / 状态不符 |
 | INVALID_TRANSITION | 409 | FSM 非法迁移（detail 返回当前合法动作） |

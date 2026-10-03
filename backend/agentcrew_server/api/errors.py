@@ -32,6 +32,8 @@ class ErrorCode(str, Enum):
     UNAUTHORIZED = "UNAUTHORIZED"                      # 401 Bearer 缺失/错误（C3）
     APPROVAL_PENDING = "APPROVAL_PENDING"              # 409 等待审批时发指令
     APPROVAL_STALE = "APPROVAL_STALE"                  # 409 审批已被不同决定处理
+    IDEMPOTENCY_CONFLICT = "IDEMPOTENCY_CONFLICT"
+    SYSTEM_BUSY = "SYSTEM_BUSY"
     PENDING_VERIFICATION = "PENDING_VERIFICATION"      # 409 resume 被待核验阻塞
     REPLAY_CORRUPT = "REPLAY_CORRUPT"                  # 409 重放遇损坏事件行（C9）
     QUEUE_EMPTY = "QUEUE_EMPTY"                        # 409 继续队列时无指令
@@ -54,6 +56,8 @@ DEFAULT_STATUS: dict[ErrorCode, int] = {
     ErrorCode.UNAUTHORIZED: 401,
     ErrorCode.APPROVAL_PENDING: 409,
     ErrorCode.APPROVAL_STALE: 409,
+    ErrorCode.IDEMPOTENCY_CONFLICT: 409,
+    ErrorCode.SYSTEM_BUSY: 409,
     ErrorCode.PENDING_VERIFICATION: 409,
     ErrorCode.REPLAY_CORRUPT: 409,
     ErrorCode.QUEUE_EMPTY: 409,

@@ -88,6 +88,10 @@ class MemoryStore:
         elif identity.actor_type == "agent":
             if identity.actor_id != identity.agent_id or not identity.conversation_id:
                 return failure("OUT_OF_SCOPE", "员工操作缺少真实会话身份")
+        elif identity.actor_type == "curator":
+            job = self.db.read_conn.execute("SELECT kind FROM memory_jobs WHERE id=?", (identity.job_id,)).fetchone()
+            if not identity.job_id or identity.actor_id != identity.job_id or identity.conversation_id or identity.task_run_id or job is None or job[0] != "curate":
+                return failure("OUT_OF_SCOPE", "治理身份缺少真实独立作业")
         else:
             return failure("OUT_OF_SCOPE", "记忆操作身份无效")
         if identity.conversation_id:
@@ -341,7 +345,7 @@ class MemoryStore:
         old = {e["entry_id"]: e for e in before["metadata"]["entries"]}
         for entry in entries:
             if entry["state"] == "archived" and old.get(entry["entry_id"], {}).get("state") != "archived":
-                root = (self.data_dir / "agents" / identity.agent_id / "archive" if identity.actor_type == "agent" else self.data_dir / "archive") / store_type / store_id / entry["entry_id"]
+                root = (self.data_dir / "agents" / identity.agent_id / "archive" if identity.actor_type in {"agent", "curator"} else self.data_dir / "archive") / store_type / store_id / entry["entry_id"]
                 archive_meta = {**entry, "original_path": str(path.relative_to(self.data_dir)), "store_type": store_type, "store_id": store_id}
                 archived_files = []
                 if store_type == "skill":

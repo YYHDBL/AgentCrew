@@ -25,6 +25,7 @@ from .schema_v6 import V6_STATEMENTS
 from .schema_v7 import V7_STATEMENTS
 from .schema_v8 import V8_STATEMENTS
 from .schema_v9 import V9_STATEMENTS
+from .schema_v10 import V10_STATEMENTS
 
 _SNAPSHOT_KEEP = 3
 _BUSY_RETRIES = 3
@@ -35,6 +36,7 @@ class Migration:
     version: int
     name: str
     statements: tuple[str, ...]
+    rebuild_foreign_keys: bool = False
 
 
 MIGRATIONS: tuple[Migration, ...] = (
@@ -47,6 +49,7 @@ MIGRATIONS: tuple[Migration, ...] = (
     Migration(version=7, name="M1 辅助作业与唯一任务摘要", statements=V7_STATEMENTS),
     Migration(version=8, name="M1 上下文压缩检查点", statements=V8_STATEMENTS),
     Migration(version=9, name="M1 后台提炼与独立审批", statements=V9_STATEMENTS),
+    Migration(version=10, name="M1 确定性遗忘治理", statements=V10_STATEMENTS, rebuild_foreign_keys=True),
 )
 
 
@@ -125,6 +128,9 @@ def _snapshot_before_upgrade(conn: sqlite3.Connection, backups_dir: Path, curren
 
 def _apply_migration(conn: sqlite3.Connection, migration: Migration) -> None:
     """单条迁移一个事务；失败回滚并抛 MigrationFailedError。"""
+    foreign_keys = conn.execute("PRAGMA foreign_keys").fetchone()[0]
+    if migration.rebuild_foreign_keys and foreign_keys:
+        conn.execute("PRAGMA foreign_keys=OFF")
     try:
         conn.execute("BEGIN IMMEDIATE")
         for no, statement in enumerate(migration.statements, start=1):
@@ -132,6 +138,10 @@ def _apply_migration(conn: sqlite3.Connection, migration: Migration) -> None:
                 conn.execute(statement)
             except sqlite3.Error as e:
                 raise MigrationFailedError(migration.version, no, str(e)) from None
+        if migration.rebuild_foreign_keys:
+            violations = conn.execute("PRAGMA foreign_key_check").fetchall()
+            if violations:
+                raise MigrationFailedError(migration.version, len(migration.statements), f"外键校验失败：{violations}")
         conn.execute(
             "INSERT INTO schema_migrations (version, name, applied_at) VALUES (?, ?, ?)",
             (migration.version, migration.name, _now()),
@@ -143,6 +153,9 @@ def _apply_migration(conn: sqlite3.Connection, migration: Migration) -> None:
     except sqlite3.OperationalError as e:
         conn.execute("ROLLBACK")
         raise MigrationFailedError(migration.version, 0, f"开启事务失败：{e}") from None
+    finally:
+        if migration.rebuild_foreign_keys and foreign_keys:
+            conn.execute("PRAGMA foreign_keys=ON")
 
 
 def run_migrations(conn: sqlite3.Connection, backups_dir: Path) -> MigrationResult:

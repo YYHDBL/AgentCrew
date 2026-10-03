@@ -1,0 +1,42 @@
+{
+  "configured_keys_checked": 1,
+  "credential_matches": 0,
+  "files": [
+    {
+      "path": "docs/acceptance/assets/M1/10/migration.json",
+      "bytes": 1125,
+      "sha256": "2d65a4f2663c8ed8a71e80bb00420aa9b193cf323cdf1613cc1db9827d3fc989",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/10/cancellation-http.json",
+      "bytes": 21659,
+      "sha256": "f5b95ab558576ef160d3807a93839adab3fe1986a3e1c69db210be5ed83ad145",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/10/openapi.txt",
+      "bytes": 42,
+      "sha256": "6682792bf87a47f66a5d044d2c89e78949ba201c7f6784b5311af287f52fcb31",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/10/targeted-tests.txt",
+      "bytes": 99,
+      "sha256": "b5f43c25db242af4f4cc7f03e62a777b41b798e0f8424b36e11858a58acb486f",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/10/curator-http.json",
+      "bytes": 61384,
+      "sha256": "32a78df3f1e08306ae31652f0ecb160408005eef26c02d706201cb56ddf34f20",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/10/backend-tests.txt",
+      "bytes": 1197,
+      "sha256": "fcfe9c5bae298619194f62be08ad1d6fb861fb9553e63dcca1d9a881b9ce309c",
+      "credential_matches": 0
+    }
+  ]
+}

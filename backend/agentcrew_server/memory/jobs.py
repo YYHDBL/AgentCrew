@@ -44,10 +44,13 @@ class MemoryJobs:
         self._sub = self._dispatch_task = self._worker_task = None
         from .review import MemoryReview
         self.review = MemoryReview(self)
+        from .curator import MemoryCurator
+        self.curator = MemoryCurator(self)
 
     async def start(self):
         self._sub = self.bus.subscribe(Topic("all"), internal=True)
         self._dispatch_task = asyncio.create_task(self._dispatch(), name="memory-jobs:dispatch")
+        await self.curator.startup()
         self._worker_task = asyncio.create_task(self._worker(), name="memory-jobs:worker")
 
     def get(self, job_id):
@@ -147,6 +150,8 @@ class MemoryJobs:
         with cancel_scope:
             if self.get(job_id)["kind"] == "summary":
                 await self._run_summary(job_id)
+            elif self.get(job_id)["kind"] == "curate":
+                await self.curator.run(job_id)
             else:
                 await self.review.run(job_id)
 
@@ -235,7 +240,7 @@ class MemoryJobs:
     def _record_tx(self, conn, job_id):
         job = self._job(conn, job_id)
         payload = {"job_id": job_id, "kind": job["kind"], "status": job["status"], "scope": self._scope(job),
-                   "trigger_global_seq": job["trigger_global_seq"], "source_task_run_id": job["task_run_id"],
+                   "trigger_global_seq": job["trigger_global_seq"] or 0, "source_task_run_id": job["task_run_id"],
                    "model": job["model"], "config_version": job["config_version"], "usage": json.loads(job["usage"]), "error": job["error"]}
         event = self.events.append_in_tx(conn, task_run_id=None, conversation_id=job["conversation_id"],
                                         type=RunEventType.MEMORY_JOB_STATUS, payload=payload)

@@ -129,7 +129,7 @@ def transform(entries: list[dict], operations: list[dict], source: dict,
     working = copy.deepcopy(entries)
     for op in operations:
         action = op.get("action")
-        if action not in {"add", "edit", "archive", "restore", "pin", "unpin", "review"}:
+        if action not in {"add", "edit", "archive", "restore", "pin", "unpin", "review", "stale"}:
             return failure("VALIDATION_ERROR", "记忆动作无效")
         if action == "add":
             item = {"entry_id": uuid.uuid4().hex, "state": "active", "hits": 0,
@@ -159,6 +159,10 @@ def transform(entries: list[dict], operations: list[dict], source: dict,
             item.update(needs_review=op["decision"] != "approve", approved_by=source["actor_id"],
                         approved_at=now, review_source=source, review_basis=basis,
                         review_decision=op["decision"])
+        elif action == "stale":
+            if source["actor_type"] != "curator" or item["state"] != "active":
+                return failure("INVALID_TRANSITION", "只有确定性治理能够将活动条目标记陈旧")
+            item.update(state="stale", stale_at=now)
         elif action == "archive":
             if item["state"] == "archived":
                 return failure("INVALID_TRANSITION", "条目已经归档")

@@ -1,0 +1,33 @@
+{
+  "source": "真实 M1-09 运行库及升级前 SQLite 快照",
+  "backup": "data/m1-governance-migration-01/backups/db-v9-20261003T070125Z.sqlite",
+  "backup_sha256": "8ba1544f49c3f308cb48295a032d1b11dbd97df751fcf8778019e2f064fc6595",
+  "tables": [
+    {
+      "table": "memory_jobs",
+      "sql": "SELECT * FROM memory_jobs ORDER BY id",
+      "before_count": 100,
+      "after_count": 100,
+      "rows_equal": true,
+      "rows_sha256": "baf72f6fd8390e335f6dbdc6f4b30ab50ddd09224148ed6e86f611372faad955"
+    },
+    {
+      "table": "memory_job_calls",
+      "sql": "SELECT * FROM memory_job_calls ORDER BY job_id,ordinal",
+      "before_count": 766,
+      "after_count": 766,
+      "rows_equal": true,
+      "rows_sha256": "f6805e0c0e6a4dfc9a11131004f2a2e4a9dd7884ec27d825aa78ded65d398ecc"
+    },
+    {
+      "table": "session_summaries",
+      "sql": "SELECT * FROM session_summaries ORDER BY id",
+      "before_count": 87,
+      "after_count": 87,
+      "rows_equal": true,
+      "rows_sha256": "b6e544bed0f998dc3acc6a0a5e7c77bbed9006febafcd7c98500682876f2540f"
+    }
+  ],
+  "version": 10,
+  "foreign_key_check": []
+}

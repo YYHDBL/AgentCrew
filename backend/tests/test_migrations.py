@@ -36,11 +36,11 @@ def test_fresh_apply_creates_all_13_tables(tmp_path):
     db = _make_db(tmp_path)
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "applied"
-    assert result.applied_versions == [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    assert result.applied_versions == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     assert result.snapshot_path and Path(result.snapshot_path).exists()
     assert _EXPECTED_TABLES <= _tables(db)
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 9
+    assert version == 10
     db.close()
 
 
@@ -59,12 +59,12 @@ def test_downgrade_refused_with_both_versions(tmp_path):
     db = _make_db(tmp_path)
     run_migrations(db.write_conn, tmp_path / "backups")
     db.write_conn.execute(
-        "INSERT INTO schema_migrations (version, name, applied_at) VALUES (10, '来自未来版本', 'x')"
+        "INSERT INTO schema_migrations (version, name, applied_at) VALUES (11, '来自未来版本', 'x')"
     )
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "conflict"
     assert isinstance(result.error, MigrationConflictError)
-    assert "v10" in str(result.error) and "v9" in str(result.error)
+    assert "v11" in str(result.error) and "v10" in str(result.error)
     db.close()
 
 
@@ -72,7 +72,7 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
     db = _make_db(tmp_path)
     run_migrations(db.write_conn, tmp_path / "backups")
     bad = Migration(
-        version=10,
+        version=11,
         name="故意非法",
         statements=("CREATE TABLE should_not_exist (id TEXT",),  # 语法错误
     )
@@ -83,7 +83,7 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
         run_migrations(db.write_conn, tmp_path / "backups")
     # 该迁移事务整体撤销：既有版本及业务表保持完整。
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 9
+    assert version == 10
     assert "should_not_exist" not in _tables(db)
     assert "conversations" in _tables(db)
     db.close()
@@ -155,7 +155,7 @@ def test_upgrade_preserves_events_and_global_seq(tmp_path):
     assert [r[0] for r in before] == [1, 2, 3]
 
     result = m.run_migrations(conn, tmp_path / "backups")
-    assert result.status == "applied" and result.applied_versions == [2, 3, 4, 5, 6, 7, 8, 9]
+    assert result.status == "applied" and result.applied_versions == [2, 3, 4, 5, 6, 7, 8, 9, 10]
     after = conn.execute(
         "SELECT global_seq, id, task_run_id FROM run_events"
         " ORDER BY global_seq").fetchall()
@@ -173,3 +173,47 @@ def test_upgrade_preserves_events_and_global_seq(tmp_path):
         "SELECT id, task_run_id FROM run_events ORDER BY global_seq").fetchall()
     assert rows[3] == ("e4", None)
     db.close()
+
+
+def test_upgrade_nine_preserves_background_foreign_keys(tmp_path):
+    import asyncio
+    from agentcrew_server.bus import EventBus
+    from agentcrew_server.config import load_config
+    from agentcrew_server.db.event_store import EventStore
+    from agentcrew_server.db.write_channel import WriteChannel
+    from agentcrew_server.memory.jobs import MemoryJobs
+    from agentcrew_server.memory.store import MemoryStore
+    from agentcrew_server.sessions import SessionService
+    from agentcrew_server.settings import SettingsService
+    from test_session_summaries import task, summary
+
+    db = _make_db(tmp_path)
+    migrations_module._bootstrap_version_table(db.write_conn)
+    for migration in migrations_module.MIGRATIONS[:9]:
+        migrations_module._apply_migration(db.write_conn, migration)
+    channel, bus = WriteChannel(db.write_conn), EventBus()
+    events = EventStore(channel, publisher=bus.publish)
+    settings = SettingsService(load_config(tmp_path, {}), tmp_path, channel, tmp_path / "chain-head.txt")
+    store, sessions = MemoryStore(db, events, tmp_path, settings), SessionService(db, events, tmp_path, settings)
+    jobs = MemoryJobs(store, bus, settings)
+    async def prepare():
+        _conversation, _task, event = await task(store, sessions)
+        await summary(jobs, event, "真实旧运行库的已完成摘要")
+    asyncio.run(prepare())
+    tables = ("memory_jobs", "session_summaries", "memory_job_calls")
+    before = {table: db.read_conn.execute(f"SELECT * FROM {table}").fetchall() for table in tables}
+    try:
+        result = run_migrations(db.write_conn, tmp_path / "backups")
+        assert result.applied_versions == [10]
+        assert db.read_conn.execute("PRAGMA foreign_key_check").fetchall() == []
+        assert db.write_conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
+        assert {table: db.read_conn.execute(f"SELECT * FROM {table}").fetchall() for table in tables} == before
+        bad = Migration(11, "外键不完整的迁移", ("DELETE FROM memory_jobs",), rebuild_foreign_keys=True)
+        with pytest.raises(MigrationFailedError, match="外键校验失败"):
+            migrations_module._apply_migration(db.write_conn, bad)
+        assert db.write_conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
+        assert {table: db.read_conn.execute(f"SELECT * FROM {table}").fetchall() for table in tables} == before
+    finally:
+        asyncio.run(jobs.shutdown())
+        channel.close()
+        db.close()
