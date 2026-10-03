@@ -340,16 +340,18 @@ def main(argv: list[str] | None = None) -> int:
         memory_jobs = MemoryJobs(memory, bus, settings)
         sessions.memory_jobs = memory_jobs
         summaries = SessionSummaries(db)
+        from .memory.checkpoints import ContextCheckpoints
+        checkpoints = ContextCheckpoints(db, event_store, data_dir)
         # 提问回答链 + RunManager（M0-C8）：run.queued → runner 派发，
         # attempt 配置绑定与取消传播见 run_manager 模块头
         questions = QuestionService(db, event_store)
         run_manager = RunManager(
             db=db, event_store=event_store, bus=bus, settings=settings,
             sessions=sessions, approvals=approvals, scheduler=scheduler,
-            questions=questions, memory=memory, snapshots=snapshots, memory_search=memory_search, memory_skills=memory_skills, summaries=summaries)
+            questions=questions, memory=memory, snapshots=snapshots, memory_search=memory_search, memory_skills=memory_skills, summaries=summaries, checkpoints=checkpoints)
         # 恢复域（M0-C9）：对账在 lifespan 内执行（RunManager 派发之前）
         recovery = RecoveryService(db, event_store, sessions, data_dir,
-                                   registry=scheduler.registry)
+                                   registry=scheduler.registry, checkpoints=checkpoints)
         recovery.wire(run_manager)
         run_manager.wire(recovery)
         runtime = RuntimeState(

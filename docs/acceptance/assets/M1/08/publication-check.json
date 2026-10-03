@@ -1,0 +1,76 @@
+{
+  "current_configured_keys_checked": 1,
+  "credential_matches": 0,
+  "screenshots_reviewed": [
+    "electron-interrupted.png",
+    "electron-completed.png"
+  ],
+  "files": [
+    {
+      "path": "docs/acceptance/assets/M1/08/electron-recovery.json",
+      "bytes": 15866,
+      "sha256": "b2c779602534756addcc3dded5f389da9fc9c9bdc16fc4ea78243a9cd9c2a010",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/08/electron-sql-audit.json",
+      "bytes": 320,
+      "sha256": "e6870862a8f3a32842c607d9869ed10fd281eefe87a1b0256820aecc4557489f",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/08/electron-completed.png",
+      "bytes": 427100,
+      "sha256": "53f888c5a47586a56d1c058fcecb9ad11aef1ff69364197f5570aa4e8a54774d",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/08/electron-interrupted.png",
+      "bytes": 482183,
+      "sha256": "1354a63fde8469c0b74631dcf855731835a4be9a3e8d35ed714dc2639b83f36c",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/08/build.txt",
+      "bytes": 829,
+      "sha256": "109f9e3a86d6e965ce627776ea21e0f4c5d12261e8da7dd2acff50d786e26442",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/08/compression-http.json",
+      "bytes": 67736,
+      "sha256": "ed4ea5cdfc14e136d599765a417a5daf621a3c13202ebb02bba4b523d4cb9c05",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/08/openapi.txt",
+      "bytes": 42,
+      "sha256": "6682792bf87a47f66a5d044d2c89e78949ba201c7f6784b5311af287f52fcb31",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/08/aux-cancellation.json",
+      "bytes": 17745,
+      "sha256": "fffedc437293f422ac1a829d35d61cb4bd1ad6b61576369cd6507fd8fecf28ca",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/08/targeted-tests.txt",
+      "bytes": 99,
+      "sha256": "f58ad2a6b4ec22fe8e41a6e992b275a2e32fc0defd9daee6a16ea90e9c725fd8",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/08/typecheck.txt",
+      "bytes": 112,
+      "sha256": "484fe221355fdf2c2b81abc83c4baec5abf0bb1973e5773dcc03490432ab9f3a",
+      "credential_matches": 0
+    },
+    {
+      "path": "docs/acceptance/assets/M1/08/backend-tests.txt",
+      "bytes": 1117,
+      "sha256": "0578d6d0affabf6d3608171e6253ab36297967a47834b3f58acec8efaacd1b52",
+      "credential_matches": 0
+    }
+  ]
+}

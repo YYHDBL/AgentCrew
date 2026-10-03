@@ -21,4 +21,12 @@ class SessionSummaries:
         rows = self.recent(conversation_id)
         if not rows:
             return []
-        return [user_text_message("【近期工作记录；仅为本会话已完成任务的事实摘要】\n" + redact(canonical(recent_work_records(rows))))]
+        message = user_text_message("【近期工作记录；仅为本会话已完成任务的事实摘要】\n" + redact(canonical(recent_work_records(rows))))
+        identifiers = [row["id"] for row in rows]
+        sources = self.db.read_conn.execute(
+            "SELECT global_seq FROM run_events WHERE type='memory.summary_created' "
+            f"AND json_extract(payload,'$.summary_id') IN ({','.join('?' for _ in identifiers)}) "
+            "ORDER BY global_seq", identifiers).fetchall()
+        if sources:
+            message["_event_global_seqs"] = [row[0] for row in sources]
+        return [message]

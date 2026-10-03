@@ -19,6 +19,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from ..memory.snapshots import MemorySnapshotError
 from ..tool_outputs import ArtifactIntegrityError
+from ..memory.checkpoints import CheckpointCorrupt
 
 log = logging.getLogger("agentcrew.api.errors")
 
@@ -117,6 +118,12 @@ def install_error_handlers(app) -> None:
             "恢复工件完整性核验失败，任务保持中断状态",
             detail={"warnings": [str(exc)], "reason": exc.reason,
                     "artifact_path": str(exc.path)})
+
+    @app.exception_handler(CheckpointCorrupt)
+    async def _checkpoint_error(_: Request, exc: CheckpointCorrupt) -> JSONResponse:
+        return error_response(ErrorCode.REPLAY_CORRUPT,
+            "上下文检查点完整性核验失败，任务保持中断状态",
+            detail={"warnings": [str(exc)]})
 
     @app.exception_handler(MemorySnapshotError)
     async def _memory_snapshot_error(_: Request, exc: MemorySnapshotError) -> JSONResponse:

@@ -36,11 +36,11 @@ def test_fresh_apply_creates_all_13_tables(tmp_path):
     db = _make_db(tmp_path)
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "applied"
-    assert result.applied_versions == [1, 2, 3, 4, 5, 6, 7]
+    assert result.applied_versions == [1, 2, 3, 4, 5, 6, 7, 8]
     assert result.snapshot_path and Path(result.snapshot_path).exists()
     assert _EXPECTED_TABLES <= _tables(db)
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 7
+    assert version == 8
     db.close()
 
 
@@ -59,12 +59,12 @@ def test_downgrade_refused_with_both_versions(tmp_path):
     db = _make_db(tmp_path)
     run_migrations(db.write_conn, tmp_path / "backups")
     db.write_conn.execute(
-        "INSERT INTO schema_migrations (version, name, applied_at) VALUES (9, '来自未来版本', 'x')"
+        "INSERT INTO schema_migrations (version, name, applied_at) VALUES (10, '来自未来版本', 'x')"
     )
     result = run_migrations(db.write_conn, tmp_path / "backups")
     assert result.status == "conflict"
     assert isinstance(result.error, MigrationConflictError)
-    assert "v9" in str(result.error) and "v7" in str(result.error)
+    assert "v10" in str(result.error) and "v8" in str(result.error)
     db.close()
 
 
@@ -72,7 +72,7 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
     db = _make_db(tmp_path)
     run_migrations(db.write_conn, tmp_path / "backups")
     bad = Migration(
-        version=8,
+        version=9,
         name="故意非法",
         statements=("CREATE TABLE should_not_exist (id TEXT",),  # 语法错误
     )
@@ -83,7 +83,7 @@ def test_mid_failure_rolls_back_that_migration(tmp_path, monkeypatch):
         run_migrations(db.write_conn, tmp_path / "backups")
     # 该迁移事务整体撤销：既有版本及业务表保持完整。
     version = db.read_conn.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0]
-    assert version == 7
+    assert version == 8
     assert "should_not_exist" not in _tables(db)
     assert "conversations" in _tables(db)
     db.close()
@@ -155,7 +155,7 @@ def test_upgrade_preserves_events_and_global_seq(tmp_path):
     assert [r[0] for r in before] == [1, 2, 3]
 
     result = m.run_migrations(conn, tmp_path / "backups")
-    assert result.status == "applied" and result.applied_versions == [2, 3, 4, 5, 6, 7]
+    assert result.status == "applied" and result.applied_versions == [2, 3, 4, 5, 6, 7, 8]
     after = conn.execute(
         "SELECT global_seq, id, task_run_id FROM run_events"
         " ORDER BY global_seq").fetchall()

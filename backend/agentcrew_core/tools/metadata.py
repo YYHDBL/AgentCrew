@@ -44,10 +44,11 @@ class ToolResult:
     details: dict[str, Any] = field(default_factory=dict)
     output_source: Any = None
     stderr_source: Any = None
+    event_global_seq: int | None = None
 
 
 ToolExecute = Callable[[ToolInvocation, "WorkContext"], Awaitable[ToolResult]]
-EventSink = Callable[[str, dict[str, Any]], Awaitable[None]]
+EventSink = Callable[[str, dict[str, Any]], Awaitable[Any]]
 AskResolver = Callable[[str], Awaitable[str | None]]
 
 

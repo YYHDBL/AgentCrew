@@ -7,6 +7,7 @@ name = "agentcrew"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "anyio" },
     { name = "fastapi" },
     { name = "httpx" },
     { name = "huggingface-hub" },
@@ -28,6 +29,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "anyio", specifier = ">=4.12,<5" },
     { name = "fastapi", specifier = ">=0.115" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "huggingface-hub", specifier = ">=0.35,<1" },

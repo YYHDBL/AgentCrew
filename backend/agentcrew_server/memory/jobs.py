@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 import httpx
+from anyio import CancelScope
 
 from agentcrew_core.events import RunEventType
 from agentcrew_core.loop import LoopDeps, LoopGates, run_task, user_text_message
@@ -36,6 +37,7 @@ class MemoryJobs:
         self._ready = asyncio.Event()
         self._closed = False
         self._current = None
+        self._cancel_scope = None
         self._reason = "前台指令到达，辅助作业已取消"
         self._slots = {}
         self._http = httpx.AsyncClient(timeout=180)
@@ -127,7 +129,8 @@ class MemoryJobs:
                         "SELECT id FROM memory_jobs WHERE status='queued' ORDER BY created_at,id LIMIT 1").fetchone())
                     if row is None:
                         break
-                    self._current = asyncio.create_task(self._run(row[0]), name=f"memory-job:{row[0]}")
+                    self._cancel_scope = CancelScope()
+                    self._current = asyncio.create_task(self._run(row[0], self._cancel_scope), name=f"memory-job:{row[0]}")
                     current = self._current
                 await asyncio.wait({current})
                 if not current.cancelled() and current.exception() is not None:
@@ -135,8 +138,13 @@ class MemoryJobs:
                 async with self._gate:
                     if self._current is current:
                         self._current = None
+                        self._cancel_scope = None
 
-    async def _run(self, job_id):
+    async def _run(self, job_id, cancel_scope):
+        with cancel_scope:
+            await self._run_summary(job_id)
+
+    async def _run_summary(self, job_id):
         result_text = None
         try:
             slot = bind_slot(self._slots.pop(job_id))
@@ -162,18 +170,20 @@ class MemoryJobs:
             if result.status != "completed" or not 1 <= len(result_text) <= 200 or contains_credentials(result_text):
                 raise ValueError(f"真实 aux 摘要不符合契约：status={result.status},characters={len(result_text)},reason={result.reason}")
             commit = asyncio.create_task(self.complete(job_id, result_text))
-            try:
-                await asyncio.shield(commit)
-            finally:
-                await commit
+            with CancelScope(shield=True):
+                try:
+                    await asyncio.shield(commit)
+                finally:
+                    await commit
         finally:
             self._slots.pop(job_id, None)
             error = sys.exception()
             if error is not None:
-                cancelling = asyncio.current_task().cancelling()
+                cancelling = isinstance(error, asyncio.CancelledError)
                 status = "interrupted" if cancelling and self._closed else "cancelled" if cancelling else "failed"
-                await self._status(job_id, status, self._reason if cancelling else redact(f"{type(error).__name__}: {error}"),
-                                   report={"result": result_text} if result_text is not None else None)
+                with CancelScope(shield=True):
+                    await self._status(job_id, status, self._reason if cancelling else redact(f"{type(error).__name__}: {error}"),
+                                       report={"result": result_text} if result_text is not None else None)
 
     def _call_tx(self, conn, job_id, event_type, payload):
         with conn:
@@ -248,7 +258,7 @@ class MemoryJobs:
     async def _cancel(self, status, reason):
         self._reason = reason
         if self._current is not None and not self._current.done():
-            self._current.cancel()
+            self._cancel_scope.cancel()
             done, pending = await asyncio.wait({self._current}, timeout=2)
             if pending:
                 raise TimeoutError("辅助模型流未在两秒内完成取消")

@@ -26,6 +26,7 @@ from datetime import datetime
 from typing import Any, AsyncIterator, Awaitable, Callable, Literal
 
 from ..provider.types import StreamEvent, ToolCall, Usage
+from ..events import Event
 from ..tools.metadata import ToolResult
 from ..tools.scheduler import INVALID_PARAMS, input_hash
 
@@ -149,7 +150,11 @@ def tool_results_message(calls: list[ToolCall],
             "type": "tool_result", "tool_use_id": call.id,
             "content": body, "is_error": not result.ok,
         })
-    return {"role": "user", "content": content}
+    message = {"role": "user", "content": content}
+    sources = [result.event_global_seq for result in results if result.event_global_seq is not None]
+    if sources:
+        message["_event_global_seqs"] = sources
+    return message
 
 
 # ── 错误分类（§5 三招之三：解析重试的判定依据，参数化单测）───────────────
@@ -183,13 +188,14 @@ PARSE_RETRY_LIMIT = 2
 class LoopDeps:
     request: Callable[[], AsyncIterator[StreamEvent]]  # 每回合新建模型流
     execute: Callable[[ToolCall], Awaitable[ToolResult]]
-    emit: Callable[[str, dict], Awaitable[None]]       # 事件出口（落库+扇出）
+    emit: Callable[[str, dict], Awaitable[Any]]       # 事件出口（落库+扇出）
     on_progress: Callable[[], None]                    # 停滞看门狗心跳
     gates: LoopGates
     model: str                                         # llm.request_started 用
     start_ordinal: int = 1  # C9：resume 续接历史回合号（steps 唯一键与
     #                                           回合上限都按任务计，不得重置）
     model_slot: str = "main"
+    before_request: Callable[[], Awaitable[None]] | None = None
 
 
 @dataclass(frozen=True)
@@ -226,6 +232,8 @@ async def run_task(messages: list[dict], deps: LoopDeps) -> LoopResult:
         llm_call_id = ""
         started = time.monotonic()
         while True:
+            if deps.before_request is not None:
+                await deps.before_request()
             llm_call_id = uuid.uuid4().hex
             await deps.emit("llm.request_started", {
                 "llm_call_id": llm_call_id, "step_id": step_id,
@@ -295,7 +303,7 @@ async def run_task(messages: list[dict], deps: LoopDeps) -> LoopResult:
         latency_ms = int((time.monotonic() - started) * 1000)
         # llm.request_done 载荷 = 回复全文 + 全部 tool_use 块（含 thinking
         # 块与签名）——C9 恢复重建对话与结果配对的唯一依据（v1.7）
-        await deps.emit("llm.request_done", {
+        request_event = await deps.emit("llm.request_done", {
             "llm_call_id": llm_call_id, "step_id": step_id,
             "prompt_tokens": in_tok, "completion_tokens": out_tok,
             "latency_ms": latency_ms, "text": full_text,
@@ -308,12 +316,15 @@ async def run_task(messages: list[dict], deps: LoopDeps) -> LoopResult:
             "step_id": step_id, "input_tokens": in_tok,
             "output_tokens": out_tok, "latency_ms": latency_ms})
 
+        reply = assistant_message(thinking_blocks, full_text, calls)
+        if isinstance(request_event, Event):
+            reply["_event_global_seqs"] = [request_event.global_seq]
         if not calls:
-            messages.append(assistant_message(thinking_blocks, full_text, []))
+            messages.append(reply)
             return LoopResult("completed", final_text=full_text)
 
         # v1.9：assistant tool_use 消息先入历史（结果配对的前提）
-        messages.append(assistant_message(thinking_blocks, full_text, calls))
+        messages.append(reply)
         # 工具批：TaskGroup 保证异常/取消时兄弟任务一并收割（终态时序②）
         results: list[ToolResult | None] = [None] * len(calls)
         async with asyncio.TaskGroup() as tg:

@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id,status,current_attempt_no FROM task_runs WHERE id=?",
+  "parameters": [
+    "118e1c78625c48f0bb971a69472db218"
+  ],
+  "result": {
+    "id": "118e1c78625c48f0bb971a69472db218",
+    "status": "completed",
+    "current_attempt_no": 2
+  },
+  "audit": {
+    "ok": true,
+    "checked_count": 124
+  }
+}

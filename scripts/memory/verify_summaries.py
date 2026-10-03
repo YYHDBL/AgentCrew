@@ -39,6 +39,7 @@ async def start(root, token):
         "--data-dir", str(root), "--port", "18986", env={**os.environ, "AGENTCREW_TOKEN": token,
         "PYTHONPATH": str(Path(__file__).resolve().parents[2] / "backend"),
         "MEMORY_REQUEST_EVIDENCE": str(root / "requests.jsonl"),
+        "MEMORY_MAIN_STREAM_EVIDENCE": str(root / "main-streams.jsonl"),
         "MEMORY_JOB_STREAM_EVIDENCE": str(root / "streams.jsonl")},
         stdout=asyncio.subprocess.PIPE, stderr=log)
     ready = await asyncio.wait_for(process.stdout.readline(), 30)

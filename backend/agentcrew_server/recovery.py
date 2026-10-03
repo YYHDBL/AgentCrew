@@ -69,12 +69,13 @@ def _now() -> str:
 class RecoveryService:
     def __init__(self, db: "Database", event_store: "EventStore",
                  sessions: "SessionService", data_dir: Path,
-                 registry=None):
+                 registry=None, checkpoints=None):
         self._db = db
         self._store = event_store
         self._sessions = sessions
         self._data_dir = data_dir
         self._registry = registry  # 工具注册表（K4：read_only 豁免判定）
+        self._checkpoints = checkpoints
         self._run_manager: "RunManager | None" = None  # cli 装配后注回
 
     def wire(self, run_manager: "RunManager") -> None:
@@ -335,24 +336,28 @@ class RecoveryService:
 
     def rebuild_for_resume(self, task_run_id: str) -> tuple[ReplayResult, str]:
         """重放重建消息上下文 + 副作用账本文本（attempt 开始时调用）。"""
+        task = self._db.read_conn.execute(
+            "SELECT conversation_id FROM task_runs WHERE id=?", (task_run_id,)).fetchone()
+        checkpoint = (self._checkpoints.latest(task[0], task_run_id=task_run_id)
+                      if self._checkpoints is not None and task is not None else None)
         rows = self._db.read_conn.execute(
-            "SELECT seq, type, payload FROM run_events WHERE task_run_id=?"
+            "SELECT global_seq, seq, type, payload FROM run_events WHERE task_run_id=?"
             " ORDER BY seq", (task_run_id,)).fetchall()
+        replay_rows = ([row for row in rows if row[0] > checkpoint["source_global_seq"]]
+            if checkpoint else rows)
         from .tool_outputs import ToolOutputStore
 
-        for _, event_type, payload in rows:
+        for _, _, event_type, payload in replay_rows:
             if event_type in ("tool.completed", "tool.failed"):
-                record = json.loads(payload)
-                details = record.get("details") or {}
-                if record.get("artifact_path") and details.get("sha256") and "prefix_bytes" in details:
-                    ToolOutputStore.verify(Path(record["artifact_path"]), details["sha256"], details["size_bytes"])
-                if stderr_artifact := details.get("stderr_artifact"):
-                    ToolOutputStore.verify(Path(stderr_artifact["artifact_path"]),
-                        stderr_artifact["sha256"], stderr_artifact["size_bytes"])
+                ToolOutputStore.verify_record(json.loads(payload))
         result = replay_messages(
-            [tuple(r) for r in rows],
+            [(r[0], r[2], r[3]) for r in replay_rows],
             read_artifact=self._read_artifact,
+            instruction_task_id=task_run_id,
+            include_event_sources=True,
         )
+        if checkpoint is not None:
+            result.messages = checkpoint["messages"] + result.messages
         calls = self._db.read_conn.execute(
             "SELECT call_id, tool_name, input, status FROM tool_calls"
             " WHERE task_run_id=? ORDER BY prepared_at",
@@ -361,7 +366,7 @@ class RecoveryService:
         # 对"回答已落库、崩溃在等名额窗口"的调用误写"未获回答"
         return result, side_effect_ledger(
             [tuple(c) for c in calls],
-            answered=question_answers([tuple(r) for r in rows]))
+            answered=question_answers([tuple(r[1:]) for r in rows]))
 
     def _read_artifact(self, path_text: str) -> str | None:
         try:

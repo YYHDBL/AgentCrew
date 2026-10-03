@@ -16,9 +16,25 @@ _observed_requests = set()
 _observed_searches = {}
 _observed_streams = set()
 _observed_summary_tasks = {}
+_observed_main_streams = set()
 
 
 def observe(frame, event, arg):
+    if (os.environ.get("MEMORY_MAIN_STREAM_EVIDENCE") and event == "call"
+            and frame.f_globals.get("__name__") == "agentcrew_server.run_manager"
+            and frame.f_code.co_name == "<lambda>" and frame.f_back.f_code.co_name == "run_task"
+            and getattr(frame.f_back.f_locals.get("ev"), "type", None) == "text_delta"):
+        emitter = frame.f_back.f_locals["deps"].emit
+        captured = dict(zip(emitter.__code__.co_freevars,
+                            (cell.cell_contents for cell in emitter.__closure__)))
+        task_id = captured["task_run_id"]
+        if task_id not in _observed_main_streams:
+            _observed_main_streams.add(task_id)
+            value = {"task_run_id": task_id, "event": "actual_main_text_delta",
+                     "monotonic": time.monotonic(),
+                     "observed_at": datetime.now(timezone.utc).isoformat()}
+            with Path(os.environ["MEMORY_MAIN_STREAM_EVIDENCE"]).open("a", encoding="utf-8") as output:
+                output.write(json.dumps(value, ensure_ascii=False) + "\n")
     if (os.environ.get("MEMORY_JOB_STREAM_EVIDENCE") and event == "call"
             and frame.f_globals.get("__name__") == "agentcrew_server.memory.jobs"
             and frame.f_code.co_name == "<lambda>" and frame.f_back.f_code.co_name == "run_task"

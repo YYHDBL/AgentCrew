@@ -387,7 +387,7 @@ def test_resume_http_rejects_modified_and_missing_large_artifact(asm: Assembly):
         artifact = Path(result.artifact_path)
         assert hashlib.sha256(artifact.read_bytes()).hexdigest() == result.details["sha256"]
         await asm.store.append(task_run_id=task_id, conversation_id=conv_id,
-                               type=T.RUN_INTERRUPTED, payload={"reason": "进程实际停止后等待恢复"})
+                               type=T.RUN_INTERRUPTED, payload={"reason": "存储验证准备中断状态"})
 
         runtime = RuntimeState(log=logging.getLogger("test.artifact.resume"),
             data_dir=asm.data_dir, db=asm.db, write_channel=asm.channel,

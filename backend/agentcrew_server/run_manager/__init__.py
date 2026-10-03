@@ -26,6 +26,7 @@ import asyncio
 import json
 import logging
 import time
+import traceback
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -59,6 +60,8 @@ from ..bus import Subscription, Topic
 from ..providers import ConfiguredProvider, bind_slot
 from ..memory.tokenizer import TOKENIZER_FIELDS
 from ..memory.snapshots import MemorySnapshotError
+from ..memory.checkpoints import CheckpointCorrupt
+from ..tool_outputs import ArtifactIntegrityError
 
 if TYPE_CHECKING:
     from .approvals import ApprovalService
@@ -124,6 +127,7 @@ class RunManager:
         memory_search=None,
         memory_skills=None,
         summaries=None,
+        checkpoints=None,
     ):
         self._db = db
         self._store = event_store
@@ -138,6 +142,7 @@ class RunManager:
         self._memory_search = memory_search
         self._memory_skills = memory_skills
         self._summaries = summaries
+        self._checkpoints = checkpoints
         self._runs: dict[str, _Run] = {}
         self._guardrails: dict[str, str] = {}  # task_id → 护栏提示（接续注入）
         self._recovery = None  # C9：RecoveryService（cli 装配后注回，resume 重建用）
@@ -328,6 +333,7 @@ class RunManager:
             # ── attempt 装配：配置/环境块/工具 schema 全部在此刻绑定 ──
             slot, tools, system, _agent_id, fingerprint = \
                 await self._assemble_attempt(conversation_id, task_run_id)
+            aux_slot = self._bind_slot("aux") if self._checkpoints is not None else None
             provider = ConfiguredProvider({"main": slot}, client=self._http,
                                           session_id=conversation_id)
             ctx = await asyncio.to_thread(
@@ -361,8 +367,10 @@ class RunManager:
                 # S5：与 initial 同口径——同会话已完成任务的（指令, 回复）
                 # 对先入上下文，再拼接本任务重放历史（同任务两次 attempt 的
                 # 上下文集合一致）
-                messages = await asyncio.to_thread(
-                    self._history_messages, conversation_id) + replay.messages
+                task_checkpoint = (await asyncio.to_thread(self._checkpoints.latest,
+                    conversation_id, task_run_id=task_run_id)) if self._checkpoints is not None else None
+                messages = (replay.messages if task_checkpoint else
+                    await asyncio.to_thread(self._history_messages, conversation_id) + replay.messages)
                 system = system + "\n\n" + ledger
             else:
                 attempt_id = uuid.uuid4().hex
@@ -376,6 +384,9 @@ class RunManager:
                 guardrail = self._guardrails.pop(task_run_id, None)
                 messages.append(user_text_message(
                     instruction + (f"\n\n{guardrail}" if guardrail else "")))
+                messages[-1]["_task_instruction_id"] = task_run_id
+                if row["instruction_global_seq"] is not None:
+                    messages[-1]["_event_global_seqs"] = [row["instruction_global_seq"]]
 
             # 停滞计时从 attempt 生效重置起（外审建议④）：等名额耗时
             # 不计入窗口，启动即误判 stalled
@@ -394,6 +405,17 @@ class RunManager:
                         call_id=call.id, name=call.name, input=call.input),
                     ctx=ctx)
 
+            async def before_request() -> None:
+                if self._checkpoints is not None:
+                    await self._checkpoints.maybe_compact(
+                        conversation_id=conversation_id, task_run_id=task_run_id,
+                        attempt_no=attempt_no,
+                        snapshot_id=fingerprint["memory_snapshot_id"],
+                        messages=messages, main_slot=slot, aux_slot=aux_slot,
+                        tools=tools, system=system, client=self._http,
+                        ctx=ctx, sink=sink,
+                        on_progress=lambda: setattr(run, "last_progress", time.monotonic()))
+
             deps = LoopDeps(
                 request=lambda: provider.stream(
                     "main", messages, tools, system=system),
@@ -403,6 +425,7 @@ class RunManager:
                 gates=gates, model=slot.model,
                 start_ordinal=(await asyncio.to_thread(
                     self._next_ordinal, task_run_id) if resume else 1),
+                before_request=before_request if self._checkpoints is not None else None,
             )
             result = await run_task(messages, deps)
             if result.status == "completed":
@@ -476,6 +499,12 @@ class RunManager:
                 elif isinstance(cause, ContextBudgetError):
                     fail_reason = str(cause)
                     break
+                elif isinstance(cause, json.JSONDecodeError) and any(
+                        frame.f_code.co_name == "_summarize" and frame.f_globals.get("__name__") == "agentcrew_server.memory.checkpoints"
+                        for frame, _line in traceback.walk_tb(cause.__traceback__)):
+                    fail_reason = "CONTEXT_SUMMARY_FAILED：辅助模型返回的 JSON 非法"
+                elif isinstance(cause, (CheckpointCorrupt, ArtifactIntegrityError)):
+                    fail_reason = str(cause)
                 elif isinstance(cause, OSError) and "artifacts" in str(cause):
                     fail_reason = "ARTIFACT_WRITE_FAILED"
                 elif isinstance(cause, RuntimeError) and "EXTERNALIZATION_UNAVAILABLE" in str(cause):
@@ -663,7 +692,9 @@ class RunManager:
     def _task_row(self, task_run_id: str):
         return self._db.read_conn.execute(
             "SELECT id, conversation_id, instruction, status,"
-            " current_attempt_no FROM task_runs"
+            " current_attempt_no,(SELECT MIN(global_seq) FROM run_events e "
+            "WHERE e.task_run_id=task_runs.id AND e.type='run.queued') AS instruction_global_seq "
+            "FROM task_runs"
             " WHERE id = ?", (task_run_id,)).fetchone()
 
     def _next_ordinal(self, task_run_id: str) -> int:
@@ -677,21 +708,34 @@ class RunManager:
     def _history_messages(self, conversation_id: str) -> list[dict]:
         """同会话已完成任务的（指令, 最终回复）对——上下文连续（v1.7：模型
         本可见此前交换）；失败/取消的任务不进上下文，由护栏提示显式化。"""
+        if self._checkpoints is not None:
+            checkpoint = self._checkpoints.latest(conversation_id)
+            if checkpoint is not None:
+                recent = self._summaries.messages(conversation_id) if self._summaries is not None else []
+                return recent + self._checkpoints.completed_after(checkpoint)
         rows = self._db.read_conn.execute(
-            "SELECT id, instruction FROM task_runs"
+            "SELECT id, instruction,"
+            "(SELECT MIN(global_seq) FROM run_events e WHERE e.task_run_id=task_runs.id AND e.type='run.queued'),"
+            "(SELECT MAX(global_seq) FROM run_events e WHERE e.task_run_id=task_runs.id AND e.type='run.completed') "
+            "FROM task_runs"
             " WHERE conversation_id = ? AND status = 'completed'"
             " ORDER BY created_at", (conversation_id,)).fetchall()
         messages: list[dict] = self._summaries.messages(conversation_id) if self._summaries is not None else []
-        for task_id, instruction in rows:
+        for task_id, instruction, instruction_source, reply_source in rows:
             reply = self._db.read_conn.execute(
                 "SELECT content FROM messages"
                 " WHERE task_run_id = ? AND role = 'assistant'"
                 " ORDER BY created_at DESC LIMIT 1", (task_id,)).fetchone()
             messages.append(user_text_message(instruction))
+            messages[-1]["_task_instruction_id"] = task_id
+            if instruction_source is not None:
+                messages[-1]["_event_global_seqs"] = [instruction_source]
             if reply and reply[0]:
                 messages.append({"role": "assistant",
                                  "content": [{"type": "text",
                                               "text": reply[0]}]})
+                if reply_source is not None:
+                    messages[-1]["_event_global_seqs"] = [reply_source]
         return messages
 
     # ── 取消（API 入口）───────────────────────────────────────────

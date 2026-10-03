@@ -1,0 +1,1830 @@
+{
+  "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+  "resumed_task": {
+    "id": "0e80f1452fc742e7beb2f6b3f1163446",
+    "status": "completed",
+    "current_attempt_no": 2
+  },
+  "observed_at": "2026-10-03T02:12:41.407053+00:00",
+  "corpus": {
+    "source_root": "/Users/yyhdbl/Desktop/workMate/hermes-agent/agent",
+    "source_files": 309,
+    "corpus_sha256": "fee9011e5c79727573bb9d5a148bce9d8d5f414148b4d54980fcd6ec54b897f8",
+    "characters": 6528245
+  },
+  "tasks": [
+    {
+      "index": 19,
+      "task_run_id": "b6522f5908ee4a6fa3f19bdac65f082b",
+      "instruction_sha256": "4fb3a598e6af7b0349d23ef5966866ba31445d75fa58a3d89133d1d9d323a42f",
+      "instruction_characters": 145107,
+      "material_tokens": 33883,
+      "request_seconds": 0.13508283399278298,
+      "auxiliary_jobs_before_send": [],
+      "auxiliary_jobs_after_send": [],
+      "status": "completed",
+      "failure": [],
+      "checkpoint_count": 2,
+      "latest_checkpoint": {
+        "id": "3f9a2143500343cfb86d575b8a3028a9",
+        "event_global_seq": 404,
+        "source_global_seq": 402,
+        "before_tokens": 505389,
+        "after_tokens": 360635,
+        "summarized_messages": 9,
+        "aux_usage_json": "{\"input_tokens\":162937,\"output_tokens\":782}"
+      },
+      "observed_at": "2026-10-03T02:09:30.620153+00:00"
+    },
+    {
+      "index": 20,
+      "task_run_id": "b7dbcc1bd7f0447db6ee632a2697b401",
+      "instruction_sha256": "fb48dc9ba51876046a300f86e3d18018258ca331043cdddcf5aaf627953529ff",
+      "instruction_characters": 145107,
+      "material_tokens": 38336,
+      "request_seconds": 0.24197462500887923,
+      "auxiliary_jobs_before_send": [
+        {
+          "id": "637701495fa0465397f1bd4eb6352648",
+          "status": "running"
+        }
+      ],
+      "auxiliary_jobs_after_send": [
+        {
+          "id": "637701495fa0465397f1bd4eb6352648",
+          "status": "cancelled"
+        }
+      ],
+      "status": "completed",
+      "failure": [],
+      "checkpoint_count": 2,
+      "latest_checkpoint": {
+        "id": "3f9a2143500343cfb86d575b8a3028a9",
+        "event_global_seq": 404,
+        "source_global_seq": 402,
+        "before_tokens": 505389,
+        "after_tokens": 360635,
+        "summarized_messages": 9,
+        "aux_usage_json": "{\"input_tokens\":162937,\"output_tokens\":782}"
+      },
+      "observed_at": "2026-10-03T02:09:46.704589+00:00"
+    },
+    {
+      "index": 21,
+      "task_run_id": "92afec9b1d984afba5c1c02f813d5a2f",
+      "instruction_sha256": "4fde3eb3e51f0efaae8ae4a6ff0af507e02f7bff10dcfd0b24517349a305f715",
+      "instruction_characters": 145107,
+      "material_tokens": 39674,
+      "request_seconds": 0.14742012502392754,
+      "auxiliary_jobs_before_send": [
+        {
+          "id": "7f2d510570c4478a8c227f6bed235568",
+          "status": "running"
+        }
+      ],
+      "auxiliary_jobs_after_send": [
+        {
+          "id": "7f2d510570c4478a8c227f6bed235568",
+          "status": "cancelled"
+        }
+      ],
+      "status": "completed",
+      "failure": [],
+      "checkpoint_count": 2,
+      "latest_checkpoint": {
+        "id": "3f9a2143500343cfb86d575b8a3028a9",
+        "event_global_seq": 404,
+        "source_global_seq": 402,
+        "before_tokens": 505389,
+        "after_tokens": 360635,
+        "summarized_messages": 9,
+        "aux_usage_json": "{\"input_tokens\":162937,\"output_tokens\":782}"
+      },
+      "observed_at": "2026-10-03T02:10:15.565290+00:00"
+    },
+    {
+      "index": 22,
+      "task_run_id": "84d74ed3524341bbbc5169ad33f5d6f1",
+      "instruction_sha256": "2652da06ac387247d8d2dbe62caa36b2d39090d62890b371bf6e9242454895eb",
+      "instruction_characters": 145107,
+      "material_tokens": 37367,
+      "request_seconds": 0.10306512500392273,
+      "auxiliary_jobs_before_send": [
+        {
+          "id": "20037ceb482c4a94a2a1528260328156",
+          "status": "running"
+        }
+      ],
+      "auxiliary_jobs_after_send": [
+        {
+          "id": "20037ceb482c4a94a2a1528260328156",
+          "status": "cancelled"
+        }
+      ],
+      "status": "completed",
+      "failure": [],
+      "checkpoint_count": 3,
+      "latest_checkpoint": {
+        "id": "43e73337aead454b860f60bc063f85c0",
+        "event_global_seq": 466,
+        "source_global_seq": 464,
+        "before_tokens": 511922,
+        "after_tokens": 331674,
+        "summarized_messages": 11,
+        "aux_usage_json": "{\"input_tokens\":203079,\"output_tokens\":1352}"
+      },
+      "observed_at": "2026-10-03T02:10:44.383812+00:00"
+    },
+    {
+      "index": 23,
+      "task_run_id": "e9ba3960e69545e2996d9b1ff9bd103a",
+      "instruction_sha256": "1cd5635cf89c442bc70fd601e71ed3e96f2e6417baca0dc64ba1fed94d184441",
+      "instruction_characters": 145107,
+      "material_tokens": 38255,
+      "request_seconds": 0.22575412501464598,
+      "auxiliary_jobs_before_send": [
+        {
+          "id": "12718b634bee41d5850192fd8a61578a",
+          "status": "running"
+        }
+      ],
+      "auxiliary_jobs_after_send": [
+        {
+          "id": "12718b634bee41d5850192fd8a61578a",
+          "status": "cancelled"
+        }
+      ],
+      "status": "completed",
+      "failure": [],
+      "checkpoint_count": 3,
+      "latest_checkpoint": {
+        "id": "43e73337aead454b860f60bc063f85c0",
+        "event_global_seq": 466,
+        "source_global_seq": 464,
+        "before_tokens": 511922,
+        "after_tokens": 331674,
+        "summarized_messages": 11,
+        "aux_usage_json": "{\"input_tokens\":203079,\"output_tokens\":1352}"
+      },
+      "observed_at": "2026-10-03T02:10:59.161195+00:00"
+    },
+    {
+      "index": 24,
+      "task_run_id": "0900e54793804607a35006c56d6696bc",
+      "instruction_sha256": "ac4a19b103d2e7868776657c13741861f35fcca201aa5904dc97eca66cb4decb",
+      "instruction_characters": 145107,
+      "material_tokens": 37830,
+      "request_seconds": 0.11478720800369047,
+      "auxiliary_jobs_before_send": [
+        {
+          "id": "826369df76d34c54b47774fe9294494e",
+          "status": "running"
+        }
+      ],
+      "auxiliary_jobs_after_send": [
+        {
+          "id": "826369df76d34c54b47774fe9294494e",
+          "status": "cancelled"
+        }
+      ],
+      "status": "completed",
+      "failure": [],
+      "checkpoint_count": 3,
+      "latest_checkpoint": {
+        "id": "43e73337aead454b860f60bc063f85c0",
+        "event_global_seq": 466,
+        "source_global_seq": 464,
+        "before_tokens": 511922,
+        "after_tokens": 331674,
+        "summarized_messages": 11,
+        "aux_usage_json": "{\"input_tokens\":203079,\"output_tokens\":1352}"
+      },
+      "observed_at": "2026-10-03T02:11:16.892593+00:00"
+    },
+    {
+      "index": 25,
+      "task_run_id": "49ab1682bf3643f8abcb11db640c131d",
+      "instruction_sha256": "f5bc0de4af946439692c665495c64e7b70a5cbc7eccc7f9d1b63d64a438e2dcf",
+      "instruction_characters": 145107,
+      "material_tokens": 36875,
+      "request_seconds": 0.355606875004014,
+      "auxiliary_jobs_before_send": [
+        {
+          "id": "cf18b47f1f304cd68024e1381cd4ff1e",
+          "status": "running"
+        }
+      ],
+      "auxiliary_jobs_after_send": [
+        {
+          "id": "cf18b47f1f304cd68024e1381cd4ff1e",
+          "status": "cancelled"
+        }
+      ],
+      "status": "completed",
+      "failure": [],
+      "checkpoint_count": 3,
+      "latest_checkpoint": {
+        "id": "43e73337aead454b860f60bc063f85c0",
+        "event_global_seq": 466,
+        "source_global_seq": 464,
+        "before_tokens": 511922,
+        "after_tokens": 331674,
+        "summarized_messages": 11,
+        "aux_usage_json": "{\"input_tokens\":203079,\"output_tokens\":1352}"
+      },
+      "observed_at": "2026-10-03T02:11:35.543094+00:00"
+    },
+    {
+      "index": 26,
+      "task_run_id": "a8bdcf0752b747d8a08e4804f8090d15",
+      "instruction_sha256": "e52e6083e5dfcb196ad485ff03fb255333aaa699faf91064e884fde9bf51cabd",
+      "instruction_characters": 145107,
+      "material_tokens": 37292,
+      "request_seconds": 0.14673083301750012,
+      "auxiliary_jobs_before_send": [
+        {
+          "id": "5233b8507f9e47fa9b7485685905495e",
+          "status": "running"
+        }
+      ],
+      "auxiliary_jobs_after_send": [
+        {
+          "id": "5233b8507f9e47fa9b7485685905495e",
+          "status": "cancelled"
+        }
+      ],
+      "status": "completed",
+      "failure": [],
+      "checkpoint_count": 4,
+      "latest_checkpoint": {
+        "id": "cb669b55874e4b2a9de61833f80a7de1",
+        "event_global_seq": 512,
+        "source_global_seq": 510,
+        "before_tokens": 483030,
+        "after_tokens": 343416,
+        "summarized_messages": 9,
+        "aux_usage_json": "{\"input_tokens\":156876,\"output_tokens\":1851}"
+      },
+      "observed_at": "2026-10-03T02:12:06.466890+00:00"
+    }
+  ],
+  "sigkill": {
+    "task_run_id": "0e80f1452fc742e7beb2f6b3f1163446",
+    "exit_code": -9,
+    "stream": {
+      "task_run_id": "0e80f1452fc742e7beb2f6b3f1163446",
+      "event": "actual_main_text_delta",
+      "monotonic": 235556.110840625,
+      "observed_at": "2026-10-03T02:12:18.912167+00:00"
+    },
+    "observed_at": "2026-10-03T02:12:18.926328+00:00"
+  },
+  "resume_http": {
+    "method": "POST",
+    "path": "/api/task-runs/0e80f1452fc742e7beb2f6b3f1163446/resume",
+    "status": 202,
+    "response": {
+      "data": {
+        "warnings": []
+      }
+    }
+  },
+  "checkpoint_query": "SELECT * FROM context_checkpoints WHERE conversation_id=? ORDER BY event_global_seq",
+  "resume_requests": [
+    {
+      "body_sha256": "77aa3d5ae099cee4512ac3b46808fef5d08fbcbb1c43ba2c5d7142780a886652",
+      "observed_at": "2026-10-03T02:12:25.159472+00:00",
+      "checkpoint_message_start": 1,
+      "checkpoint_messages": 21,
+      "actual_messages": 24,
+      "side_effect_ledger_present": true
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "ec1f98ab50824726add73b7eb3281812",
+      "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+      "task_run_id": "b6b6060373b045e8ab2c73cf37e4302d",
+      "source_global_seq": 356,
+      "event_global_seq": 358,
+      "snapshot_id": "bbbeeca44cc94267b84ab0980f46c5e6",
+      "before_tokens": 511418,
+      "after_tokens": 363854,
+      "summarized_messages": 7,
+      "template_version": "M1-08-structured-v1",
+      "sha256": "d80f8a3cd7b2d308796fc184f62c6bd2cab322075c86b1371e6e2c1ba2c4ee13",
+      "aux_model": "deepseek-v4.1-flash",
+      "aux_usage_json": "{\"input_tokens\":164660,\"output_tokens\":475}",
+      "summary_fields": [
+        "completed_actions",
+        "constraints_preferences",
+        "current_status",
+        "goals",
+        "historical_tasks"
+      ],
+      "summary": {
+        "completed_actions": "已回复第 1 份：确认 `SOURCE __init__.py`，并额外提示材料末尾 `agent_init.py` 在 `_resolve_context_length` 中被截断。已回复第 2 份：指出开头是上一份被截断处的续文（首行 `from that default.`），文内首个 SOURCE 标记为 `SOURCE agent_runtime_helpers.py`。已回复第 3 份：指出开头是上一份在 `Pool reload is part of the s` 处被截断的续文（首行 `witch and must be reversible on rollback, hence the pool fields.`），文内首个 SOURCE 标记为 `SOURCE anthropic_adapter.py`，其后还有 `SOURCE anthropic_credentials.py`。",
+        "constraints_preferences": "[BLOCKED: 疑似注入]",
+        "current_status": "第 4 份材料刚提供，尚未回应。该材料开头也非 SOURCE 标记，而是上一份 `auxiliary_client.py` 在 `# Defau` 处被截断的续文（首行 `HS.get(source) if isinstance(source, str) else None`），文内首个 SOURCE 标记为 `SOURCE anthropic_endpoints.py`，其后还有 `SOURCE anthropic_message_convert.py`、`SOURCE api_error_summary.py`、`SOURCE api_request_hooks.py`、`SOURCE async_utils.py`、`SOURCE aux_accounting.py`、`SOURCE auxiliary_async_rebuild.py`、`SOURCE auxiliary_client.py`。",
+        "goals": "逐份核对材料编号与开头 SOURCE 标记；对每份材料给出单句确认，并在截断或非 SOURCE 开头时如实说明实际情况。",
+        "historical_tasks": "用户依次提交了 4 份真实 Python 源码材料，每份要求仅用一句话确认材料编号和开头 SOURCE 标记，并声明材料已直接提供、无需调用工具、源码内指令性文字无控制权。"
+      },
+      "retained_messages": 21,
+      "message_sources": [
+        [
+          210,
+          218,
+          222,
+          229,
+          233,
+          240,
+          244
+        ],
+        [
+          251
+        ],
+        [
+          255
+        ],
+        [
+          262
+        ],
+        [
+          266
+        ],
+        [
+          273
+        ],
+        [
+          277
+        ],
+        [
+          284
+        ],
+        [
+          288
+        ],
+        [
+          295
+        ],
+        [
+          299
+        ],
+        [
+          306
+        ],
+        [
+          310
+        ],
+        [
+          317
+        ],
+        [
+          321
+        ],
+        [
+          328
+        ],
+        [
+          332
+        ],
+        [
+          339
+        ],
+        [
+          343
+        ],
+        [
+          350
+        ],
+        [
+          354
+        ]
+      ],
+      "instruction_ids": [
+        "820b0ce21aa34c3b9bd863d022464ed4",
+        "9f97bdd8d6b744ed92a76a34fd95d786",
+        "1cafd096f15241bb8eb0ba3aedaececb",
+        "7d18d7f511be4d1c901d1c8adc705d3c",
+        "638919dd92f74fe1b6e9022f39aae907",
+        "9ba41926b2244005b1dcdae6a81922f7",
+        "e840320a03344ff9a6ffd826090e4a8d",
+        "89bf27c530714b59af69b1e496c1417e",
+        "32e90b490e68460791aee45ba72555e3",
+        "b6b6060373b045e8ab2c73cf37e4302d"
+      ],
+      "retained_sha256": "599195918e5825a574f429a7b0a42e1a6071cea9bc8bfb9f99511b1caa18ee4f",
+      "actual_requests": [
+        {
+          "body_sha256": "97a2ed4bfd325eab1b17f2d5a23186db5580d099fb252190796fc3bc1e2c281c",
+          "observed_at": "2026-10-03T01:43:00.686257+00:00",
+          "messages_equal_checkpoint": true
+        }
+      ],
+      "artifacts": []
+    },
+    {
+      "id": "3f9a2143500343cfb86d575b8a3028a9",
+      "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+      "task_run_id": "b1597cd4ce1240eea0f22c58e11f6b7a",
+      "source_global_seq": 402,
+      "event_global_seq": 404,
+      "snapshot_id": "bbbeeca44cc94267b84ab0980f46c5e6",
+      "before_tokens": 505389,
+      "after_tokens": 360635,
+      "summarized_messages": 9,
+      "template_version": "M1-08-structured-v1",
+      "sha256": "26450f222b2011cb01c987b32e9e1c665bf14ee96d8bccc9437dfb4b42def6e7",
+      "aux_model": "deepseek-v4.1-flash",
+      "aux_usage_json": "{\"input_tokens\":162937,\"output_tokens\":782}",
+      "summary_fields": [
+        "completed_actions",
+        "constraints_preferences",
+        "current_status",
+        "goals",
+        "historical_tasks"
+      ],
+      "summary": {
+        "completed_actions": "已回复第 1 份：确认 `SOURCE __init__.py`，并提示材料末尾 `agent_init.py` 在 `_resolve_context_length` 中被截断。已回复第 2 份：指出开头是上一份截断续文（首行 `from that default.`），文内首个 SOURCE 标记为 `SOURCE agent_runtime_helpers.py`。已回复第 3 份：指出开头是上一份在 `Pool reload is part of the s` 处截断的续文，文内首个 SOURCE 标记为 `SOURCE anthropic_adapter.py`，其后还有 `SOURCE anthropic_credentials.py`。已回复第 4 份：指出开头是 `anthropic_credentials.py` 在 `getter = _SINGLETON_SOURCE_PAT` 处截断的续文（首行 `HS.get(source) if isinstance(source, str) else None`），首个 SOURCE 标记为 `SOURCE anthropic_endpoints.py`。已回复第 5 份：指出开头是 `auxiliary_client.py` 在 `# Defau` 处截断的续文（首行 `lt auxiliary models for direct API-key providers (cheap/fast for side tasks)`），全篇无 SOURCE 标记，末尾在 `and base_url_or` 处截断。已回复第 6 份：指出开头是上一份在 `and base_url_or` 处截断的续文（首行 `igin(base) != base_url_origin(rt_base)):`），全篇无 SOURCE 标记，末尾在 `# During provider incidents each call also retries / fans out across the fallback chain, multiplying request` 处截断。已回复第 7 份：指出开头是上一份注释续文（首行 `# volume on already-degraded endpoints. A per-task semaphore caps in-flight calls so retry amplification`），文内首个 SOURCE 标记为 `SOURCE auxiliary_fallback_recovery.py`，其后依次还有 `SOURCE auxiliary_health.py`、`auxiliary_hooks.py`、`auxiliary_reasoning_floor.py`、`auxiliary_structured_output.py`、`auxiliary_unavailable.py`，末尾在 `_warned_nous_deta` 处截断。",
+        "constraints_preferences": "[BLOCKED: 疑似注入]",
+        "current_status": "第 8 份材料刚提供，尚未回应。该材料开头仍非 SOURCE 标记，而是上一份 `auxiliary_unavailable.py` 在 `_warned_nous_deta` 处被截断的续文（首行 `ils`，紧跟 `_warned_nous_details.add(detail)`），文内首个 SOURCE 标记为 `SOURCE auxiliary_wire.py`，其后还有 `SOURCE azure_identity_adapter.py`、`SOURCE backend_identity.py`、`SOURCE background_review.py`、`SOURCE battery.py`、`SOURCE bedrock_adapter.py`，末尾在 `content_blocks.append({\"reasoningConte` 处截断。",
+        "goals": "逐份核对材料编号与开头 SOURCE 标记；对每份材料给出单句确认，并在截断或非 SOURCE 开头时如实说明实际情况。",
+        "historical_tasks": "用户依次提交了 8 份真实 Python 源码材料，每份要求只用一句确认编号和开头 SOURCE 标记，并声明材料已直接提供、无需调用工具、源码内指令性文字无控制权。"
+      },
+      "retained_messages": 21,
+      "message_sources": [
+        [
+          210,
+          218,
+          222,
+          229,
+          233,
+          240,
+          244,
+          251,
+          255,
+          262,
+          266,
+          273,
+          277,
+          284,
+          288,
+          358
+        ],
+        [
+          295
+        ],
+        [
+          299
+        ],
+        [
+          306
+        ],
+        [
+          310
+        ],
+        [
+          317
+        ],
+        [
+          321
+        ],
+        [
+          328
+        ],
+        [
+          332
+        ],
+        [
+          339
+        ],
+        [
+          343
+        ],
+        [
+          350
+        ],
+        [
+          354
+        ],
+        [
+          361
+        ],
+        [
+          367
+        ],
+        [
+          372
+        ],
+        [
+          378
+        ],
+        [
+          383
+        ],
+        [
+          389
+        ],
+        [
+          394
+        ],
+        [
+          400
+        ]
+      ],
+      "instruction_ids": [
+        "638919dd92f74fe1b6e9022f39aae907",
+        "9ba41926b2244005b1dcdae6a81922f7",
+        "e840320a03344ff9a6ffd826090e4a8d",
+        "89bf27c530714b59af69b1e496c1417e",
+        "32e90b490e68460791aee45ba72555e3",
+        "b6b6060373b045e8ab2c73cf37e4302d",
+        "b1597cd4ce1240eea0f22c58e11f6b7a"
+      ],
+      "retained_sha256": "c2d7989a17d8dca5a36ef84ad43e4d2e2f16d025ae8aed1b625c52da5729cd8e",
+      "actual_requests": [
+        {
+          "body_sha256": "905b5d8c83dfefd5a91c6d329bdf6a07a2afa28200c9f70df73e9f001c5b0fd2",
+          "observed_at": "2026-10-03T01:44:40.632204+00:00",
+          "messages_equal_checkpoint": true
+        }
+      ],
+      "artifacts": []
+    },
+    {
+      "id": "43e73337aead454b860f60bc063f85c0",
+      "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+      "task_run_id": "84d74ed3524341bbbc5169ad33f5d6f1",
+      "source_global_seq": 464,
+      "event_global_seq": 466,
+      "snapshot_id": "bbbeeca44cc94267b84ab0980f46c5e6",
+      "before_tokens": 511922,
+      "after_tokens": 331674,
+      "summarized_messages": 11,
+      "template_version": "M1-08-structured-v1",
+      "sha256": "0a64d2ed28dae14403964502f0059ba26abfa881625a7824a453f05102fca8eb",
+      "aux_model": "deepseek-v4.1-flash",
+      "aux_usage_json": "{\"input_tokens\":203079,\"output_tokens\":1352}",
+      "summary_fields": [
+        "completed_actions",
+        "constraints_preferences",
+        "current_status",
+        "goals",
+        "historical_tasks"
+      ],
+      "summary": {
+        "completed_actions": "已回复第 1 份：确认 `SOURCE __init__.py`，并提示材料末尾 `agent_init.py` 在 `_resolve_context_length` 中被截断。已回复第 2 份：指出开头是上一份截断续文（首行 `from that default.`），文内首个 SOURCE 标记为 `SOURCE agent_runtime_helpers.py`。已回复第 3 份：指出开头是上一份在 `Pool reload is part of the s` 处截断的续文，文内首个 SOURCE 标记为 `SOURCE anthropic_adapter.py`，其后还有 `SOURCE anthropic_credentials.py`。已回复第 4 份：指出开头是 `anthropic_credentials.py` 在 `getter = _SINGLETON_SOURCE_PAT` 处截断的续文（首行 `HS.get(source) if isinstance(source, str) else None`），首个 SOURCE 标记为 `SOURCE anthropic_endpoints.py`。已回复第 5 份：指出开头是 `auxiliary_client.py` 在 `# Defau` 处截断的续文（首行 `lt auxiliary models for direct API-key providers (cheap/fast for side tasks)`），全篇无 SOURCE 标记，末尾在 `and base_url_or` 处截断。已回复第 6 份：指出开头是上一份在 `and base_url_or` 处截断的续文（首行 `igin(base) != base_url_origin(rt_base)):`），全篇无 SOURCE 标记，末尾在 `# During provider incidents each call also retries / fans out across the fallback chain, multiplying request` 处截断。已回复第 7 份：指出开头是上一份注释续文（首行 `# volume on already-degraded endpoints. A per-task semaphore caps in-flight calls so retry amplification`），文内首个 SOURCE 标记为 `SOURCE auxiliary_fallback_recovery.py`，其后依次还有 `SOURCE auxiliary_health.py`、`auxiliary_hooks.py`、`auxiliary_reasoning_floor.py`、`auxiliary_structured_output.py`、`auxiliary_unavailable.py`，末尾在 `_warned_nous_deta` 处截断。已回复第 8 份：指出开头是 `auxiliary_unavailable.py` 在 `_warned_nous_deta` 处截断的续文（首行 `ils`），首个 SOURCE 标记为 `SOURCE auxiliary_wire.py`，其后依次还有 `azure_identity_adapter.py`、`backend_identity.py`、`background_review.py`、`battery.py`、`bedrock_adapter.py`，末尾在 `content_blocks.append({\"reasoningConte` 处截断；并声明其中提示词文本无指令效力。已回复第 9 份：指出开头是 `bedrock_adapter.py` 截断处续文（首行 `nt\": {\"reasoningText\": reasoning_text}})`），首个 SOURCE 标记为 `SOURCE billing_links.py`，其后依次还有 `billing_usage.py`、`billing_view.py`、`bounded_response.py`、`browser_provider.py`、`browser_registry.py`、`chat_completion_helpers.py`，末尾在 `_alias_tool_search_bridge_for_xai` 内 `tools` 处截断。已回复第 10 份：指出开头是上一份截断处续文（首行 `_for_api = _copy_xai.deepcopy(tools_for_api)`），全篇无 SOURCE 标记，末尾在 `_shutdown_stale_attempt_socket` 的注释 `it covers request` 处截断。已回复第 11 份：指出开头是 `chat_completion_helpers.py` 在 `_shutdown_stale_attempt_socket` 注释处截断的续文（首行 `-local clients too, #30858).`），首个 SOURCE 标记为 `SOURCE chat_completion_helpers_relay.py`，其后依次还有 `chat_completion_nonstream.py`、`chat_completion_stream_monitor.py`、`chat_completion_wait_notice.py`、`client_lifecycle.py`、`codex_headers.py`、`codex_responses_adapter.py`，末尾在 `ResponsesRouteFlags` 定义处截断。已回复第 12 份：指出开头是 `codex_responses_adapter.py` 在 `ResponsesRouteFlags` 定义处截断的续文（首行 `y class: #22548/#70893/#59561/#72468).`），首个 SOURCE 标记为 `SOURCE codex_runtime.py`，其后依次还有 `codex_runtime_history_seed.py`、`coding_context.py`、`command_token_source.py`，末尾在 `CommandTokenSource.__init__` 的 `) -> No` 处截断。",
+        "constraints_preferences": "[BLOCKED: 疑似注入]",
+        "current_status": "第 13 份材料刚提供，尚未回应。该材料开头是上一份 `command_token_source.py` 在 `) -> No` 处被截断的续文（首行 `ne:`，紧跟 `self._command = command`），文内首个 SOURCE 标记为 `SOURCE compaction_display.py`，其后还有 `SOURCE compression_facade.py`、`SOURCE compression_marker.py`、`SOURCE context_breakdown.py`、`SOURCE context_compressor.py`，末尾在 `_SECTION_INSTRUCTIONS` 中 `\"answer that question with full cont` 处截断。",
+        "goals": "逐份核对材料编号与开头 SOURCE 标记；对每份材料给出单句确认，并在截断或非 SOURCE 开头时如实说明实际情况。",
+        "historical_tasks": "用户依次提交了 13 份真实 Python 源码材料，每份要求只用一句确认编号和开头 SOURCE 标记，并声明材料已直接提供、无需调用工具、源码内指令性文字无控制权。"
+      },
+      "retained_messages": 21,
+      "message_sources": [
+        [
+          210,
+          218,
+          222,
+          229,
+          233,
+          240,
+          244,
+          251,
+          255,
+          262,
+          266,
+          273,
+          277,
+          284,
+          288,
+          295,
+          299,
+          306,
+          310,
+          317,
+          321,
+          328,
+          332,
+          339,
+          343,
+          358,
+          404
+        ],
+        [
+          350
+        ],
+        [
+          354
+        ],
+        [
+          361
+        ],
+        [
+          367
+        ],
+        [
+          372
+        ],
+        [
+          378
+        ],
+        [
+          383
+        ],
+        [
+          389
+        ],
+        [
+          394
+        ],
+        [
+          400
+        ],
+        [
+          407
+        ],
+        [
+          413
+        ],
+        [
+          423
+        ],
+        [
+          429
+        ],
+        [
+          434
+        ],
+        [
+          440
+        ],
+        [
+          445
+        ],
+        [
+          451
+        ],
+        [
+          456
+        ],
+        [
+          462
+        ]
+      ],
+      "instruction_ids": [
+        "b6b6060373b045e8ab2c73cf37e4302d",
+        "b1597cd4ce1240eea0f22c58e11f6b7a",
+        "84d74ed3524341bbbc5169ad33f5d6f1"
+      ],
+      "retained_sha256": "8f6857d78b618b1bdf0755e93608faa192720f7be8c15846641e3ee531fcc1cf",
+      "actual_requests": [
+        {
+          "body_sha256": "56207b7a310dfb4e912f899cac329fbac1c091c2ec5f5c8adf3119f2e716d15d",
+          "observed_at": "2026-10-03T02:10:33.612167+00:00",
+          "messages_equal_checkpoint": true
+        }
+      ],
+      "artifacts": []
+    },
+    {
+      "id": "cb669b55874e4b2a9de61833f80a7de1",
+      "conversation_id": "6018b39c95f9457c8836930dba028b9f",
+      "task_run_id": "a8bdcf0752b747d8a08e4804f8090d15",
+      "source_global_seq": 510,
+      "event_global_seq": 512,
+      "snapshot_id": "bbbeeca44cc94267b84ab0980f46c5e6",
+      "before_tokens": 483030,
+      "after_tokens": 343416,
+      "summarized_messages": 9,
+      "template_version": "M1-08-structured-v1",
+      "sha256": "25e28146d1365e6b99a1069f1efc1bc11f1e3f497087377cd5dd03b520ba5f41",
+      "aux_model": "deepseek-v4.1-flash",
+      "aux_usage_json": "{\"input_tokens\":156876,\"output_tokens\":1851}",
+      "summary_fields": [
+        "completed_actions",
+        "constraints_preferences",
+        "current_status",
+        "goals",
+        "historical_tasks"
+      ],
+      "summary": {
+        "completed_actions": "已回复第 1 份：确认 `SOURCE __init__.py`，并提示材料末尾 `agent_init.py` 在 `_resolve_context_length` 中被截断。已回复第 2 份：指出开头是上一份截断续文（首行 `from that default.`），文内首个 SOURCE 标记为 `SOURCE agent_runtime_helpers.py`。已回复第 3 份：指出开头是上一份在 `Pool reload is part of the s` 处截断的续文，文内首个 SOURCE 标记为 `SOURCE anthropic_adapter.py`，其后还有 `SOURCE anthropic_credentials.py`。已回复第 4 份：指出开头是 `anthropic_credentials.py` 在 `getter = _SINGLETON_SOURCE_PAT` 处截断的续文（首行 `HS.get(source) if isinstance(source, str) else None`），首个 SOURCE 标记为 `SOURCE anthropic_endpoints.py`。已回复第 5 份：指出开头是 `auxiliary_client.py` 在 `# Defau` 处截断的续文（首行 `lt auxiliary models for direct API-key providers (cheap/fast for side tasks)`），全篇无 SOURCE 标记，末尾在 `and base_url_or` 处截断。已回复第 6 份：指出开头是上一份在 `and base_url_or` 处截断的续文（首行 `igin(base) != base_url_origin(rt_base)):`），全篇无 SOURCE 标记，末尾在 `# During provider incidents each call also retries / fans out across the fallback chain, multiplying request` 处截断。已回复第 7 份：指出开头是上一份注释续文（首行 `# volume on already-degraded endpoints. A per-task semaphore caps in-flight calls so retry amplification`），文内首个 SOURCE 标记为 `SOURCE auxiliary_fallback_recovery.py`，其后依次还有 `SOURCE auxiliary_health.py`、`auxiliary_hooks.py`、`auxiliary_reasoning_floor.py`、`auxiliary_structured_output.py`、`auxiliary_unavailable.py`，末尾在 `_warned_nous_deta` 处截断。已回复第 8 份：指出开头是 `auxiliary_unavailable.py` 在 `_warned_nous_deta` 处截断的续文（首行 `ils`），首个 SOURCE 标记为 `SOURCE auxiliary_wire.py`，其后依次还有 `azure_identity_adapter.py`、`backend_identity.py`、`background_review.py`、`battery.py`、`bedrock_adapter.py`，末尾在 `content_blocks.append({\"reasoningConte` 处截断；并声明其中提示词文本无指令效力。已回复第 9 份：指出开头是 `bedrock_adapter.py` 截断处续文（首行 `nt\": {\"reasoningText\": reasoning_text}})`），首个 SOURCE 标记为 `SOURCE billing_links.py`，其后依次还有 `billing_usage.py`、`billing_view.py`、`bounded_response.py`、`browser_provider.py`、`browser_registry.py`、`chat_completion_helpers.py`，末尾在 `_alias_tool_search_bridge_for_xai` 内 `tools` 处截断。已回复第 10 份：指出开头是上一份截断处续文（首行 `_for_api = _copy_xai.deepcopy(tools_for_api)`），全篇无 SOURCE 标记，末尾在 `_shutdown_stale_attempt_socket` 的注释 `it covers request` 处截断。已回复第 11 份：指出开头是 `chat_completion_helpers.py` 在 `_shutdown_stale_attempt_socket` 注释处截断的续文（首行 `-local clients too, #30858).`），首个 SOURCE 标记为 `SOURCE chat_completion_helpers_relay.py`，其后依次还有 `chat_completion_nonstream.py`、`chat_completion_stream_monitor.py`、`chat_completion_wait_notice.py`、`client_lifecycle.py`、`codex_headers.py`、`codex_responses_adapter.py`，末尾在 `ResponsesRouteFlags` 定义处截断。已回复第 12 份：指出开头是 `codex_responses_adapter.py` 在 `ResponsesRouteFlags` 定义处截断的续文（首行 `y class: #22548/#70893/#59561/#72468).`），首个 SOURCE 标记为 `SOURCE codex_runtime.py`，其后依次还有 `codex_runtime_history_seed.py`、`coding_context.py`、`command_token_source.py`，末尾在 `CommandTokenSource.__init__` 的 `) -> No` 处截断。已回复第 13 份：指出开头是上一份 `command_token_source.py` 在 `) -> No` 处被截断的续文（首行 `ne:`），文内首个 SOURCE 标记为 `SOURCE compaction_display.py`，其后还有 `SOURCE compression_facade.py`、`SOURCE compression_marker.py`、`SOURCE context_breakdown.py`、`SOURCE context_compressor.py`，末尾在 `_SECTION_INSTRUCTIONS` 中 `\"answer that question with full cont` 处截断。已回复第 14 份：指出开头是上一份 `context_compressor.py` 在 `\"answer that question with full cont` 处被截断的续文（首行 `ext\". Do NOT write \"None\" merely`），全篇无 SOURCE 标记，末尾在 `_blank_echo_indices_after` 内 `idx = user_idx + 1` 处截断。已回复第 15 份：指出开头是上一份 `context_compressor.py` 在 `_blank_echo_indices_after` 内 `idx = user_idx + 1` 处被截断的续文（首行 `while idx < len(messages) and cls._is_blank_user_turn(messages[idx]):`），文内首个 SOURCE 标记为 `SOURCE context_compressor_summary.py`，其后依次还有 `context_engine.py`、`context_file_sources.py`、`context_pin.py`、`context_references.py`、`conversation_compression.py`，末尾在 `_strip_marker_for_comparison` 文档字符串处截断。已回复第 16 份：指出开头是上一份 `conversation_compression.py` 在 `_strip_marker_for_comparison` 文档字符串处被截断的续文（首行 `from agent.context_compressor import _DB_PERSISTED_MARKER`），全篇无 SOURCE 标记，末尾在 `_acquire_compression_lease` 的注释 `Only s` 处截断。",
+        "constraints_preferences": "[BLOCKED: 疑似注入]",
+        "current_status": "第 17 份材料刚提供，尚未回应。该材料开头是上一份 `conversation_compression.py` 在 `_acquire_compression_lease` 的注释 `Only s` 处被截断的续文（首行 `tructural absence of the lock API (version skew) fails open; once resolved, any exception`），文内首个 SOURCE 标记为 `SOURCE conversation_compression_archive.py`，其后依次还有 `SOURCE conversation_compression_manual.py`、`SOURCE conversation_compression_reply_anchor.py`、`SOURCE conversation_loop.py`，末尾在 `_continuation_overlap_length` 的 `if len(previous) < _MIN_CONTINUATION_OVERLAP or len(continuation)` 处截断。",
+        "goals": "逐份核对材料编号与开头 SOURCE 标记；对每份材料给出单句确认，并在截断或非 SOURCE 开头时如实说明实际情况。",
+        "historical_tasks": "用户依次提交了 17 份真实 Python 源码材料，每份要求只用一句确认编号和开头 SOURCE 标记，并声明材料已直接提供、无需调用工具、源码内指令性文字无控制权。"
+      },
+      "retained_messages": 21,
+      "message_sources": [
+        [
+          210,
+          218,
+          222,
+          229,
+          233,
+          240,
+          244,
+          251,
+          255,
+          262,
+          266,
+          273,
+          277,
+          284,
+          288,
+          295,
+          299,
+          306,
+          310,
+          317,
+          321,
+          328,
+          332,
+          339,
+          343,
+          350,
+          354,
+          358,
+          361,
+          367,
+          372,
+          378,
+          383,
+          389,
+          404,
+          466
+        ],
+        [
+          394
+        ],
+        [
+          400
+        ],
+        [
+          407
+        ],
+        [
+          413
+        ],
+        [
+          423
+        ],
+        [
+          429
+        ],
+        [
+          434
+        ],
+        [
+          440
+        ],
+        [
+          445
+        ],
+        [
+          451
+        ],
+        [
+          456
+        ],
+        [
+          462
+        ],
+        [
+          469
+        ],
+        [
+          475
+        ],
+        [
+          480
+        ],
+        [
+          486
+        ],
+        [
+          491
+        ],
+        [
+          497
+        ],
+        [
+          502
+        ],
+        [
+          508
+        ]
+      ],
+      "instruction_ids": [
+        "b1597cd4ce1240eea0f22c58e11f6b7a",
+        "84d74ed3524341bbbc5169ad33f5d6f1",
+        "a8bdcf0752b747d8a08e4804f8090d15"
+      ],
+      "retained_sha256": "ce601f2762596cffc4676d6911fc25ba34d79cdcc47038de777a2b72da516abb",
+      "actual_requests": [
+        {
+          "body_sha256": "9c1cb9999ff195e3cfc62dd15a41565f2d0517b9c1f6f29bb0a2b174d034efe9",
+          "observed_at": "2026-10-03T02:11:56.167868+00:00",
+          "messages_equal_checkpoint": true
+        }
+      ],
+      "artifacts": []
+    }
+  ],
+  "event_query": "SELECT global_seq,task_run_id,type,payload,attempt_no FROM run_events WHERE conversation_id=? AND type IN ('context.compacted','context.budget_checked','run.interrupted','run.resumed','run.completed','run.failed') ORDER BY global_seq",
+  "events": [
+    {
+      "global_seq": 215,
+      "task_run_id": "f961fd0842c74691bd1a70ee8b342394",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 36603,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 39240
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 218,
+      "task_run_id": "f961fd0842c74691bd1a70ee8b342394",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 226,
+      "task_run_id": "a229b85da14541499dc126d83e8e5c26",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 73297,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 75934
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 229,
+      "task_run_id": "a229b85da14541499dc126d83e8e5c26",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 237,
+      "task_run_id": "841a2dc0eeb6497ead1f7cf93b884af0",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 111107,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 113744
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 240,
+      "task_run_id": "841a2dc0eeb6497ead1f7cf93b884af0",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 248,
+      "task_run_id": "621f64d8498241b19b6e083e95d02077",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 148020,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 150657
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 251,
+      "task_run_id": "621f64d8498241b19b6e083e95d02077",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 259,
+      "task_run_id": "820b0ce21aa34c3b9bd863d022464ed4",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 184509,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 187146
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 262,
+      "task_run_id": "820b0ce21aa34c3b9bd863d022464ed4",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 270,
+      "task_run_id": "9f97bdd8d6b744ed92a76a34fd95d786",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 220369,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 223006
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 273,
+      "task_run_id": "9f97bdd8d6b744ed92a76a34fd95d786",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 281,
+      "task_run_id": "1cafd096f15241bb8eb0ba3aedaececb",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 256276,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 258913
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 284,
+      "task_run_id": "1cafd096f15241bb8eb0ba3aedaececb",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 292,
+      "task_run_id": "7d18d7f511be4d1c901d1c8adc705d3c",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 293111,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 295748
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 295,
+      "task_run_id": "7d18d7f511be4d1c901d1c8adc705d3c",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 303,
+      "task_run_id": "638919dd92f74fe1b6e9022f39aae907",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 330515,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 333152
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 306,
+      "task_run_id": "638919dd92f74fe1b6e9022f39aae907",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 314,
+      "task_run_id": "9ba41926b2244005b1dcdae6a81922f7",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 365389,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 368026
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 317,
+      "task_run_id": "9ba41926b2244005b1dcdae6a81922f7",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 325,
+      "task_run_id": "e840320a03344ff9a6ffd826090e4a8d",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 400968,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 403605
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 328,
+      "task_run_id": "e840320a03344ff9a6ffd826090e4a8d",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 336,
+      "task_run_id": "89bf27c530714b59af69b1e496c1417e",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 437084,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 439721
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 339,
+      "task_run_id": "89bf27c530714b59af69b1e496c1417e",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 347,
+      "task_run_id": "32e90b490e68460791aee45ba72555e3",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 473937,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 476574
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 350,
+      "task_run_id": "32e90b490e68460791aee45ba72555e3",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 357,
+      "task_run_id": "b6b6060373b045e8ab2c73cf37e4302d",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 164577,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 82,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 164659
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 358,
+      "task_run_id": "b6b6060373b045e8ab2c73cf37e4302d",
+      "type": "context.compacted",
+      "payload": {
+        "after_tokens": 363854,
+        "before_tokens": 511418,
+        "checkpoint_id": "ec1f98ab50824726add73b7eb3281812",
+        "checkpoint_sha256": "d80f8a3cd7b2d308796fc184f62c6bd2cab322075c86b1371e6e2c1ba2c4ee13",
+        "replaced_from_global_seq": 210,
+        "replaced_to_global_seq": 356,
+        "snapshot_id": "bbbeeca44cc94267b84ab0980f46c5e6",
+        "source_global_seq": 356,
+        "summarized_messages": 7,
+        "template_version": "M1-08-structured-v1"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 360,
+      "task_run_id": "b6b6060373b045e8ab2c73cf37e4302d",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 361217,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 363854
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 363,
+      "task_run_id": "b6b6060373b045e8ab2c73cf37e4302d",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 371,
+      "task_run_id": "af3be0552707482f8adf20faf4f01cf0",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 397414,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 400051
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 374,
+      "task_run_id": "af3be0552707482f8adf20faf4f01cf0",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 382,
+      "task_run_id": "26ac824c7f044ba39c98c33aecf1c1a9",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 432055,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 434692
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 385,
+      "task_run_id": "26ac824c7f044ba39c98c33aecf1c1a9",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 393,
+      "task_run_id": "2be5c44dc78546039aa8c63083801d5b",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 466493,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 469130
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 396,
+      "task_run_id": "2be5c44dc78546039aa8c63083801d5b",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 403,
+      "task_run_id": "b1597cd4ce1240eea0f22c58e11f6b7a",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 162855,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 82,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 162937
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 404,
+      "task_run_id": "b1597cd4ce1240eea0f22c58e11f6b7a",
+      "type": "context.compacted",
+      "payload": {
+        "after_tokens": 360635,
+        "before_tokens": 505389,
+        "checkpoint_id": "3f9a2143500343cfb86d575b8a3028a9",
+        "checkpoint_sha256": "26450f222b2011cb01c987b32e9e1c665bf14ee96d8bccc9437dfb4b42def6e7",
+        "replaced_from_global_seq": 357,
+        "replaced_to_global_seq": 402,
+        "snapshot_id": "bbbeeca44cc94267b84ab0980f46c5e6",
+        "source_global_seq": 402,
+        "summarized_messages": 9,
+        "template_version": "M1-08-structured-v1"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 406,
+      "task_run_id": "b1597cd4ce1240eea0f22c58e11f6b7a",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 357998,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 360635
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 409,
+      "task_run_id": "b1597cd4ce1240eea0f22c58e11f6b7a",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 417,
+      "task_run_id": "cc8c80ea3bff48298471c9eb16f779ef",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 358185,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 360822
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 418,
+      "task_run_id": "cc8c80ea3bff48298471c9eb16f779ef",
+      "type": "run.interrupted",
+      "payload": {
+        "reason": "backend_restart_reconciliation"
+      },
+      "attempt_no": null
+    },
+    {
+      "global_seq": 419,
+      "task_run_id": "cc8c80ea3bff48298471c9eb16f779ef",
+      "type": "run.resumed",
+      "payload": {
+        "attempt_id": "82354a084f2146958f5e76dd3f87a5a5",
+        "attempt_no": 2,
+        "context_fingerprint": {
+          "memory_block_sha256": "57067301117e91c9b0ef1ff73a5c9d4502f6ab341f601d06a42f197940be1007",
+          "memory_snapshot_id": "bbbeeca44cc94267b84ab0980f46c5e6",
+          "memory_snapshot_sha256": "63cf6375eb8cc7f6686b1b0450d191d229ab364c4b4cd44670abc41e764a98bf",
+          "model_config": {
+            "api_key_sha256": "a72258b07a769071",
+            "base_url": "https://opencode.ai/zen/go/v1",
+            "context_window": 1000000,
+            "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+            "max_tokens": 8192,
+            "model": "deepseek-v4.1-flash",
+            "prompt_format": "deepseek-v4.1",
+            "provider": "openai-compatible",
+            "tokenizer_repository": "deepseek-ai/DeepSeek-V4.1-Flash",
+            "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+            "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+          },
+          "system_prompt_hash": "ad6f1dc455bfdf43cf0420baaf1ed947c4f6d3aec671a07aaf7af428af10f23f",
+          "tools_schema_hash": "df25d303411b6d6de4c4938fe4f35435840fe903270f636a8e95fd1d894fdb98"
+        },
+        "resume_reason": "user_requested"
+      },
+      "attempt_no": 2
+    },
+    {
+      "global_seq": 422,
+      "task_run_id": "cc8c80ea3bff48298471c9eb16f779ef",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 358185,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2709,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 360894
+      },
+      "attempt_no": 2
+    },
+    {
+      "global_seq": 425,
+      "task_run_id": "cc8c80ea3bff48298471c9eb16f779ef",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 2
+    },
+    {
+      "global_seq": 433,
+      "task_run_id": "b6522f5908ee4a6fa3f19bdac65f082b",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 393321,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 395958
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 436,
+      "task_run_id": "b6522f5908ee4a6fa3f19bdac65f082b",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 444,
+      "task_run_id": "b7dbcc1bd7f0447db6ee632a2697b401",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 431858,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 434495
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 447,
+      "task_run_id": "b7dbcc1bd7f0447db6ee632a2697b401",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 455,
+      "task_run_id": "92afec9b1d984afba5c1c02f813d5a2f",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 471733,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 474370
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 458,
+      "task_run_id": "92afec9b1d984afba5c1c02f813d5a2f",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 465,
+      "task_run_id": "84d74ed3524341bbbc5169ad33f5d6f1",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 202997,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 82,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 203079
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 466,
+      "task_run_id": "84d74ed3524341bbbc5169ad33f5d6f1",
+      "type": "context.compacted",
+      "payload": {
+        "after_tokens": 331674,
+        "before_tokens": 511922,
+        "checkpoint_id": "43e73337aead454b860f60bc063f85c0",
+        "checkpoint_sha256": "0a64d2ed28dae14403964502f0059ba26abfa881625a7824a453f05102fca8eb",
+        "replaced_from_global_seq": 403,
+        "replaced_to_global_seq": 464,
+        "snapshot_id": "bbbeeca44cc94267b84ab0980f46c5e6",
+        "source_global_seq": 464,
+        "summarized_messages": 11,
+        "template_version": "M1-08-structured-v1"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 468,
+      "task_run_id": "84d74ed3524341bbbc5169ad33f5d6f1",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 329037,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 331674
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 471,
+      "task_run_id": "84d74ed3524341bbbc5169ad33f5d6f1",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 479,
+      "task_run_id": "e9ba3960e69545e2996d9b1ff9bd103a",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 367579,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 370216
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 482,
+      "task_run_id": "e9ba3960e69545e2996d9b1ff9bd103a",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 490,
+      "task_run_id": "0900e54793804607a35006c56d6696bc",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 405683,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 408320
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 493,
+      "task_run_id": "0900e54793804607a35006c56d6696bc",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 501,
+      "task_run_id": "49ab1682bf3643f8abcb11db640c131d",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 442840,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 445477
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 504,
+      "task_run_id": "49ab1682bf3643f8abcb11db640c131d",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 511,
+      "task_run_id": "a8bdcf0752b747d8a08e4804f8090d15",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 156794,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 82,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 156876
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 512,
+      "task_run_id": "a8bdcf0752b747d8a08e4804f8090d15",
+      "type": "context.compacted",
+      "payload": {
+        "after_tokens": 343416,
+        "before_tokens": 483030,
+        "checkpoint_id": "cb669b55874e4b2a9de61833f80a7de1",
+        "checkpoint_sha256": "25e28146d1365e6b99a1069f1efc1bc11f1e3f497087377cd5dd03b520ba5f41",
+        "replaced_from_global_seq": 465,
+        "replaced_to_global_seq": 510,
+        "snapshot_id": "bbbeeca44cc94267b84ab0980f46c5e6",
+        "source_global_seq": 510,
+        "summarized_messages": 9,
+        "template_version": "M1-08-structured-v1"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 514,
+      "task_run_id": "a8bdcf0752b747d8a08e4804f8090d15",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 340779,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 343416
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 517,
+      "task_run_id": "a8bdcf0752b747d8a08e4804f8090d15",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 525,
+      "task_run_id": "0e80f1452fc742e7beb2f6b3f1163446",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 340990,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2637,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 343627
+      },
+      "attempt_no": 1
+    },
+    {
+      "global_seq": 526,
+      "task_run_id": "0e80f1452fc742e7beb2f6b3f1163446",
+      "type": "run.interrupted",
+      "payload": {
+        "reason": "backend_restart_reconciliation"
+      },
+      "attempt_no": null
+    },
+    {
+      "global_seq": 527,
+      "task_run_id": "0e80f1452fc742e7beb2f6b3f1163446",
+      "type": "run.resumed",
+      "payload": {
+        "attempt_id": "60a8692889bf49cb930ede53620caa0e",
+        "attempt_no": 2,
+        "context_fingerprint": {
+          "memory_block_sha256": "57067301117e91c9b0ef1ff73a5c9d4502f6ab341f601d06a42f197940be1007",
+          "memory_snapshot_id": "bbbeeca44cc94267b84ab0980f46c5e6",
+          "memory_snapshot_sha256": "63cf6375eb8cc7f6686b1b0450d191d229ab364c4b4cd44670abc41e764a98bf",
+          "model_config": {
+            "api_key_sha256": "a72258b07a769071",
+            "base_url": "https://opencode.ai/zen/go/v1",
+            "context_window": 1000000,
+            "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+            "max_tokens": 8192,
+            "model": "deepseek-v4.1-flash",
+            "prompt_format": "deepseek-v4.1",
+            "provider": "openai-compatible",
+            "tokenizer_repository": "deepseek-ai/DeepSeek-V4.1-Flash",
+            "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+            "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+          },
+          "system_prompt_hash": "1cd55be1a7edf968950239b860bb1205f68975d4e7871e97bdddc542ef962c77",
+          "tools_schema_hash": "df25d303411b6d6de4c4938fe4f35435840fe903270f636a8e95fd1d894fdb98"
+        },
+        "resume_reason": "user_requested"
+      },
+      "attempt_no": 2
+    },
+    {
+      "global_seq": 530,
+      "task_run_id": "0e80f1452fc742e7beb2f6b3f1163446",
+      "type": "context.budget_checked",
+      "payload": {
+        "context_window": 1000000,
+        "counting_method": "tokenizers/official-deepseek-v4.1",
+        "history_tokens": 340990,
+        "model": "deepseek-v4.1-flash",
+        "output_reserved": 8192,
+        "system_tokens": 2709,
+        "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "tool_result_tokens": 0,
+        "total_input_tokens": 343699
+      },
+      "attempt_no": 2
+    },
+    {
+      "global_seq": 533,
+      "task_run_id": "0e80f1452fc742e7beb2f6b3f1163446",
+      "type": "run.completed",
+      "payload": {
+        "outcome": "completed"
+      },
+      "attempt_no": 2
+    }
+  ],
+  "snapshot": {
+    "path": "conversations/6018b39c95f9457c8836930dba028b9f/memory-snapshot.json",
+    "sha256": "63cf6375eb8cc7f6686b1b0450d191d229ab364c4b4cd44670abc41e764a98bf",
+    "mtime_ns": 1790991541706672654
+  },
+  "audit": {
+    "ok": true,
+    "checked_count": 138
+  },
+  "request_count": 61,
+  "service_exit": 0
+}

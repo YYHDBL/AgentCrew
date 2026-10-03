@@ -24,6 +24,7 @@ import uuid
 from dataclasses import replace
 
 from jsonschema import Draft202012Validator
+from ..events import Event
 
 from .judgment import bash_readonly
 from .metadata import Tool, ToolInvocation, ToolMetadata, ToolResult, WorkContext
@@ -228,13 +229,15 @@ class ToolScheduler:
         if not result.ok:
             payload["error"] = result.error
         # 副作用已发生，记录失败不可撤销——标记后交上层（C9 待核验）
-        if not await self._emit_strict(ctx, "tool.completed" if result.ok
-                                       else "tool.failed", payload):
+        recorded = await self._emit_strict(ctx, "tool.completed" if result.ok else "tool.failed", payload)
+        if not recorded:
             result.details["record_failed"] = True
+        elif isinstance(recorded, Event):
+            result.event_global_seq = recorded.global_seq
         return result
 
     async def _emit_strict(self, ctx: WorkContext, event_type: str,
-                           payload: dict) -> bool:
+                           payload: dict) -> bool | Event:
         """发出事件；失败返回 False（不吞——调用方决定阻断或标记）。"""
         if ctx.emit is None:
             return True
@@ -242,7 +245,7 @@ class ToolScheduler:
             event = await ctx.emit(event_type, payload)
             if event_type == "tool.dispatched" and event is not None:
                 ctx.source_global_seq = event.global_seq
-            return True
+            return event if event is not None else True
         except Exception:  # noqa: BLE001
             _log.exception("tool.emit_failed %s", event_type)
             return False
