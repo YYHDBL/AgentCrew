@@ -44,6 +44,7 @@ from agentcrew_core.recovery import (
     replay_messages,
     side_effect_ledger,
 )
+from agentcrew_core.tools.builtin.externalize import _check_path
 
 from .db.audit import append_audit
 from .sessions import SessionError
@@ -59,7 +60,7 @@ _log = logging.getLogger("agentcrew.recovery")
 
 # 对账口径：全部非终态（终态 = completed/failed/cancelled 不扫）
 NON_TERMINAL_STATUSES = ("queued", "running", "waiting_user",
-                         "waiting_verification")
+                         "waiting_verification", "interrupted")
 
 
 def _now() -> str:
@@ -199,6 +200,9 @@ class RecoveryService:
         raw_path = (p.get("input") or {}).get("path", "")
         if not expected or not raw_path:
             return None
+        context = self._sessions.build_work_context(conversation_id, task_id)
+        if _check_path(context, str(raw_path), read_only=True):
+            return None
         path = Path(str(raw_path)).expanduser()
         if not path.is_absolute():
             path = Path(self._task_cwd(conversation_id)) / path
@@ -259,6 +263,11 @@ class RecoveryService:
                 return ("verifiable：prepared 未记 content_sha256，"
                         "无法自动核验，待人工确认")
             path = Path(str(raw_path)).expanduser()
+            conversation = self._db.read_conn.execute("SELECT conversation_id FROM task_runs WHERE id=?", (task_id,)).fetchone()
+            context = self._sessions.build_work_context(conversation[0], task_id)
+            boundary = _check_path(context, str(raw_path), read_only=True)
+            if boundary:
+                return "verifiable：当前合法范围不允许读取核验目标，需保留待核验状态"
             if not path.is_absolute():
                 path = Path(self._task_cwd_for(task_id)) / path
             if not os.path.exists(path):

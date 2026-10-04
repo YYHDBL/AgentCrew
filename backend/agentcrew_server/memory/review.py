@@ -89,6 +89,9 @@ class MemoryReview:
                 "tool" if kind == "llm.request_done" and payload.get("tool_uses") else None
             if counted is None and kind != "run.completed":
                 return []
+            if kind == "run.completed" and conn.execute(
+                    "SELECT 1 FROM task_runs WHERE id=? AND status='completed'", (task_id,)).fetchone() is None:
+                return []
             publications, created = [], []
             with conn:
                 conn.execute("BEGIN IMMEDIATE")
@@ -168,7 +171,10 @@ class MemoryReview:
         async with self._tool_locks.setdefault(job_id, asyncio.Lock()):
             if hasattr(self.jobs, "identities"):
                 self.jobs.check_identity(job_id)
-            return await scheduler.run(invocation, context)
+            result = await scheduler.run(invocation, context)
+            if result.details.get("record_failed") or result.error == "EVENT_PERSIST_FAILED":
+                raise RuntimeError("EVENT_PERSIST_FAILED：后台工具事件未持久化，作业立即停止")
+            return result
 
     async def request_approval(self, job_id, invocation):
         if invocation.name not in {"memory_write", "skill_patch"} or invocation.input.get("action") == "read":

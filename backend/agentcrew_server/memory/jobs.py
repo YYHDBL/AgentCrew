@@ -85,13 +85,22 @@ class MemoryJobs:
                 continue
             if event.type == RunEventType.RUN_COMPLETED:
                 await self.enqueue(event.global_seq)
+            elif event.type == RunEventType.TOOL_VERIFICATION_SUBMITTED:
+                source = self.db.read_conn.execute(
+                    "SELECT e.global_seq FROM run_events e JOIN task_runs t ON t.id=e.task_run_id "
+                    "WHERE e.task_run_id=? AND e.type='run.completed' AND t.status='completed' "
+                    "ORDER BY e.global_seq DESC LIMIT 1", (event.task_run_id,)).fetchone()
+                if source is not None:
+                    await self.enqueue(source[0])
+                    await self.review.consume(source[0])
             await self.review.consume(event.global_seq)
             if event.type in {RunEventType.RUN_QUEUED, RunEventType.RUN_RESUMED, RunEventType.QUEUE_ITEM_ENQUEUED}:
                 async with self._gate:
                     await self._cancel("cancelled", "前台任务已经接收，辅助作业已取消")
             if event.type in {RunEventType.RUN_COMPLETED, RunEventType.RUN_FAILED,
                               RunEventType.RUN_CANCELLED, RunEventType.RUN_INTERRUPTED,
-                              RunEventType.QUEUE_PAUSED, RunEventType.QUEUE_ITEM_CANCELLED}:
+                              RunEventType.QUEUE_PAUSED, RunEventType.QUEUE_ITEM_CANCELLED,
+                              RunEventType.TOOL_VERIFICATION_SUBMITTED}:
                 self._ready.set()
 
     async def enqueue(self, global_seq):
@@ -109,7 +118,7 @@ class MemoryJobs:
                     "WHERE e.global_seq=? AND e.type='run.completed' AND t.status='completed'",
                     (global_seq,)).fetchone()
                 if source is None:
-                    raise ValueError("摘要触发必须引用真实的已完成任务事件")
+                    return None
                 existing = conn.execute("SELECT id FROM memory_jobs WHERE kind='summary' AND trigger_key=?", (source[0],)).fetchone()
                 if existing:
                     return existing[0]
@@ -124,7 +133,7 @@ class MemoryJobs:
                 self._publish(conn, events, audit_seq)
                 return job_id
             job_id = await self.events.channel.execute(tx)
-            if (await asyncio.to_thread(self.get, job_id))["status"] == "queued":
+            if job_id is not None and (await asyncio.to_thread(self.get, job_id))["status"] == "queued":
                 self._slots.setdefault(job_id, entry)
                 self._ready.set()
             return job_id

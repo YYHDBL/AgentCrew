@@ -1,0 +1,25 @@
+{
+  "task_run_id": "367d9bf026254b6d891971f5440eaeec",
+  "conversation_id": "fdc380c1b8ae4848b56c4c8605a59656",
+  "call_id": "call_00_x0m35n615xwrumbiga9nzc5b",
+  "child_pid": 51715,
+  "child_exited": true,
+  "terminal": [
+    {
+      "status": "waiting_verification"
+    }
+  ],
+  "preserved_effect": {
+    "sha256": "d72425f47932bbd422c92416e32f5b62bc67dd2db5069eaab52f0c83c5a3493e",
+    "mtime_ns": 1791126481277864466
+  },
+  "delayed_file_exists": false,
+  "ledger": [
+    {
+      "call_id": "call_00_x0m35n615xwrumbiga9nzc5b",
+      "tool_name": "bash",
+      "status": "pending_verification",
+      "dispatched_at": "2026-10-04T15:07:57.740406+00:00"
+    }
+  ]
+}

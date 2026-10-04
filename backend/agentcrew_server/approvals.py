@@ -377,6 +377,11 @@ class ApprovalService:
         try:
             assert self.scheduler is not None, "cli 未装配 scheduler"
             result = await self.scheduler.run(invocation, ctx)
+            if result.details.get("record_failed") or result.error == "EVENT_PERSIST_FAILED":
+                tool = (ctx.registry if ctx.registry is not None else self.scheduler.registry).get(invocation.name)
+                if result.details.get("record_failed") and tool is not None and not tool.metadata.read_only:
+                    await ctx.emit("tool.pending_verification", {"call_id": invocation.call_id})
+                raise RuntimeError("EVENT_PERSIST_FAILED：工具事件未持久化，执行立即停止并核对真实效果")
             # governance §3：risk≥medium 的工具完成/失败入审计链
             tool = (ctx.registry if ctx.registry is not None else self.scheduler.registry).get(invocation.name)
             if tool is not None and tool.metadata.risk_level in ("medium", "high"):

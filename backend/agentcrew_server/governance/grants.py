@@ -124,7 +124,7 @@ class Grants:
     def check_tool(self, task_id, name, inputs, conn=None):
         view = self.view(task_id, conn)
         connection = conn if conn is not None else self.db.read_conn
-        if connection.execute("SELECT 1 FROM tool_calls WHERE task_run_id=? AND status='pending_verification'", (task_id,)).fetchone():
+        if connection.execute("SELECT 1 FROM tool_calls c JOIN task_runs t ON t.id=c.task_run_id WHERE t.conversation_id=? AND c.status='pending_verification'", (view["conversation_id"],)).fetchone():
             raise GovernanceError("PENDING_VERIFICATION", "必须先核验已有调用的真实效果")
         if name == "http_request":
             from agentcrew_core.connectors import connector_headers
@@ -171,6 +171,8 @@ class Grants:
             payload["authorization_sha256"] = view["sha256"]
         elif kind in {T.LLM_REQUEST_STARTED, T.RUN_RESUMED}:
             view = self.view(task_id, conn)
+            if conn.execute("SELECT 1 FROM tool_calls c JOIN task_runs t ON t.id=c.task_run_id WHERE t.conversation_id=? AND c.status='pending_verification'", (view["conversation_id"],)).fetchone():
+                raise GovernanceError("PENDING_VERIFICATION", "必须先核验该会话已有调用的真实效果")
             payload["authorization_sha256"] = view["sha256"]
             if kind == T.LLM_REQUEST_STARTED:
                 from agentcrew_core.tools import build_default_registry

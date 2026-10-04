@@ -225,6 +225,8 @@ class Identities:
     def bind_task(self, conn, event):
         if event.type != RunEventType.RUN_QUEUED:
             return
+        if conn.execute("SELECT 1 FROM tool_calls c JOIN task_runs t ON t.id=c.task_run_id WHERE t.conversation_id=? AND c.status='pending_verification'", (event.conversation_id,)).fetchone():
+            raise GovernanceError("PENDING_VERIFICATION", "该会话仍有副作用需要核验，禁止新增派发任务")
         row = conn.execute("SELECT workspace_id,agent_id,credential_owner_id,effective_user_id FROM governance_conversations WHERE conversation_id=?", (event.conversation_id,)).fetchone()
         if row is None:
             raise GovernanceError("OUT_OF_SCOPE", "任务缺少已认证会话身份", 403)

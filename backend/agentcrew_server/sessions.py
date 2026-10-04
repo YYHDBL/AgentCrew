@@ -499,6 +499,8 @@ class SessionService:
                     self._instruction_replay, conversation_id, client_request_id)
                 if replayed is not None:
                     return replayed
+            if await asyncio.to_thread(self._pending_verifications, conversation_id):
+                raise SessionError(ErrorCode.PENDING_VERIFICATION, "该会话仍有副作用需要核验，完成后才能提交新指令")
             fsm, _ = await asyncio.to_thread(self._fsm_sync, conversation_id)
 
             if can_send(fsm):
@@ -630,6 +632,8 @@ class SessionService:
         before_publish(task_id) 在事件发布前、写线程内调用——调用方借此刻
         挂任务级先决信息（RunManager 的护栏提示），杜绝"runner 先取走"竞态。"""
         async with await self._conv_lock(conversation_id):
+            if await asyncio.to_thread(self._pending_verifications, conversation_id):
+                return None
             fsm, _ = await asyncio.to_thread(self._fsm_sync, conversation_id)
             if fsm.state != "idle" or fsm.queue_paused or not fsm.queued_items:
                 return None
@@ -648,6 +652,9 @@ class SessionService:
             def tx(conn: sqlite3.Connection) -> None:
                 conn.execute("BEGIN IMMEDIATE")
                 try:
+                    if conn.execute("SELECT 1 FROM tool_calls c JOIN task_runs t ON t.id=c.task_run_id WHERE t.conversation_id=? AND c.status='pending_verification'", (conversation_id,)).fetchone():
+                        conn.execute("COMMIT")
+                        return False
                     if before_publish is not None:
                         before_publish(task_id)
                     events.append(self._store.append_in_tx(
@@ -665,9 +672,10 @@ class SessionService:
                     raise
                 for event in events:  # COMMIT 后、闭包返回前发布（顺序=提交序）
                     self._store.publish(event)
+                return True
 
-            await self._channel.execute(tx)
-            return task_id
+            dispatched = await self._channel.execute(tx)
+            return task_id if dispatched else None
 
     async def continue_queue(self, conversation_id: str) -> None:
         async with await self._conv_lock(conversation_id), self.foreground():
@@ -759,9 +767,10 @@ class SessionService:
             "       json_extract(re.payload, '$.tool'), re.created_at"
             " FROM run_events re"
             " WHERE re.conversation_id = ? AND re.type = 'permission.requested'"
-            "   AND re.task_run_id IN (SELECT id FROM task_runs"
-            "       WHERE conversation_id = ?"
-            "       AND status NOT IN ('completed', 'failed', 'cancelled'))"
+            "   AND EXISTS (SELECT 1 FROM task_runs t"
+            "       WHERE t.id=re.task_run_id AND t.conversation_id = ?"
+            "       AND t.status IN ('running', 'waiting_user')"
+            "       AND re.attempt_no=t.current_attempt_no)"
             "   AND NOT EXISTS ("
             "     SELECT 1 FROM run_events r2 WHERE r2.type = 'permission.resolved'"
             "     AND json_extract(r2.payload, '$.tool_call_id')"
@@ -810,8 +819,8 @@ class SessionService:
             "queue_paused": fsm.queue_paused,
             "at_global_seq": head,
             "queue": [item.as_dict() for item in fsm.queued_items],
-            "can_send": can_send(fsm),
-            "can_queue": can_queue(fsm),
+            "can_send": can_send(fsm) and not verifications,
+            "can_queue": can_queue(fsm) and not verifications,
             "can_cancel": can_cancel(fsm),
             "can_continue_queue": can_continue_queue(
                 fsm, pending_verifications=len(verifications),

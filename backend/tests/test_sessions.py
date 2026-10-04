@@ -810,11 +810,7 @@ def test_folders_per_item_results_persisted_and_returned(asm, tmp_path):
 
 
 def test_can_continue_queue_snapshot_matches_endpoint(asm):
-    """外审回稿：快照 can_continue_queue 与 POST queue/continue 同一判定源
-    ——待核验/未决审批两阻断事实纳入能力字段（修复前宣称 True 而接口必 409）。
-
-    未决审批场景走真实事件路径：任务 A running 中弹卡 → run.interrupted
-    （任务停在非终态，审批仍可决定）→ queue.paused → idle+暂停+有队列。"""
+    """已中断尝试的历史审批失效；待核验调用阻止暂停队列继续。"""
     with asm.client() as c:
         conv_id = _create(asm, c)
         _enqueue(c, conv_id, "后续")
@@ -829,7 +825,7 @@ def test_can_continue_queue_snapshot_matches_endpoint(asm):
                 payload={"attempt_no": 1, "attempt_id": "att-1", "kind": "initial"})
             await asm.store.append(
                 task_run_id=task_id, conversation_id=conv_id,
-                type=T.PERMISSION_REQUESTED, payload={"tool_call_id": "call-y"})
+                type=T.PERMISSION_REQUESTED, attempt_no=1, payload={"tool_call_id": "call-y"})
             await asm.store.append(
                 task_run_id=task_id, conversation_id=conv_id,
                 type=T.RUN_INTERRUPTED, payload={})
@@ -842,14 +838,9 @@ def test_can_continue_queue_snapshot_matches_endpoint(asm):
         assert state["state"] == "idle" and state["queue_paused"] is True
         assert state["queue"], "前置：暂停 + 有排队项"
 
-        # 阻断事实②：未决审批 → 能力字段 False + 接口 409 APPROVAL_PENDING
-        assert state["can_continue_queue"] is False
-        resp = c.post(f"/api/conversations/{conv_id}/queue/continue",
-                      headers=AUTH)
-        assert resp.status_code == 409
-        assert resp.json()["error"]["code"] == "APPROVAL_PENDING"
+        assert state["can_continue_queue"] is True
 
-        # 叠加阻断事实①：待核验调用 → 仍 False + 409 PENDING_VERIFICATION
+        # 待核验调用阻止新的执行。
         asm.db.write_conn.execute(
             "INSERT INTO tool_calls (id, call_id, task_run_id, tool_name,"
             " side_effect_class, input_hash, status, risk_level, prepared_at)"
@@ -866,7 +857,7 @@ def test_can_continue_queue_snapshot_matches_endpoint(asm):
         asm.db.write_conn.execute("DELETE FROM tool_calls WHERE call_id='call-x'")
         asm.db.write_conn.commit()
 
-        # 两个阻断事实都解除 → 能力字段恢复 True 且接口成功
+        # 核验结束后，历史审批不会阻止队列继续。
         asyncio.run(asm.store.append(
             task_run_id=task_id, conversation_id=conv_id,
             type=T.PERMISSION_RESOLVED,

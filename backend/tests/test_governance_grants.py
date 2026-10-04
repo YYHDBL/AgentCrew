@@ -210,7 +210,7 @@ def test_dispatched_bash_cancellation_preserves_effect_and_stops_children(live):
     before = {"sha256": hashlib.sha256(marker.read_bytes()).hexdigest(), "mtime_ns": marker.stat().st_mtime_ns}
     grant = next(item for item in http(live, "GET", "/api/grants?workspace_id=office").json()["data"]["items"] if item["resource_type"] == "skill" and item["grantee_id"] == "xiaowen")
     assert http(live, "DELETE", "/api/grants/" + grant["id"], {"change_id": "revoke-dispatched-skill", "expected_revision": grant["revision"]}).status_code == 200
-    terminal = until(live, "SELECT status FROM task_runs WHERE id=? AND status IN ('failed','cancelled')", (tid,))
+    terminal = until(live, "SELECT status FROM task_runs WHERE id=? AND status='waiting_verification'", (tid,))
     assert sql(live, "SELECT call_id FROM tool_calls WHERE task_run_id=? AND status='pending_verification'", (tid,))
     assert not delayed.exists()
     assert before == {"sha256": hashlib.sha256(marker.read_bytes()).hexdigest(), "mtime_ns": marker.stat().st_mtime_ns}

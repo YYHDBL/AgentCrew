@@ -62,6 +62,7 @@ from ..memory.tokenizer import TOKENIZER_FIELDS
 from ..memory.snapshots import MemorySnapshotError
 from ..memory.checkpoints import CheckpointCorrupt
 from ..tool_outputs import ArtifactIntegrityError
+from ..governance.resources import GovernanceError
 
 if TYPE_CHECKING:
     from .approvals import ApprovalService
@@ -546,6 +547,9 @@ class RunManager:
                 cause = causes.pop()
                 if isinstance(cause, BaseExceptionGroup):
                     causes.extend(cause.exceptions)
+                elif isinstance(cause, GovernanceError):
+                    fail_reason = f"{cause.code}：{cause.message}"
+                    break
                 elif isinstance(cause, ContextBudgetError):
                     fail_reason = str(cause)
                     break
@@ -607,16 +611,11 @@ class RunManager:
 
     async def _settle_dispatched(self, task_run_id: str,
                                  conversation_id: str) -> None:
+        if self._recovery is not None:
+            await self._recovery._settle_dispatched(task_run_id, conversation_id)
+            return
         rows = await asyncio.to_thread(self._dispatched_calls, task_run_id)
         for call_id in rows:
-            if hasattr(self, "grants"):
-                row = self._db.read_conn.execute("SELECT tool_name,side_effect_class FROM tool_calls WHERE call_id=?", (call_id,)).fetchone()
-                if row[0] == "write_file" and row[1] == "verifiable":
-                    verified = await asyncio.to_thread(self._recovery._verify_write_file, task_run_id, conversation_id, call_id)
-                    if verified:
-                        await self._emit(task_run_id, conversation_id, "tool.completed",
-                            {"call_id": call_id, "output": "已核验真实文件内容SHA", "output_summary": "授权变化后真实文件效果已核验"})
-                        continue
             await self._emit(task_run_id, conversation_id,
                              "tool.pending_verification",
                              {"call_id": call_id})

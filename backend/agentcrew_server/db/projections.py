@@ -143,9 +143,11 @@ def _run_resumed(conn: sqlite3.Connection, ev: Event) -> None:
 
 def _run_finished(conn: sqlite3.Connection, ev: Event, status: str, outcome: str,
                   final_text: str | None = None) -> None:
+    pending = conn.execute("SELECT 1 FROM tool_calls WHERE task_run_id=? AND status='pending_verification' LIMIT 1", (ev.task_run_id,)).fetchone()
+    task_status = "waiting_verification" if pending and status in {"completed", "failed"} else status
     conn.execute(
         "UPDATE task_runs SET status=?, finished_at=?, updated_at=? WHERE id=?",
-        (status, ev.ts, ev.ts, ev.task_run_id),
+        (task_status, None if task_status == "waiting_verification" else ev.ts, ev.ts, ev.task_run_id),
     )
     conn.execute(
         "UPDATE run_attempts SET status=?, outcome=?, ended_at=? WHERE task_run_id=?"
@@ -310,6 +312,12 @@ def _tool_verification(conn: sqlite3.Connection, ev: Event) -> None:
     status = "completed" if verdict == "confirmed_executed" else "not_executed"
     _tool_status(conn, ev, status, finish=True,
                  output_summary=f"verified_by_user:{verdict}:{ev.payload.get('note', '')}")
+    remaining = conn.execute("SELECT 1 FROM tool_calls WHERE task_run_id=? AND status='pending_verification' LIMIT 1", (ev.task_run_id,)).fetchone()
+    if remaining is None:
+        terminal = conn.execute("SELECT type FROM run_events WHERE task_run_id=? AND type IN ('run.completed','run.failed','run.cancelled') ORDER BY global_seq DESC LIMIT 1", (ev.task_run_id,)).fetchone()
+        settled = "completed" if terminal and terminal[0] == "run.completed" else "interrupted"
+        conn.execute("UPDATE task_runs SET status=?,finished_at=?,updated_at=? WHERE id=? AND status='waiting_verification'",
+            (settled, ev.ts if settled == "completed" else None, ev.ts, ev.task_run_id))
 
 
 # ── 产物 → artifacts ────────────────────────────────────────────────
