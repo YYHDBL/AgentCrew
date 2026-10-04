@@ -115,7 +115,7 @@ class ToolScheduler:
         return self._registry
 
     async def run(self, invocation: ToolInvocation, ctx: WorkContext) -> ToolResult:
-        tool = self._registry.get(invocation.name)
+        tool = (ctx.registry if ctx.registry is not None else self._registry).get(invocation.name)
         if tool is None:
             return ToolResult(ok=False, error="UNKNOWN_TOOL",
                               details={"known": self._registry.names()})

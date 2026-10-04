@@ -9,13 +9,28 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "backend"))
 
 from agentcrew_server.config import load_config
+from agentcrew_server.secrets import redact, register_secret
 
 
 def publish(source, destination):
     requests = json.loads((source / "http-evidence.json").read_text())
+    secrets = load_config(source).api_keys()
+    connection = sqlite3.connect(f"file:{source / 'agentcrew.db'}?mode=ro", uri=True)
+    for row in connection.execute("SELECT result FROM governance_changes"):
+        value = json.loads(row[0])
+        if "identity_token" in value:
+            secrets.append(value["identity_token"])
+    secrets.extend(row[0] for row in connection.execute("SELECT credential FROM connectors WHERE credential IS NOT NULL"))
+    connection.close()
+    for item in requests:
+        request = item.get("request")
+        if isinstance(request, dict) and request.get("credential"):
+            secrets.append(request["credential"])
+    for secret in secrets:
+        register_secret(secret)
     destination.mkdir(parents=True, exist_ok=True)
     public_requests = destination / "http-identity.json"
-    public_requests.write_text(json.dumps(requests, ensure_ascii=False, indent=2) + "\n")
+    public_requests.write_text(redact(json.dumps(requests, ensure_ascii=False, indent=2)) + "\n")
     connection = sqlite3.connect(f"file:{source / 'agentcrew.db'}?mode=ro", uri=True)
     connection.row_factory = sqlite3.Row
     queries = ["SELECT id,user_id,role,status,revision FROM memberships ORDER BY id",
@@ -32,13 +47,6 @@ def publish(source, destination):
         "audit_sequence": connection.execute("SELECT coalesce(max(seq),0) FROM audit_log").fetchone()[0]}
     connection.close()
     (destination / "identity-sql-audit.json").write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n")
-    secrets = load_config(source).api_keys()
-    connection = sqlite3.connect(f"file:{source / 'agentcrew.db'}?mode=ro", uri=True)
-    for row in connection.execute("SELECT result FROM governance_changes"):
-        value = json.loads(row[0])
-        if "identity_token" in value:
-            secrets.append(value["identity_token"])
-    connection.close()
     for path in destination.iterdir():
         if path.is_file():
             text = path.read_text()

@@ -191,7 +191,7 @@ def install_error_handlers(app) -> None:
         return error_response(
             ErrorCode.VALIDATION_ERROR,
             "请求体校验失败",
-            detail={"errors": jsonable_encoder(exc.errors())[:50]},
+            detail={"errors": jsonable_encoder([{key: value for key, value in error.items() if key != "input"} for error in exc.errors()[:50]])},
         )
 
     @app.exception_handler(Exception)

@@ -71,6 +71,7 @@ class WorkContext:
     allowed_hosts: list[str] = field(default_factory=list)
     enforce_http_hosts: bool = False
     connector_id: str | None = None
+    registry: Any = None
     task_run_id: str = ""
     job_id: str | None = None
     emit: EventSink | None = None        # 事件出口（tool.*/artifact.*/question.*）

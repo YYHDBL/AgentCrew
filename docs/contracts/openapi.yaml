@@ -1156,14 +1156,14 @@ paths:
     get:
       operationId: listConnectors
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-06
       x-domain-card: M2-06
       parameters: *workspace_page_parameters
       responses: *resource_page_responses
     post:
       operationId: createConnector
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-06
       x-domain-card: M2-06
       requestBody:
         required: true
@@ -1176,20 +1176,20 @@ paths:
     get:
       operationId: readConnector
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-06
       x-domain-card: M2-06
       responses: *resource_create_responses
     patch:
       operationId: editConnector
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-06
       x-domain-card: M2-06
       requestBody: *resource_patch_body
       responses: *resource_create_responses
     delete:
       operationId: disableConnector
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-06
       x-domain-card: M2-06
       requestBody: *governance_change_body
       responses: *resource_create_responses

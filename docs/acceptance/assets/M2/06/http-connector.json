@@ -1,0 +1,301 @@
+{
+  "mcp_sdk": "1.26.0",
+  "task_run_id": "af8f60be64fa401f82b97ea7398b9296",
+  "connector_id": "1583c547ef8c582990d486c3fa7e042a",
+  "call_id": "external-same-call",
+  "result": {
+    "output": "{\"count\": 1, \"authentication\": \"***\"}",
+    "details": {
+      "status_code": 200,
+      "connector_id": "1583c547ef8c582990d486c3fa7e042a",
+      "content_type": "***",
+      "target": "http://127.0.0.1:61850/deduplicated"
+    }
+  },
+  "upstream_sql": "SELECT id,identity_key,body,auth_sha256 FROM operations",
+  "upstream_rows": [
+    {
+      "id": 1,
+      "identity_key": "af8f60be64fa401f82b97ea7398b9296:external-same-call",
+      "body": "真实一次保存",
+      "auth_sha256": "06e0838c2e3ed019ae10843f10799ad1d44598be7fdb88b4e6f6704b4ced12f2"
+    }
+  ],
+  "credential_raw_matches": 0,
+  "redirect_rejected": true,
+  "grant_revoke_rejected": true,
+  "queries": [
+    {
+      "sql": "SELECT id,workspace_id,type,status,revision FROM connectors ORDER BY id",
+      "rows": [
+        {
+          "id": "1583c547ef8c582990d486c3fa7e042a",
+          "workspace_id": "office",
+          "type": "http",
+          "status": "active",
+          "revision": 1
+        },
+        {
+          "id": "office-http",
+          "workspace_id": "office",
+          "type": "http",
+          "status": "active",
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT connector_id,tool_name,stable_name,connector_revision FROM connector_tools ORDER BY stable_name",
+      "rows": []
+    },
+    {
+      "sql": "SELECT id,resource_type,resource_id,grantee_id,revoked_at FROM grants ORDER BY id",
+      "rows": [
+        {
+          "id": "2155213f09e759f4a355350a73fd16ad",
+          "resource_type": "skill",
+          "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "grantee_id": "xiaowen",
+          "revoked_at": null
+        },
+        {
+          "id": "288ae1948c955c118ce9757f2789ce10",
+          "resource_type": "connector",
+          "resource_id": "1583c547ef8c582990d486c3fa7e042a",
+          "grantee_id": "xiaowen",
+          "revoked_at": "2026-10-04T02:08:16.417328+00:00"
+        },
+        {
+          "id": "2a574a78c1915000a23996806e66b2cd",
+          "resource_type": "connector",
+          "resource_id": "office-http",
+          "grantee_id": "xiaowen",
+          "revoked_at": null
+        },
+        {
+          "id": "57718b191d9a5f438c891943b1e36b68",
+          "resource_type": "skill",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "grantee_id": "xiaowen",
+          "revoked_at": null
+        },
+        {
+          "id": "97a2879415f6516baf16d3064d5e298c",
+          "resource_type": "skill",
+          "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "grantee_id": "xiaogang",
+          "revoked_at": null
+        },
+        {
+          "id": "a6a4643dc78058ecbb370d403723dd93",
+          "resource_type": "agent",
+          "resource_id": "xiaowen",
+          "grantee_id": "lilei",
+          "revoked_at": null
+        },
+        {
+          "id": "fe6d085015035c559a5974c5259a674d",
+          "resource_type": "agent",
+          "resource_id": "xiaogang",
+          "grantee_id": "lilei",
+          "revoked_at": null
+        }
+      ]
+    },
+    {
+      "sql": "SELECT task_run_id,effective_user_id,credential_owner_id,skill_versions FROM task_governance ORDER BY task_run_id",
+      "rows": [
+        {
+          "task_run_id": "af8f60be64fa401f82b97ea7398b9296",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner",
+          "skill_versions": "{\"7fb6db7a69e75931b85594e05ed43d2b\":\"314222aa9401532b96ae08867bc734a5\",\"c7b7146c6ea65788b6d4161a4982f34b\":\"ce7f36c35b735d43a30a8a4b0b4c0f3b\"}"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT global_seq,type,task_run_id FROM run_events ORDER BY global_seq",
+      "rows": [
+        {
+          "global_seq": 1,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 2,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 3,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 4,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 5,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 6,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 7,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 8,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 9,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 10,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 11,
+          "type": "governance.grant_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 12,
+          "type": "run.queued",
+          "task_run_id": "af8f60be64fa401f82b97ea7398b9296"
+        },
+        {
+          "global_seq": 13,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 14,
+          "type": "governance.grant_changed",
+          "task_run_id": null
+        }
+      ]
+    },
+    {
+      "sql": "SELECT seq,actor_id,action,resource_type,resource_id,hash FROM audit_log ORDER BY seq",
+      "rows": [
+        {
+          "seq": 1,
+          "actor_id": "owner",
+          "action": "governance.seed",
+          "resource_type": "organization",
+          "resource_id": "demo-org",
+          "hash": "d15830cde2ddbf050851d5241d9fbe229bb2221a96396cc2539bd20fb021c4aa"
+        },
+        {
+          "seq": 2,
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:c7b7146c6ea65788b6d4161a4982f34b",
+          "hash": "6edd84ec72f0032ee3aef467e3f485adbcc2f1890c9a227bf6b9dd555d5f2733"
+        },
+        {
+          "seq": 3,
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "hash": "7750751bfc076dde02f0a4e942fbebf615bb0df2315d1683f36cb6ca16d75588"
+        },
+        {
+          "seq": 4,
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:7fb6db7a69e75931b85594e05ed43d2b",
+          "hash": "7c112a6913436919cdf9f71a0645679ac31ab602327163e9275aa444cf701a2f"
+        },
+        {
+          "seq": 5,
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "hash": "924f0e243639d15d133af8b7afda0746f80e7259ae6582aae74efd1984534530"
+        },
+        {
+          "seq": 6,
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:d902cc4eb75d5b9790c0278523e87aa0",
+          "hash": "90b217239be4ae63753daeeeb4b4945e3aedfd667019c35dc4da6682e412c2a7"
+        },
+        {
+          "seq": 7,
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "hash": "5902af3af10f43e78fac28139ef1606e160ec54df8142488a87fda00ed1b3614"
+        },
+        {
+          "seq": 8,
+          "actor_id": "owner",
+          "action": "governance.seed_completed",
+          "resource_type": "organization",
+          "resource_id": "demo-org",
+          "hash": "145596a9d3dd88a4cd92f5417a830df8c48f55466fcad5e146f78afc89a05e73"
+        },
+        {
+          "seq": 9,
+          "actor_id": "owner",
+          "action": "governance.skill_history_registered",
+          "resource_type": "identity",
+          "resource_id": "skill-history",
+          "hash": "0b6b3f7e7cd4d9efd538d65fa5a3e6d036ca0aeffb5a8e1d23d5bae28650b3cb"
+        },
+        {
+          "seq": 10,
+          "actor_id": "owner",
+          "action": "governance.connector_created",
+          "resource_type": "connector",
+          "resource_id": "1583c547ef8c582990d486c3fa7e042a",
+          "hash": "3bead40b0d792b6e1d7ff211fe491ae0791560f74cb1c42eaeddead87ee22689"
+        },
+        {
+          "seq": 11,
+          "actor_id": "owner",
+          "action": "governance.grant_created",
+          "resource_type": "grant",
+          "resource_id": "288ae1948c955c118ce9757f2789ce10",
+          "hash": "7333d942d6d1a50b184168e8690b034b782b8d57f4a8f11667b93a73af02a951"
+        },
+        {
+          "seq": 12,
+          "actor_id": "owner",
+          "action": "governance.connector_validated",
+          "resource_type": "connector",
+          "resource_id": "1583c547ef8c582990d486c3fa7e042a",
+          "hash": "a36c9a13802689c683783cbd0de776ed5b5edb92e6f5340eb0324256a5c60999"
+        },
+        {
+          "seq": 13,
+          "actor_id": "owner",
+          "action": "governance.grant_revoked",
+          "resource_type": "grant",
+          "resource_id": "288ae1948c955c118ce9757f2789ce10",
+          "hash": "3a1e4128c8c92894bd87e44e1ea92e00b0b18847ad9994313e5d10baed97cfd8"
+        }
+      ]
+    }
+  ]
+}

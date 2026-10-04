@@ -1,0 +1,1902 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/memory/stores/soul/xiaogang?workspace_id=analytics&agent_id=xiaogang",
+    "request": {
+      "change_id": "configure-soul-xiaogang",
+      "expected_revision": 0,
+      "basis": "所有者为治理验收明确配置岗位自我认知",
+      "text": "我是负责核查数据来源与查询结果的数据分析员工。执行时遵守当前工具授权，核对真实输出并记录依据。"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "configure-soul-xiaogang",
+        "ledger_id": 4,
+        "store_type": "soul",
+        "store_id": "xiaogang",
+        "entry_id": "de0bc5780c2c4f97af7a2ad951203a59",
+        "entry_hash": "b645151e1432698d185dc8c12f77e3e724df2a6101a27ad129deff626b669ab4",
+        "revision": 1,
+        "global_seq": 17,
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen",
+    "request": {
+      "change_id": "configure-soul-xiaowen",
+      "expected_revision": 0,
+      "basis": "所有者为治理验收明确配置岗位自我认知",
+      "text": "我是负责整理材料与核查输出的办公助理。执行时读取当前授权，按实际文件和工具结果说明工作情况。"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "configure-soul-xiaowen",
+        "ledger_id": 5,
+        "store_type": "soul",
+        "store_id": "xiaowen",
+        "entry_id": "c375f32775704424aa5fe43773986916",
+        "entry_hash": "ed7fed30fe7814db583e9adff84c1d3b5961c9817cd9faa022fd60458eb4b137",
+        "revision": 1,
+        "global_seq": 19,
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "request": {
+      "workspace_id": "analytics",
+      "agent_id": "xiaogang",
+      "instruction": "请说明你当前是否具有HTTP工具，直接回复实际情况，无需调用其他工具。",
+      "client_request_id": "585a3d03e0884977a11c73f3154e163e"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "36c589c531e04a588201b26a6b450f8d",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaogang",
+          "last_activity_at": "2026-10-04T02:08:25.621008+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-connectors-release/grant-http0/workspaces/analytics/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-connectors-release/grant-http0/conversations/36c589c531e04a588201b26a6b450f8d/materials",
+          "folders": []
+        },
+        "task_run_id": "d8954dcabf1a476abce5990906aba6fe"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/grants?workspace_id=office",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "2155213f09e759f4a355350a73fd16ad",
+            "resource_type": "skill",
+            "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.219120+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-skill-xiaowen-cda8b927ff2d5b45a9330b91ec1b1789",
+            "workspace_id": "office"
+          },
+          {
+            "id": "57718b191d9a5f438c891943b1e36b68",
+            "resource_type": "skill",
+            "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.275123+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408",
+            "workspace_id": "office"
+          },
+          {
+            "id": "2a574a78c1915000a23996806e66b2cd",
+            "resource_type": "connector",
+            "resource_id": "office-http",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.333165+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-http",
+            "workspace_id": "office"
+          },
+          {
+            "id": "a6a4643dc78058ecbb370d403723dd93",
+            "resource_type": "agent",
+            "resource_id": "xiaowen",
+            "grantee_type": "user",
+            "grantee_id": "lilei",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.333342+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-visibility-xiaowen",
+            "workspace_id": "office"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/grants/2155213f09e759f4a355350a73fd16ad",
+    "request": {
+      "change_id": "revoke-skill-http",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "2155213f09e759f4a355350a73fd16ad",
+        "resource_type": "skill",
+        "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+        "grantee_type": "agent",
+        "grantee_id": "xiaowen",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-04T02:08:25.219120+00:00",
+        "revoked_at": "2026-10-04T02:08:36.588883+00:00",
+        "revision": 2,
+        "change_id": "seed-skill-xiaowen-cda8b927ff2d5b45a9330b91ec1b1789",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/grants/2155213f09e759f4a355350a73fd16ad",
+    "request": {
+      "change_id": "revoke-skill-http",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "seed-skill-xiaowen-cda8b927ff2d5b45a9330b91ec1b1789",
+        "created_at": "2026-10-04T02:08:25.219120+00:00",
+        "granted_by_user_id": "owner",
+        "grantee_id": "xiaowen",
+        "grantee_type": "agent",
+        "id": "2155213f09e759f4a355350a73fd16ad",
+        "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+        "resource_type": "skill",
+        "revision": 2,
+        "revoked_at": "2026-10-04T02:08:36.588883+00:00",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/grants/2155213f09e759f4a355350a73fd16ad",
+    "request": {
+      "change_id": "stale-revocation",
+      "expected_revision": 1
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "REVISION_CONFLICT",
+        "message": "授权修订已经变化"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/grants",
+    "request": {
+      "change_id": "cross-workspace",
+      "resource_type": "skill",
+      "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+      "grantee_type": "agent",
+      "grantee_id": "xiaogang"
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "接受员工不属于相同有效工作区"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/grants",
+    "request": {
+      "change_id": "regrant-skill-http",
+      "resource_type": "skill",
+      "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+      "grantee_type": "agent",
+      "grantee_id": "xiaowen"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "685d95b1a6a351649d06daca21c28599",
+        "resource_type": "skill",
+        "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+        "grantee_type": "agent",
+        "grantee_id": "xiaowen",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-04T02:08:36.656839+00:00",
+        "revoked_at": null,
+        "revision": 1,
+        "change_id": "regrant-skill-http",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/grants",
+    "request": {
+      "change_id": "regrant-skill-http",
+      "resource_type": "skill",
+      "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+      "grantee_type": "agent",
+      "grantee_id": "xiaowen"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "regrant-skill-http",
+        "created_at": "2026-10-04T02:08:36.656839+00:00",
+        "granted_by_user_id": "owner",
+        "grantee_id": "xiaowen",
+        "grantee_type": "agent",
+        "id": "685d95b1a6a351649d06daca21c28599",
+        "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+        "resource_type": "skill",
+        "revision": 1,
+        "revoked_at": null,
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/grants?limit=1",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "57718b191d9a5f438c891943b1e36b68",
+            "resource_type": "skill",
+            "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.275123+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408",
+            "workspace_id": "office"
+          }
+        ],
+        "next_after": "7ed4498bd19a87243ca3f20999205786f29e9be2df8149f9077fa84647d54b91:57718b191d9a5f438c891943b1e36b68"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/grants?limit=1&after=7ed4498bd19a87243ca3f20999205786f29e9be2df8149f9077fa84647d54b91:57718b191d9a5f438c891943b1e36b68",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "97a2879415f6516baf16d3064d5e298c",
+            "resource_type": "skill",
+            "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+            "grantee_type": "agent",
+            "grantee_id": "xiaogang",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.330914+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-skill-xiaogang-4c8a9eec37845f22816c4cb3c401b722",
+            "workspace_id": "analytics"
+          }
+        ],
+        "next_after": "7ed4498bd19a87243ca3f20999205786f29e9be2df8149f9077fa84647d54b91:97a2879415f6516baf16d3064d5e298c"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/grants?limit=1&workspace_id=office&after=7ed4498bd19a87243ca3f20999205786f29e9be2df8149f9077fa84647d54b91:57718b191d9a5f438c891943b1e36b68",
+    "request": null,
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "分页游标与当前身份、范围、过滤或修订不一致"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "请使用http_request向https://example.com发送POST，正文为grant-revocation-test。使用当前已授权HTTP连接器。",
+      "client_request_id": "c2a43d72cd6c4c2481fe546efb4fe1d1"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "f7ff993f763f4fefb61acf5153f0d85e",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-04T02:08:36.720806+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-connectors-release/grant-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-connectors-release/grant-http0/conversations/f7ff993f763f4fefb61acf5153f0d85e/materials",
+          "folders": []
+        },
+        "task_run_id": "f7b52fb2fa584afbb2bace0756de2b22"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/grants?workspace_id=office",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "57718b191d9a5f438c891943b1e36b68",
+            "resource_type": "skill",
+            "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.275123+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408",
+            "workspace_id": "office"
+          },
+          {
+            "id": "2a574a78c1915000a23996806e66b2cd",
+            "resource_type": "connector",
+            "resource_id": "office-http",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.333165+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-http",
+            "workspace_id": "office"
+          },
+          {
+            "id": "a6a4643dc78058ecbb370d403723dd93",
+            "resource_type": "agent",
+            "resource_id": "xiaowen",
+            "grantee_type": "user",
+            "grantee_id": "lilei",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.333342+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-visibility-xiaowen",
+            "workspace_id": "office"
+          },
+          {
+            "id": "685d95b1a6a351649d06daca21c28599",
+            "resource_type": "skill",
+            "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:36.656839+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "regrant-skill-http",
+            "workspace_id": "office"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/grants/2a574a78c1915000a23996806e66b2cd",
+    "request": {
+      "change_id": "revoke-waiting-http",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "2a574a78c1915000a23996806e66b2cd",
+        "resource_type": "connector",
+        "resource_id": "office-http",
+        "grantee_type": "agent",
+        "grantee_id": "xiaowen",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-04T02:08:25.333165+00:00",
+        "revoked_at": "2026-10-04T02:08:40.302336+00:00",
+        "revision": 2,
+        "change_id": "seed-http",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/tool-approvals/call_00_4bfo45z7qjdwf8utj05e4v3b",
+    "request": {
+      "decision": "allow_once",
+      "input_hash": "a55b4c5f900b42aba5ad4eebf2c789d84c7c018b7cce0d9f72502d6a8dd57187"
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前任务没有所选HTTP连接器授权"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "请直接回复你当前HTTP工具是否可用，无需调用任何工具。",
+      "client_request_id": "eb6e08d3cc7545c287a7ce54cc8e7891"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "c621cf3c194048f28dd60523ae206f71",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-04T02:08:40.452777+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-connectors-release/grant-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-connectors-release/grant-http0/conversations/c621cf3c194048f28dd60523ae206f71/materials",
+          "folders": []
+        },
+        "task_run_id": "19e16903570c41aa8321fc0fc5a45114"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "工作目录已经确定。请直接提交这个bash调用，保留完整参数并等待真实审批：\n{\"command\": \"printf 'actual-dispatched-effect' > dispatched-effect.txt; printf '%s' $$ > child-pid.txt; sleep 30; printf 'unexpected-late-effect' > delayed-effect.txt\"}",
+      "client_request_id": "4b253a6f2ea74e93a6a47ed4d9e43a07"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "44fee89a49de49a4954e429f212f4984",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-04T02:08:43.659083+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-connectors-release/grant-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-connectors-release/grant-http0/conversations/44fee89a49de49a4954e429f212f4984/materials",
+          "folders": []
+        },
+        "task_run_id": "5706905624784dd8be8f6b5229bf74db"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/tool-approvals/call_00_dhldquy454viyumuo7d349zk",
+    "request": {
+      "decision": "allow_once",
+      "input_hash": "5b813f77cbfd48410002f42724d65223e5e89e27f9be72914d13b038d4368324"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "decision": "allow_once",
+        "decided_at": "2026-10-04T02:08:48.069491+00:00",
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/grants?workspace_id=office",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "57718b191d9a5f438c891943b1e36b68",
+            "resource_type": "skill",
+            "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.275123+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408",
+            "workspace_id": "office"
+          },
+          {
+            "id": "a6a4643dc78058ecbb370d403723dd93",
+            "resource_type": "agent",
+            "resource_id": "xiaowen",
+            "grantee_type": "user",
+            "grantee_id": "lilei",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.333342+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-visibility-xiaowen",
+            "workspace_id": "office"
+          },
+          {
+            "id": "685d95b1a6a351649d06daca21c28599",
+            "resource_type": "skill",
+            "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:36.656839+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "regrant-skill-http",
+            "workspace_id": "office"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/grants/57718b191d9a5f438c891943b1e36b68",
+    "request": {
+      "change_id": "revoke-dispatched-skill",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "57718b191d9a5f438c891943b1e36b68",
+        "resource_type": "skill",
+        "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+        "grantee_type": "agent",
+        "grantee_id": "xiaowen",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-04T02:08:25.275123+00:00",
+        "revoked_at": "2026-10-04T02:08:48.213268+00:00",
+        "revision": 2,
+        "change_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/grants?workspace_id=office",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "a6a4643dc78058ecbb370d403723dd93",
+            "resource_type": "agent",
+            "resource_id": "xiaowen",
+            "grantee_type": "user",
+            "grantee_id": "lilei",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:25.333342+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-visibility-xiaowen",
+            "workspace_id": "office"
+          },
+          {
+            "id": "685d95b1a6a351649d06daca21c28599",
+            "resource_type": "skill",
+            "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T02:08:36.656839+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "regrant-skill-http",
+            "workspace_id": "office"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/grants",
+    "request": {
+      "change_id": "regrant-http-for-recovery",
+      "resource_type": "connector",
+      "resource_id": "office-http",
+      "grantee_type": "agent",
+      "grantee_id": "xiaowen"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "25247a5456205826999a10704f8b58f7",
+        "resource_type": "connector",
+        "resource_id": "office-http",
+        "grantee_type": "agent",
+        "grantee_id": "xiaowen",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-04T02:08:48.566768+00:00",
+        "revoked_at": null,
+        "revision": 1,
+        "change_id": "regrant-http-for-recovery",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "请通过已授权http_request向https://example.com发送POST，正文为recovery-grant-check。请等待审批。",
+      "client_request_id": "458d01414fd247a89daae744dc3b6b7b"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "2bae5f89664e4d4fb6664979f740e735",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-04T02:08:48.582792+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-connectors-release/grant-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-connectors-release/grant-http0/conversations/2bae5f89664e4d4fb6664979f740e735/materials",
+          "folders": []
+        },
+        "task_run_id": "1c3cb70e0f5b44279adac6551157c9ea"
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/grants/25247a5456205826999a10704f8b58f7",
+    "request": {
+      "change_id": "revoke-recovery-http",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "25247a5456205826999a10704f8b58f7",
+        "resource_type": "connector",
+        "resource_id": "office-http",
+        "grantee_type": "agent",
+        "grantee_id": "xiaowen",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-04T02:08:48.566768+00:00",
+        "revoked_at": "2026-10-04T02:08:54.941402+00:00",
+        "revision": 2,
+        "change_id": "regrant-http-for-recovery",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/tool-approvals/call_00_b3jxz4osx61tc526rox4t7dt",
+    "request": {
+      "decision": "allow_once",
+      "input_hash": "18bfa0d5b2500f2aafbdb2bb225bd91aec4a11f5e730686cb7268a6454155a7b"
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前任务没有所选HTTP连接器授权"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/task-runs/1c3cb70e0f5b44279adac6551157c9ea/resume",
+    "request": null,
+    "status": 202,
+    "response": {
+      "data": {
+        "warnings": []
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/tool-approvals/call_00_uoaw9np79bdbf7xobl2nqspw",
+    "request": {
+      "decision": "reject_once",
+      "input_hash": "c92be920eec814c273199588fcbb231c9a57d21ddad1bfbf78ff0b918eda8331"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "decision": "reject_once",
+        "decided_at": "2026-10-04T02:09:03.898059+00:00",
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/tool-approvals/call_01_4pu5mfmajggabvz4qp9lup78",
+    "request": {
+      "decision": "reject_once",
+      "input_hash": "2f501c4ffc29e60a1784092d45cb4c19d23ac545685d61b1569dac9ce26dd5af"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "decision": "reject_once",
+        "decided_at": "2026-10-04T02:09:08.182880+00:00",
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2bae5f89664e4d4fb6664979f740e735/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  }
+]

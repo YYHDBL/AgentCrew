@@ -225,6 +225,7 @@ class ApprovalService:
             if hasattr(self, "grants"):
                 call = conn.execute("SELECT tool_name,input FROM tool_calls WHERE call_id=?", (call_id,)).fetchone()
                 self.grants.check_tool(task_run_id, call[0], json.loads(call[1]), conn)
+                self.grants.check_binding(task_run_id, call_id, conn)
             first = self._resolution_row(conn, call_id)
             if first is not None:
                 conn.execute("COMMIT")  # 只读事务（并发窗口内已有首次决定）
@@ -310,12 +311,26 @@ class ApprovalService:
                        ctx: WorkContext) -> Any:
         """带闸门执行一次工具：事件落库（emit 接 EventStore）+ 三级闸门。"""
         ctx = replace(ctx, approved_calls=set())
+        if hasattr(self, "connectors"):
+            ctx.registry = self.connectors.registry(task_run_id, self.scheduler.registry)
         if hasattr(self, "grants"):
             view = self.grants.check_tool(task_run_id, invocation.name, invocation.input)
             if "selected_connector" in view:
                 ctx.connector_id = view["selected_connector"]["id"]
                 ctx.allowed_hosts = list(view["selected_connector"]["config"]["allowed_hosts"])
                 ctx.enforce_http_hosts = True
+                if ctx.registry is not None:
+                    from agentcrew_core.connectors import connector_effect
+                    from agentcrew_core.tools import ToolRegistry
+                    original = ctx.registry.get("http_request")
+                    selected = view["selected_connector"]
+                    classified = replace(original, metadata=replace(original.metadata, side_effect_class=connector_effect(
+                        invocation.input.get("method", "GET"), invocation.input["url"], selected["config"])),
+                        prepared_extras=lambda _input: {"connector_id": selected["id"], "connector_revision": selected["revision"]})
+                    registry = ToolRegistry()
+                    for name in ctx.registry.names():
+                        registry.register(classified if name == "http_request" else ctx.registry.get(name))
+                    ctx.registry = registry
         loop = asyncio.get_running_loop()
         future: asyncio.Future = loop.create_future()
         ih = input_hash(invocation.input)
@@ -329,7 +344,7 @@ class ApprovalService:
             assert self.scheduler is not None, "cli 未装配 scheduler"
             result = await self.scheduler.run(invocation, ctx)
             # governance §3：risk≥medium 的工具完成/失败入审计链
-            tool = self.scheduler.registry.get(invocation.name)
+            tool = (ctx.registry if ctx.registry is not None else self.scheduler.registry).get(invocation.name)
             if tool is not None and tool.metadata.risk_level in ("medium", "high"):
                 await self._audit(
                     "system", "tools",

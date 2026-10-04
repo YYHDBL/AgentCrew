@@ -1,0 +1,56 @@
+{
+  "task_run_id": "1c3cb70e0f5b44279adac6551157c9ea",
+  "conversation_id": "2bae5f89664e4d4fb6664979f740e735",
+  "old_approval": {
+    "always_scope_preview": "example.com",
+    "input_hash": "18bfa0d5b2500f2aafbdb2bb225bd91aec4a11f5e730686cb7268a6454155a7b",
+    "options": [
+      "allow_once",
+      "allow_always",
+      "reject_once",
+      "reject_always"
+    ],
+    "risk": "medium",
+    "target": "https://example.com",
+    "tool": "http_request",
+    "tool_call_id": "call_00_b3jxz4osx61tc526rox4t7dt"
+  },
+  "attempts": [
+    {
+      "id": "6883fd9d68d84d67a9216cd6777cb62c",
+      "attempt_no": 1,
+      "context_fingerprint": "{\"authorization_sha256\": \"6008de4b00a076c4a70f0f1d5a5611ae092bf27e049eefda7df806eac0426935\", \"memory_block_sha256\": \"29fdb83aaee0cb2f4af8173adc14b2ba1a5e3c59ad226aaa4362395c0694bc65\", \"memory_snapshot_id\": \"82ff0708e0c548ddb0f3f9cc288f45f4\", \"memory_snapshot_sha256\": \"99bbfd7bef3fc1f1ce9b3a0023acc819d7df92a06a3cd7d4c9f73b46a5848b95\", \"model_config\": {\"api_key_sha256\": \"a72258b07a769071\", \"base_url\": \"https://opencode.ai/zen/go/v1\", \"context_window\": 1000000, \"context_window_source\": \"https://models.dev/api.json#opencode-go/deepseek-v4.1-flash\", \"max_tokens\": 8192, \"model\": \"deepseek-v4.1-flash\", \"prompt_format\": \"deepseek-v4.1\", \"provider\": \"openai-compatible\", \"tokenizer_repository\": \"deepseek-ai/DeepSeek-V4.1-Flash\", \"tokenizer_revision\": \"2cba9e42aa026125f3ed06c6d98c1db82f7ca027\", \"tokenizer_sha256\": \"c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b\"}, \"skill_versions\": {\"c7b7146c6ea65788b6d4161a4982f34b\": \"ce7f36c35b735d43a30a8a4b0b4c0f3b\"}, \"system_prompt_hash\": \"bbe90df5e67204ee922bfdcd904e1fc682777dd1d485e542b9bde5880bad4e4f\", \"tools_schema_hash\": \"14961fa3521d5f77869b18fc5fd9aedd890bc86069bc9fc745050156245c4c95\"}"
+    },
+    {
+      "id": "62e5cfecd3344cb2b0fa013a7cb562fa",
+      "attempt_no": 2,
+      "context_fingerprint": "{\"authorization_sha256\": \"a161dc0901f0300673d7270ef5dddd8dd6af37017fbd573a01f46f7514fcddc5\", \"memory_block_sha256\": \"29fdb83aaee0cb2f4af8173adc14b2ba1a5e3c59ad226aaa4362395c0694bc65\", \"memory_snapshot_id\": \"82ff0708e0c548ddb0f3f9cc288f45f4\", \"memory_snapshot_sha256\": \"99bbfd7bef3fc1f1ce9b3a0023acc819d7df92a06a3cd7d4c9f73b46a5848b95\", \"model_config\": {\"api_key_sha256\": \"a72258b07a769071\", \"base_url\": \"https://opencode.ai/zen/go/v1\", \"context_window\": 1000000, \"context_window_source\": \"https://models.dev/api.json#opencode-go/deepseek-v4.1-flash\", \"max_tokens\": 8192, \"model\": \"deepseek-v4.1-flash\", \"prompt_format\": \"deepseek-v4.1\", \"provider\": \"openai-compatible\", \"tokenizer_repository\": \"deepseek-ai/DeepSeek-V4.1-Flash\", \"tokenizer_revision\": \"2cba9e42aa026125f3ed06c6d98c1db82f7ca027\", \"tokenizer_sha256\": \"c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b\"}, \"skill_versions\": {\"c7b7146c6ea65788b6d4161a4982f34b\": \"ce7f36c35b735d43a30a8a4b0b4c0f3b\"}, \"system_prompt_hash\": \"bc527b68e9cb9cc3c6308419e06c9ee249b6850a117df2ca6ab10db2c6b0cd99\", \"tools_schema_hash\": \"8237ce3f685e70e3ab221f9cb8a0089413d31c35890133035149353d281aa14b\"}"
+    }
+  ],
+  "terminal": [
+    {
+      "status": "completed",
+      "current_attempt_no": 2
+    }
+  ],
+  "historical_binding": {
+    "agent_spec": "{\"connector_ids\": [\"office-http\"], \"model_slot\": \"main\", \"position\": \"办公助理\", \"skill_ids\": [\"c7b7146c6ea65788b6d4161a4982f34b\", \"7fb6db7a69e75931b85594e05ed43d2b\"]}",
+    "skill_versions": "{\"c7b7146c6ea65788b6d4161a4982f34b\":\"ce7f36c35b735d43a30a8a4b0b4c0f3b\"}"
+  },
+  "snapshot_preserved": {
+    "sha256": "99bbfd7bef3fc1f1ce9b3a0023acc819d7df92a06a3cd7d4c9f73b46a5848b95",
+    "mtime_ns": 1791079728657342833
+  },
+  "resumed_requests": [
+    {
+      "payload": "{\"authorization_sha256\": \"a161dc0901f0300673d7270ef5dddd8dd6af37017fbd573a01f46f7514fcddc5\", \"llm_call_id\": \"851819b601ea44a8b4ccd85ca452af74\", \"model\": \"deepseek-v4.1-flash\", \"retry_no\": 0, \"step_id\": \"8f8ecd3d0a224b8380a8fed8e3c92073\", \"tool_names\": [\"read_file\", \"write_file\", \"bash\", \"memory_write\", \"session_search\", \"skill_view\", \"skill_patch\", \"ask_user\"]}"
+    },
+    {
+      "payload": "{\"authorization_sha256\": \"a161dc0901f0300673d7270ef5dddd8dd6af37017fbd573a01f46f7514fcddc5\", \"llm_call_id\": \"554e546c7fc345bd8bca622cb6ce4f67\", \"model\": \"deepseek-v4.1-flash\", \"retry_no\": 0, \"step_id\": \"f2b5cebb4a82436dbc1e9526a8aa2f24\", \"tool_names\": [\"read_file\", \"write_file\", \"bash\", \"memory_write\", \"session_search\", \"skill_view\", \"skill_patch\", \"ask_user\"]}"
+    },
+    {
+      "payload": "{\"authorization_sha256\": \"a161dc0901f0300673d7270ef5dddd8dd6af37017fbd573a01f46f7514fcddc5\", \"llm_call_id\": \"16ceceb8db3742d68042ab8b26f7e45a\", \"model\": \"deepseek-v4.1-flash\", \"retry_no\": 0, \"step_id\": \"6135130dc3c94d21a80e2fc19f5fd9f0\", \"tool_names\": [\"read_file\", \"write_file\", \"bash\", \"memory_write\", \"session_search\", \"skill_view\", \"skill_patch\", \"ask_user\"]}"
+    }
+  ],
+  "http_dispatches": 0
+}

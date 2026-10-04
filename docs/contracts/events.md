@@ -133,5 +133,7 @@ M1 的会话后台事件没有前台 `task_run_id/seq`；来源任务放入 payl
 
 治理拒绝使用现有工具失败事件及审计 action=permission.denied。审批请求/决定增加有效 actor、真实 credential_owner_id、agent_id、resource_id 和 authorization_sha256；相同决定重试返回首次记录，失去活动执行方的旧卡返回409并展示失效。run.started/resumed 的 context_fingerprint 增加任务配置修订、skill_versions 和 authorization_sha256，恢复不改写历史尝试。
 
+连接器tool.prepared附加connector_id及connector_revision，工具目录绑定相同配置修订；审批和dispatched登记在同一写通道内核对当前修订，实际HTTP/MCP传输继续核对当前Grant与该次绑定修订。服务端认证头和凭据不进入输入、目录、事件或产物，HTTP响应正文及派生元数据执行凭据脱敏。明确承诺external_idempotency的写入端点禁止重定向；普通HTTP/MCP写入保持outcome_unknown。stdio传输使用官方SDK、固定环境白名单和Seatbelt，服务退出时清理整个进程组。
+
 ## 定时与审计（M3/P5，cron-and-audit §3）
 `cron.job_fired / cron.job_missed / cron.job_skipped / cron.job_failed / audit.reported`

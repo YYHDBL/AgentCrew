@@ -2,11 +2,11 @@
 
 import json
 import uuid
-from urllib.parse import urlsplit
 
 from agentcrew_core.events import RunEventType as T
 from agentcrew_core.memory import sha256
 from agentcrew_core.governance import capability_active, filter_tool_schemas, grant_types_allowed
+from agentcrew_core.connectors import connector_target
 from ..memory.store import MemoryIdentity
 from .resources import GovernanceError, canonical, now
 
@@ -114,7 +114,11 @@ class Grants:
     def schemas(self, task_id, schemas, conn=None):
         view = self.view(task_id, conn)
         http_ids = [connector["id"] for connector in view["connectors"] if connector["type"] == "http"]
-        return filter_tool_schemas(schemas, http_ids), view
+        filtered = filter_tool_schemas(schemas, http_ids)
+        if hasattr(self, "connectors"):
+            for connector, row, definition in self.connectors.authorized_mcp(task_id):
+                filtered.append({"name": row["stable_name"], "description": self.connectors.description(definition), "input_schema": definition["inputSchema"]})
+        return filtered, view
 
     def check_tool(self, task_id, name, inputs, conn=None):
         view = self.view(task_id, conn)
@@ -122,6 +126,7 @@ class Grants:
         if connection.execute("SELECT 1 FROM tool_calls WHERE task_run_id=? AND status='pending_verification'", (task_id,)).fetchone():
             raise GovernanceError("PENDING_VERIFICATION", "必须先核验已有调用的真实效果")
         if name == "http_request":
+            from agentcrew_core.connectors import connector_headers
             choices = [item for item in view["connectors"] if item["type"] == "http"]
             connector_id = inputs.get("connector_id")
             if connector_id is None and len(choices) == 1:
@@ -129,24 +134,25 @@ class Grants:
             selected = next((item for item in choices if item["id"] == connector_id), None)
             if selected is None:
                 raise GovernanceError("OUT_OF_SCOPE", "当前任务没有所选HTTP连接器授权", 403)
-            from agentcrew_core.tools.judgment import host_allowed
-            allowed, reason = host_allowed(inputs.get("url", ""), selected["config"].get("allowed_hosts", []))
-            url = urlsplit(inputs.get("url", ""))
-            if not allowed or (url.port or (443 if url.scheme == "https" else 80)) not in selected["config"].get("allowed_ports", []):
-                raise GovernanceError("OUT_OF_SCOPE", "连接器主机或端口范围拒绝：" + reason, 403)
+            connector_headers(inputs.get("headers") or {}, selected["config"].get("credential_header", "Authorization"))
+            connector_target(inputs.get("url", ""), selected["config"])
             view["selected_connector"] = selected
         elif name in {"skill_view", "skill_patch"}:
             skill = connection.execute("SELECT id FROM skills WHERE workspace_id=? AND name=?", (view["workspace_id"], inputs.get("name"))).fetchone()
             if skill is not None and not any(item["type"] == "skill" and item["id"] == skill[0] for item in view["capabilities"]):
                 raise GovernanceError("OUT_OF_SCOPE", "当前任务没有技能授权", 403)
         elif name.startswith("mcp_"):
-            raise GovernanceError("OUT_OF_SCOPE", "当前任务未登记该MCP工具", 403)
+            row = connection.execute("SELECT connector_id,connector_revision FROM connector_tools WHERE stable_name=?", (name,)).fetchone()
+            selected = next((item for item in view["connectors"] if row is not None and item["id"] == row[0] and item["revision"] == row[1]), None)
+            if selected is None:
+                raise GovernanceError("OUT_OF_SCOPE", "当前任务未授权该MCP工具或目录已经过期", 403)
         return view
 
     def check_dispatch(self, conn, kind, task_id, payload):
         if task_id is None:
             return
         if kind == T.TOOL_DISPATCHED:
+            self.check_binding(task_id, payload["call_id"], conn)
             status = conn.execute("SELECT status FROM task_runs WHERE id=?", (task_id,)).fetchone()
             if status is None or status[0] not in {"running", "waiting_user"}:
                 raise GovernanceError("OUT_OF_SCOPE", "任务已经停止，禁止派发", 403)
@@ -163,6 +169,17 @@ class Grants:
                 names = [schema["name"] for schema in self.schemas(task_id, build_default_registry().schemas(), conn)[0]]
                 payload["tool_names"] = names
 
+    def check_binding(self, task_id, call_id, conn):
+        row = conn.execute("SELECT payload FROM run_events WHERE task_run_id=? AND type='tool.prepared' AND json_extract(payload,'$.call_id')=? ORDER BY global_seq DESC LIMIT 1", (task_id, call_id)).fetchone()
+        if row is None:
+            raise GovernanceError("NOT_FOUND", "调用缺少准备记录", 404)
+        original = json.loads(row[0])
+        connector_id = original.get("connector_id")
+        if connector_id is not None:
+            current = self.resources.get("connector", connector_id, conn)
+            if current["revision"] != original["connector_revision"] or current["status"] != "active":
+                raise GovernanceError("REVISION_CONFLICT", "准备调用的连接器修订已经失效")
+
     def affects(self, event, task_id):
         row = self.db.read_conn.execute("SELECT c.workspace_id,c.agent_id,g.effective_user_id,g.agent_spec FROM task_runs t JOIN conversations c ON c.id=t.conversation_id JOIN task_governance g ON g.task_run_id=t.id WHERE t.id=?", (task_id,)).fetchone()
         if row is None:
@@ -178,7 +195,7 @@ class Grants:
         if event.type == T.GOVERNANCE_ROLE_CHANGED:
             owner = self.db.read_conn.execute("SELECT credential_owner_id FROM task_governance WHERE task_run_id=?", (task_id,)).fetchone()[0]
             return p.get("user_id") in {row[2], owner}
-        if event.type == T.GOVERNANCE_RESOURCE_CHANGED and p.get("status") != "active":
+        if event.type == T.GOVERNANCE_RESOURCE_CHANGED and (p.get("status") != "active" or p.get("configuration_changed")):
             kind, resource_id = p.get("resource_type"), p.get("resource_id")
             if kind == "agent":
                 return resource_id == row[1]
@@ -216,7 +233,7 @@ class Grants:
                 (payload.get("grantee_type") == "user" and payload.get("grantee_id") == row[3] and payload.get("capability_id") == row[2])
         if event.type == T.GOVERNANCE_ROLE_CHANGED:
             return payload.get("user_id") in {row[3], row[4]}
-        if event.type == T.GOVERNANCE_RESOURCE_CHANGED and payload.get("status") != "active":
+        if event.type == T.GOVERNANCE_RESOURCE_CHANGED and (payload.get("status") != "active" or payload.get("configuration_changed")):
             kind, resource_id = payload.get("resource_type"), payload.get("resource_id")
             if kind == "organization":
                 return True

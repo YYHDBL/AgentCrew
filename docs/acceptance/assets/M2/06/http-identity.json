@@ -1,0 +1,306 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/connectors",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "http-connector-create",
+      "expected_revision": 0,
+      "workspace_id": "office",
+      "name": "真实本地HTTP",
+      "type": "http",
+      "config": {
+        "url": "http://127.0.0.1:61905",
+        "allowed_hosts": [
+          "127.0.0.1"
+        ],
+        "allowed_ports": [
+          61905
+        ],
+        "allow_loopback": true
+      },
+      "credential": "***"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "a25575a75c665c8089dec64edf76ac32",
+        "workspace_id": "office",
+        "name": "真实本地HTTP",
+        "type": "http",
+        "config": {
+          "allow_loopback": true,
+          "allowed_hosts": [
+            "127.0.0.1"
+          ],
+          "allowed_ports": [
+            61905
+          ],
+          "args": [],
+          "credential_header": "Authorization",
+          "idempotent_endpoints": [],
+          "tool_policies": {},
+          "url": "http://127.0.0.1:61905/"
+        },
+        "status": "active",
+        "revision": 1,
+        "created_at": "2026-10-04T02:08:22.114522+00:00",
+        "updated_at": "2026-10-04T02:08:22.114522+00:00",
+        "credential_configured": true
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/connectors",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "http-connector-create",
+      "expected_revision": 0,
+      "workspace_id": "office",
+      "name": "真实本地HTTP",
+      "type": "http",
+      "config": {
+        "url": "http://127.0.0.1:61905",
+        "allowed_hosts": [
+          "127.0.0.1"
+        ],
+        "allowed_ports": [
+          61905
+        ],
+        "allow_loopback": true
+      },
+      "credential": "***"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "config": {
+          "allow_loopback": true,
+          "allowed_hosts": [
+            "127.0.0.1"
+          ],
+          "allowed_ports": [
+            61905
+          ],
+          "args": [],
+          "credential_header": "Authorization",
+          "idempotent_endpoints": [],
+          "tool_policies": {},
+          "url": "http://127.0.0.1:61905/"
+        },
+        "created_at": "2026-10-04T02:08:22.114522+00:00",
+        "credential_configured": true,
+        "id": "a25575a75c665c8089dec64edf76ac32",
+        "name": "真实本地HTTP",
+        "revision": 1,
+        "status": "active",
+        "type": "http",
+        "updated_at": "2026-10-04T02:08:22.114522+00:00",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/connectors/a25575a75c665c8089dec64edf76ac32",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "a25575a75c665c8089dec64edf76ac32",
+        "workspace_id": "office",
+        "name": "真实本地HTTP",
+        "type": "http",
+        "config": {
+          "allow_loopback": true,
+          "allowed_hosts": [
+            "127.0.0.1"
+          ],
+          "allowed_ports": [
+            61905
+          ],
+          "args": [],
+          "credential_header": "Authorization",
+          "idempotent_endpoints": [],
+          "tool_policies": {},
+          "url": "http://127.0.0.1:61905/"
+        },
+        "status": "active",
+        "revision": 1,
+        "created_at": "2026-10-04T02:08:22.114522+00:00",
+        "updated_at": "2026-10-04T02:08:22.114522+00:00",
+        "credential_configured": true
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/connectors/a25575a75c665c8089dec64edf76ac32/validate",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "a25575a75c665c8089dec64edf76ac32",
+        "revision": 1,
+        "connector_id": "a25575a75c665c8089dec64edf76ac32",
+        "ok": true,
+        "status_code": 200,
+        "tools": []
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "identity-1ca62463d7b5429b9bc25d28a381f55c"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "lilei",
+          "name": "李蕾",
+          "org_id": "demo-org",
+          "role": "member",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/connectors/a25575a75c665c8089dec64edf76ac32",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前角色无权执行该操作"
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/connectors/a25575a75c665c8089dec64edf76ac32",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "disable-http-api",
+      "expected_revision": 1,
+      "status": "disabled"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "a25575a75c665c8089dec64edf76ac32",
+        "workspace_id": "office",
+        "name": "真实本地HTTP",
+        "type": "http",
+        "config": {
+          "allow_loopback": true,
+          "allowed_hosts": [
+            "127.0.0.1"
+          ],
+          "allowed_ports": [
+            61905
+          ],
+          "args": [],
+          "credential_header": "Authorization",
+          "idempotent_endpoints": [],
+          "tool_policies": {},
+          "url": "http://127.0.0.1:61905/"
+        },
+        "status": "disabled",
+        "revision": 2,
+        "created_at": "2026-10-04T02:08:22.114522+00:00",
+        "updated_at": "2026-10-04T02:08:22.128263+00:00",
+        "credential_configured": true
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/connectors/a25575a75c665c8089dec64edf76ac32",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "stale-http-api",
+      "expected_revision": 1,
+      "name": "陈旧修订"
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "REVISION_CONFLICT",
+        "message": "连接器修订已经变化"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/connectors/a25575a75c665c8089dec64edf76ac32/validate",
+    "effective_user": "owner",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "连接器已禁用"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/connectors",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "http-connector-create",
+      "expected_revision": 0,
+      "workspace_id": "office",
+      "name": "真实本地HTTP",
+      "type": "http",
+      "config": {
+        "url": "http://127.0.0.1:61905",
+        "allowed_hosts": [
+          "127.0.0.1"
+        ],
+        "allowed_ports": [
+          61905
+        ],
+        "allow_loopback": true
+      },
+      "credential": "***",
+      "unknown": "***"
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "extra_forbidden",
+              "loc": [
+                "body",
+                "unknown"
+              ],
+              "msg": "Extra inputs are not permitted"
+            }
+          ]
+        }
+      }
+    }
+  }
+]

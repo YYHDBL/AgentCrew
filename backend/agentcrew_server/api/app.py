@@ -29,6 +29,8 @@ from .sse import install_sse_routes
 from .identity import install_identity_routes
 from .skill_versions import install_skill_version_routes
 from .grants import install_grant_routes
+from .connectors import install_connector_routes
+from agentcrew_core.connectors import ConnectorBoundaryError
 from ..governance.resources import GovernanceError
 
 # 诊断模式下仍然可用的端点（§1：仅 health 与诊断端点）
@@ -121,10 +123,14 @@ def create_app(runtime: RuntimeState) -> FastAPI:
     if runtime.skill_versions is not None:
         install_skill_version_routes(app, runtime)
         install_grant_routes(app, runtime)
+        install_connector_routes(app, runtime)
 
     @app.exception_handler(GovernanceError)
     async def governance_error(_: Request, exc: GovernanceError):
         return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status)
+    @app.exception_handler(ConnectorBoundaryError)
+    async def connector_error(_: Request, exc: ConnectorBoundaryError):
+        return JSONResponse({"error": {"code": exc.code, "message": str(exc)}}, status_code=exc.status)
     install_sse_routes(app, runtime)
     if runtime.memory is not None:
         install_memory_routes(app, runtime)

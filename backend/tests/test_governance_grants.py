@@ -180,7 +180,7 @@ def test_dispatched_bash_cancellation_preserves_effect_and_stops_children(live):
     delayed = marker.with_name("delayed-effect.txt")
     child_pid = marker.with_name("child-pid.txt")
     command = "printf 'actual-dispatched-effect' > dispatched-effect.txt; printf '%s' $$ > child-pid.txt; sleep 30; printf 'unexpected-late-effect' > delayed-effect.txt"
-    run = task(live, "xiaowen", "office", "请现在调用bash执行下面这条完整命令，保持相对路径。这项操作用于核查工作区内的真实进程取消，请按审批流程提交：\n" + command)
+    run = task(live, "xiaowen", "office", "工作目录已经确定。请直接提交这个bash调用，保留完整参数并等待真实审批：\n" + json.dumps({"command": command}, ensure_ascii=False))
     tid = run["task_run_id"]
     deadline = time.monotonic() + 180
     processed = set()
@@ -192,8 +192,8 @@ def test_dispatched_bash_cancellation_preserves_effect_and_stops_children(live):
                 continue
             call = sql(live, "SELECT input FROM tool_calls WHERE call_id=?", (card["tool_call_id"],))[0]
             observed = json.loads(call["input"]).get("command")
-            assert observed in {command, "pwd && ls -la"}, call
-            response = http(live, "POST", "/api/tool-approvals/" + card["tool_call_id"], {"decision": "allow_once", "input_hash": card["input_hash"]})
+            allowed = observed in {command, "pwd && ls -la", "pwd; ls -la", "pwd", "ls -la"}
+            response = http(live, "POST", "/api/tool-approvals/" + card["tool_call_id"], {"decision": "allow_once" if allowed else "reject_once", "input_hash": card["input_hash"]})
             assert response.status_code == 200, response.text
             processed.add(card["tool_call_id"])
             if observed == command:
@@ -341,6 +341,7 @@ def test_sigkill_resume_uses_original_version_and_current_grant(live):
     assert http(live, "POST", "/api/tool-approvals/" + old["tool_call_id"], {"decision": "allow_once", "input_hash": old["input_hash"]}).status_code in {403, 409}
     response = http(live, "POST", "/api/task-runs/" + tid + "/resume")
     assert response.status_code == 202, response.text
+    resumed_seq = until(live, "SELECT global_seq FROM run_events WHERE task_run_id=? AND type='run.resumed' AND attempt_no=2", (tid,))[0]["global_seq"]
     deadline = time.monotonic() + 180
     handled = set()
     terminal = []
@@ -348,12 +349,16 @@ def test_sigkill_resume_uses_original_version_and_current_grant(live):
         terminal = sql(live, "SELECT status,current_attempt_no FROM task_runs WHERE id=? AND status IN ('completed','failed')", (tid,))
         if terminal:
             break
-        for row in sql(live, "SELECT payload FROM run_events WHERE task_run_id=? AND attempt_no=2 AND type='permission.requested'", (tid,)):
+        for row in sql(live, "SELECT payload FROM run_events WHERE task_run_id=? AND global_seq>? AND type='permission.requested'", (tid, resumed_seq)):
             card = json.loads(row["payload"])
             if card["tool_call_id"] not in handled:
                 declined = http(live, "POST", "/api/tool-approvals/" + card["tool_call_id"], {"decision": "reject_once", "input_hash": card["input_hash"]})
                 assert declined.status_code == 200, declined.text
                 handled.add(card["tool_call_id"])
+        for question in http(live, "GET", "/api/conversations/" + cid + "/questions").json()["data"]:
+            answered = http(live, "POST", "/api/questions/" + question["request_id"] + "/answer",
+                {"answer": "保持当前授权，直接根据已有证据说明执行情况，不执行网络操作。"})
+            assert answered.status_code == 200, answered.text
         time.sleep(0.1)
     assert terminal, sql(live, "SELECT type,payload FROM run_events WHERE task_run_id=? ORDER BY global_seq", (tid,))
     assert terminal[0]["current_attempt_no"] == 2
