@@ -12,6 +12,7 @@ from mcp.client.streamable_http import streamable_http_client
 
 from agentcrew_core.tools.builtin.seatbelt import seatbelt_profile
 from agentcrew_core.connectors import validate_schema_references
+from agentcrew_core.tools.judgment import filesystem_boundary
 from .http import connector_client
 
 
@@ -26,9 +27,10 @@ async def session(connector, context, credential, authorize):
                     yield connection
     else:
         authorize()
-        scope = [str(Path(path).resolve()) for path in context.scope]
-        protected = [str(Path(path).resolve()) for path in context.protected]
-        profile = seatbelt_profile(scope, protected)
+        boundary = filesystem_boundary(context)
+        runtime = [str(Path(__file__).with_name("process_host.py").resolve()), *[path for row in connector["startup_resources"] for path in (row["source_path"], row["canonical_path"])]]
+        profile = seatbelt_profile([str(path) for path in boundary.write_roots], [str(path) for path in boundary.protected],
+            read_realpaths=[str(path) for path in boundary.read_roots], readonly_realpaths=[str(path) for path in boundary.readonly_roots], runtime_readonly=runtime)
         environment = {key: os.environ[key] for key in ("PATH", "HOME", "LANG", "TZ", "TERM") if key in os.environ}
         args = ["-p", profile, "/usr/bin/env", "-i", *[key + "=" + value for key, value in environment.items()],
             sys.executable, str(Path(__file__).with_name("process_host.py")), config["command"], *config.get("args", [])]

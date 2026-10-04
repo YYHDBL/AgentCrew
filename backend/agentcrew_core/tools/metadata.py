@@ -66,6 +66,10 @@ class WorkContext:
     """一次任务的工具执行上下文（scope/cwd/保护路径由会话装配统一提供，S09）。"""
 
     scope: list[Any] = field(default_factory=list)          # Path 列表（realpath 已规范）
+    write_scope: list[Any] | None = None
+    readonly_scope: list[Any] | None = None
+    filesystem: Any = None
+    filesystem_resolver: Callable[[], Any] | None = None
     protected: list[Any] = field(default_factory=list)      # 受保护路径（realpath）
     artifacts_dir: Any = None                               # Path：外部化工件落盘处
     allowed_hosts: list[str] = field(default_factory=list)
@@ -76,11 +80,9 @@ class WorkContext:
     job_id: str | None = None
     emit: EventSink | None = None        # 事件出口（tool.*/artifact.*/question.*）
     ask_resolver: AskResolver | None = None  # ask_user 的回答通道（C8 接真实 HTTP）
-    # 任务工作目录（S09，C7 会话装配提供）：read_file/write_file 的相对路径
-    # 统一对此解析；bash 子进程以它为 cwd。缺省 None = 维持进程 cwd（旧语义）
+    # 会话装配提供任务工作目录，文件工具据此解析相对路径，bash在此启动。
     cwd: Any = None
-    # 经三级闸门授权的 http_request 调用（call_id 级）：M0 allowed_hosts 空 =
-    # 全部需审批——人工/规则放行后执行器的域名硬检查须认这笔授权（外审 S02）
+    # 调用级审批结果，连接器目标和当前Grant由执行服务独立检查。
     approved_calls: set[str] = field(default_factory=set)
     memory_writer: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
     memory_search: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None

@@ -39,7 +39,7 @@ def env(tmp_path):
         events.append((event_type, payload))
 
     ctx = WorkContext(
-        scope=[scope], protected=build_protected_paths(data, home),
+        scope=[scope], cwd=scope, protected=build_protected_paths(data, home),
         artifacts_dir=tmp_path / "artifacts", task_run_id="run-t",
         emit=sink,
         output_store=ToolOutputStore(),
@@ -289,7 +289,7 @@ def test_bash_protected_path_in_scope_denied_read_and_write(tmp_path):
     home = tmp_path / "home"
     (home / ".ssh").mkdir(parents=True)
     (scope / "data" / "agentcrew.db").write_text("DB")
-    ctx = WorkContext(scope=[scope],
+    ctx = WorkContext(scope=[scope], cwd=scope,
                       protected=build_protected_paths(scope / "data", home),
                       artifacts_dir=tmp_path / "art", task_run_id="run-t",
                       output_store=ToolOutputStore())

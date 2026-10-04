@@ -7,7 +7,7 @@ import os
 from contextlib import ExitStack
 from pathlib import Path
 
-from ..judgment import bash_readonly
+from ..judgment import bash_readonly, filesystem_boundary, path_in_scope
 from ..metadata import ToolInvocation, ToolResult, WorkContext
 from .seatbelt import _pump, _sandboxed_argv, seatbelt_profile
 
@@ -34,14 +34,19 @@ async def _bash(inv: ToolInvocation, ctx: WorkContext) -> ToolResult:
 
 
 async def _run_bash(inv, ctx, stdout_buf, stderr_buf):
+    boundary = filesystem_boundary(ctx)
+    if ctx.cwd is None or not path_in_scope(Path(ctx.cwd), boundary.read_roots, normalized=True):
+        raise ValueError("bash需要合法范围内的明确任务工作目录")
     command = inv.input.get("command", "")
     timeout_ms = int(inv.input.get("timeout_ms", 60_000))
     readonly, verdict_reason = bash_readonly(command, ctx.cwd)
     # 受保护路径全部进 deny 列表（不按 exists() 过滤——尚未创建的
     # config.json 等同样要挡，内核对不存在路径的 deny 实测生效，F07）
-    protected_real = [str(Path(p).resolve()) for p in ctx.protected]
+    protected_real = [str(path) for path in boundary.protected]
     profile = seatbelt_profile(
-        [str(Path(p).resolve()) for p in ctx.scope], protected_real,
+        [str(path) for path in boundary.write_roots], protected_real,
+        read_realpaths=[str(path) for path in boundary.read_roots],
+        readonly_realpaths=[str(path) for path in boundary.readonly_roots],
     )
     env = {k: os.environ[k] for k in BASH_ENV_WHITELIST if k in os.environ}
     proc = await asyncio.create_subprocess_exec(

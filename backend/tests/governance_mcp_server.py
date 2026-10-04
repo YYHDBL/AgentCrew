@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """真实MCP验收服务：文件持久化、读取、环境与进程信息。"""
 
 import json
@@ -12,8 +13,17 @@ from pydantic import BaseModel
 arguments = argparse.ArgumentParser()
 arguments.add_argument("--transport", choices=("stdio", "streamable-http"), default="stdio")
 arguments.add_argument("--port", type=int, default=8000)
+arguments.add_argument("dataset", nargs="?")
 settings = arguments.parse_args()
 server = FastMCP("AgentCrew persistent acceptance", host="127.0.0.1", port=settings.port, json_response=True)
+
+
+@server.tool()
+def dataset_material() -> str:
+    """读取配置的位置参数指向的实际数据文件。"""
+    if settings.dataset is None:
+        raise ValueError("未配置数据文件")
+    return Path(settings.dataset).read_text()
 
 
 class EnvironmentInfo(BaseModel):

@@ -29,6 +29,7 @@ from .schema_v10 import V10_STATEMENTS
 from .schema_v11 import V11_STATEMENTS
 from .schema_v12 import V12_STATEMENTS
 from .schema_v13 import V13_STATEMENTS
+from .schema_v14 import V14_STATEMENTS
 
 _SNAPSHOT_KEEP = 3
 _BUSY_RETRIES = 3
@@ -56,6 +57,7 @@ MIGRATIONS: tuple[Migration, ...] = (
     Migration(version=11, name="M2 治理资源与授权", statements=V11_STATEMENTS),
     Migration(version=12, name="M2 任务技能版本绑定", statements=V12_STATEMENTS),
     Migration(version=13, name="M2 MCP连接器工具目录", statements=V13_STATEMENTS),
+    Migration(version=14, name="M2 连接器启动资源绑定", statements=V14_STATEMENTS),
 )
 
 

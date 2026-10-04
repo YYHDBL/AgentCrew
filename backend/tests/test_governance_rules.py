@@ -8,6 +8,7 @@ import os
 import subprocess
 import time
 from pathlib import Path
+from dataclasses import replace
 
 import pytest
 
@@ -220,6 +221,7 @@ def test_real_mcp_permanent_decision(authorized, decision, written):
     approvals.connectors = connectors
     async def check():
         config = {"transport": "stdio", "command": sys.executable, "args": [str(Path(__file__).with_name("governance_mcp_server.py"))],
+            "startup_files": [str(Path(__file__).with_name("governance_mcp_server.py"))],
             "allowed_hosts": [], "allowed_ports": [], "allow_loopback": False}
         connector, grant = await create_connector(service, approvals.grants, connectors, "mcp", config)
         created = await sessions.create_conversation(instruction="真实MCP永久规则", workspace_id="office", agent_id="xiaowen", request_identity=RequestIdentity("owner", "owner"))
@@ -255,10 +257,10 @@ def test_authorized_external_scope_symlink_and_scope_denial(authorized):
         outside_file = outside / "untouched.txt"
         outside_file.write_text("范围外原正文")
         before = {"sha256": hashlib.sha256(outside_file.read_bytes()).hexdigest(), "mtime_ns": outside_file.stat().st_mtime_ns}
-        context.scope.append(external)
+        expanded = replace(context, scope=[*context.scope, external], write_scope=[*context.write_scope, external], filesystem=None)
         target = external / "approved.txt"
         task = asyncio.create_task(approvals.run_tool(task_run_id=created["task_run_id"], conversation_id=created["conversation"]["id"], agent_id="xiaowen",
-            invocation=ToolInvocation("external-approved", "write_file", {"path": str(target), "content": "实际外部目录审批"}), ctx=context))
+            invocation=ToolInvocation("external-approved", "write_file", {"path": str(target), "content": "实际外部目录审批"}), ctx=expanded))
         card = await request_card(service, "external-approved")
         assert card["target"] == str(target)
         await approvals.submit(card["tool_call_id"], "allow_once", card["input_hash"], RequestIdentity("owner", "owner"))
@@ -267,7 +269,7 @@ def test_authorized_external_scope_symlink_and_scope_denial(authorized):
         alias.symlink_to(outside, target_is_directory=True)
         for call_id, path in (("scope-denied", outside_file), ("symlink-denied", alias / "untouched.txt")):
             result = await approvals.run_tool(task_run_id=created["task_run_id"], conversation_id=created["conversation"]["id"], agent_id="xiaowen",
-                invocation=ToolInvocation(call_id, "write_file", {"path": str(path), "content": "禁止范围扩大"}), ctx=context)
+                invocation=ToolInvocation(call_id, "write_file", {"path": str(path), "content": "禁止范围扩大"}), ctx=expanded)
             assert not result.ok
         assert before == {"sha256": hashlib.sha256(outside_file.read_bytes()).hexdigest(), "mtime_ns": outside_file.stat().st_mtime_ns}
         assert service.db.read_conn.execute("SELECT count(*) FROM run_events WHERE task_run_id=? AND type='permission.requested'", (created["task_run_id"],)).fetchone()[0] == 1

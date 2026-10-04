@@ -379,7 +379,7 @@ def test_instruction_409_while_approval_pending(asm, tmp_path):
                 agent_id="default",
                 invocation=ToolInvocation(
                     new_call_id(), "write_file",
-                    {"path": str(tmp_path / "ws" / "x.md"), "content": "x"}),
+                    {"path": str(Path(ctx.cwd) / "x.md"), "content": "x"}),
                 ctx=ctx))
             for _ in range(100):
                 if asm.sessions.state_snapshot(conv_id)["waiting_approvals"]:

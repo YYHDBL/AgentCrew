@@ -6,6 +6,9 @@
 from __future__ import annotations
 
 from pathlib import Path
+from dataclasses import dataclass
+import sys
+import sysconfig
 from urllib.parse import urlparse
 
 # ── bash 只读三重判定 ────────────────────────────────────────────
@@ -78,6 +81,57 @@ def bash_readonly(command: str, cwd: Path | None = None) -> tuple[bool, str]:
 
 # ── 路径合法范围与受保护路径 ─────────────────────────────────────
 
+@dataclass(frozen=True)
+class FilesystemBoundary:
+    read_roots: tuple[Path, ...]
+    write_roots: tuple[Path, ...]
+    protected: tuple[Path, ...]
+    readonly_roots: tuple[Path, ...]
+
+
+def _runtime_paths():
+    paths = ("/bin", "/usr/bin", "/usr/lib", "/usr/share", "/System/Library", "/System/Cryptexes",
+        "/Library/Apple/System/Library", "/private/var/db/dyld", "/private/var/select/sh", "/private/etc/localtime",
+        "/dev/null", "/dev/random", "/dev/urandom", "/dev/fd", "/dev/tty",
+        *(sysconfig.get_path(key) for key in ("stdlib", "platstdlib", "purelib", "platlib", "scripts")),
+        Path(sys.base_prefix) / "lib", Path(sys.prefix) / "pyvenv.cfg", Path(__file__).resolve().parents[1])
+    return tuple(dict.fromkeys(path for value in paths for path in (Path(value).absolute(), Path(value).resolve())))
+
+
+_RUNTIME_READONLY_PATHS = _runtime_paths()
+
+
+def runtime_readonly_paths():
+    return _RUNTIME_READONLY_PATHS
+
+
+def normalize_filesystem(scope, protected, write_scope=None, readonly_scope=None, *, canonical_roots=False):
+    def root(path):
+        value = Path(path).expanduser()
+        if canonical_roots:
+            if not value.is_absolute():
+                raise ValueError("已保存的范围必须使用绝对规范化路径")
+            return value
+        return value.resolve()
+    reads = tuple(dict.fromkeys(root(path) for path in scope))
+    writes = tuple(dict.fromkeys(root(path) for path in (scope if write_scope is None else write_scope)))
+    if not all(any(path == parent or parent in path.parents for parent in reads) for path in writes):
+        raise ValueError("写入范围必须包含在读取范围内")
+    denied = tuple(dict.fromkeys(path for value in protected for path in (Path(value).expanduser().absolute(), Path(value).expanduser().resolve())))
+    readonly = tuple(dict.fromkeys([*(root(path) for path in (readonly_scope if readonly_scope is not None else [path for path in reads if path not in writes])), *runtime_readonly_paths()]))
+    reads = tuple(path for path in reads if not path_is_protected(path, denied, normalized=True))
+    writes = tuple(path for path in writes if not path_is_protected(path, denied, normalized=True)
+        and not any(path == parent or parent in path.parents for parent in readonly))
+    return FilesystemBoundary(reads, writes, denied, readonly)
+
+
+def filesystem_boundary(context):
+    if context.filesystem_resolver is not None:
+        return context.filesystem_resolver()
+    if context.filesystem is None:
+        context.filesystem = normalize_filesystem(context.scope, context.protected, context.write_scope, context.readonly_scope)
+    return context.filesystem
+
 def _within(path: Path, root: Path) -> bool:
     try:
         path.relative_to(root)
@@ -86,20 +140,21 @@ def _within(path: Path, root: Path) -> bool:
         return False
 
 
-def path_in_scope(path: Path, scope: list[Path]) -> bool:
+def path_in_scope(path: Path, scope: list[Path], *, normalized=False) -> bool:
     """realpath 后必须落在任一 scope 根内（符号链接逃逸在此被解析掉）。"""
     real = Path(path).resolve()
-    return any(_within(real, Path(root).resolve()) for root in scope)
+    return any(_within(real, Path(root) if normalized else Path(root).resolve()) for root in scope)
 
 
-def path_is_protected(path: Path, protected: list[Path]) -> bool:
+def path_is_protected(path: Path, protected: list[Path], *, normalized=False) -> bool:
     real = Path(str(Path(path).resolve()).casefold())
+    lexical = Path(str(Path(path).expanduser().absolute()).casefold())
     for protected_path in protected:
-        root = Path(str(Path(protected_path).resolve()).casefold())
+        root = Path(str(Path(protected_path) if normalized else Path(protected_path).resolve()).casefold())
         if "*" in root.parts:
-            if real.match(str(root)):
+            if real.match(str(root)) or lexical.match(str(root)):
                 return True
-        elif real == root or _within(real, root):
+        elif real == root or _within(real, root) or lexical == root or _within(lexical, root):
             return True
     return False
 

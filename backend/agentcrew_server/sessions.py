@@ -44,7 +44,7 @@ from agentcrew_core.events.reducer import (
     replay,
 )
 from agentcrew_core.tools import WorkContext
-from agentcrew_core.tools.judgment import build_protected_paths
+from agentcrew_core.tools.judgment import build_protected_paths, normalize_filesystem
 
 from .api.errors import ErrorCode
 from .db.event_store import EventStore
@@ -279,7 +279,7 @@ class SessionService:
 
     def _materials_dir(self, conversation_id: str) -> Path:
         return (self._data_dir / "conversations" / conversation_id
-                / "materials").resolve()
+                / "materials").absolute()
 
     def scope_of(self, conv: sqlite3.Row) -> dict[str, Any]:
         folders = json.loads(conv["folders_json"] or "[]")
@@ -303,8 +303,15 @@ class SessionService:
         workspace.mkdir(parents=True, exist_ok=True)
         materials = self._materials_dir(conversation_id)
         materials.mkdir(parents=True, exist_ok=True)
-        folders = [Path(f["path"]) for f in json.loads(conv["folders_json"] or "[]")]
-        scope = [workspace, materials] + [f.resolve() for f in folders]
+        folders = json.loads(conv["folders_json"] or "[]")
+        if any(folder.get("access", "read_write") not in {"read", "read_write"} for folder in folders):
+            raise ValueError("授权文件夹访问类型无效")
+        scope = [workspace, materials] + [Path(folder["path"]) for folder in folders]
+        write_scope = [workspace, materials] + [Path(folder["path"]) for folder in folders if folder.get("access", "read_write") == "read_write"]
+        readonly_scope = [Path(folder["path"]) for folder in folders if folder.get("access") == "read"]
+        readonly_scope.append(Path(__file__).resolve().parent)
+        readonly_scope.extend(Path(path) for row in self._db.read_conn.execute("SELECT s.source_path,s.canonical_path FROM connector_startup_files s JOIN connectors c ON c.id=s.connector_id AND c.revision=s.connector_revision") for path in row)
+        protected = build_protected_paths(self._data_dir, Path.home())
         from .tool_outputs import ToolOutputStore
 
         readable = self._db.read_conn.execute(
@@ -315,7 +322,8 @@ class SessionService:
             "WHERE t.conversation_id=? AND a.status='ready'", (conversation_id,)).fetchall()
         return WorkContext(
             scope=scope,
-            protected=build_protected_paths(self._data_dir, Path.home()),
+            write_scope=write_scope, readonly_scope=readonly_scope, protected=protected,
+            filesystem=normalize_filesystem(scope, protected, write_scope, readonly_scope, canonical_roots=True),
             artifacts_dir=(self._data_dir / "artifacts" / task_run_id
                            if task_run_id else None),
             task_run_id=task_run_id or "",

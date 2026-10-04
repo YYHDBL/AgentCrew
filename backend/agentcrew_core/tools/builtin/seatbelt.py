@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import re
 from pathlib import Path
+from ..judgment import path_is_protected, runtime_readonly_paths
 
 def _sbpl_quote(path: str) -> str:
     """SBPL 字符串字面量转义（外审回稿 S06，macOS 实测）：`\"` 生效（未转义
@@ -13,14 +14,21 @@ def _sbpl_quote(path: str) -> str:
     return path.replace("\\", "\\\\").replace('"', '\\"')
 
 def seatbelt_profile(scope_realpaths: list[str],
-                     deny_realpaths: list[str]) -> str:
-    """最小 profile（ADR-008）：读默认放开（读取强制边界 M2），写限 scope，
-    网络全禁，受保护路径**读写双向**禁（嵌套 subpath 的 deny 压过外层 allow，
-    实测验证；deny 对尚不存在的路径同样生效——创建即被拒，实测验证）。SBPL
-    规则：特定 subpath 覆盖泛化规则。"""
-    rules = ['(version 1)', '(allow default)', '(deny network*)', '(deny file-write*)']
+                     deny_realpaths: list[str], *, read_realpaths=None, readonly_realpaths=(), runtime_readonly=()) -> str:
+    """普通文件读写限于规范化范围，运行依赖单独只读，网络全部禁止。"""
+    reads = scope_realpaths if read_realpaths is None else read_realpaths
+    system = [str(path) for path in runtime_readonly_paths()] + list(runtime_readonly)
+    readonly_realpaths = tuple(dict.fromkeys([*readonly_realpaths, *system]))
+    rules = ['(version 1)', '(allow default)', '(deny network*)', '(deny file-write*)', '(deny file-read*)']
+    rules.append('(allow file-read* (literal "/"))')
+    rules += [f'(allow file-read* (subpath "{_sbpl_quote(p)}"))' for p in dict.fromkeys([*reads, *system])
+        if not path_is_protected(Path(p), deny_realpaths, normalized=True)]
+    ancestors = {str(parent) for path in [*reads, *scope_realpaths, *system] for parent in Path(path).parents}
+    rules += [f'(allow file-read-metadata (literal "{_sbpl_quote(p)}"))' for p in sorted(ancestors)]
     rules += [f'(allow file-write* (subpath "{_sbpl_quote(p)}"))'
-              for p in scope_realpaths]
+              for p in scope_realpaths if not path_is_protected(Path(p), deny_realpaths, normalized=True)
+              and not any(Path(p) == Path(root) or Path(root) in Path(p).parents for root in readonly_realpaths)]
+    rules += [f'(deny file-write* (subpath "{_sbpl_quote(p)}"))' for p in readonly_realpaths]
     # 双向禁：先禁写（含 scope 内受保护路径），再禁读
     for path in deny_realpaths:
         if "*" in Path(path).parts:

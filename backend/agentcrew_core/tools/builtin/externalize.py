@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ..judgment import path_in_scope, path_is_protected
+from ..judgment import filesystem_boundary, path_in_scope, path_is_protected
 from ..metadata import ToolResult, WorkContext
 
 INLINE_OUTPUT_LIMIT = 32 * 1024
@@ -18,11 +18,14 @@ def _resolve_input_path(ctx: WorkContext, raw: str) -> Path:
 
 def _check_path(ctx: WorkContext, raw: str, *, read_only: bool = False) -> str | None:
     path = _resolve_input_path(ctx, raw)
-    if path_is_protected(path, ctx.protected):
+    boundary = filesystem_boundary(ctx)
+    if path_is_protected(path, boundary.protected, normalized=True):
         return f"PROTECTED_PATH：{path.resolve()}"
+    if not read_only and path_in_scope(path, boundary.readonly_roots, normalized=True):
+        return f"OUT_OF_SCOPE：{path.resolve()} 属于只读授权目录"
     if read_only and str(path.resolve()) in ctx.readable_artifacts:
         return None
-    if not path_in_scope(path, ctx.scope):
+    if not path_in_scope(path, boundary.read_roots if read_only else boundary.write_roots, normalized=True):
         return f"OUT_OF_SCOPE：{path.resolve()} 不在任务合法范围内"
     return None
 

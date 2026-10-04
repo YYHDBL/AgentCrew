@@ -14,6 +14,7 @@ from agentcrew_core.connectors import connector_effect, connector_headers, conne
 from agentcrew_core.memory import contains_credentials
 from agentcrew_core.events import RunEventType as T
 from agentcrew_core.tools import Tool, ToolInvocation, ToolMetadata, ToolRegistry, ToolResult
+from agentcrew_core.tools.judgment import build_protected_paths, path_is_protected
 from ..connectors.http import connector_client, request_http
 from ..connectors.mcp import call, discover
 from ..secrets import known_secrets, redact, register_secret
@@ -54,6 +55,10 @@ class Connectors:
                 raise GovernanceError("VALIDATION_ERROR", "stdio需要已存在的绝对可执行路径", 422)
             if any(secret in canonical(config) for secret in known_secrets()):
                 raise GovernanceError("VALIDATION_ERROR", "连接器启动参数不能包含凭据", 422)
+            for filename in config.get("startup_files", []):
+                path = Path(filename)
+                if not path.is_absolute() or not path.is_file() or path.suffix.lower() not in {".py", ".js", ".mjs", ".cjs"}:
+                    raise GovernanceError("VALIDATION_ERROR", "启动依赖必须明确登记已存在的绝对代码文件", 422)
         for policy in config.get("tool_policies", {}).values():
             if policy["read_only"] and (policy["destructive"] or policy["needs_approval"]):
                 raise GovernanceError("VALIDATION_ERROR", "连接器只读工具的风险声明冲突", 422)
@@ -75,18 +80,49 @@ class Connectors:
             raise GovernanceError("REVISION_CONFLICT", "调用绑定的连接器修订已经失效")
         return view
 
+    def capture_startup(self, conn, connector):
+        config = connector["config"]
+        if connector["type"] != "mcp" or config["transport"] != "stdio":
+            return
+        for filename in dict.fromkeys([config["command"], *config.get("startup_files", [])]):
+            target = Path(filename).resolve()
+            if path_is_protected(target, build_protected_paths(self.resources.data_dir)):
+                raise GovernanceError("OUT_OF_SCOPE", "保护文件不能登记为启动资源", 403)
+            if filename != config["command"] and target.suffix.lower() not in {".py", ".js", ".mjs", ".cjs"}:
+                raise GovernanceError("VALIDATION_ERROR", "启动依赖的实际目标必须属于代码文件", 422)
+            content = target.read_bytes()
+            if any(secret.encode() in content for secret in known_secrets()):
+                raise GovernanceError("VALIDATION_ERROR", "启动代码不能包含已登记凭据", 422)
+            conn.execute("INSERT INTO connector_startup_files VALUES(?,?,?,?,?,?)", (connector["id"], connector["revision"],
+                filename, str(target), hashlib.sha256(content).hexdigest(), now()))
+
+    def startup_resources(self, connector, conn=None):
+        if connector["type"] != "mcp" or connector["config"]["transport"] != "stdio":
+            return []
+        connection = conn if conn is not None else self.db.read_conn
+        rows = [dict(row) for row in connection.execute("SELECT * FROM connector_startup_files WHERE connector_id=? AND connector_revision=? ORDER BY source_path", (connector["id"], connector["revision"]))]
+        expected = set([connector["config"]["command"], *connector["config"].get("startup_files", [])])
+        if {row["source_path"] for row in rows} != expected:
+            raise GovernanceError("REVISION_CONFLICT", "启动资源缺少修订绑定，请提交配置新修订并校验")
+        for row in rows:
+            source, target = Path(row["source_path"]), Path(row["canonical_path"])
+            if source.resolve() != target or not target.is_file() or hashlib.sha256(target.read_bytes()).hexdigest() != row["sha256"]:
+                raise GovernanceError("REVISION_CONFLICT", "启动资源目标或内容已经变化，请提交配置新修订")
+        return rows
+
     async def create(self, identity, request):
         workspace = request["workspace_id"]
         self.identities.require(identity, "manage", workspace)
-        self.validate_config(request["type"], request["config"])
         register_secret(request.get("credential"))
         safe_request = {**request, "credential": hashlib.sha256((request.get("credential") or "").encode()).hexdigest()}
         connector_id = uuid.uuid5(uuid.NAMESPACE_URL, "agentcrew:connector:" + request["change_id"]).hex
         def operation(conn):
+            self.validate_config(request["type"], request["config"])
             stamp = now()
             conn.execute("INSERT INTO connectors(id,workspace_id,name,type,config,credential,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)",
                 (connector_id, workspace, request["name"], request["type"], canonical(request["config"]), request.get("credential"), stamp, stamp))
             value = self.resources.get("connector", connector_id, conn)
+            self.capture_startup(conn, value)
             return value, self.resources.scope("connector", connector_id, conn), {"status": value["status"]}
         return await self.resources.mutate(change_id=request["change_id"], actor_id=identity.effective_user_id,
             credential_owner_id=identity.credential_owner_id, request=safe_request, action="governance.connector_created",
@@ -96,8 +132,6 @@ class Connectors:
     async def update(self, identity, connector_id, request):
         original = self.resources.get("connector", connector_id)
         self.identities.require(identity, "manage", original["workspace_id"])
-        if "config" in request:
-            self.validate_config(original["type"], request["config"])
         if any(field in request and request[field] is None for field in ("config", "name", "status")):
             raise GovernanceError("VALIDATION_ERROR", "连接器配置、名称和状态不能为null", 422)
         config = request.get("config", original["config"])
@@ -111,12 +145,19 @@ class Connectors:
             resource = self.resources.get("connector", connector_id, conn)
             if resource["revision"] != request["expected_revision"]:
                 raise GovernanceError("REVISION_CONFLICT", "连接器修订已经变化")
+            if "config" in request:
+                self.validate_config(resource["type"], request["config"])
             for field in ("config", "name", "status", "credential"):
                 if field in request:
                     conn.execute(f"UPDATE connectors SET {field}=? WHERE id=?", (canonical(request[field]) if field == "config" else request[field], connector_id))
             conn.execute("UPDATE connectors SET revision=revision+1,updated_at=? WHERE id=?", (now(), connector_id))
             conn.execute("DELETE FROM connector_tools WHERE connector_id=?", (connector_id,))
             value = self.resources.get("connector", connector_id, conn)
+            if "config" in request:
+                self.capture_startup(conn, value)
+            else:
+                conn.execute("INSERT INTO connector_startup_files SELECT connector_id,?,source_path,canonical_path,sha256,? FROM connector_startup_files WHERE connector_id=? AND connector_revision=?",
+                    (value["revision"], now(), connector_id, resource["revision"]))
             return value, self.resources.scope("connector", connector_id, conn), {"status": value["status"], "configuration_changed": True}
         return await self.resources.mutate(change_id=request["change_id"], actor_id=identity.effective_user_id,
             credential_owner_id=identity.credential_owner_id, request=safe, action="governance.connector_changed",
@@ -134,6 +175,7 @@ class Connectors:
             if current["revision"] != resource["revision"] or current["status"] != "active":
                 raise GovernanceError("REVISION_CONFLICT", "连接校验期间配置已经改变")
         credential = self.credential(connector_id)
+        resource["startup_resources"] = self.startup_resources(resource)
         if resource["type"] == "http":
             async with connector_client(resource, credential, authorize) as client:
                 response = await client.get(resource["config"]["url"])
@@ -181,6 +223,7 @@ class Connectors:
         for connector in self.grants.view(task_id)["connectors"]:
             if connector["type"] != "mcp":
                 continue
+            connector["startup_resources"] = self.startup_resources(connector)
             rows = self.db.read_conn.execute("SELECT * FROM connector_tools WHERE connector_id=? AND connector_revision=?", (connector["id"], connector["revision"])).fetchall()
             if not rows:
                 raise GovernanceError("CONNECTOR_NOT_VALIDATED", "MCP连接器尚未成功发现工具", 409)

@@ -187,6 +187,8 @@ class Grants:
             current = self.resources.get("connector", connector_id, conn)
             if current["revision"] != original["connector_revision"] or current["status"] != "active":
                 raise GovernanceError("REVISION_CONFLICT", "准备调用的连接器修订已经失效")
+            if hasattr(self, "connectors"):
+                self.connectors.startup_resources(current, conn)
 
     def affects(self, event, task_id):
         row = self.db.read_conn.execute("SELECT c.workspace_id,c.agent_id,g.effective_user_id,g.agent_spec FROM task_runs t JOIN conversations c ON c.id=t.conversation_id JOIN task_governance g ON g.task_run_id=t.id WHERE t.id=?", (task_id,)).fetchone()

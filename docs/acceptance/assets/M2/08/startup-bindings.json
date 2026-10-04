@@ -1,0 +1,183 @@
+{
+  "queries": [
+    {
+      "sql": "SELECT connector_id,connector_revision,source_path,canonical_path,sha256 FROM connector_startup_files ORDER BY connector_id,connector_revision,source_path",
+      "rows": [
+        {
+          "connector_id": "a61f722e28cb5adc8b7c624174faf6ae",
+          "connector_revision": 1,
+          "source_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/backend/tests/governance_mcp_server.py",
+          "canonical_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/backend/tests/governance_mcp_server.py",
+          "sha256": "e14fc91f0d4d3028fe2d4fff43e3a679e86cf64199acfad79e2df237fe99e8e9"
+        },
+        {
+          "connector_id": "a61f722e28cb5adc8b7c624174faf6ae",
+          "connector_revision": 1,
+          "source_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_registered_startup_target0/declared-helper.py",
+          "canonical_path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_registered_startup_target0/declared-helper.py",
+          "sha256": "8aee7aab5bc0629e5a646c31db34bab8158a241a27eeee306c982e13073948f4"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT call_id,status,dispatched_at FROM tool_calls ORDER BY prepared_at",
+      "rows": []
+    },
+    {
+      "sql": "SELECT global_seq,type FROM run_events ORDER BY global_seq",
+      "rows": [
+        {
+          "global_seq": 1,
+          "type": "governance.resource_changed"
+        },
+        {
+          "global_seq": 2,
+          "type": "skill.patched"
+        },
+        {
+          "global_seq": 3,
+          "type": "governance.resource_changed"
+        },
+        {
+          "global_seq": 4,
+          "type": "skill.patched"
+        },
+        {
+          "global_seq": 5,
+          "type": "governance.resource_changed"
+        },
+        {
+          "global_seq": 6,
+          "type": "skill.patched"
+        },
+        {
+          "global_seq": 7,
+          "type": "governance.resource_changed"
+        },
+        {
+          "global_seq": 8,
+          "type": "governance.resource_changed"
+        },
+        {
+          "global_seq": 9,
+          "type": "governance.resource_changed"
+        },
+        {
+          "global_seq": 10,
+          "type": "governance.rule_changed"
+        },
+        {
+          "global_seq": 11,
+          "type": "run.queued"
+        },
+        {
+          "global_seq": 12,
+          "type": "run.started"
+        },
+        {
+          "global_seq": 13,
+          "type": "governance.resource_changed"
+        },
+        {
+          "global_seq": 14,
+          "type": "governance.grant_changed"
+        },
+        {
+          "global_seq": 15,
+          "type": "run.queued"
+        },
+        {
+          "global_seq": 16,
+          "type": "run.started"
+        },
+        {
+          "global_seq": 17,
+          "type": "governance.resource_changed"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT seq,action,resource_id,hash FROM audit_log ORDER BY seq",
+      "rows": [
+        {
+          "seq": 1,
+          "action": "governance.seed",
+          "resource_id": "demo-org",
+          "hash": "68bbab232c9912ed9fd6bfbd34d676be7340faa5f7fdad1207118519622a2807"
+        },
+        {
+          "seq": 2,
+          "action": "skill.patched",
+          "resource_id": "skill:c7b7146c6ea65788b6d4161a4982f34b",
+          "hash": "12ec6f37796bcd762abf60b490032b65295299e942f10c3226179748132e14b5"
+        },
+        {
+          "seq": 3,
+          "action": "governance.skill_seeded",
+          "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "hash": "967912cbe56b766529d1f76258964d7763a31211444bc7cad8af610753fe42d7"
+        },
+        {
+          "seq": 4,
+          "action": "skill.patched",
+          "resource_id": "skill:7fb6db7a69e75931b85594e05ed43d2b",
+          "hash": "7629395541e3a6e2d24e9c20dc1de45c4b0cff5b6378a27e1197d19fda261086"
+        },
+        {
+          "seq": 5,
+          "action": "governance.skill_seeded",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "hash": "5a1659521c242377e2b67e13d0c1262d65d3251de1c7679e14391e5549e7e6fc"
+        },
+        {
+          "seq": 6,
+          "action": "skill.patched",
+          "resource_id": "skill:d902cc4eb75d5b9790c0278523e87aa0",
+          "hash": "f7c9d8c0dc2927e2e2b72d1d1eedde181658d5a00e7afd73f349070b11a3c22c"
+        },
+        {
+          "seq": 7,
+          "action": "governance.skill_seeded",
+          "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "hash": "ad5666c4dc821965ffc55768314c164cd0ef44356e7ea9174bbda35368ab1ad9"
+        },
+        {
+          "seq": 8,
+          "action": "governance.seed_completed",
+          "resource_id": "demo-org",
+          "hash": "32167145d325da2f12a45e96cf3870194caa990f5b9aa7f13cabc8b6ffb359e6"
+        },
+        {
+          "seq": 9,
+          "action": "governance.skill_history_registered",
+          "resource_id": "skill-history",
+          "hash": "6e36dcf1fb1a12ad646ee23bd5a2fdfef507f5c3f68b3363cca3a4e59d35d4e1"
+        },
+        {
+          "seq": 10,
+          "action": "governance.rule_revoked",
+          "resource_id": "seed-office-write",
+          "hash": "5a6a7810b1bd2db839dc9767af610dcc4f356a337533b5ad4282d19094fd2170"
+        },
+        {
+          "seq": 11,
+          "action": "governance.connector_created",
+          "resource_id": "a61f722e28cb5adc8b7c624174faf6ae",
+          "hash": "fd579b9d140891959b761ecd956b950e3b068ac2727d45bdc4d2df5557a8677c"
+        },
+        {
+          "seq": 12,
+          "action": "governance.grant_created",
+          "resource_id": "9ffb120f57ed50d8bd5378a08ad045df",
+          "hash": "155211f5db056d2a58614cebf7b43f8b1f03c58e824bb9e5cf5dbb5c2545e8d1"
+        },
+        {
+          "seq": 13,
+          "action": "governance.connector_validated",
+          "resource_id": "a61f722e28cb5adc8b7c624174faf6ae",
+          "hash": "817e2812e9a0ff83f769ef7cd40cf02296c061d323366244c7d04a80cb8ddd73"
+        }
+      ]
+    }
+  ]
+}

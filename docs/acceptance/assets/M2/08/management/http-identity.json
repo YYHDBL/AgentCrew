@@ -1,0 +1,388 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/agents/xiaowen/permission-rules",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "seed-office-write",
+            "agent_id": "xiaowen",
+            "tool_name": "write_file",
+            "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files",
+            "effect": "allow",
+            "created_by_user_id": "owner",
+            "created_at": "2026-10-04T13:12:55.451376+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-office-write"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/agents/xiaowen/permission-rules",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "human-allow-directory",
+      "tool_name": "write_file",
+      "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files/human-managed",
+      "effect": "allow"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "c038f2ffbe465c9abf5832d748098145",
+        "agent_id": "xiaowen",
+        "tool_name": "write_file",
+        "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files/human-managed",
+        "effect": "allow",
+        "created_by_user_id": "owner",
+        "created_at": "2026-10-04T13:12:55.485502+00:00",
+        "revoked_at": null,
+        "revision": 1,
+        "change_id": "human-allow-directory"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/agents/xiaowen/permission-rules",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "human-allow-directory",
+      "tool_name": "write_file",
+      "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files/human-managed",
+      "effect": "allow"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "agent_id": "xiaowen",
+        "change_id": "human-allow-directory",
+        "created_at": "2026-10-04T13:12:55.485502+00:00",
+        "created_by_user_id": "owner",
+        "effect": "allow",
+        "id": "c038f2ffbe465c9abf5832d748098145",
+        "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files/human-managed",
+        "revision": 1,
+        "revoked_at": null,
+        "tool_name": "write_file"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/agents/xiaowen/permission-rules",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "human-allow-directory",
+      "tool_name": "write_file",
+      "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files/human-managed",
+      "effect": "deny"
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "IDEMPOTENCY_CONFLICT",
+        "message": "change_id 已绑定不同请求"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "identity-de6baa75da3f46cd9f54d5318e9b2d0e"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "lilei",
+          "name": "李蕾",
+          "org_id": "demo-org",
+          "role": "member",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/agents/xiaowen/permission-rules",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "seed-office-write",
+            "agent_id": "xiaowen",
+            "tool_name": "write_file",
+            "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files",
+            "effect": "allow",
+            "created_by_user_id": "owner",
+            "created_at": "2026-10-04T13:12:55.451376+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-office-write"
+          },
+          {
+            "id": "c038f2ffbe465c9abf5832d748098145",
+            "agent_id": "xiaowen",
+            "tool_name": "write_file",
+            "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files/human-managed",
+            "effect": "allow",
+            "created_by_user_id": "owner",
+            "created_at": "2026-10-04T13:12:55.485502+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "human-allow-directory"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/agents/xiaowen/permission-rules",
+    "effective_user": "lilei",
+    "request": {
+      "change_id": "member-rules",
+      "tool_name": "write_file",
+      "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files/human-managed",
+      "effect": "allow"
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前角色无权执行该操作"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/grants?grantee_id=lilei",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "a6a4643dc78058ecbb370d403723dd93",
+            "resource_type": "agent",
+            "resource_id": "xiaowen",
+            "grantee_type": "user",
+            "grantee_id": "lilei",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T13:12:55.451560+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-visibility-xiaowen",
+            "workspace_id": "office"
+          },
+          {
+            "id": "fe6d085015035c559a5974c5259a674d",
+            "resource_type": "agent",
+            "resource_id": "xiaogang",
+            "grantee_type": "user",
+            "grantee_id": "lilei",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-04T13:12:55.451579+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-visibility-xiaogang",
+            "workspace_id": "analytics"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/grants/fe6d085015035c559a5974c5259a674d",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "remove-member-analytics",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "fe6d085015035c559a5974c5259a674d",
+        "resource_type": "agent",
+        "resource_id": "xiaogang",
+        "grantee_type": "user",
+        "grantee_id": "lilei",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-04T13:12:55.451579+00:00",
+        "revoked_at": "2026-10-04T13:12:55.492951+00:00",
+        "revision": 2,
+        "change_id": "seed-visibility-xiaogang",
+        "workspace_id": "analytics"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/agents/xiaogang/permission-rules",
+    "effective_user": "lilei",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前成员没有员工使用授权"
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/agents/xiaowen/permission-rules/c038f2ffbe465c9abf5832d748098145",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "revoke-human-rule",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "c038f2ffbe465c9abf5832d748098145",
+        "agent_id": "xiaowen",
+        "tool_name": "write_file",
+        "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files/human-managed",
+        "effect": "allow",
+        "created_by_user_id": "owner",
+        "created_at": "2026-10-04T13:12:55.485502+00:00",
+        "revoked_at": "2026-10-04T13:12:55.494915+00:00",
+        "revision": 2,
+        "change_id": "human-allow-directory"
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/agents/xiaowen/permission-rules/c038f2ffbe465c9abf5832d748098145",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "revoke-human-rule",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "agent_id": "xiaowen",
+        "change_id": "human-allow-directory",
+        "created_at": "2026-10-04T13:12:55.485502+00:00",
+        "created_by_user_id": "owner",
+        "effect": "allow",
+        "id": "c038f2ffbe465c9abf5832d748098145",
+        "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files/human-managed",
+        "revision": 2,
+        "revoked_at": "2026-10-04T13:12:55.494915+00:00",
+        "tool_name": "write_file"
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/agents/xiaowen/permission-rules/c038f2ffbe465c9abf5832d748098145",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "stale-rule",
+      "expected_revision": 1
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "REVISION_CONFLICT",
+        "message": "规则修订已经变化"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/agents/xiaowen/permission-rules?revoked=true&limit=1",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "seed-office-write",
+            "agent_id": "xiaowen",
+            "tool_name": "write_file",
+            "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files",
+            "effect": "allow",
+            "created_by_user_id": "owner",
+            "created_at": "2026-10-04T13:12:55.451376+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-office-write"
+          }
+        ],
+        "next_after": "3f429006a96547c0e7ac7daf69670f3fc65decfd6d40754db9b7898e067fcbe9:seed-office-write"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/agents/xiaowen/permission-rules?revoked=true&limit=1&after=3f429006a96547c0e7ac7daf69670f3fc65decfd6d40754db9b7898e067fcbe9:seed-office-write",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "c038f2ffbe465c9abf5832d748098145",
+            "agent_id": "xiaowen",
+            "tool_name": "write_file",
+            "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/identity-http0/workspaces/office/files/human-managed",
+            "effect": "allow",
+            "created_by_user_id": "owner",
+            "created_at": "2026-10-04T13:12:55.485502+00:00",
+            "revoked_at": "2026-10-04T13:12:55.494915+00:00",
+            "revision": 2,
+            "change_id": "human-allow-directory"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/agents/xiaowen/permission-rules?limit=1&after=3f429006a96547c0e7ac7daf69670f3fc65decfd6d40754db9b7898e067fcbe9:seed-office-write",
+    "effective_user": "owner",
+    "request": null,
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "分页游标与当前身份、范围、过滤或修订不一致"
+      }
+    }
+  }
+]

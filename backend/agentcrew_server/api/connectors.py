@@ -37,6 +37,7 @@ class ConnectorConfig(BaseModel):
     transport: Literal["stdio", "streamable_http"] | None = None
     command: str | None = None
     args: list[str] = Field(default_factory=list)
+    startup_files: list[str] = Field(default_factory=list, max_length=20)
     credential_header: Literal["Authorization", "X-API-Key"] = "Authorization"
     tool_policies: dict[str, ToolPolicy] = Field(default_factory=dict)
     idempotent_endpoints: list[IdempotentEndpoint] = Field(default_factory=list)

@@ -1,0 +1,958 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/memory/stores/soul/xiaogang?workspace_id=analytics&agent_id=xiaogang",
+    "request": {
+      "change_id": "configure-soul-xiaogang",
+      "expected_revision": 0,
+      "basis": "所有者为治理验收明确配置岗位自我认知",
+      "text": "我是负责核查数据来源与查询结果的数据分析员工。执行时遵守当前工具授权，核对真实输出并记录依据。"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "configure-soul-xiaogang",
+        "ledger_id": 4,
+        "store_type": "soul",
+        "store_id": "xiaogang",
+        "entry_id": "33b8b5f63b3447c7b89fb12e692fd574",
+        "entry_hash": "b645151e1432698d185dc8c12f77e3e724df2a6101a27ad129deff626b669ab4",
+        "revision": 1,
+        "global_seq": 17,
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen",
+    "request": {
+      "change_id": "configure-soul-xiaowen",
+      "expected_revision": 0,
+      "basis": "所有者为治理验收明确配置岗位自我认知",
+      "text": "我是负责整理材料与核查输出的办公助理。执行时读取当前授权，按实际文件和工具结果说明工作情况。"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "configure-soul-xiaowen",
+        "ledger_id": 5,
+        "store_type": "soul",
+        "store_id": "xiaowen",
+        "entry_id": "7b4f9bfb375546658899d7b975aa8a16",
+        "entry_hash": "ed7fed30fe7814db583e9adff84c1d3b5961c9817cd9faa022fd60458eb4b137",
+        "revision": 1,
+        "global_seq": 20,
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/agents/xiaowen/permission-rules",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "seed-office-write",
+            "agent_id": "xiaowen",
+            "tool_name": "write_file",
+            "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/grant-http0/workspaces/office/files",
+            "effect": "allow",
+            "created_by_user_id": "owner",
+            "created_at": "2026-10-04T13:12:20.182861+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-office-write"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/agents/xiaowen/permission-rules/seed-office-write",
+    "request": {
+      "change_id": "kill-revoke-seed-office-write",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "seed-office-write",
+        "agent_id": "xiaowen",
+        "tool_name": "write_file",
+        "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/grant-http0/workspaces/office/files",
+        "effect": "allow",
+        "created_by_user_id": "owner",
+        "created_at": "2026-10-04T13:12:20.182861+00:00",
+        "revoked_at": "2026-10-04T13:12:20.504178+00:00",
+        "revision": 2,
+        "change_id": "seed-office-write"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "请直接执行write_file调用，参数为{\"path\": \"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/grant-http0/workspaces/office/files/rules-kill.txt\", \"content\": \"真实恢复审批正文\"}。需要审批时等待决定。",
+      "client_request_id": "23d51067de8c4a269648e6c1201c4259"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "377d5305bef44aac8b7fe4181533ab8d",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-04T13:12:20.522864+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/grant-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/grant-http0/conversations/377d5305bef44aac8b7fe4181533ab8d/materials",
+          "folders": []
+        },
+        "task_run_id": "d9b45d108b96419787954ed3a7080a2b"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/tool-approvals/call_00_z0f3n1ev6kjwazs42us3m8lb",
+    "request": {
+      "decision": "allow_always",
+      "input_hash": "dd2ea2d7381f081938576018ff5e3a99517a8cf153a33b0ffa78819ddb488d68"
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "APPROVAL_STALE",
+        "message": "审批执行方已经停止，未处理审批已过期"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/d9b45d108b96419787954ed3a7080a2b/approvals",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "call_id": "call_00_z0f3n1ev6kjwazs42us3m8lb",
+          "tool": "write_file",
+          "target": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/grant-http0/workspaces/office/files/rules-kill.txt",
+          "input_hash": "dd2ea2d7381f081938576018ff5e3a99517a8cf153a33b0ffa78819ddb488d68",
+          "risk": "medium",
+          "always_scope_preview": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/grant-http0/workspaces/office/files",
+          "requested_at": "2026-10-04T13:12:30.432593+00:00",
+          "decision": null,
+          "stale": true,
+          "attempt_no": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/task-runs/d9b45d108b96419787954ed3a7080a2b/resume",
+    "request": null,
+    "status": 202,
+    "response": {
+      "data": {
+        "warnings": []
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/tool-approvals/call_00_m91jmmdxgdtwp8wwtrliya5y",
+    "request": {
+      "decision": "allow_once",
+      "input_hash": "dd2ea2d7381f081938576018ff5e3a99517a8cf153a33b0ffa78819ddb488d68"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "decision": "allow_once",
+        "decided_at": "2026-10-04T13:12:42.943302+00:00",
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/377d5305bef44aac8b7fe4181533ab8d/questions",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  }
+]

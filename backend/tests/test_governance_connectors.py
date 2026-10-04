@@ -14,6 +14,7 @@ import uuid
 from importlib.metadata import version
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from dataclasses import replace
 
 import pytest
 
@@ -158,6 +159,7 @@ def test_real_mcp_stdio_persists_and_cleans_process(governed, persistent_http):
     resources, sessions, grants, connectors = services(governed)
     async def check():
         config = {"transport": "stdio", "command": sys.executable, "args": [str(Path(__file__).with_name("governance_mcp_server.py"))],
+            "startup_files": [str(Path(__file__).with_name("governance_mcp_server.py"))],
             "allowed_hosts": [], "allowed_ports": [], "allow_loopback": False,
             "tool_policies": {"environment": {"read_only": True, "destructive": False, "needs_approval": False, "risk_level": "low"},
                 "persist": {"read_only": False, "destructive": False, "needs_approval": True, "risk_level": "medium"}}}
@@ -185,7 +187,7 @@ def test_real_mcp_stdio_persists_and_cleans_process(governed, persistent_http):
         assert [json.loads(line) for line in target.read_text().splitlines()] == [{"value": "真实MCP持久化材料"}]
         protected = resources.data_dir / "protected-sample.txt"
         protected.write_text("独立无凭据保护材料")
-        context.protected.append(protected)
+        context = replace(context, protected=[*context.protected, protected], filesystem=None)
         read = await scheduler.run(ToolInvocation("mcp-protected-read", "mcp_" + connector["id"] + "_read_target", {"path": str(protected)}), context)
         write = await scheduler.run(ToolInvocation("mcp-protected-write", "mcp_" + connector["id"] + "_write_target", {"path": str(protected), "text": "禁止替换"}), context)
         network = await scheduler.run(ToolInvocation("mcp-forbidden-network", "mcp_" + connector["id"] + "_network_target", {"url": persistent_http["url"]}), context)
@@ -252,6 +254,7 @@ def test_old_mcp_directory_revision_cannot_execute_after_update(governed):
     resources, sessions, grants, connectors = services(governed)
     async def check():
         config = {"transport": "stdio", "command": sys.executable, "args": [str(Path(__file__).with_name("governance_mcp_server.py"))],
+            "startup_files": [str(Path(__file__).with_name("governance_mcp_server.py"))],
             "allowed_hosts": [], "allowed_ports": [], "allow_loopback": False}
         connector, grant = await create(resources, grants, connectors, "mcp", config)
         task = await sessions.create_conversation(instruction="旧目录修订执行边界", workspace_id="office", agent_id="xiaowen", request_identity=RequestIdentity("owner", "owner"))

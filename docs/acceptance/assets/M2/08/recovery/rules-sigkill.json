@@ -1,0 +1,40 @@
+{
+  "task_run_id": "d9b45d108b96419787954ed3a7080a2b",
+  "conversation_id": "377d5305bef44aac8b7fe4181533ab8d",
+  "old_approval": {
+    "always_scope_preview": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/grant-http0/workspaces/office/files",
+    "input_hash": "dd2ea2d7381f081938576018ff5e3a99517a8cf153a33b0ffa78819ddb488d68",
+    "options": [
+      "allow_once",
+      "allow_always",
+      "reject_once",
+      "reject_always"
+    ],
+    "risk": "medium",
+    "target": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/grant-http0/workspaces/office/files/rules-kill.txt",
+    "tool": "write_file",
+    "tool_call_id": "call_00_z0f3n1ev6kjwazs42us3m8lb"
+  },
+  "new_approved_calls": [
+    "call_00_m91jmmdxgdtwp8wwtrliya5y"
+  ],
+  "attempts": [
+    {
+      "id": "e485941523f0499f8838791a49d2f3bc",
+      "attempt_no": 1,
+      "status": "interrupted"
+    },
+    {
+      "id": "cc70900cde434293801bb8e1fc95310a",
+      "attempt_no": 2,
+      "status": "completed"
+    }
+  ],
+  "terminal": [
+    {
+      "status": "completed"
+    }
+  ],
+  "sha256": "b528ff2bc5f3e3a19955259d17b6f41c2e8a87fc2f7dbeadc334b18fa78f9dc1",
+  "mtime_ns": 1791119564707828907
+}

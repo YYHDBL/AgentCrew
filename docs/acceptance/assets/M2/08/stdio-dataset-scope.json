@@ -1,0 +1,24 @@
+{
+  "task_run_id": "124523df0c454f2aba26d6aa3788e437",
+  "authorized_task_run_id": "ce230ebbf74d44cc9a534e90dc273538",
+  "connector_id": "05f0bd37e5555492923f81c9cad6d2ea",
+  "denied_call_id": "mcp-data-argument",
+  "authorized_call_id": "mcp-data-authorized",
+  "denied": true,
+  "authorized": true,
+  "file_sha256": "783082ac34ad583e68151ad38d8daa01c9e081f6305e9f1ec0ec2761ed61fd30",
+  "mtime_ns": 1791119497384617419,
+  "tool_sql": "SELECT call_id,status,input_hash FROM tool_calls ORDER BY prepared_at",
+  "tool_rows": [
+    {
+      "call_id": "mcp-data-argument",
+      "status": "failed",
+      "input_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "call_id": "mcp-data-authorized",
+      "status": "completed",
+      "input_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
+  ]
+}

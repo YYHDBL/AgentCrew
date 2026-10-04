@@ -1,0 +1,824 @@
+{
+  "task_run_id": "05769e6655014e94bd9996c4759e0e6b",
+  "conversation_id": "7c85c3636868438cbda68203f7f41cd5",
+  "calls": [
+    {
+      "call_id": "sandbox-inside-read",
+      "command": "cat inside.txt",
+      "ok": true,
+      "output": "实际合法材料",
+      "details": {
+        "exit_code": 0,
+        "read_only_verdict": true,
+        "verdict_reason": "白名单只读命令",
+        "stderr": ""
+      }
+    },
+    {
+      "call_id": "sandbox-inside-write",
+      "command": "printf '实际合法写入' > inside-written.txt",
+      "ok": true,
+      "output": "",
+      "details": {
+        "exit_code": 0,
+        "read_only_verdict": false,
+        "verdict_reason": "含元字符/重定向：'>'",
+        "stderr": ""
+      }
+    },
+    {
+      "call_id": "sandbox-outside-read",
+      "command": "cat /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/ordinary-external/material.txt",
+      "ok": false,
+      "output": "\n[stderr]\ncat: /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/ordinary-external/material.txt: Operation not permitted\n",
+      "details": {
+        "exit_code": 1,
+        "read_only_verdict": true,
+        "verdict_reason": "白名单只读命令",
+        "stderr": "cat: /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/ordinary-external/material.txt: Operation not permitted\n"
+      }
+    },
+    {
+      "call_id": "sandbox-outside-write",
+      "command": "printf '禁止外部写入' > /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/ordinary-external/material.txt",
+      "ok": false,
+      "output": "\n[stderr]\n/bin/sh: /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/ordinary-external/material.txt: Operation not permitted\n",
+      "details": {
+        "exit_code": 1,
+        "read_only_verdict": false,
+        "verdict_reason": "含元字符/重定向：'>'",
+        "stderr": "/bin/sh: /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/ordinary-external/material.txt: Operation not permitted\n"
+      }
+    },
+    {
+      "call_id": "sandbox-protected-read",
+      "command": "cat protected-copy/material.txt",
+      "ok": false,
+      "output": "\n[stderr]\ncat: protected-copy/material.txt: Operation not permitted\n",
+      "details": {
+        "exit_code": 1,
+        "read_only_verdict": true,
+        "verdict_reason": "白名单只读命令",
+        "stderr": "cat: protected-copy/material.txt: Operation not permitted\n"
+      }
+    },
+    {
+      "call_id": "sandbox-protected-write",
+      "command": "printf '禁止保护写入' > protected-copy/material.txt",
+      "ok": false,
+      "output": "\n[stderr]\n/bin/sh: protected-copy/material.txt: Operation not permitted\n",
+      "details": {
+        "exit_code": 1,
+        "read_only_verdict": false,
+        "verdict_reason": "含元字符/重定向：'>'",
+        "stderr": "/bin/sh: protected-copy/material.txt: Operation not permitted\n"
+      }
+    },
+    {
+      "call_id": "sandbox-readonly-read",
+      "command": "cat /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/read-authorized/material.txt",
+      "ok": true,
+      "output": "独立安全验收材料",
+      "details": {
+        "exit_code": 0,
+        "read_only_verdict": true,
+        "verdict_reason": "白名单只读命令",
+        "stderr": ""
+      }
+    },
+    {
+      "call_id": "sandbox-readonly-write",
+      "command": "printf '禁止读取目录写入' > /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/read-authorized/material.txt",
+      "ok": false,
+      "output": "\n[stderr]\n/bin/sh: /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/read-authorized/material.txt: Operation not permitted\n",
+      "details": {
+        "exit_code": 1,
+        "read_only_verdict": false,
+        "verdict_reason": "含元字符/重定向：'>'",
+        "stderr": "/bin/sh: /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/read-authorized/material.txt: Operation not permitted\n"
+      }
+    },
+    {
+      "call_id": "sandbox-alias-read",
+      "command": "cat outside-alias/material.txt",
+      "ok": false,
+      "output": "\n[stderr]\ncat: outside-alias/material.txt: Operation not permitted\n",
+      "details": {
+        "exit_code": 1,
+        "read_only_verdict": true,
+        "verdict_reason": "白名单只读命令",
+        "stderr": "cat: outside-alias/material.txt: Operation not permitted\n"
+      }
+    },
+    {
+      "call_id": "sandbox-network-denied",
+      "command": "/usr/bin/curl --silent --show-error --max-time 2 --data '真实禁止网络材料' http://127.0.0.1:63691/ordinary",
+      "ok": false,
+      "output": "\n[stderr]\nAuto configuration failed\n8610822208:error:02FFF001:system library:func(4095):Operation not permitted:/AppleInternal/Library/BuildRoots/4b66fb3c-7dd0-11ef-b4fb-4a83e32a47e1/Library/Caches/com.apple.xbs/Sources/libressl/libressl-3.3/crypto/bio/bss_file.c:122:fopen('/private/etc/ssl/openssl.cnf', 'rb')\n8610822208:error:20FFF002:BIO routines:CRYPTO_internal:system lib:/AppleInternal/Library/BuildRoots/4b66fb3c-7dd0-11ef-b4fb-4a83e32a47e1/Library/Caches/com.apple.xbs/Sources/libressl/libressl-3.3/crypto/bio/bss_file.c:127:\n8610822208:error:0EFFF002:configuration file routines:CRYPTO_internal:system lib:/AppleInternal/Library/BuildRoots/4b66fb3c-7dd0-11ef-b4fb-4a83e32a47e1/Library/Caches/com.apple.xbs/Sources/libressl/libressl-3.3/crypto/conf/conf_def.c:202:\n",
+      "details": {
+        "exit_code": 1,
+        "read_only_verdict": false,
+        "verdict_reason": "首词不在只读白名单：/usr/bin/curl",
+        "stderr": "Auto configuration failed\n8610822208:error:02FFF001:system library:func(4095):Operation not permitted:/AppleInternal/Library/BuildRoots/4b66fb3c-7dd0-11ef-b4fb-4a83e32a47e1/Library/Caches/com.apple.xbs/Sources/libressl/libressl-3.3/crypto/bio/bss_file.c:122:fopen('/private/etc/ssl/openssl.cnf', 'rb')\n8610822208:error:20FFF002:BIO routines:CRYPTO_internal:system lib:/AppleInternal/Library/BuildRoots/4b66fb3c-7dd0-11ef-b4fb-4a83e32a47e1/Library/Caches/com.apple.xbs/Sources/libressl/libressl-3.3/crypto/bio/bss_file.c:127:\n8610822208:error:0EFFF002:configuration file routines:CRYPTO_internal:system lib:/AppleInternal/Library/BuildRoots/4b66fb3c-7dd0-11ef-b4fb-4a83e32a47e1/Library/Caches/com.apple.xbs/Sources/libressl/libressl-3.3/crypto/conf/conf_def.c:202:\n"
+      }
+    }
+  ],
+  "files_before": {
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/ordinary-external": {
+      "sha256": "5856c956c749fb862ec84ad0414379b405f49c9a412908af8f78b43e12f1e18a",
+      "mtime_ns": 1791119495928610103
+    },
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/read-authorized": {
+      "sha256": "5856c956c749fb862ec84ad0414379b405f49c9a412908af8f78b43e12f1e18a",
+      "mtime_ns": 1791119495928789393
+    },
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/workspaces/office/files/protected-copy": {
+      "sha256": "5856c956c749fb862ec84ad0414379b405f49c9a412908af8f78b43e12f1e18a",
+      "mtime_ns": 1791119495928940266
+    }
+  },
+  "files_after": {
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/ordinary-external": {
+      "sha256": "5856c956c749fb862ec84ad0414379b405f49c9a412908af8f78b43e12f1e18a",
+      "mtime_ns": 1791119495928610103
+    },
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/read-authorized": {
+      "sha256": "5856c956c749fb862ec84ad0414379b405f49c9a412908af8f78b43e12f1e18a",
+      "mtime_ns": 1791119495928789393
+    },
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-sandbox-delivery/test_real_task_sandbox_boundar0/workspaces/office/files/protected-copy": {
+      "sha256": "5856c956c749fb862ec84ad0414379b405f49c9a412908af8f78b43e12f1e18a",
+      "mtime_ns": 1791119495928940266
+    }
+  },
+  "actual_http_operations": 0,
+  "upstream_sql": "SELECT count(*) FROM operations",
+  "queries": [
+    {
+      "sql": "SELECT call_id,tool_name,status,input_hash,dispatched_at,completed_at FROM tool_calls ORDER BY prepared_at",
+      "rows": [
+        {
+          "call_id": "sandbox-inside-read",
+          "tool_name": "bash",
+          "status": "completed",
+          "input_hash": "70780870f4b46e437774bafe7cea0da63da2660e086f5e59a1592a2ff6d78930",
+          "dispatched_at": "2026-10-04T13:11:35.953946+00:00",
+          "completed_at": "2026-10-04T13:11:36.028983+00:00"
+        },
+        {
+          "call_id": "sandbox-inside-write",
+          "tool_name": "bash",
+          "status": "completed",
+          "input_hash": "a981332cadedea525a30c3bf290139fc6eee54416c2ddcb2e2a4153f88a09144",
+          "dispatched_at": "2026-10-04T13:11:36.055266+00:00",
+          "completed_at": "2026-10-04T13:11:36.124418+00:00"
+        },
+        {
+          "call_id": "sandbox-outside-read",
+          "tool_name": "bash",
+          "status": "failed",
+          "input_hash": "80a9eb180d090f61980433a3451dfe37a63491d89148116e0a88c9f7895805ad",
+          "dispatched_at": "2026-10-04T13:11:36.143704+00:00",
+          "completed_at": "2026-10-04T13:11:36.212923+00:00"
+        },
+        {
+          "call_id": "sandbox-outside-write",
+          "tool_name": "bash",
+          "status": "failed",
+          "input_hash": "a299615bbdce69181a73cefa5ef2d18730924219a1a4b58e76871bdd1baeb9da",
+          "dispatched_at": "2026-10-04T13:11:36.242044+00:00",
+          "completed_at": "2026-10-04T13:11:36.309271+00:00"
+        },
+        {
+          "call_id": "sandbox-protected-read",
+          "tool_name": "bash",
+          "status": "failed",
+          "input_hash": "4695bbad9227450d179bbcc693d8c768290bf90d4ce2182b0f4423eff0d263dd",
+          "dispatched_at": "2026-10-04T13:11:36.328009+00:00",
+          "completed_at": "2026-10-04T13:11:36.396643+00:00"
+        },
+        {
+          "call_id": "sandbox-protected-write",
+          "tool_name": "bash",
+          "status": "failed",
+          "input_hash": "b258526b75d6995d50f8705c18df99c521d60d930bd0c4e733e7600872f629da",
+          "dispatched_at": "2026-10-04T13:11:36.425912+00:00",
+          "completed_at": "2026-10-04T13:11:36.496129+00:00"
+        },
+        {
+          "call_id": "sandbox-readonly-read",
+          "tool_name": "bash",
+          "status": "completed",
+          "input_hash": "0d48c8be2bd2607cfcc7cd8e2d172a164e8a1e969728c02bb755363ad7213235",
+          "dispatched_at": "2026-10-04T13:11:36.515460+00:00",
+          "completed_at": "2026-10-04T13:11:36.585760+00:00"
+        },
+        {
+          "call_id": "sandbox-readonly-write",
+          "tool_name": "bash",
+          "status": "failed",
+          "input_hash": "cf162dfb278fa269c2fc43e79b6ef0bf9449457689e0e414a71c451f164d4f66",
+          "dispatched_at": "2026-10-04T13:11:36.614910+00:00",
+          "completed_at": "2026-10-04T13:11:36.684611+00:00"
+        },
+        {
+          "call_id": "sandbox-alias-read",
+          "tool_name": "bash",
+          "status": "failed",
+          "input_hash": "821820d1e98bc00b492b10418c819114d799a5480b77d872db355aec73656a63",
+          "dispatched_at": "2026-10-04T13:11:36.702868+00:00",
+          "completed_at": "2026-10-04T13:11:36.771566+00:00"
+        },
+        {
+          "call_id": "sandbox-network-denied",
+          "tool_name": "bash",
+          "status": "failed",
+          "input_hash": "dd81a0345a7f5b541a1e60bb4a211bb568be74bd252bacc354ff0903fe42eb88",
+          "dispatched_at": "2026-10-04T13:11:36.800003+00:00",
+          "completed_at": "2026-10-04T13:11:36.884854+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,attempt_no,status FROM run_attempts ORDER BY started_at",
+      "rows": [
+        {
+          "id": "rules-attempt",
+          "attempt_no": 1,
+          "status": "running"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,status FROM memory_jobs ORDER BY created_at",
+      "rows": []
+    },
+    {
+      "sql": "SELECT global_seq,attempt_no,type,task_run_id FROM run_events ORDER BY global_seq",
+      "rows": [
+        {
+          "global_seq": 1,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 2,
+          "attempt_no": null,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 3,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 4,
+          "attempt_no": null,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 5,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 6,
+          "attempt_no": null,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 7,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 8,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 9,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 10,
+          "attempt_no": null,
+          "type": "governance.rule_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 11,
+          "attempt_no": null,
+          "type": "run.queued",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 12,
+          "attempt_no": null,
+          "type": "run.started",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 13,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 14,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 15,
+          "attempt_no": 1,
+          "type": "tool.completed",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 16,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 17,
+          "attempt_no": 1,
+          "type": "permission.requested",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 18,
+          "attempt_no": 1,
+          "type": "permission.resolved",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 19,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 20,
+          "attempt_no": 1,
+          "type": "tool.completed",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 21,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 22,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 23,
+          "attempt_no": 1,
+          "type": "tool.failed",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 24,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 25,
+          "attempt_no": 1,
+          "type": "permission.requested",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 26,
+          "attempt_no": 1,
+          "type": "permission.resolved",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 27,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 28,
+          "attempt_no": 1,
+          "type": "tool.failed",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 29,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 30,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 31,
+          "attempt_no": 1,
+          "type": "tool.failed",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 32,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 33,
+          "attempt_no": 1,
+          "type": "permission.requested",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 34,
+          "attempt_no": 1,
+          "type": "permission.resolved",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 35,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 36,
+          "attempt_no": 1,
+          "type": "tool.failed",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 37,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 38,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 39,
+          "attempt_no": 1,
+          "type": "tool.completed",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 40,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 41,
+          "attempt_no": 1,
+          "type": "permission.requested",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 42,
+          "attempt_no": 1,
+          "type": "permission.resolved",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 43,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 44,
+          "attempt_no": 1,
+          "type": "tool.failed",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 45,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 46,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 47,
+          "attempt_no": 1,
+          "type": "tool.failed",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 48,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 49,
+          "attempt_no": 1,
+          "type": "permission.requested",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 50,
+          "attempt_no": 1,
+          "type": "permission.resolved",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 51,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        },
+        {
+          "global_seq": 52,
+          "attempt_no": 1,
+          "type": "tool.failed",
+          "task_run_id": "05769e6655014e94bd9996c4759e0e6b"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT seq,actor_id,action,resource_id,hash FROM audit_log ORDER BY seq",
+      "rows": [
+        {
+          "seq": 1,
+          "actor_id": "owner",
+          "action": "governance.seed",
+          "resource_id": "demo-org",
+          "hash": "66fb5218822e4e36da9ccdcd2026c1f12835a7871de6f3dc649aed6320c7d1ec"
+        },
+        {
+          "seq": 2,
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_id": "skill:c7b7146c6ea65788b6d4161a4982f34b",
+          "hash": "e1ef3bb30c2898b30937e7d9869522659a3e07ea4c3805f09d4996f5b8c7bcb4"
+        },
+        {
+          "seq": 3,
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "hash": "0628b811d9ff46bf825e509f520f8293168363ae41bc03f1ef0bd92f88493313"
+        },
+        {
+          "seq": 4,
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_id": "skill:7fb6db7a69e75931b85594e05ed43d2b",
+          "hash": "355e8ff02774d814557e5ad239a40edeee4e9871d24a1fa3121e0521ef1e1199"
+        },
+        {
+          "seq": 5,
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "hash": "38a8e5b49c81f8cf021d6ca910f57985f987c3987e9dfe2a6eb3cc9776a139a2"
+        },
+        {
+          "seq": 6,
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_id": "skill:d902cc4eb75d5b9790c0278523e87aa0",
+          "hash": "57d742a6b39305d45f3f6d6730a1538b7b66b9a875d2eb33fb31a1c0c6683b6d"
+        },
+        {
+          "seq": 7,
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "hash": "d7263c42f2a4d48726ca269dcca8f6cb67a71e18030d7b1c8efbe14169e1aeee"
+        },
+        {
+          "seq": 8,
+          "actor_id": "owner",
+          "action": "governance.seed_completed",
+          "resource_id": "demo-org",
+          "hash": "d2e23257cc760bb7291363cb3395aa3f833d8741241db141e3afe5ae8cad8340"
+        },
+        {
+          "seq": 9,
+          "actor_id": "owner",
+          "action": "governance.skill_history_registered",
+          "resource_id": "skill-history",
+          "hash": "961ebc42351ff05f0b72c64c7e990d9c64e40b61f2c3426e953242bd0265308b"
+        },
+        {
+          "seq": 10,
+          "actor_id": "owner",
+          "action": "governance.rule_revoked",
+          "resource_id": "seed-office-write",
+          "hash": "010149115d9e76b05d0c6a3ef237bd9d1797bd03df7e9414b56e9b47064aca48"
+        },
+        {
+          "seq": 11,
+          "actor_id": "gate",
+          "action": "permission.auto_allowed",
+          "resource_id": "sandbox-inside-read",
+          "hash": "f7b6689b861ebfcb161e887751ff28d564fab8d7cb0f347c570b22c57d3bbaed"
+        },
+        {
+          "seq": 12,
+          "actor_id": "tools",
+          "action": "tool.completed",
+          "resource_id": "sandbox-inside-read",
+          "hash": "5831d572f4a15f12519f86c95b2fdb1a3867046d3d91c916e32cc9545ce77608"
+        },
+        {
+          "seq": 13,
+          "actor_id": "gate",
+          "action": "permission.requested",
+          "resource_id": "sandbox-inside-write",
+          "hash": "b5a46eccc83eee4114f7484627de03c65b1b3867db409c3d8741a2a8eaaae132"
+        },
+        {
+          "seq": 14,
+          "actor_id": "owner",
+          "action": "permission.resolved:allow_once",
+          "resource_id": "sandbox-inside-write",
+          "hash": "6cb6422a28037e23d1c6c6026cbb508c2d9217e534b24767e96d5730aafc2021"
+        },
+        {
+          "seq": 15,
+          "actor_id": "tools",
+          "action": "tool.completed",
+          "resource_id": "sandbox-inside-write",
+          "hash": "a8a5c21255f3cb780de26000a3a99f9bffe40032e3ceab5309d6484342bd6957"
+        },
+        {
+          "seq": 16,
+          "actor_id": "gate",
+          "action": "permission.auto_allowed",
+          "resource_id": "sandbox-outside-read",
+          "hash": "4105549e717912eeb49890d47e1e2c658ea3e6783a825f9341766f5374089509"
+        },
+        {
+          "seq": 17,
+          "actor_id": "tools",
+          "action": "tool.failed",
+          "resource_id": "sandbox-outside-read",
+          "hash": "f6ef35f3daee5da126b7b9bd96006dff93579a71ae77bc05a66d340229d08f5e"
+        },
+        {
+          "seq": 18,
+          "actor_id": "gate",
+          "action": "permission.requested",
+          "resource_id": "sandbox-outside-write",
+          "hash": "985c1ed5608d6d9e53d2857df02e9a4ba29576eba103ec01061cb6f1e78664fb"
+        },
+        {
+          "seq": 19,
+          "actor_id": "owner",
+          "action": "permission.resolved:allow_once",
+          "resource_id": "sandbox-outside-write",
+          "hash": "7b04acb33bd8c977fdbf15c3b866c9fcf6201c963b23b7fdafc8ccbdad0cd3bc"
+        },
+        {
+          "seq": 20,
+          "actor_id": "tools",
+          "action": "tool.failed",
+          "resource_id": "sandbox-outside-write",
+          "hash": "3c9a73627177b7e0c1e6bf27a11f202dca338637a51c14c41ea4f37c3cbc5f11"
+        },
+        {
+          "seq": 21,
+          "actor_id": "gate",
+          "action": "permission.auto_allowed",
+          "resource_id": "sandbox-protected-read",
+          "hash": "eddbaf76f58b1abc8442fd20386a77d820f3f8d194fc8a8f30d94ccc927084bc"
+        },
+        {
+          "seq": 22,
+          "actor_id": "tools",
+          "action": "tool.failed",
+          "resource_id": "sandbox-protected-read",
+          "hash": "23e2b616a8a7466ad0544e33b7e4fa3cc1006e40b773970efc4006ca3a9a4f0f"
+        },
+        {
+          "seq": 23,
+          "actor_id": "gate",
+          "action": "permission.requested",
+          "resource_id": "sandbox-protected-write",
+          "hash": "071b0ffae91e82ef9b2e0771e43fd48b081c84ea50f922eedc1d49250c5196c9"
+        },
+        {
+          "seq": 24,
+          "actor_id": "owner",
+          "action": "permission.resolved:allow_once",
+          "resource_id": "sandbox-protected-write",
+          "hash": "4a2ca807c5cac649104d8a24b34d8771daca08e17e99384cb2ccd701953caba0"
+        },
+        {
+          "seq": 25,
+          "actor_id": "tools",
+          "action": "tool.failed",
+          "resource_id": "sandbox-protected-write",
+          "hash": "6c9165267bb3a0070339bf80697a146a6acdc3ca0440d9495db4ca503ad1a04d"
+        },
+        {
+          "seq": 26,
+          "actor_id": "gate",
+          "action": "permission.auto_allowed",
+          "resource_id": "sandbox-readonly-read",
+          "hash": "1705506bfe959fd505a9fccc19d4982decc96f4a7a6a613c979c243c70c71172"
+        },
+        {
+          "seq": 27,
+          "actor_id": "tools",
+          "action": "tool.completed",
+          "resource_id": "sandbox-readonly-read",
+          "hash": "c01dc3a6dc70b2a6233315b3e7aa03e42f80ab52abe903be3c74f73314b0d7d6"
+        },
+        {
+          "seq": 28,
+          "actor_id": "gate",
+          "action": "permission.requested",
+          "resource_id": "sandbox-readonly-write",
+          "hash": "048a3721e477ff4ca1b1ee1cb5058e94a42557a6708996e92254aa4da071940b"
+        },
+        {
+          "seq": 29,
+          "actor_id": "owner",
+          "action": "permission.resolved:allow_once",
+          "resource_id": "sandbox-readonly-write",
+          "hash": "f557227d14206b2467f962a327c9515fb9d4b8f673f2f02c20a4c815d1ec460b"
+        },
+        {
+          "seq": 30,
+          "actor_id": "tools",
+          "action": "tool.failed",
+          "resource_id": "sandbox-readonly-write",
+          "hash": "10e7879a18a01fb7335fb948991897681009a64d8fd064b1e726b939a7d89bb5"
+        },
+        {
+          "seq": 31,
+          "actor_id": "gate",
+          "action": "permission.auto_allowed",
+          "resource_id": "sandbox-alias-read",
+          "hash": "2f6a04fac5afd60c4b0564ba215100c53bbee205dbd65c46f787ee501c68a421"
+        },
+        {
+          "seq": 32,
+          "actor_id": "tools",
+          "action": "tool.failed",
+          "resource_id": "sandbox-alias-read",
+          "hash": "5d8a6aaccadd1cba5ed6a4a89438a0a4e35eaa55036ffbb01a7b781e2aafa105"
+        },
+        {
+          "seq": 33,
+          "actor_id": "gate",
+          "action": "permission.requested",
+          "resource_id": "sandbox-network-denied",
+          "hash": "7ec20c2366d920fcfab7c042ffa00af87ee415fbc7ce6df114916112364228fe"
+        },
+        {
+          "seq": 34,
+          "actor_id": "owner",
+          "action": "permission.resolved:allow_once",
+          "resource_id": "sandbox-network-denied",
+          "hash": "f01891d2a16f1b548dec628f9e6e7fa073bd9f199389018dcd6b440d5f7bec82"
+        },
+        {
+          "seq": 35,
+          "actor_id": "tools",
+          "action": "tool.failed",
+          "resource_id": "sandbox-network-denied",
+          "hash": "b1db7c5d66b754bc25c7b9221161ee0b3bf4322766e3b5819565fb7b56a04fb2"
+        }
+      ]
+    }
+  ]
+}

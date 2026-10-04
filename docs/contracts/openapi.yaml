@@ -634,6 +634,7 @@ components:
         transport: { type: string, enum: [stdio, streamable_http] }
         command: { type: string, description: stdio 固定管理员批准的可执行路径 }
         args: { type: array, items: { type: string } }
+        startup_files: { type: array, maxItems: 20, items: { type: string }, description: stdio明确登记的绝对代码文件；规范化目标与SHA绑定配置修订，变更需要提交新修订 }
         credential_header: { type: string, default: Authorization }
         tool_policies: { type: object, additionalProperties: { $ref: "#/components/schemas/ConnectorToolPolicy" } }
         idempotent_endpoints:

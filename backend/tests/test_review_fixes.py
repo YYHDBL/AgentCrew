@@ -73,7 +73,7 @@ def _ctx(a: Assembly, tmp_path: Path, **kw) -> WorkContext:
     scope = tmp_path / "ws"
     scope.mkdir(exist_ok=True)
     return WorkContext(
-        scope=[scope], protected=[], artifacts_dir=tmp_path / "art",
+        scope=[scope], cwd=scope, protected=[], artifacts_dir=tmp_path / "art",
         task_run_id=RUN, output_store=ToolOutputStore(), **kw,
     )
 
@@ -287,7 +287,8 @@ def test_f07_sandbox_denies_nonexistent_protected_path(tmp_path):
         a = Assembly(tmp_path)
         scope = tmp_path / "ws"
         secret = scope / "notyet-config.json"
-        ctx = WorkContext(scope=[scope], protected=[secret],
+        scope.mkdir(exist_ok=True)
+        ctx = WorkContext(scope=[scope], cwd=scope, protected=[secret],
                           artifacts_dir=tmp_path / "art", task_run_id=RUN,
                           output_store=ToolOutputStore())
         result = await ToolScheduler(build_default_registry()).run(
@@ -576,7 +577,7 @@ def test_s05_background_child_reaped_after_normal_exit(tmp_path):
     import subprocess
 
     async def scenario():
-        ctx = WorkContext(scope=[tmp_path], protected=[],
+        ctx = WorkContext(scope=[tmp_path], cwd=tmp_path, protected=[],
                           artifacts_dir=tmp_path / "art", task_run_id=RUN,
                           output_store=ToolOutputStore())
         result = await ToolScheduler(build_default_registry()).run(
@@ -632,7 +633,7 @@ def test_s08_dispatched_after_slots(tmp_path):
         async def emit(event_type, payload):
             order.append(event_type)
 
-        ctx = WorkContext(scope=[tmp_path], protected=[],
+        ctx = WorkContext(scope=[tmp_path], cwd=tmp_path, protected=[],
                           artifacts_dir=tmp_path / "art", task_run_id=RUN,
                           emit=emit, output_store=ToolOutputStore())
         scheduler = ToolScheduler(build_default_registry(), max_concurrency=1)

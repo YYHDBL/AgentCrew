@@ -26,7 +26,7 @@ from dataclasses import replace
 from jsonschema import Draft202012Validator
 from ..events import Event
 
-from .judgment import bash_readonly
+from .judgment import bash_readonly, filesystem_boundary
 from .metadata import Tool, ToolInvocation, ToolMetadata, ToolResult, WorkContext
 from .builtin.externalize import _externalize
 
@@ -123,6 +123,7 @@ class ToolScheduler:
             return ToolResult(ok=False, error="INVALID_CALL_ID",
                               details={"call_id": invocation.call_id[:40]})
         ctx = replace(ctx)
+        filesystem_boundary(ctx)
         # 入口即做不可变快照（外审回稿 F04）：审批哈希绑定的是快照，此后
         # 对原 dict 的任何修改都不影响 prepared/闸门/执行三处的一致性
         invocation = ToolInvocation(

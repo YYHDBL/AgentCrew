@@ -46,7 +46,7 @@ from agentcrew_core.tools import (
 from agentcrew_core.tools.gate import PermissionRule
 from agentcrew_core.tools.gate import GateResult
 from agentcrew_core.tools.builtin.externalize import _check_path
-from agentcrew_core.tools.judgment import bash_readonly
+from agentcrew_core.tools.judgment import bash_readonly, filesystem_boundary, normalize_filesystem
 from agentcrew_core.tools.scheduler import input_hash
 
 from .db.audit import SNAPSHOT_EVERY, append_audit, snapshot_chain_head
@@ -170,8 +170,7 @@ class ApprovalService:
 
     def _mark_http_approved(self, invocation: ToolInvocation,
                             meta: ToolMetadata, ctx_info: _Pending) -> None:
-        """http_request：闸门放行（规则/人工）即本次主机的授权——执行器
-        硬限制（allowed_hosts）放行（M0 默认为空 = 全部需审批，v1.7）。"""
+        """记录本次批准身份，连接器范围由执行服务独立检查。"""
         if meta.name == "http_request" and ctx_info.ctx is not None:
             ctx_info.ctx.approved_calls.add(invocation.call_id)
 
@@ -211,7 +210,10 @@ class ApprovalService:
         if pending is not None and not pending.future.done():
             # submit 可能跑在另一个事件循环（HTTP 服务线程）——跨线程唤醒
             # 必须走 call_soon_threadsafe，直接 set_result 不唤醒对方循环
-            pending.loop.call_soon_threadsafe(pending.future.set_result, decision)
+            def deliver():
+                if not pending.future.done():
+                    pending.future.set_result(decision)
+            pending.loop.call_soon_threadsafe(deliver)
         # decided_at 以决定事件的落库时刻为准（幂等重放读取同源）
         return {"decision": decision, "decided_at": event.ts,
                 "idempotent_replay": False}
@@ -339,7 +341,9 @@ class ApprovalService:
                        agent_id: str, invocation: ToolInvocation,
                        ctx: WorkContext) -> Any:
         """带闸门执行一次工具：事件落库（emit 接 EventStore）+ 三级闸门。"""
-        ctx = replace(ctx, approved_calls=set())
+        ctx = replace(ctx, approved_calls=set(), filesystem=filesystem_boundary(ctx))
+        fixed = ctx.filesystem
+        ctx.filesystem_resolver = lambda: self._current_filesystem(fixed)
         if hasattr(self, "connectors"):
             ctx.registry = self.connectors.registry(task_run_id, self.scheduler.registry)
         if hasattr(self, "grants"):
@@ -391,6 +395,11 @@ class ApprovalService:
         if pending is None:
             raise ApprovalNotFound(f"执行上下文不存在（重启后的孤儿卡）：{call_id}")
         return pending
+
+    def _current_filesystem(self, fixed):
+        code = [Path(path) for row in self._db.read_conn.execute("SELECT s.source_path,s.canonical_path FROM connector_startup_files s JOIN connectors c ON c.id=s.connector_id AND c.revision=s.connector_revision") for path in row]
+        return normalize_filesystem(fixed.read_roots, fixed.protected, fixed.write_roots,
+            [*fixed.readonly_roots, *code], canonical_roots=True)
 
     def check_current(self, conn, task_run_id, call_id):
         pending = self._pending.get(call_id)
