@@ -196,7 +196,7 @@ class RunManager:
 
     def _on_event(self, event) -> None:
         if hasattr(self, "grants") and event.type in {RunEventType.GOVERNANCE_GRANT_CHANGED,
-                RunEventType.GOVERNANCE_ROLE_CHANGED, RunEventType.GOVERNANCE_RESOURCE_CHANGED}:
+                RunEventType.GOVERNANCE_ROLE_CHANGED, RunEventType.GOVERNANCE_RESOURCE_CHANGED, RunEventType.GOVERNANCE_RULE_CHANGED}:
             for task_id, active in tuple(self._runs.items()):
                 if self.grants.affects(event, task_id):
                     active.fail_reason = "AUTHORIZATION_REVOKED：当前执行授权已经变化"

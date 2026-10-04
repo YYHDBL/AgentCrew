@@ -7,6 +7,7 @@ from agentcrew_core.events import RunEventType as T
 from agentcrew_core.memory import sha256
 from agentcrew_core.governance import capability_active, filter_tool_schemas, grant_types_allowed
 from agentcrew_core.connectors import connector_target
+from ..approvals import ApprovalStale
 from ..memory.store import MemoryIdentity
 from .resources import GovernanceError, canonical, now
 
@@ -160,6 +161,13 @@ class Grants:
             if row is None:
                 raise GovernanceError("NOT_FOUND", "派发缺少已准备调用", 404)
             view = self.check_tool(task_id, row[0], json.loads(row[1]), conn)
+            if row[0] == "ask_user":
+                prepared = conn.execute("SELECT attempt_no FROM run_events WHERE task_run_id=? AND type='tool.prepared' AND json_extract(payload,'$.call_id')=? ORDER BY global_seq DESC LIMIT 1", (task_id, payload["call_id"])).fetchone()
+                attempt = conn.execute("SELECT current_attempt_no FROM task_runs WHERE id=?", (task_id,)).fetchone()[0]
+                if prepared is None or prepared[0] != attempt:
+                    raise ApprovalStale("提问派发绑定的活动尝试已经过期")
+            if hasattr(self, "approvals") and row[0] != "ask_user":
+                self.approvals.check_current(conn, task_id, payload["call_id"])
             payload["authorization_sha256"] = view["sha256"]
         elif kind in {T.LLM_REQUEST_STARTED, T.RUN_RESUMED}:
             view = self.view(task_id, conn)
@@ -185,6 +193,9 @@ class Grants:
         if row is None:
             return False
         p = event.payload
+        if event.type == T.GOVERNANCE_RULE_CHANGED:
+            return p.get("agent_id") == row[1] and p.get("source_task_run_id") != task_id and \
+                (p.get("effect") == "deny" and p.get("revoked_at") is None or p.get("effect") == "allow" and bool(p.get("revoked_at")) and p.get("revocation_changed", True))
         if event.type == T.GOVERNANCE_GRANT_CHANGED and p.get("revoked_at"):
             if not p.get("revocation_changed", True):
                 return False

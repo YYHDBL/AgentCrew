@@ -148,6 +148,8 @@ class MemoryReview:
         async def gate(invocation, metadata, readonly):
             if self.jobs.get(job["id"])["status"] != "running":
                 raise ValueError("JOB_NOT_RUNNING：作业已经停止")
+            if hasattr(self.jobs, "rules") and self.jobs.rules.gate(job["agent_id"], invocation, self.context(job)).action == "deny":
+                return "deny"
             if invocation.name not in {"memory_write", "skill_patch"} or invocation.input.get("action") == "read" or \
                     not json.loads(job["config_snapshot"])["write_approval"]:
                 return "allow"

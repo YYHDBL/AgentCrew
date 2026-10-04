@@ -1,9 +1,8 @@
 """权限闸门判定纯函数（governance §2.3 三级闸门 / harness-design §5）。
 
-第 1 闸：元数据分级——只读（含 bash 动态只读判定）放行；risk=high 且
-destructive 直接拒；needs_approval 进第 2 闸。
-第 2 闸：员工规则表——deny 命中直接拒；allow 命中视同批准；都不中进第 3 闸。
-第 3 闸：人工审批（ASK，由服务层挂起等待）。
+员工deny规则优先检查。元数据的破坏风险硬拒后，合法只读调用免审批；
+其余调用匹配员工allow规则，没有当前规则授权时由服务层等待人工审批。
+文件scope和protected以及角色、Grant由服务层在审批和派发前检查。
 
 pattern 语义（v1.1；bash 于外审回稿 F05 收紧）：write_file → 路径前缀
 （realpath 规范化后匹配）；bash → 完整命令等值（前缀会连带放行追加命令，
@@ -49,7 +48,7 @@ def _write_target(call_input: dict[str, Any], cwd) -> Path:
 
 def rule_matches(tool_name: str, call_input: dict[str, Any], pattern: str,
                  cwd=None) -> bool:
-    if tool_name == "write_file":
+    if tool_name in {"write_file", "read_file"}:
         target = _write_target(call_input, cwd)
         root = Path(pattern).expanduser().resolve()
         try:
@@ -65,6 +64,8 @@ def rule_matches(tool_name: str, call_input: dict[str, Any], pattern: str,
     if tool_name == "http_request":
         ok, _ = host_allowed(call_input.get("url", ""), [pattern])
         return ok
+    if tool_name.startswith("mcp_"):
+        return pattern == tool_name
     return False
 
 
@@ -76,22 +77,22 @@ def evaluate_gate(
     agent_id: str = "",
     cwd=None,
 ) -> GateResult:
-    # 第 1 闸：元数据分级
-    if meta.name == "bash" and bash_readonly_verdict:
-        return GateResult("allow", "白名单只读命令（动态判定）")
-    if meta.read_only:
-        return GateResult("allow", "只读工具")
-    if meta.risk_level == "high" and meta.destructive:
-        return GateResult("deny", "risk=high 且 destructive，硬拒")
-    if not meta.needs_approval:
-        return GateResult("allow", "元数据免审批")
-    # 第 2 闸：员工规则表（deny > allow）
     mine = [r for r in rules
             if r.agent_id == agent_id and r.tool_name == meta.name]
     for rule in mine:
         if rule.effect == "deny" and rule_matches(
                 meta.name, call_input, rule.pattern, cwd):
             return GateResult("deny", f"deny 规则命中：{rule.pattern}", rule.pattern)
+    # deny规则检查完成后判断元数据。
+    if meta.risk_level == "high" and meta.destructive:
+        return GateResult("deny", "risk=high 且 destructive，硬拒")
+    if meta.name == "bash" and bash_readonly_verdict:
+        return GateResult("allow", "白名单只读命令（动态判定）")
+    if meta.read_only:
+        return GateResult("allow", "只读工具")
+    if not meta.needs_approval:
+        return GateResult("allow", "元数据免审批")
+    # 第 2 闸：员工规则表（deny > allow）
     for rule in mine:
         if rule.effect == "allow" and rule_matches(
                 meta.name, call_input, rule.pattern, cwd):

@@ -688,17 +688,19 @@ components:
         pattern: { type: string, minLength: 1, description: 路径为规范化目录；bash为完整命令；HTTP为连接器约束内域名 }
         effect: { type: string, enum: [allow, deny] }
     PermissionRule:
-      allOf:
-        - { $ref: "#/components/schemas/PermissionRuleRequest" }
-        - type: object
-          required: [id, agent_id, revision, created_by_user_id, created_at, revoked_at]
-          properties:
-            id: { type: string }
-            agent_id: { type: string }
-            revision: { type: integer, minimum: 1 }
-            created_by_user_id: { type: string }
-            created_at: { type: string, format: date-time }
-            revoked_at: { type: [string, "null"], format: date-time }
+      type: object
+      required: [id, agent_id, tool_name, pattern, effect, revision, created_by_user_id, created_at, revoked_at, change_id]
+      properties:
+        id: { type: string }
+        agent_id: { type: string }
+        tool_name: { type: string }
+        pattern: { type: string }
+        effect: { type: string, enum: [allow, deny] }
+        revision: { type: integer, minimum: 1 }
+        created_by_user_id: { type: string }
+        created_at: { type: string, format: date-time }
+        revoked_at: { type: [string, "null"], format: date-time }
+        change_id: { type: [string, "null"], description: 导入的历史规则允许没有change_id }
     AuditRecord:
       type: object
       required: [seq, ts, actor_type, actor_id, action, resource_type, resource_id, detail, prev_hash, hash]
@@ -1288,7 +1290,7 @@ paths:
     get:
       operationId: listPermissionRules
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-07
       x-domain-card: M2-07
       parameters:
         - { $ref: "#/components/parameters/GovernanceLimit" }
@@ -1313,7 +1315,7 @@ paths:
     post:
       operationId: createPermissionRule
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-07
       x-domain-card: M2-07
       requestBody:
         required: true
@@ -1338,7 +1340,7 @@ paths:
     delete:
       operationId: revokePermissionRule
       tags: [governance]
-      x-implementation-card: M2-11
+      x-implementation-card: M2-07
       x-domain-card: M2-07
       requestBody: *governance_change_body
       responses: *rule_responses

@@ -29,7 +29,7 @@ for path, ops in paths.items():
             operation_ids.add(op["operationId"])
         if method in ("get", "post", "put", "patch", "delete") and op.get("x-domain-card", "").startswith("M2-"):
             m2_operations += 1
-            assert op.get("x-implementation-card") in {"M2-03", "M2-04", "M2-05", "M2-06", "M2-10", "M2-11"}, f"{path} {method} 缺少 HTTP 实施归属"
+            assert op.get("x-implementation-card") in {"M2-03", "M2-04", "M2-05", "M2-06", "M2-07", "M2-10", "M2-11"}, f"{path} {method} 缺少 HTTP 实施归属"
             assert op.get("x-domain-card") in {f"M2-{number:02}" for number in range(2, 11)}, f"{path} {method} 缺少领域实施归属"
             assert op.get("operationId"), f"{path} {method} 缺少操作标识"
             for status in ("401", "403", "404", "409", "422", "503"):

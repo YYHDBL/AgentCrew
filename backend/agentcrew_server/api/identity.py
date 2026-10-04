@@ -41,6 +41,7 @@ def install_identity_routes(app, runtime):
     runtime.memory.identities = service
     if runtime.memory_jobs is not None:
         runtime.memory_jobs.identities = service
+        runtime.memory_jobs.review.sessions.identities = service
     if runtime.approvals is not None:
         runtime.approvals.identities = service
     if runtime.recovery is not None:

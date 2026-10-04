@@ -3,7 +3,7 @@
 场景：触发 write_file 弹卡 → curl（TestClient）批准 → 工具真实执行、
 PERMISSION_RESOLVED 落库、审计链追加；幂等重试 / 不同决定 409 / input_hash
 不符 409；allow_always 写规则且同类第二次不弹卡；reject 不执行；
-重启后（重建服务）pending 可恢复并可继续决定。
+重启后（重建服务）历史审批保留，失去执行方的未处理决定过期。
 """
 
 import asyncio
@@ -256,8 +256,8 @@ def test_readonly_tool_no_gate(tmp_path):
     asyncio.run(scenario())
 
 
-def test_restart_recovers_pending_card(tmp_path):
-    """重启进程（重建 Assembly）后：pending 卡可查、决定可提交并落库。"""
+def test_restart_preserves_expired_card(tmp_path):
+    """重建服务后历史审批可查，孤儿决定拒绝且无规则写入。"""
     async def scenario():
         a1 = Assembly(tmp_path, "restart.db")
         target = tmp_path / "ws" / "later.txt"
@@ -277,10 +277,11 @@ def test_restart_recovers_pending_card(tmp_path):
         a2 = Assembly(tmp_path, "restart.db")
         pending = await a2.approvals.list_approvals(RUN, "pending")
         assert len(pending) == 1 and pending[0]["call_id"] == call_id
-        decision = await a2.approvals.submit(call_id, "allow_once")
-        assert decision["decision"] == "allow_once"
+        from agentcrew_server.approvals import ApprovalStale
+        with pytest.raises(ApprovalStale):
+            await a2.approvals.submit(call_id, "allow_once")
         resolved = await a2.approvals.list_approvals(RUN, "resolved")
-        assert len(resolved) == 1
+        assert len(resolved) == 0
         a2.close()
     asyncio.run(scenario())
 

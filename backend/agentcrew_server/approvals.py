@@ -9,8 +9,7 @@ always_scope_preview 的范围写 agent_permission_rules。
 决定提交语义（v1.1）：同决定重试 → 200 幂等返回首次结果；不同决定 →
 409 APPROVAL_STALE；携带的 input_hash 与当前调用不一致 → 409（防"批的是
 A 执行的是 B"）；call_id 无 REQUESTED 记录 → 404。进程重启后 Future 丢失
-但 pending 事件在库——决定仍可提交并落库（执行上下文已随重启消亡，属 C9
-对账域）。
+但 pending 事件在库——未处理决定因活动执行方消失而过期。
 
 外审回稿（C6 第三轮）写入纪律：
 - 一切库写入（事件、审计、规则、链头快照）只经 WriteChannel 单写线程——
@@ -45,6 +44,9 @@ from agentcrew_core.tools import (
     evaluate_gate,
 )
 from agentcrew_core.tools.gate import PermissionRule
+from agentcrew_core.tools.gate import GateResult
+from agentcrew_core.tools.builtin.externalize import _check_path
+from agentcrew_core.tools.judgment import bash_readonly
 from agentcrew_core.tools.scheduler import input_hash
 
 from .db.audit import SNAPSHOT_EVERY, append_audit, snapshot_chain_head
@@ -74,6 +76,7 @@ class _Pending:
     conversation_id: str
     agent_id: str
     ctx: WorkContext | None = None  # 闸门放行 http_request 时登记本次授权
+    attempt_no: int = 0
 
 
 def _now() -> str:
@@ -107,8 +110,9 @@ class ApprovalService:
         ih = input_hash(invocation.input)
         cwd = ctx_info.ctx.cwd if ctx_info.ctx is not None else None
         rules = await asyncio.to_thread(self._load_rules, ctx_info.agent_id)
-        result = evaluate_gate(meta, invocation.input, readonly_verdict,
-                               rules, ctx_info.agent_id, cwd)
+        boundary = self._file_boundary(invocation, ctx_info.ctx)
+        result = GateResult("deny", boundary) if boundary else evaluate_gate(
+            meta, invocation.input, readonly_verdict, rules, ctx_info.agent_id, cwd)
         if result.action == "allow":
             # governance §3：闸门放行（自动/规则命中）全部入审计链
             action = ("permission.rule_allowed" if result.matched_pattern
@@ -145,6 +149,7 @@ class ApprovalService:
         await self._store.append(
             task_run_id=ctx_info.task_run_id,
             conversation_id=ctx_info.conversation_id,
+            attempt_no=ctx_info.attempt_no,
             type=RunEventType.PERMISSION_REQUESTED,
             payload={
                 "tool_call_id": invocation.call_id,
@@ -202,7 +207,7 @@ class ApprovalService:
         if audit_seq % SNAPSHOT_EVERY == 0:  # 每 100 条快照链头（governance §3）
             await self._channel.execute(
                 lambda conn: snapshot_chain_head(conn, self._chain_head_path))
-        pending = self._pending.pop(call_id, None)
+        pending = self._pending.get(call_id)
         if pending is not None and not pending.future.done():
             # submit 可能跑在另一个事件循环（HTTP 服务线程）——跨线程唤醒
             # 必须走 call_soon_threadsafe，直接 set_result 不唤醒对方循环
@@ -214,29 +219,48 @@ class ApprovalService:
     def _decide_tx(self, conn, *, call_id: str, decision: str,
                    task_run_id: str, conversation_id: str, payload: dict,
                    agent_id: str, request_identity=None) -> dict[str, Any]:
-        conn.execute("BEGIN IMMEDIATE")
-        try:
+        published = []
+        with conn:
+            conn.execute("BEGIN IMMEDIATE")
+            first_audit_seq = conn.execute("SELECT coalesce(max(seq),0) FROM audit_log").fetchone()[0]
             actor_id = request_identity.effective_user_id if request_identity is not None else "owner"
             if request_identity is not None:
                 self.identities.conversation(request_identity, conversation_id, conn)
                 if decision in ("allow_always", "reject_always"):
                     workspace_id = self.identities.resources.get("agent", agent_id, conn)["workspace_id"]
                     self.identities.require(request_identity, "manage", workspace_id, conn)
-            if hasattr(self, "grants"):
-                call = conn.execute("SELECT tool_name,input FROM tool_calls WHERE call_id=?", (call_id,)).fetchone()
-                self.grants.check_tool(task_run_id, call[0], json.loads(call[1]), conn)
-                self.grants.check_binding(task_run_id, call_id, conn)
             first = self._resolution_row(conn, call_id)
             if first is not None:
                 conn.execute("COMMIT")  # 只读事务（并发窗口内已有首次决定）
                 return {"kind": "existing", "first": first}
+            pending = self._pending.get(call_id)
+            task = conn.execute("SELECT status,current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()
+            if pending is None or pending.future.done() or task is None or task[0] not in {"running", "waiting_user"} or task[1] != pending.attempt_no:
+                raise ApprovalStale("审批执行方已经停止，未处理审批已过期")
+            if (pending.task_run_id, pending.conversation_id, pending.agent_id, pending.tool_name) != (task_run_id, conversation_id, agent_id, payload.get("tool")):
+                raise ApprovalStale("审批绑定的任务或员工已经过期")
+            call = conn.execute("SELECT tool_name,input,input_hash,status FROM tool_calls WHERE call_id=?", (call_id,)).fetchone()
+            if call is None or call[2] != pending.input_hash or call[2] != payload.get("input_hash") or call[3] != "prepared":
+                raise ApprovalStale("审批绑定的调用参数或状态已经过期")
+            inputs = json.loads(call[1])
+            boundary = self._file_boundary(ToolInvocation(call_id, call[0], inputs), pending.ctx)
+            registry = pending.ctx.registry if pending.ctx.registry is not None else self.scheduler.registry
+            meta = registry.get(call[0]).metadata
+            result = evaluate_gate(meta, inputs, False, self._load_rules(agent_id, conn), agent_id, pending.ctx.cwd)
+            if decision.startswith("allow") and (boundary or result.action == "deny"):
+                raise ApprovalStale(boundary or result.reason)
+            if hasattr(self, "grants"):
+                self.grants.check_tool(task_run_id, call[0], inputs, conn)
+                self.grants.check_binding(task_run_id, call_id, conn)
             event = self._store.append_in_tx(
                 conn, task_run_id=task_run_id,
                 conversation_id=conversation_id,
+                attempt_no=pending.attempt_no,
                 type=RunEventType.PERMISSION_RESOLVED,
                 payload={"tool_call_id": call_id, "decision": decision, "actor_id": actor_id,
                     "credential_owner_id": request_identity.credential_owner_id if request_identity else "owner"},
             )
+            published.append(event)
             audit_seq = append_audit(
                 conn, ts=_now(), actor_type="user", actor_id=actor_id,
                 action=f"permission.resolved:{decision}",
@@ -248,33 +272,33 @@ class ApprovalService:
             if decision in ("allow_always", "reject_always"):
                 effect = "allow" if decision == "allow_always" else "deny"
                 pattern = payload.get("always_scope_preview") or ""
-                conn.execute(
-                    "INSERT INTO agent_permission_rules (id, agent_id,"
-                    " tool_name, pattern, effect, created_by_user_id, created_at)"
-                    " VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    (uuid.uuid4().hex, agent_id, str(payload.get("tool") or ""),
-                     pattern, effect, actor_id, _now()),
-                )
+                rule_id = uuid.uuid4().hex
+                if hasattr(self, "rules"):
+                    rule = self.rules.insert(conn, rule_id, agent_id, {"change_id": "approval-rule-" + call_id,
+                        "tool_name": payload["tool"], "pattern": pattern, "effect": effect}, actor_id)
+                else:
+                    conn.execute("INSERT INTO agent_permission_rules(id,agent_id,tool_name,pattern,effect,created_by_user_id,created_at) VALUES(?,?,?,?,?,?,?)",
+                        (rule_id, agent_id, payload["tool"], pattern, effect, actor_id, _now()))
                 audit_seq = append_audit(
                     conn, ts=_now(), actor_type="user", actor_id=actor_id,
                     action="permission.rule.created",
-                    resource_type="permission_rule", resource_id=call_id,
+                    resource_type="permission_rule", resource_id=rule_id,
                     detail=_detail(tool=payload.get("tool"), pattern=pattern,
                                    effect=effect, agent_id=agent_id,
                                    input_hash=payload.get("input_hash")),
                 )
-            conn.execute("COMMIT")
-            # COMMIT 成功后、闭包返回前发布（写线程内）——发布顺序 = 提交顺序
-            # （外审回稿：闭包外发布会让写线程先发布更大 global_seq，SSE 去重
-            # 把后到的较小序号永久丢弃）
-            self._store.publish(event)
-            return {"kind": "written", "event": event, "audit_seq": audit_seq}
-        except Exception:
-            try:
-                conn.execute("ROLLBACK")
-            except Exception:
-                pass
-            raise
+                if hasattr(self, "rules"):
+                    published.append(self._store.append_in_tx(conn, task_run_id=None, conversation_id=None,
+                        type=RunEventType.GOVERNANCE_RULE_CHANGED, payload={"resource_type": "permission_rule", "resource_id": rule_id,
+                            "change_id": rule["change_id"], "revision": rule["revision"], "actor_id": actor_id,
+                            "credential_owner_id": request_identity.credential_owner_id, "audit_seq": audit_seq,
+                            "source_task_run_id": task_run_id, "source_call_id": call_id,
+                            "scope": self.rules.resources.scope("agent", agent_id, conn), **self.rules.event(rule)}))
+        for item in published:
+            self._store.publish(item)
+        if first_audit_seq // SNAPSHOT_EVERY != audit_seq // SNAPSHOT_EVERY:
+            snapshot_chain_head(conn, self._chain_head_path)
+        return {"kind": "written", "event": event, "audit_seq": audit_seq}
 
     # ── pending 查询（界面刷新恢复审批卡，v1.4）──────────────────
     async def list_approvals(self, task_run_id: str, status: str) -> list[dict]:
@@ -285,6 +309,7 @@ class ApprovalService:
 
     def _approval_rows(self, task_run_id: str) -> list[dict]:
         conn = self._db.read_conn
+        task = conn.execute("SELECT status,current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()
         rows = conn.execute(
             "SELECT payload, created_at FROM run_events"
             " WHERE task_run_id = ? AND type = 'permission.requested'"
@@ -295,6 +320,8 @@ class ApprovalService:
             p = json.loads(payload_text)
             call_id = p.get("tool_call_id")
             resolved = self._find_resolution(call_id)
+            pending = self._pending.get(call_id)
+            active = pending is not None and not pending.future.done() and task is not None and task[0] in {"running", "waiting_user"} and task[1] == pending.attempt_no
             out.append({
                 "call_id": call_id, "tool": p.get("tool"),
                 "target": p.get("target"), "input_hash": p.get("input_hash"),
@@ -302,6 +329,8 @@ class ApprovalService:
                 "always_scope_preview": p.get("always_scope_preview"),
                 "requested_at": requested_at,
                 "decision": resolved[0] if resolved else None,
+                "stale": resolved is None and not active,
+                "attempt_no": pending.attempt_no if pending is not None else None,
             })
         return out
 
@@ -338,6 +367,7 @@ class ApprovalService:
             future=future, loop=loop, input_hash=ih,
             tool_name=invocation.name, task_run_id=task_run_id,
             conversation_id=conversation_id, agent_id=agent_id, ctx=ctx,
+            attempt_no=self._db.read_conn.execute("SELECT current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()[0],
         )
         ctx.emit = self._make_emit(task_run_id, conversation_id)
         try:
@@ -362,17 +392,46 @@ class ApprovalService:
             raise ApprovalNotFound(f"执行上下文不存在（重启后的孤儿卡）：{call_id}")
         return pending
 
+    def check_current(self, conn, task_run_id, call_id):
+        pending = self._pending.get(call_id)
+        task = conn.execute("SELECT status,current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()
+        if pending is None or pending.future.cancelled() or task is None or pending.task_run_id != task_run_id or task[1] != pending.attempt_no:
+            raise ApprovalStale("派发时审批执行方或尝试已经过期")
+        row = conn.execute("SELECT tool_name,input FROM tool_calls WHERE task_run_id=? AND call_id=?", (task_run_id, call_id)).fetchone()
+        if row is None:
+            raise ApprovalStale("派发缺少调用绑定")
+        inputs = json.loads(row[1])
+        boundary = self._file_boundary(ToolInvocation(call_id, row[0], inputs), pending.ctx)
+        registry = pending.ctx.registry if pending.ctx.registry is not None else self.scheduler.registry
+        meta = registry.get(row[0]).metadata
+        readonly = bash_readonly(inputs["command"], pending.ctx.cwd)[0] if row[0] == "bash" else meta.read_only
+        result = evaluate_gate(meta, inputs, readonly, self._load_rules(pending.agent_id, conn), pending.agent_id, pending.ctx.cwd)
+        if boundary or result.action == "deny":
+            raise ApprovalStale(boundary or result.reason)
+        if result.action == "ask":
+            decision = self._resolution_row(conn, call_id)
+            if decision is None or not decision[0].startswith("allow"):
+                raise ApprovalStale("当前规则要求人工审批，调用缺少本次允许决定")
+
     def _make_emit(self, task_run_id: str, conversation_id: str):
+        attempt_no = self._db.read_conn.execute("SELECT current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()[0]
         async def sink(event_type: str, payload: dict) -> None:
             return await self._store.append(
                 task_run_id=task_run_id, conversation_id=conversation_id,
-                type=RunEventType(event_type), payload=payload,
+                attempt_no=attempt_no, type=RunEventType(event_type), payload=payload,
             )
         return sink
 
     # ── 库操作（读：to_thread 内每线程只读连接）────────────────────
-    def _load_rules(self, agent_id: str) -> list[PermissionRule]:
-        rows = self._db.read_conn.execute(
+    @staticmethod
+    def _file_boundary(invocation, ctx):
+        if invocation.name in {"read_file", "write_file"}:
+            return _check_path(ctx, invocation.input.get("path", ""), read_only=invocation.name == "read_file")
+        return None
+
+    def _load_rules(self, agent_id: str, conn=None) -> list[PermissionRule]:
+        connection = conn if conn is not None else self._db.read_conn
+        rows = connection.execute(
             "SELECT agent_id, tool_name, pattern, effect FROM"
             " agent_permission_rules WHERE agent_id = ? AND revoked_at IS NULL",
             (agent_id,),

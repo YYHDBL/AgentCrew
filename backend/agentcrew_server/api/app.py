@@ -30,6 +30,7 @@ from .identity import install_identity_routes
 from .skill_versions import install_skill_version_routes
 from .grants import install_grant_routes
 from .connectors import install_connector_routes
+from .rules import install_rule_routes
 from agentcrew_core.connectors import ConnectorBoundaryError
 from ..governance.resources import GovernanceError
 
@@ -124,6 +125,7 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         install_skill_version_routes(app, runtime)
         install_grant_routes(app, runtime)
         install_connector_routes(app, runtime)
+        install_rule_routes(app, runtime)
 
     @app.exception_handler(GovernanceError)
     async def governance_error(_: Request, exc: GovernanceError):

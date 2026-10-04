@@ -1,6 +1,6 @@
 # M2 · 安全与治理实施任务卡
 
-> 日期：2026-10-04 ｜ 状态：M2-01 至 M2-06 已完成，其余卡片未开始 ｜ 代码依据：desktop-shell，本卡证据见 docs/acceptance/M2-06.md
+> 日期：2026-10-04 ｜ 状态：M2-01 至 M2-07 已完成，其余卡片未开始 ｜ 代码依据：desktop-shell，本卡证据见 docs/acceptance/M2-07.md
 > 设计依据：[权限治理详设](../architecture/governance.md)、[Harness 与 Session](../architecture/harness-session.md)、[M1 实施卡](./M1-cards.md)、[ADR-008](../decisions/ADR-008-tool-admission-and-sandbox.md)、[F009 数字员工与授权管理](../features/F009-employee-and-governance.md)。
 
 ## 领取与交付约定
@@ -45,7 +45,7 @@
 | M2-04 | Skill 不可变版本与 M1 账本接入 | M2-02、M2-03 | 后端 | 已完成，见 [验收](../acceptance/M2-04.md) |
 | M2-05 | Grant、能力隔离与实时撤销 | M2-03、M2-04 | 后端 | 已完成，见 [验收](../acceptance/M2-05.md) |
 | M2-06 | HTTP/MCP 连接器与执行边界 | M2-05 | 后端 | 已完成 |
-| M2-07 | 员工规则、审批与提权防线 | M2-03、M2-05、M2-06 | 后端 | 未开始 |
+| M2-07 | 员工规则、审批与提权防线 | M2-03、M2-05、M2-06 | 后端 | 已完成 |
 | M2-08 | 完整 Seatbelt 读取与写入限制 | M2-06、M2-07 | 后端 | 未开始 |
 | M2-09 | 当前授权下的中断恢复与核验 | M2-04、M2-05、M2-07、M2-08 | 后端 | 未开始 |
 | M2-10 | 治理审计、锚点与只读诊断 | M2-03、M2-05、M2-07、M2-09 | 后端 | 未开始 |

@@ -1,0 +1,382 @@
+{
+  "task_run_id": "24a94b2e8447421999b865ca4595decb",
+  "call_id": "external-approved",
+  "approval": {
+    "always_scope_preview": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-rules-final/test_authorized_external_scope0/approved-external",
+    "input_hash": "8d919986645e2df49c44246eee1d215ca290eaa89e514de1338e4548a3bda021",
+    "options": [
+      "allow_once",
+      "allow_always",
+      "reject_once",
+      "reject_always"
+    ],
+    "risk": "medium",
+    "target": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-rules-final/test_authorized_external_scope0/approved-external/approved.txt",
+    "tool": "write_file",
+    "tool_call_id": "external-approved"
+  },
+  "outside_preserved": {
+    "sha256": "d1a6ad7b80d018a9633396c4da72b70adf8f43bc70bc135e73fbb78577c3a91e",
+    "mtime_ns": 1791081211654828833
+  },
+  "external_sha256": "a0254a41e66bcbbed7e208e5fdb867b750c82d9e0c19a5971230e470e6b3bb0d",
+  "external_mtime_ns": 1791081211672559166,
+  "queries": [
+    {
+      "sql": "SELECT id,agent_id,tool_name,pattern,effect,created_by_user_id,revoked_at FROM agent_permission_rules ORDER BY id",
+      "rows": [
+        {
+          "id": "seed-office-write",
+          "agent_id": "xiaowen",
+          "tool_name": "write_file",
+          "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-rules-final/test_authorized_external_scope0/workspaces/office/files",
+          "effect": "allow",
+          "created_by_user_id": "owner",
+          "revoked_at": "2026-10-04T02:33:31.650014+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT * FROM governance_rule_owners ORDER BY rule_id",
+      "rows": [
+        {
+          "rule_id": "seed-office-write",
+          "agent_id": "xiaowen",
+          "created_by_user_id": "owner",
+          "revision": 2,
+          "change_id": "seed-office-write"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT call_id,task_run_id,tool_name,input_hash,status,dispatched_at FROM tool_calls ORDER BY prepared_at",
+      "rows": [
+        {
+          "call_id": "external-approved",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb",
+          "tool_name": "write_file",
+          "input_hash": "8d919986645e2df49c44246eee1d215ca290eaa89e514de1338e4548a3bda021",
+          "status": "completed",
+          "dispatched_at": "2026-10-04T02:33:31.669287+00:00"
+        },
+        {
+          "call_id": "scope-denied",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb",
+          "tool_name": "write_file",
+          "input_hash": "bc382fc07d8bc8970971d0c51e8c5b56c88144acd07f80b8f1ec02e75c4df1ff",
+          "status": "failed",
+          "dispatched_at": null
+        },
+        {
+          "call_id": "symlink-denied",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb",
+          "tool_name": "write_file",
+          "input_hash": "d888ccd46eacfc6b8b2feb41bda682cb2cfa8fd9c1e1f283ecbd4304a08ae173",
+          "status": "failed",
+          "dispatched_at": null
+        }
+      ]
+    },
+    {
+      "sql": "SELECT global_seq,attempt_no,type,task_run_id FROM run_events ORDER BY global_seq",
+      "rows": [
+        {
+          "global_seq": 1,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 2,
+          "attempt_no": null,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 3,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 4,
+          "attempt_no": null,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 5,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 6,
+          "attempt_no": null,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 7,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 8,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 9,
+          "attempt_no": null,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 10,
+          "attempt_no": null,
+          "type": "governance.rule_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 11,
+          "attempt_no": null,
+          "type": "run.queued",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 12,
+          "attempt_no": null,
+          "type": "run.started",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 13,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 14,
+          "attempt_no": 1,
+          "type": "permission.requested",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 15,
+          "attempt_no": 1,
+          "type": "permission.resolved",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 16,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 17,
+          "attempt_no": 1,
+          "type": "artifact.created",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 18,
+          "attempt_no": 1,
+          "type": "artifact.ready",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 19,
+          "attempt_no": 1,
+          "type": "tool.completed",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 20,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 21,
+          "attempt_no": 1,
+          "type": "tool.failed",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 22,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        },
+        {
+          "global_seq": 23,
+          "attempt_no": 1,
+          "type": "tool.failed",
+          "task_run_id": "24a94b2e8447421999b865ca4595decb"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT seq,actor_type,actor_id,action,resource_type,resource_id,hash FROM audit_log ORDER BY seq",
+      "rows": [
+        {
+          "seq": 1,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.seed",
+          "resource_type": "organization",
+          "resource_id": "demo-org",
+          "hash": "480b611797b79c9c246f24f068bc9a34c2eaca82bd8cf10d6c32bc0a500b74c1"
+        },
+        {
+          "seq": 2,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:c7b7146c6ea65788b6d4161a4982f34b",
+          "hash": "720365bcb12346584169bfe0b80253bde333b407ebf987daa8cd194368dd47ff"
+        },
+        {
+          "seq": 3,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "hash": "e8d3d379b9cb520ac1e347fb318c99223a0624273346b9e5f7af792673d7089d"
+        },
+        {
+          "seq": 4,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:7fb6db7a69e75931b85594e05ed43d2b",
+          "hash": "6f733799f744fe3c35f932c46c7ce973d1a1b543816d7d97537ad73480e8e840"
+        },
+        {
+          "seq": 5,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "hash": "8fdc99d3cebf9dc5f666fe9d6c10e555f5ecebd27fce4630a359ef68cb85421d"
+        },
+        {
+          "seq": 6,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:d902cc4eb75d5b9790c0278523e87aa0",
+          "hash": "b6bf709010e3d357962f3d65f70fabe06374776915c1aff86ce197cf8f695054"
+        },
+        {
+          "seq": 7,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "hash": "e82908f5e657fe0044bc71fed3ef18c4817051d30b547ed110f3800e65a6bf99"
+        },
+        {
+          "seq": 8,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.seed_completed",
+          "resource_type": "organization",
+          "resource_id": "demo-org",
+          "hash": "11be23f7fbcc4ed4f9d2eaa60f32e6b2161e5eaea91cd183841b4138613c347f"
+        },
+        {
+          "seq": 9,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_history_registered",
+          "resource_type": "identity",
+          "resource_id": "skill-history",
+          "hash": "1ef237dec5abe278db81726a5970e1144bc70436db3ca64d5b111776d6fdc123"
+        },
+        {
+          "seq": 10,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.rule_revoked",
+          "resource_type": "permission_rule",
+          "resource_id": "seed-office-write",
+          "hash": "cc5ff2babe46340cb43f09c952ea000f29bfafd8cacaa781bf28328c237f9b99"
+        },
+        {
+          "seq": 11,
+          "actor_type": "system",
+          "actor_id": "gate",
+          "action": "permission.requested",
+          "resource_type": "tool_call",
+          "resource_id": "external-approved",
+          "hash": "b96676641b4adc4c2201fc6be81bd631f30b263fcdcea994b56980b5d1cabaf3"
+        },
+        {
+          "seq": 12,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "permission.resolved:allow_once",
+          "resource_type": "tool_call",
+          "resource_id": "external-approved",
+          "hash": "a2e48f9e1721602179266191cc757928d444c87d8d237480a7b93d53de5f545d"
+        },
+        {
+          "seq": 13,
+          "actor_type": "system",
+          "actor_id": "tools",
+          "action": "tool.completed",
+          "resource_type": "tool_call",
+          "resource_id": "external-approved",
+          "hash": "8ef8cf0c2120b8cc607e1541296f8f8aff552a9320731422a246a5b31b4b7ea9"
+        },
+        {
+          "seq": 14,
+          "actor_type": "system",
+          "actor_id": "gate",
+          "action": "permission.denied:OUT_OF_SCOPE：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-rules-final/test_authorized_external_scope0/unauthorized-external/untouched.txt 不在任务合法范围内",
+          "resource_type": "tool_call",
+          "resource_id": "scope-denied",
+          "hash": "8fbf476af14007dfae2676218e5361b091e697018801519fddae0f1695345f28"
+        },
+        {
+          "seq": 15,
+          "actor_type": "system",
+          "actor_id": "tools",
+          "action": "tool.failed",
+          "resource_type": "tool_call",
+          "resource_id": "scope-denied",
+          "hash": "8cd23b3528104c150ca83d387b297cff5056b138c829bd12419423ed398e5ae6"
+        },
+        {
+          "seq": 16,
+          "actor_type": "system",
+          "actor_id": "gate",
+          "action": "permission.denied:OUT_OF_SCOPE：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-rules-final/test_authorized_external_scope0/unauthorized-external/untouched.txt 不在任务合法范围内",
+          "resource_type": "tool_call",
+          "resource_id": "symlink-denied",
+          "hash": "17fff38d3c9a9690a2728c29d19ffc0de6b6cee018625c6632517cc8af9eb3d1"
+        },
+        {
+          "seq": 17,
+          "actor_type": "system",
+          "actor_id": "tools",
+          "action": "tool.failed",
+          "resource_type": "tool_call",
+          "resource_id": "symlink-denied",
+          "hash": "bb2362f502a57c4cebb195725991e85c0e81a487afd8380bf5903b38f5c043dd"
+        }
+      ]
+    }
+  ]
+}

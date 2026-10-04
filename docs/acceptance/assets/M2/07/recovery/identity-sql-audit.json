@@ -1,0 +1,1031 @@
+{
+  "queries": [
+    {
+      "sql": "SELECT id,user_id,role,status,revision FROM memberships ORDER BY id",
+      "rows": [
+        {
+          "id": "membership-lilei",
+          "user_id": "lilei",
+          "role": "member",
+          "status": "active",
+          "revision": 1
+        },
+        {
+          "id": "membership-owner",
+          "user_id": "owner",
+          "role": "owner",
+          "status": "active",
+          "revision": 1
+        },
+        {
+          "id": "membership-wangming",
+          "user_id": "wangming",
+          "role": "admin",
+          "status": "active",
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT conversation_id,workspace_id,agent_id,credential_owner_id,effective_user_id FROM governance_conversations ORDER BY conversation_id",
+      "rows": [
+        {
+          "conversation_id": "57413120cfa0447884d1f4f60dfa8666",
+          "workspace_id": "office",
+          "agent_id": "xiaowen",
+          "credential_owner_id": "owner",
+          "effective_user_id": "owner"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT task_run_id,effective_user_id,credential_owner_id,agent_revision FROM task_governance ORDER BY task_run_id",
+      "rows": [
+        {
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner",
+          "agent_revision": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT job_id,effective_user_id,credential_owner_id FROM job_governance ORDER BY job_id",
+      "rows": [
+        {
+          "job_id": "298841c0e2fa4602933169dd1f732d25",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner"
+        },
+        {
+          "job_id": "844713f5e2724d6fb008514fadb6dea4",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner"
+        },
+        {
+          "job_id": "ddab4e419513496d8bef143cb51a19c9",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner"
+        },
+        {
+          "job_id": "ebd48f0b023347f0a55a97a4e7040a73",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,resource_type,resource_id,grantee_type,grantee_id,revision,revoked_at FROM grants ORDER BY created_at,id",
+      "rows": [
+        {
+          "id": "2155213f09e759f4a355350a73fd16ad",
+          "resource_type": "skill",
+          "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "grantee_type": "agent",
+          "grantee_id": "xiaowen",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "57718b191d9a5f438c891943b1e36b68",
+          "resource_type": "skill",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "grantee_type": "agent",
+          "grantee_id": "xiaowen",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "97a2879415f6516baf16d3064d5e298c",
+          "resource_type": "skill",
+          "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "grantee_type": "agent",
+          "grantee_id": "xiaogang",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "2a574a78c1915000a23996806e66b2cd",
+          "resource_type": "connector",
+          "resource_id": "office-http",
+          "grantee_type": "agent",
+          "grantee_id": "xiaowen",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "a6a4643dc78058ecbb370d403723dd93",
+          "resource_type": "agent",
+          "resource_id": "xiaowen",
+          "grantee_type": "user",
+          "grantee_id": "lilei",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "fe6d085015035c559a5974c5259a674d",
+          "resource_type": "agent",
+          "resource_id": "xiaogang",
+          "grantee_type": "user",
+          "grantee_id": "lilei",
+          "revision": 1,
+          "revoked_at": null
+        }
+      ]
+    },
+    {
+      "sql": "SELECT call_id,task_run_id,tool_name,status,input_hash,dispatched_at,completed_at FROM tool_calls ORDER BY prepared_at,call_id",
+      "rows": [
+        {
+          "call_id": "call_00_l86juu7rwo3tdxcro2k8pjc7",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838",
+          "tool_name": "write_file",
+          "status": "prepared",
+          "input_hash": "639ddaee287ff3e2391c7be21a613a0620e3b291b3038c6076641f1fd9191aab",
+          "dispatched_at": null,
+          "completed_at": null
+        },
+        {
+          "call_id": "call_00_u9glf4n6wzl3cbawpc06ursw",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838",
+          "tool_name": "bash",
+          "status": "completed",
+          "input_hash": "50eaae99be6fa65d304fb3f0ad28eb3c53d8e53c84d3eb8a5506fa4afb29f823",
+          "dispatched_at": "2026-10-04T02:33:52.051254+00:00",
+          "completed_at": "2026-10-04T02:33:52.125119+00:00"
+        },
+        {
+          "call_id": "call_00_w2ai8ygkzakynb0l9yozujwe",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838",
+          "tool_name": "write_file",
+          "status": "completed",
+          "input_hash": "639ddaee287ff3e2391c7be21a613a0620e3b291b3038c6076641f1fd9191aab",
+          "dispatched_at": "2026-10-04T02:33:55.981608+00:00",
+          "completed_at": "2026-10-04T02:33:56.199050+00:00"
+        },
+        {
+          "call_id": "call_00_yiq2bxw1kgkgsgbp77mbfhvi",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838",
+          "tool_name": "bash",
+          "status": "failed",
+          "input_hash": "cd071537d33ac81439a5e4bc1153ec5f3ef679d021b45379bf7ccec38a1570da",
+          "dispatched_at": null,
+          "completed_at": "2026-10-04T02:34:00.608114+00:00"
+        },
+        {
+          "call_id": "call_00_nzlkksgbimm7yq48anej39q4",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838",
+          "tool_name": "bash",
+          "status": "completed",
+          "input_hash": "50eaae99be6fa65d304fb3f0ad28eb3c53d8e53c84d3eb8a5506fa4afb29f823",
+          "dispatched_at": "2026-10-04T02:34:04.133861+00:00",
+          "completed_at": "2026-10-04T02:34:04.258062+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,task_run_id,attempt_no,status FROM run_attempts ORDER BY started_at,id",
+      "rows": [
+        {
+          "id": "c1a14e51c11d4692a5c7129c748ab7dc",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838",
+          "attempt_no": 1,
+          "status": "interrupted"
+        },
+        {
+          "id": "4063d4143f2b48f28467b92feecd3973",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838",
+          "attempt_no": 2,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT global_seq,type,task_run_id FROM run_events ORDER BY global_seq",
+      "rows": [
+        {
+          "global_seq": 1,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 2,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 3,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 4,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 5,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 6,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 7,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 8,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 9,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 10,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 11,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 12,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 13,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 14,
+          "type": "memory.curated",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 15,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 16,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 17,
+          "type": "memory.updated",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 18,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 19,
+          "type": "memory.updated",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 20,
+          "type": "governance.rule_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 21,
+          "type": "run.queued",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 22,
+          "type": "memory.snapshot_created",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 23,
+          "type": "run.started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 24,
+          "type": "step.started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 25,
+          "type": "governance.authorization_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 26,
+          "type": "llm.request_started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 27,
+          "type": "context.budget_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 28,
+          "type": "llm.request_done",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 29,
+          "type": "step.completed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 30,
+          "type": "tool.prepared",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 31,
+          "type": "permission.requested",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 32,
+          "type": "run.interrupted",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 33,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 34,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 35,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 36,
+          "type": "run.resumed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 37,
+          "type": "step.started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 38,
+          "type": "governance.authorization_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 39,
+          "type": "llm.request_started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 40,
+          "type": "context.budget_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 41,
+          "type": "llm.request_done",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 42,
+          "type": "step.completed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 43,
+          "type": "tool.prepared",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 44,
+          "type": "tool.dispatched",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 45,
+          "type": "tool.completed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 46,
+          "type": "step.started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 47,
+          "type": "governance.authorization_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 48,
+          "type": "llm.request_started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 49,
+          "type": "context.budget_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 50,
+          "type": "llm.request_done",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 51,
+          "type": "step.completed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 52,
+          "type": "tool.prepared",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 53,
+          "type": "permission.requested",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 54,
+          "type": "permission.resolved",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 55,
+          "type": "tool.dispatched",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 56,
+          "type": "artifact.created",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 57,
+          "type": "artifact.ready",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 58,
+          "type": "tool.completed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 59,
+          "type": "step.started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 60,
+          "type": "governance.authorization_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 61,
+          "type": "llm.request_started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 62,
+          "type": "context.budget_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 63,
+          "type": "llm.request_done",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 64,
+          "type": "step.completed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 65,
+          "type": "tool.prepared",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 66,
+          "type": "permission.requested",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 67,
+          "type": "permission.resolved",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 68,
+          "type": "tool.failed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 69,
+          "type": "step.started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 70,
+          "type": "governance.authorization_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 71,
+          "type": "llm.request_started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 72,
+          "type": "context.budget_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 73,
+          "type": "llm.request_done",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 74,
+          "type": "step.completed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 75,
+          "type": "tool.prepared",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 76,
+          "type": "tool.dispatched",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 77,
+          "type": "tool.completed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 78,
+          "type": "step.started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 79,
+          "type": "governance.authorization_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 80,
+          "type": "llm.request_started",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 81,
+          "type": "context.budget_checked",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 82,
+          "type": "llm.request_done",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 83,
+          "type": "step.completed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 84,
+          "type": "run.completed",
+          "task_run_id": "8b7ae8bd27494e3fb3155402abfa5838"
+        },
+        {
+          "global_seq": 85,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 86,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 87,
+          "type": "memory.job_status",
+          "task_run_id": null
+        }
+      ]
+    },
+    {
+      "sql": "SELECT seq,actor_type,actor_id,action,resource_type,resource_id,prev_hash,hash FROM audit_log ORDER BY seq",
+      "rows": [
+        {
+          "seq": 1,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.seed",
+          "resource_type": "organization",
+          "resource_id": "demo-org",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "hash": "367818e89ccd39041093f7f904b4b2db1c9e6962d7cf798b6d03c928bb8b9b66"
+        },
+        {
+          "seq": 2,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:c7b7146c6ea65788b6d4161a4982f34b",
+          "prev_hash": "367818e89ccd39041093f7f904b4b2db1c9e6962d7cf798b6d03c928bb8b9b66",
+          "hash": "43cc6e5fd0a0cd95141670284cc7242111ac67e5c72dd012c61ae2c1debf7b97"
+        },
+        {
+          "seq": 3,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "prev_hash": "43cc6e5fd0a0cd95141670284cc7242111ac67e5c72dd012c61ae2c1debf7b97",
+          "hash": "28c290862772a3e7dacc0bb87aa7cf6faadf426180bd21adee364468ce95e34a"
+        },
+        {
+          "seq": 4,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:7fb6db7a69e75931b85594e05ed43d2b",
+          "prev_hash": "28c290862772a3e7dacc0bb87aa7cf6faadf426180bd21adee364468ce95e34a",
+          "hash": "425c31a154061500d3df21b80a7c5220dc57be9ef5179aebdbb3092dd3e22300"
+        },
+        {
+          "seq": 5,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "prev_hash": "425c31a154061500d3df21b80a7c5220dc57be9ef5179aebdbb3092dd3e22300",
+          "hash": "ab23deac1306dc756fb72bab8a6bdaa05091767e41bf924b9c5053c8e56313d7"
+        },
+        {
+          "seq": 6,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:d902cc4eb75d5b9790c0278523e87aa0",
+          "prev_hash": "ab23deac1306dc756fb72bab8a6bdaa05091767e41bf924b9c5053c8e56313d7",
+          "hash": "3deded8e5f4b7eb9f8fad9d5276feebee448c403ae6a3efff2a1e6506aaa3e8b"
+        },
+        {
+          "seq": 7,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "prev_hash": "3deded8e5f4b7eb9f8fad9d5276feebee448c403ae6a3efff2a1e6506aaa3e8b",
+          "hash": "80198d5c4fbca5010ec85be29f5cc1dea5cc7998668cbe320aed169f96cabe8d"
+        },
+        {
+          "seq": 8,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.seed_completed",
+          "resource_type": "organization",
+          "resource_id": "demo-org",
+          "prev_hash": "80198d5c4fbca5010ec85be29f5cc1dea5cc7998668cbe320aed169f96cabe8d",
+          "hash": "880c83209e5031f5fd37a67a98320c332d6fb1256d80854ddc2b7ef1e9bfd08d"
+        },
+        {
+          "seq": 9,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.task_identities_registered",
+          "resource_type": "identity",
+          "resource_id": "legacy-task-identities",
+          "prev_hash": "880c83209e5031f5fd37a67a98320c332d6fb1256d80854ddc2b7ef1e9bfd08d",
+          "hash": "01fef0469a3b5fbaad721faa03f9a41a7ffffb67b6ac99a89ba1f65d1e58f0e7"
+        },
+        {
+          "seq": 10,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_history_registered",
+          "resource_type": "identity",
+          "resource_id": "skill-history",
+          "prev_hash": "01fef0469a3b5fbaad721faa03f9a41a7ffffb67b6ac99a89ba1f65d1e58f0e7",
+          "hash": "fdf29a1f3927abd8fd2e96595eaf6162fb941ece4f8dcde4b1b709447e819fda"
+        },
+        {
+          "seq": 11,
+          "actor_type": "system",
+          "actor_id": "ddab4e419513496d8bef143cb51a19c9",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "ddab4e419513496d8bef143cb51a19c9",
+          "prev_hash": "fdf29a1f3927abd8fd2e96595eaf6162fb941ece4f8dcde4b1b709447e819fda",
+          "hash": "f774e8b6064a3f2f453e07bd3e3899713c967056a7e803830819ecebbc97a872"
+        },
+        {
+          "seq": 12,
+          "actor_type": "system",
+          "actor_id": "ebd48f0b023347f0a55a97a4e7040a73",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "ebd48f0b023347f0a55a97a4e7040a73",
+          "prev_hash": "f774e8b6064a3f2f453e07bd3e3899713c967056a7e803830819ecebbc97a872",
+          "hash": "f07a65cc7efcf094b988267ac8844e3175bcf150f17bb72a67e228ac33d85df4"
+        },
+        {
+          "seq": 13,
+          "actor_type": "system",
+          "actor_id": "ddab4e419513496d8bef143cb51a19c9",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "ddab4e419513496d8bef143cb51a19c9",
+          "prev_hash": "f07a65cc7efcf094b988267ac8844e3175bcf150f17bb72a67e228ac33d85df4",
+          "hash": "63905f1ed55aaad365343cf1e1d0cfc33e54138b88fb18b4894c5d0b64432719"
+        },
+        {
+          "seq": 14,
+          "actor_type": "curator",
+          "actor_id": "ddab4e419513496d8bef143cb51a19c9",
+          "action": "memory.curated",
+          "resource_type": "memory_job",
+          "resource_id": "ddab4e419513496d8bef143cb51a19c9",
+          "prev_hash": "63905f1ed55aaad365343cf1e1d0cfc33e54138b88fb18b4894c5d0b64432719",
+          "hash": "4e2b0f3e9c44b684ee569265dc586633a1d762ad94ea2555292520c7e83e213d"
+        },
+        {
+          "seq": 15,
+          "actor_type": "system",
+          "actor_id": "ddab4e419513496d8bef143cb51a19c9",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "ddab4e419513496d8bef143cb51a19c9",
+          "prev_hash": "4e2b0f3e9c44b684ee569265dc586633a1d762ad94ea2555292520c7e83e213d",
+          "hash": "73af5c14d7b3b186365fdf251502365ef122816edc796ebc3e9aa0cd9f8e737e"
+        },
+        {
+          "seq": 16,
+          "actor_type": "system",
+          "actor_id": "ebd48f0b023347f0a55a97a4e7040a73",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "ebd48f0b023347f0a55a97a4e7040a73",
+          "prev_hash": "73af5c14d7b3b186365fdf251502365ef122816edc796ebc3e9aa0cd9f8e737e",
+          "hash": "181eff82760a7c751c37aa85cf69d58f3ae2cf86516438c9066dc806e0db4295"
+        },
+        {
+          "seq": 17,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "memory.updated",
+          "resource_type": "memory_store",
+          "resource_id": "soul:xiaogang",
+          "prev_hash": "181eff82760a7c751c37aa85cf69d58f3ae2cf86516438c9066dc806e0db4295",
+          "hash": "e6f6c5e6c9b414650c4dd3c54aaeaa02eb0091b384c7122e9e8d6f22f954fa69"
+        },
+        {
+          "seq": 18,
+          "actor_type": "system",
+          "actor_id": "ebd48f0b023347f0a55a97a4e7040a73",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "ebd48f0b023347f0a55a97a4e7040a73",
+          "prev_hash": "e6f6c5e6c9b414650c4dd3c54aaeaa02eb0091b384c7122e9e8d6f22f954fa69",
+          "hash": "c0eca728b8411e938a47dfc60f67f4c1ada2ed4795aae5a370286aadbff9d015"
+        },
+        {
+          "seq": 19,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "memory.updated",
+          "resource_type": "memory_store",
+          "resource_id": "soul:xiaowen",
+          "prev_hash": "c0eca728b8411e938a47dfc60f67f4c1ada2ed4795aae5a370286aadbff9d015",
+          "hash": "956ee050ab7fa9aab45958deca804619314f26f41e1f3a0f89c275202535d6ed"
+        },
+        {
+          "seq": 20,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.rule_revoked",
+          "resource_type": "permission_rule",
+          "resource_id": "seed-office-write",
+          "prev_hash": "956ee050ab7fa9aab45958deca804619314f26f41e1f3a0f89c275202535d6ed",
+          "hash": "13757ad630fb5e4717ab76ecf1f02ff45e754c3e12b33cc67ef04c10aef63846"
+        },
+        {
+          "seq": 21,
+          "actor_type": "system",
+          "actor_id": "gate",
+          "action": "permission.requested",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_l86juu7rwo3tdxcro2k8pjc7",
+          "prev_hash": "13757ad630fb5e4717ab76ecf1f02ff45e754c3e12b33cc67ef04c10aef63846",
+          "hash": "5b7061146b1c95635ad2cd135f69442fa0897aba0241881f73c10adf67ef4923"
+        },
+        {
+          "seq": 22,
+          "actor_type": "system",
+          "actor_id": "844713f5e2724d6fb008514fadb6dea4",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "844713f5e2724d6fb008514fadb6dea4",
+          "prev_hash": "5b7061146b1c95635ad2cd135f69442fa0897aba0241881f73c10adf67ef4923",
+          "hash": "8123b4ab62e37eb255d11e965aa9785da44b929d6863d94dddbc836a3156ef8e"
+        },
+        {
+          "seq": 23,
+          "actor_type": "system",
+          "actor_id": "844713f5e2724d6fb008514fadb6dea4",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "844713f5e2724d6fb008514fadb6dea4",
+          "prev_hash": "8123b4ab62e37eb255d11e965aa9785da44b929d6863d94dddbc836a3156ef8e",
+          "hash": "57718abbac967c735750e591b13bafecb6950ae6af9ad72d9ee77591bfab3f5c"
+        },
+        {
+          "seq": 24,
+          "actor_type": "system",
+          "actor_id": "844713f5e2724d6fb008514fadb6dea4",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "844713f5e2724d6fb008514fadb6dea4",
+          "prev_hash": "57718abbac967c735750e591b13bafecb6950ae6af9ad72d9ee77591bfab3f5c",
+          "hash": "9be2aa87e5b42be62a18f30f08f7bfdf8db4d94fb31537b05e199f132f84b490"
+        },
+        {
+          "seq": 25,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "run.resume_requested",
+          "resource_type": "task_run",
+          "resource_id": "8b7ae8bd27494e3fb3155402abfa5838",
+          "prev_hash": "9be2aa87e5b42be62a18f30f08f7bfdf8db4d94fb31537b05e199f132f84b490",
+          "hash": "6980de9e6deb9be9bd690b2b98bc06e7eaa57cd4c8012d1e7fe859dac3f1348e"
+        },
+        {
+          "seq": 26,
+          "actor_type": "system",
+          "actor_id": "gate",
+          "action": "permission.auto_allowed",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_u9glf4n6wzl3cbawpc06ursw",
+          "prev_hash": "6980de9e6deb9be9bd690b2b98bc06e7eaa57cd4c8012d1e7fe859dac3f1348e",
+          "hash": "b1178e71dd74d68592baf66a0dc0d601d5084bb1b06e57f8c98ad642a96735b9"
+        },
+        {
+          "seq": 27,
+          "actor_type": "system",
+          "actor_id": "tools",
+          "action": "tool.completed",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_u9glf4n6wzl3cbawpc06ursw",
+          "prev_hash": "b1178e71dd74d68592baf66a0dc0d601d5084bb1b06e57f8c98ad642a96735b9",
+          "hash": "3393a2de71a348cd68b84188b8d57e987cc7d784387e76970dbfdd2c9574b1b6"
+        },
+        {
+          "seq": 28,
+          "actor_type": "system",
+          "actor_id": "gate",
+          "action": "permission.requested",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_w2ai8ygkzakynb0l9yozujwe",
+          "prev_hash": "3393a2de71a348cd68b84188b8d57e987cc7d784387e76970dbfdd2c9574b1b6",
+          "hash": "3a660c8281515713015892a470c063335edb9f4c53091e2dd95b466b62722ded"
+        },
+        {
+          "seq": 29,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "permission.resolved:allow_once",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_w2ai8ygkzakynb0l9yozujwe",
+          "prev_hash": "3a660c8281515713015892a470c063335edb9f4c53091e2dd95b466b62722ded",
+          "hash": "c25edaa49770bf23c9758142d1bab8c338954aae7bc7939961408b097d42ccd6"
+        },
+        {
+          "seq": 30,
+          "actor_type": "system",
+          "actor_id": "tools",
+          "action": "tool.completed",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_w2ai8ygkzakynb0l9yozujwe",
+          "prev_hash": "c25edaa49770bf23c9758142d1bab8c338954aae7bc7939961408b097d42ccd6",
+          "hash": "6998ea6097ded3229207ebb6cf24ba948be0213f500ff7770a48c30e4006d176"
+        },
+        {
+          "seq": 31,
+          "actor_type": "system",
+          "actor_id": "gate",
+          "action": "permission.requested",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_yiq2bxw1kgkgsgbp77mbfhvi",
+          "prev_hash": "6998ea6097ded3229207ebb6cf24ba948be0213f500ff7770a48c30e4006d176",
+          "hash": "b09c662e76922a9fcd93c6a5bc5acd83cfcd5db31a56f300383a97588abb7ed3"
+        },
+        {
+          "seq": 32,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "permission.resolved:reject_once",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_yiq2bxw1kgkgsgbp77mbfhvi",
+          "prev_hash": "b09c662e76922a9fcd93c6a5bc5acd83cfcd5db31a56f300383a97588abb7ed3",
+          "hash": "c91bdb2be4912b4a818783913a5b2fc15a05393862ff6223b375e57c2941f34d"
+        },
+        {
+          "seq": 33,
+          "actor_type": "system",
+          "actor_id": "tools",
+          "action": "tool.failed",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_yiq2bxw1kgkgsgbp77mbfhvi",
+          "prev_hash": "c91bdb2be4912b4a818783913a5b2fc15a05393862ff6223b375e57c2941f34d",
+          "hash": "c391cbdebef36e9dbb7534de21d4a6726cdce1c160d1dc3e5edf44dfeb098288"
+        },
+        {
+          "seq": 34,
+          "actor_type": "system",
+          "actor_id": "gate",
+          "action": "permission.auto_allowed",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_nzlkksgbimm7yq48anej39q4",
+          "prev_hash": "c391cbdebef36e9dbb7534de21d4a6726cdce1c160d1dc3e5edf44dfeb098288",
+          "hash": "986efe4c040c7768197e1fd47dd515ac9fec753197955e7b605f128134c4ee05"
+        },
+        {
+          "seq": 35,
+          "actor_type": "system",
+          "actor_id": "tools",
+          "action": "tool.completed",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_nzlkksgbimm7yq48anej39q4",
+          "prev_hash": "986efe4c040c7768197e1fd47dd515ac9fec753197955e7b605f128134c4ee05",
+          "hash": "23dc18617a73462a5b79aaf05440bd32e479447e75a322c574153b8f0accd1f1"
+        },
+        {
+          "seq": 36,
+          "actor_type": "system",
+          "actor_id": "298841c0e2fa4602933169dd1f732d25",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "298841c0e2fa4602933169dd1f732d25",
+          "prev_hash": "23dc18617a73462a5b79aaf05440bd32e479447e75a322c574153b8f0accd1f1",
+          "hash": "a6586cc5f19f6140cb413d2fa567b215f33217a2e8aed71c74c68264dafcd7df"
+        },
+        {
+          "seq": 37,
+          "actor_type": "system",
+          "actor_id": "298841c0e2fa4602933169dd1f732d25",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "298841c0e2fa4602933169dd1f732d25",
+          "prev_hash": "a6586cc5f19f6140cb413d2fa567b215f33217a2e8aed71c74c68264dafcd7df",
+          "hash": "6ee3cda6c222c6a89beb959d0f2e91f0f1802ab26b8b793a2fd9de5f571cf165"
+        },
+        {
+          "seq": 38,
+          "actor_type": "system",
+          "actor_id": "298841c0e2fa4602933169dd1f732d25",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "298841c0e2fa4602933169dd1f732d25",
+          "prev_hash": "6ee3cda6c222c6a89beb959d0f2e91f0f1802ab26b8b793a2fd9de5f571cf165",
+          "hash": "aa07d2823cfbc63e64c3ea8f2874a03feaa3e1dd1b55ee8e3ff2b55003b81390"
+        }
+      ]
+    }
+  ],
+  "event_watermark": 87,
+  "audit_sequence": 38
+}
