@@ -20,6 +20,7 @@ from agentcrew_core.events import Event, RunEventType
 
 from .projections import apply_projection
 from .write_channel import WriteChannel
+from .audit import SNAPSHOT_EVERY, snapshot_chain_head
 
 Publisher = Callable[[Event], None]
 
@@ -36,6 +37,7 @@ class EventStore:
         self._publisher = publisher
         self.task_preparer = None
         self.authorization_checker = None
+        self.audit_anchor_path = None
 
     @property
     def channel(self) -> WriteChannel:
@@ -107,6 +109,7 @@ class EventStore:
     ) -> Event:
         event_id = uuid.uuid4().hex
         ts = _utc_now()
+        previous_audit_seq = conn.execute("SELECT coalesce(max(seq),0) FROM audit_log").fetchone()[0]
         try:
             conn.execute("BEGIN IMMEDIATE")
             # FK 延迟到 COMMIT 检查：RUN_QUEUED 的 task_runs 父行由本事务内的
@@ -145,6 +148,9 @@ class EventStore:
             except sqlite3.Error:
                 pass  # 事务已不存在（如 BEGIN 即失败）——保持原异常
             raise
+        audit_seq = conn.execute("SELECT coalesce(max(seq),0) FROM audit_log").fetchone()[0]
+        if self.audit_anchor_path is not None and audit_seq // SNAPSHOT_EVERY > previous_audit_seq // SNAPSHOT_EVERY:
+            snapshot_chain_head(conn, self.audit_anchor_path)
         self.publish(event)
         return event
 

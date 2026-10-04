@@ -1,0 +1,1581 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "identity-0c48e91624634e609e66ec66ea4706cc"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "lilei",
+          "name": "李蕾",
+          "org_id": "demo-org",
+          "role": "member",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/diagnostics/backups",
+    "effective_user": "lilei",
+    "request": {
+      "change_id": "member-backup",
+      "kind": "directory"
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前角色无权执行该操作"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "audit-soul",
+      "expected_revision": 0,
+      "basis": "所有者配置恢复后的真实模型岗位",
+      "text": "我是负责核查办公材料的数字员工，执行任务时使用当前授权、合法路径和真实工具结果。"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "audit-soul",
+        "ledger_id": 4,
+        "store_type": "soul",
+        "store_id": "xiaowen",
+        "entry_id": "8a410810f68e4fe0807689ee0eab30d2",
+        "entry_hash": "f617071661893330512964a4d2f5cc032858c4ad42ce1097b5ead74b068df911",
+        "revision": 1,
+        "global_seq": 21,
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/audit/verify",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "ok": true,
+        "internal": {
+          "ok": true,
+          "checked_rows": 21,
+          "broken_at": null,
+          "reason": null
+        },
+        "anchor": {
+          "ok": true,
+          "status": "verified",
+          "seq": 10,
+          "hash": "d661c36e9ebc836f2b3bf5148c63225b36ace837962f14bff9eb577797bc28b7"
+        },
+        "reason": null,
+        "broken_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/diagnostics/backups",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "audit-directory-backup",
+      "kind": "directory"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+        "kind": "directory",
+        "created_at": "2026-10-04T15:46:05.226359+00:00",
+        "verified": true,
+        "database_sha256": "b5269c7ad7bb889b24e8712697f3a28c15fc9762246b3b4c4cbc2b2a7a5ce6eb",
+        "anchor_seq": 22,
+        "anchor_hash": "db4bf03769b35988bc13b2309f63cbb98e05c203f407ff051a8ef86f45410b7e"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/diagnostics",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "mode": "diagnostic",
+        "reason": "审计链校验失败（seq=None：链头快照文件损坏（无法解析）：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_http_diagnostic_ba4/chain-head.txt）",
+        "hint": "审计账本不可信，系统拒绝进入正常模式；可从 backups/ 快照还原后重启"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/audit/export?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "action": "governance.backup_created",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "actor_id": "owner",
+              "change_id": "audit-directory-backup",
+              "credential_owner_id": "owner",
+              "kind": "directory",
+              "resource_id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+              "resource_type": "diagnostic_backup",
+              "revision": 1,
+              "scope": {
+                "agent_id": null,
+                "org_id": "demo-org",
+                "owner_id": "owner",
+                "workspace_id": null
+              }
+            },
+            "hash": "20dcad08a49f2826f9e28ab8f3a0e923ba21799219527041f54f6266a506d8ae",
+            "prev_hash": "db4bf03769b35988bc13b2309f63cbb98e05c203f407ff051a8ef86f45410b7e",
+            "resource_id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+            "resource_type": "diagnostic_backup",
+            "seq": 23,
+            "ts": "2026-10-04T15:46:05.232196+00:00"
+          },
+          {
+            "action": "governance.audit_verified",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "actor_id": "owner",
+              "anchor": {
+                "hash": "d661c36e9ebc836f2b3bf5148c63225b36ace837962f14bff9eb577797bc28b7",
+                "ok": true,
+                "seq": 10,
+                "status": "verified"
+              },
+              "change_id": "88164fe0182b4e309388cb5811351890",
+              "credential_owner_id": "owner",
+              "internal": {
+                "broken_at": null,
+                "checked_rows": 21,
+                "ok": true,
+                "reason": null
+              },
+              "resource_id": "chain",
+              "resource_type": "audit",
+              "revision": 1,
+              "scope": {
+                "agent_id": null,
+                "org_id": "demo-org",
+                "owner_id": "owner",
+                "workspace_id": null
+              }
+            },
+            "hash": "db4bf03769b35988bc13b2309f63cbb98e05c203f407ff051a8ef86f45410b7e",
+            "prev_hash": "b387302bf085ec4828cefb7c3879cf120204a4bde1f13fdffe09934f5d64ca5d",
+            "resource_id": "chain",
+            "resource_type": "audit",
+            "seq": 22,
+            "ts": "2026-10-04T15:46:05.208242+00:00"
+          },
+          {
+            "action": "memory.updated",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "action": "create",
+              "change_id": "audit-soul",
+              "credential_owner_id": "owner",
+              "entry_hash": "f617071661893330512964a4d2f5cc032858c4ad42ce1097b5ead74b068df911",
+              "entry_id": "8a410810f68e4fe0807689ee0eab30d2",
+              "job_id": null,
+              "ledger_id": 4,
+              "revision": 1,
+              "scope": {
+                "agent_id": "xiaowen",
+                "owner_id": "owner",
+                "workspace_id": "office"
+              },
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "audit-soul"
+              },
+              "source_task_run_id": null,
+              "store_id": "xiaowen",
+              "store_type": "soul",
+              "summary": "我是负责核查办公材料的数字员工，执行任务时使用当前授权、合法路径和真实工具结果。"
+            },
+            "hash": "b387302bf085ec4828cefb7c3879cf120204a4bde1f13fdffe09934f5d64ca5d",
+            "prev_hash": "c96248fd9d4a4671bc8a457d49236b20717cfe4f4cf6d19852c79b4557e1c618",
+            "resource_id": "soul:xiaowen",
+            "resource_type": "memory_store",
+            "seq": 21,
+            "ts": "2026-10-04T15:46:05.203608+00:00"
+          },
+          {
+            "action": "governance.access_denied",
+            "actor_id": "lilei",
+            "actor_type": "user",
+            "detail": {
+              "actor_id": "lilei",
+              "change_id": "8279758af7224482b6b8e7e1ad4e6b0e",
+              "code": "OUT_OF_SCOPE",
+              "credential_owner_id": "owner",
+              "method": "POST",
+              "reason": "当前角色无权执行该操作",
+              "resource_id": "/api/diagnostics/backups",
+              "resource_type": "api_request",
+              "revision": 1,
+              "scope": {
+                "agent_id": null,
+                "org_id": "demo-org",
+                "owner_id": "lilei",
+                "workspace_id": null
+              }
+            },
+            "hash": "c96248fd9d4a4671bc8a457d49236b20717cfe4f4cf6d19852c79b4557e1c618",
+            "prev_hash": "70991147c5c042d7f5f3b9105b00273f5d0190896143f2b56eedea7bb5c0220c",
+            "resource_id": "/api/diagnostics/backups",
+            "resource_type": "api_request",
+            "seq": 20,
+            "ts": "2026-10-04T15:46:05.201651+00:00"
+          },
+          {
+            "action": "governance.identity_changed",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "actor_id": "owner",
+              "change_id": "identity-0c48e91624634e609e66ec66ea4706cc",
+              "credential_owner_id": "owner",
+              "effective_user_id": "lilei",
+              "resource_id": "lilei",
+              "resource_type": "identity",
+              "revision": 1,
+              "scope": {
+                "agent_id": null,
+                "org_id": "demo-org",
+                "owner_id": "lilei",
+                "workspace_id": null
+              }
+            },
+            "hash": "70991147c5c042d7f5f3b9105b00273f5d0190896143f2b56eedea7bb5c0220c",
+            "prev_hash": "773586239a0d561a99a1aa391dff4dbac92d116b1af299f732e553739e9f3908",
+            "resource_id": "lilei",
+            "resource_type": "identity",
+            "seq": 19,
+            "ts": "2026-10-04T15:46:05.200044+00:00"
+          },
+          {
+            "action": "memory.job_status",
+            "actor_id": "ad376b7090af46dd9f3640c77957cf98",
+            "actor_type": "system",
+            "detail": {
+              "config_version": "2",
+              "error": null,
+              "job_id": "ad376b7090af46dd9f3640c77957cf98",
+              "kind": "curate",
+              "model": null,
+              "scope": {
+                "agent_id": "xiaowen",
+                "owner_id": "owner",
+                "workspace_id": "office"
+              },
+              "source_task_run_id": null,
+              "status": "completed",
+              "trigger_global_seq": 11,
+              "usage": {
+                "input_tokens": 0,
+                "output_tokens": 0
+              }
+            },
+            "hash": "773586239a0d561a99a1aa391dff4dbac92d116b1af299f732e553739e9f3908",
+            "prev_hash": "9c15a114f7acaaf4dc96f72a69cd341b5dfab7a0907f54012d32a6357091b9b5",
+            "resource_id": "ad376b7090af46dd9f3640c77957cf98",
+            "resource_type": "memory_job",
+            "seq": 18,
+            "ts": "2026-10-04T15:46:05.181917+00:00"
+          },
+          {
+            "action": "memory.curated",
+            "actor_id": "ad376b7090af46dd9f3640c77957cf98",
+            "actor_type": "curator",
+            "detail": {
+              "job_id": "ad376b7090af46dd9f3640c77957cf98",
+              "last_curate_at": "2026-10-04T15:46:05.181629+00:00",
+              "report": {
+                "archived": [],
+                "changes": [],
+                "checked": 2,
+                "exempt": [
+                  {
+                    "entry_id": "1aa2cccda09f49f6b4fd943de64e916a",
+                    "reason": "active_skill_reference",
+                    "references": [
+                      {
+                        "active": 1,
+                        "created_at": "2026-10-04T15:46:05.162423+00:00",
+                        "resource_id": "xiaowen",
+                        "resource_type": "agent",
+                        "skill_id": "7fb6db7a69e75931b85594e05ed43d2b"
+                      }
+                    ],
+                    "store_id": "7fb6db7a69e75931b85594e05ed43d2b",
+                    "store_type": "skill"
+                  },
+                  {
+                    "entry_id": "8e7bd3b434004074baee03816f0146d6",
+                    "reason": "active_skill_reference",
+                    "references": [
+                      {
+                        "active": 1,
+                        "created_at": "2026-10-04T15:46:05.157483+00:00",
+                        "resource_id": "xiaowen",
+                        "resource_type": "agent",
+                        "skill_id": "c7b7146c6ea65788b6d4161a4982f34b"
+                      }
+                    ],
+                    "store_id": "c7b7146c6ea65788b6d4161a4982f34b",
+                    "store_type": "skill"
+                  }
+                ],
+                "stale": []
+              },
+              "scope": {
+                "agent_id": "xiaowen",
+                "owner_id": "owner",
+                "workspace_id": "office"
+              }
+            },
+            "hash": "9c15a114f7acaaf4dc96f72a69cd341b5dfab7a0907f54012d32a6357091b9b5",
+            "prev_hash": "ce0f79cf30b962805793a9867b56f98fa385352fa5df44ad789490b6415ae627",
+            "resource_id": "ad376b7090af46dd9f3640c77957cf98",
+            "resource_type": "memory_job",
+            "seq": 17,
+            "ts": "2026-10-04T15:46:05.181728+00:00"
+          },
+          {
+            "action": "memory.job_status",
+            "actor_id": "ad376b7090af46dd9f3640c77957cf98",
+            "actor_type": "system",
+            "detail": {
+              "config_version": "2",
+              "error": null,
+              "job_id": "ad376b7090af46dd9f3640c77957cf98",
+              "kind": "curate",
+              "model": null,
+              "scope": {
+                "agent_id": "xiaowen",
+                "owner_id": "owner",
+                "workspace_id": "office"
+              },
+              "source_task_run_id": null,
+              "status": "running",
+              "trigger_global_seq": 11,
+              "usage": {
+                "input_tokens": 0,
+                "output_tokens": 0
+              }
+            },
+            "hash": "ce0f79cf30b962805793a9867b56f98fa385352fa5df44ad789490b6415ae627",
+            "prev_hash": "9e3e74e0a03df051df23d3d0f0ae74f81067ecf6f6559e7ba9fc537cace7801a",
+            "resource_id": "ad376b7090af46dd9f3640c77957cf98",
+            "resource_type": "memory_job",
+            "seq": 16,
+            "ts": "2026-10-04T15:46:05.178769+00:00"
+          },
+          {
+            "action": "memory.job_status",
+            "actor_id": "10099aab4e0444e79a1912b31d21f856",
+            "actor_type": "system",
+            "detail": {
+              "config_version": "2",
+              "error": null,
+              "job_id": "10099aab4e0444e79a1912b31d21f856",
+              "kind": "curate",
+              "model": null,
+              "scope": {
+                "agent_id": "xiaogang",
+                "owner_id": "owner",
+                "workspace_id": "analytics"
+              },
+              "source_task_run_id": null,
+              "status": "completed",
+              "trigger_global_seq": 10,
+              "usage": {
+                "input_tokens": 0,
+                "output_tokens": 0
+              }
+            },
+            "hash": "9e3e74e0a03df051df23d3d0f0ae74f81067ecf6f6559e7ba9fc537cace7801a",
+            "prev_hash": "a9113f80db97e9a6eaf4a09a8539746a2437fba80897c4ecf9c7c41108346e7e",
+            "resource_id": "10099aab4e0444e79a1912b31d21f856",
+            "resource_type": "memory_job",
+            "seq": 15,
+            "ts": "2026-10-04T15:46:05.177865+00:00"
+          },
+          {
+            "action": "memory.curated",
+            "actor_id": "10099aab4e0444e79a1912b31d21f856",
+            "actor_type": "curator",
+            "detail": {
+              "job_id": "10099aab4e0444e79a1912b31d21f856",
+              "last_curate_at": "2026-10-04T15:46:05.177606+00:00",
+              "report": {
+                "archived": [],
+                "changes": [],
+                "checked": 1,
+                "exempt": [
+                  {
+                    "entry_id": "806294ab62b94a8fa91f02b89cb397a8",
+                    "reason": "active_skill_reference",
+                    "references": [
+                      {
+                        "active": 1,
+                        "created_at": "2026-10-04T15:46:05.167140+00:00",
+                        "resource_id": "xiaogang",
+                        "resource_type": "agent",
+                        "skill_id": "d902cc4eb75d5b9790c0278523e87aa0"
+                      }
+                    ],
+                    "store_id": "d902cc4eb75d5b9790c0278523e87aa0",
+                    "store_type": "skill"
+                  }
+                ],
+                "stale": []
+              },
+              "scope": {
+                "agent_id": "xiaogang",
+                "owner_id": "owner",
+                "workspace_id": "analytics"
+              }
+            },
+            "hash": "a9113f80db97e9a6eaf4a09a8539746a2437fba80897c4ecf9c7c41108346e7e",
+            "prev_hash": "3da36316c8ecc78e17c9797008310211be1670197085cf29c03272b4d3cf108f",
+            "resource_id": "10099aab4e0444e79a1912b31d21f856",
+            "resource_type": "memory_job",
+            "seq": 14,
+            "ts": "2026-10-04T15:46:05.177692+00:00"
+          },
+          {
+            "action": "memory.job_status",
+            "actor_id": "10099aab4e0444e79a1912b31d21f856",
+            "actor_type": "system",
+            "detail": {
+              "config_version": "2",
+              "error": null,
+              "job_id": "10099aab4e0444e79a1912b31d21f856",
+              "kind": "curate",
+              "model": null,
+              "scope": {
+                "agent_id": "xiaogang",
+                "owner_id": "owner",
+                "workspace_id": "analytics"
+              },
+              "source_task_run_id": null,
+              "status": "running",
+              "trigger_global_seq": 10,
+              "usage": {
+                "input_tokens": 0,
+                "output_tokens": 0
+              }
+            },
+            "hash": "3da36316c8ecc78e17c9797008310211be1670197085cf29c03272b4d3cf108f",
+            "prev_hash": "97d70d43500330d67f4a1ca8c343029f60b812eb42c9209fb918d01c3f6882f2",
+            "resource_id": "10099aab4e0444e79a1912b31d21f856",
+            "resource_type": "memory_job",
+            "seq": 13,
+            "ts": "2026-10-04T15:46:05.175075+00:00"
+          },
+          {
+            "action": "memory.job_status",
+            "actor_id": "ad376b7090af46dd9f3640c77957cf98",
+            "actor_type": "system",
+            "detail": {
+              "config_version": "2",
+              "error": null,
+              "job_id": "ad376b7090af46dd9f3640c77957cf98",
+              "kind": "curate",
+              "model": null,
+              "scope": {
+                "agent_id": "xiaowen",
+                "owner_id": "owner",
+                "workspace_id": "office"
+              },
+              "source_task_run_id": null,
+              "status": "queued",
+              "trigger_global_seq": 11,
+              "usage": {
+                "input_tokens": 0,
+                "output_tokens": 0
+              }
+            },
+            "hash": "97d70d43500330d67f4a1ca8c343029f60b812eb42c9209fb918d01c3f6882f2",
+            "prev_hash": "22ab179a320cbdbd996e7795ef972cad60cba71c6b6af73b050686caf5e9ab93",
+            "resource_id": "ad376b7090af46dd9f3640c77957cf98",
+            "resource_type": "memory_job",
+            "seq": 12,
+            "ts": "2026-10-04T15:46:05.173845+00:00"
+          },
+          {
+            "action": "memory.job_status",
+            "actor_id": "10099aab4e0444e79a1912b31d21f856",
+            "actor_type": "system",
+            "detail": {
+              "config_version": "2",
+              "error": null,
+              "job_id": "10099aab4e0444e79a1912b31d21f856",
+              "kind": "curate",
+              "model": null,
+              "scope": {
+                "agent_id": "xiaogang",
+                "owner_id": "owner",
+                "workspace_id": "analytics"
+              },
+              "source_task_run_id": null,
+              "status": "queued",
+              "trigger_global_seq": 10,
+              "usage": {
+                "input_tokens": 0,
+                "output_tokens": 0
+              }
+            },
+            "hash": "22ab179a320cbdbd996e7795ef972cad60cba71c6b6af73b050686caf5e9ab93",
+            "prev_hash": "d661c36e9ebc836f2b3bf5148c63225b36ace837962f14bff9eb577797bc28b7",
+            "resource_id": "10099aab4e0444e79a1912b31d21f856",
+            "resource_type": "memory_job",
+            "seq": 11,
+            "ts": "2026-10-04T15:46:05.173030+00:00"
+          },
+          {
+            "action": "governance.skill_history_registered",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "actor_id": "owner",
+              "change_id": "m2-skill-history-3",
+              "credential_owner_id": "owner",
+              "resource_id": "skill-history",
+              "resource_type": "identity",
+              "revision": 1,
+              "scope": {
+                "agent_id": null,
+                "org_id": "demo-org",
+                "owner_id": "owner",
+                "workspace_id": null
+              },
+              "status": "active"
+            },
+            "hash": "d661c36e9ebc836f2b3bf5148c63225b36ace837962f14bff9eb577797bc28b7",
+            "prev_hash": "ea33315647a9610a3ec56482e2b16d27929d4fdbf85a436b27cda045aea3d01b",
+            "resource_id": "skill-history",
+            "resource_type": "identity",
+            "seq": 10,
+            "ts": "2026-10-04T15:46:05.169770+00:00"
+          },
+          {
+            "action": "governance.task_identities_registered",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "actor_id": "owner",
+              "change_id": "m2-legacy-task-identities",
+              "credential_owner_id": "owner",
+              "resource_id": "legacy-task-identities",
+              "resource_type": "identity",
+              "revision": 1,
+              "scope": {
+                "agent_id": null,
+                "org_id": "demo-org",
+                "owner_id": "owner",
+                "workspace_id": null
+              },
+              "status": "active"
+            },
+            "hash": "ea33315647a9610a3ec56482e2b16d27929d4fdbf85a436b27cda045aea3d01b",
+            "prev_hash": "faaaafb33b374cd55f60d019755c1d2e8720964d8941644cc85b17a1c5046cbf",
+            "resource_id": "legacy-task-identities",
+            "resource_type": "identity",
+            "seq": 9,
+            "ts": "2026-10-04T15:46:05.168952+00:00"
+          },
+          {
+            "action": "governance.seed_completed",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "scope": {
+                "agent_id": null,
+                "org_id": "demo-org",
+                "owner_id": "owner",
+                "workspace_id": null
+              }
+            },
+            "hash": "faaaafb33b374cd55f60d019755c1d2e8720964d8941644cc85b17a1c5046cbf",
+            "prev_hash": "1144658ce9ebf60d4b4263d3e9327179d435d3230721bdac016ed7f4f1e88468",
+            "resource_id": "demo-org",
+            "resource_type": "organization",
+            "seq": 8,
+            "ts": "2026-10-04T15:46:05.167668+00:00"
+          },
+          {
+            "action": "governance.skill_seeded",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "actor_id": "owner",
+              "change_id": "seed-skill-xiaogang-4c8a9eec37845f22816c4cb3c401b722",
+              "credential_owner_id": "owner",
+              "grantee_id": "xiaogang",
+              "grantee_type": "agent",
+              "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+              "resource_type": "skill",
+              "revision": 1,
+              "scope": {
+                "agent_id": "xiaogang",
+                "org_id": "demo-org",
+                "owner_id": null,
+                "workspace_id": "analytics"
+              },
+              "status": "active"
+            },
+            "hash": "1144658ce9ebf60d4b4263d3e9327179d435d3230721bdac016ed7f4f1e88468",
+            "prev_hash": "a693a70d942367182475dbe59b9684daf3ab8e5796ce488c81a0b48e5bc7d43c",
+            "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+            "resource_type": "skill",
+            "seq": 7,
+            "ts": "2026-10-04T15:46:05.167265+00:00"
+          },
+          {
+            "action": "skill.patched",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "action": "create",
+              "change_id": "seed-skill-xiaogang-4c8a9eec37845f22816c4cb3c401b722",
+              "credential_owner_id": "owner",
+              "description": "通过已授权数据库查询分析数据",
+              "entry_hash": "c9f11508907b8b1fed32ce3c99d7b1d75edd80292346a310176e75aed50b1df2",
+              "entry_id": "806294ab62b94a8fa91f02b89cb397a8",
+              "files": [],
+              "job_id": null,
+              "ledger_id": 3,
+              "name": "SQL查询",
+              "revision": 1,
+              "scope": {
+                "agent_id": "xiaogang",
+                "owner_id": "owner",
+                "workspace_id": "analytics"
+              },
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "seed-skill-xiaogang-4c8a9eec37845f22816c4cb3c401b722"
+              },
+              "source_task_run_id": null,
+              "store_id": "d902cc4eb75d5b9790c0278523e87aa0",
+              "store_type": "skill",
+              "summary": "# SQL查询\n确认数据库范围与查询目标，使用参数化SQL读取真实数据并核验结果。"
+            },
+            "hash": "a693a70d942367182475dbe59b9684daf3ab8e5796ce488c81a0b48e5bc7d43c",
+            "prev_hash": "ed08cb611598a67f2b2aad3919cd241ebf88ab72fd066eafb39461dcf2d1a2a0",
+            "resource_id": "skill:d902cc4eb75d5b9790c0278523e87aa0",
+            "resource_type": "memory_store",
+            "seq": 6,
+            "ts": "2026-10-04T15:46:05.163896+00:00"
+          },
+          {
+            "action": "governance.skill_seeded",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "actor_id": "owner",
+              "change_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408",
+              "credential_owner_id": "owner",
+              "grantee_id": "xiaowen",
+              "grantee_type": "agent",
+              "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+              "resource_type": "skill",
+              "revision": 1,
+              "scope": {
+                "agent_id": "xiaowen",
+                "org_id": "demo-org",
+                "owner_id": null,
+                "workspace_id": "office"
+              },
+              "status": "active"
+            },
+            "hash": "ed08cb611598a67f2b2aad3919cd241ebf88ab72fd066eafb39461dcf2d1a2a0",
+            "prev_hash": "07d77618e18c485c3c492c6ecf1bebfff6140c708ff6befc11f7e19ba6ee0528",
+            "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+            "resource_type": "skill",
+            "seq": 5,
+            "ts": "2026-10-04T15:46:05.162566+00:00"
+          },
+          {
+            "action": "skill.patched",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "action": "create",
+              "change_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408",
+              "credential_owner_id": "owner",
+              "description": "核查来源并组织文档内容",
+              "entry_hash": "b432f048a72d0cda8b600746e31882afaba0a3b0eb165a80b847f874e6a5b9f0",
+              "entry_id": "1aa2cccda09f49f6b4fd943de64e916a",
+              "files": [],
+              "job_id": null,
+              "ledger_id": 2,
+              "name": "文档模板",
+              "revision": 1,
+              "scope": {
+                "agent_id": "xiaowen",
+                "owner_id": "owner",
+                "workspace_id": "office"
+              },
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408"
+              },
+              "source_task_run_id": null,
+              "store_id": "7fb6db7a69e75931b85594e05ed43d2b",
+              "store_type": "skill",
+              "summary": "# 文档模板\n核对材料来源，按标题、正文和依据组织内容，保存后检查完整正文。"
+            },
+            "hash": "07d77618e18c485c3c492c6ecf1bebfff6140c708ff6befc11f7e19ba6ee0528",
+            "prev_hash": "8dd9d4108a8816f3bd48c0474577aecbfb30ba1b9dab8155936bbdc9757540ff",
+            "resource_id": "skill:7fb6db7a69e75931b85594e05ed43d2b",
+            "resource_type": "memory_store",
+            "seq": 4,
+            "ts": "2026-10-04T15:46:05.158937+00:00"
+          },
+          {
+            "action": "governance.skill_seeded",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "actor_id": "owner",
+              "change_id": "seed-skill-xiaowen-cda8b927ff2d5b45a9330b91ec1b1789",
+              "credential_owner_id": "owner",
+              "grantee_id": "xiaowen",
+              "grantee_type": "agent",
+              "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+              "resource_type": "skill",
+              "revision": 1,
+              "scope": {
+                "agent_id": "xiaowen",
+                "org_id": "demo-org",
+                "owner_id": null,
+                "workspace_id": "office"
+              },
+              "status": "active"
+            },
+            "hash": "8dd9d4108a8816f3bd48c0474577aecbfb30ba1b9dab8155936bbdc9757540ff",
+            "prev_hash": "a73767b63b3d70751674c06bf72fe1fa3f19aefbdcabddf439d66ce45d5767a5",
+            "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+            "resource_type": "skill",
+            "seq": 3,
+            "ts": "2026-10-04T15:46:05.157635+00:00"
+          },
+          {
+            "action": "skill.patched",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "action": "create",
+              "change_id": "seed-skill-xiaowen-cda8b927ff2d5b45a9330b91ec1b1789",
+              "credential_owner_id": "owner",
+              "description": "核对表头并处理表格材料",
+              "entry_hash": "da41fe9c3a67006268e7027b6b8c5192fb4e1fe586f070155774f8f4eb2ffe3c",
+              "entry_id": "8e7bd3b434004074baee03816f0146d6",
+              "files": [],
+              "job_id": null,
+              "ledger_id": 1,
+              "name": "Excel处理",
+              "revision": 1,
+              "scope": {
+                "agent_id": "xiaowen",
+                "owner_id": "owner",
+                "workspace_id": "office"
+              },
+              "source": {
+                "actor_id": "owner",
+                "actor_type": "user",
+                "manual_edit_id": "seed-skill-xiaowen-cda8b927ff2d5b45a9330b91ec1b1789"
+              },
+              "source_task_run_id": null,
+              "store_id": "c7b7146c6ea65788b6d4161a4982f34b",
+              "store_type": "skill",
+              "summary": "# Excel处理\n核对原始文件、表头和数据类型，确认处理目标后保存并核验输出。"
+            },
+            "hash": "a73767b63b3d70751674c06bf72fe1fa3f19aefbdcabddf439d66ce45d5767a5",
+            "prev_hash": "a1d3275be7da50092c9ed4d36868e434af03f35542d18d683a534043ae2148b6",
+            "resource_id": "skill:c7b7146c6ea65788b6d4161a4982f34b",
+            "resource_type": "memory_store",
+            "seq": 2,
+            "ts": "2026-10-04T15:46:05.149676+00:00"
+          },
+          {
+            "action": "governance.seed",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "credential_owner_id": "owner",
+              "legacy_mapping": {
+                "default": "default"
+              },
+              "scope": {
+                "agent_id": null,
+                "org_id": "demo-org",
+                "owner_id": "owner",
+                "workspace_id": null
+              }
+            },
+            "hash": "a1d3275be7da50092c9ed4d36868e434af03f35542d18d683a534043ae2148b6",
+            "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+            "resource_id": "demo-org",
+            "resource_type": "organization",
+            "seq": 1,
+            "ts": "2026-10-04T15:46:05.145206+00:00"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/audit/verify",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "ok": false,
+        "internal": {
+          "ok": true,
+          "checked_rows": 23,
+          "broken_at": null,
+          "reason": null
+        },
+        "anchor": {
+          "ok": false,
+          "status": "malformed",
+          "seq": null,
+          "hash": null
+        },
+        "reason": "链头快照文件损坏（无法解析）：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_http_diagnostic_ba4/chain-head.txt",
+        "broken_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "instruction": "诊断禁止执行"
+    },
+    "status": 503,
+    "response": {
+      "error": {
+        "code": "DIAGNOSTIC_MODE",
+        "message": "只读诊断模式：业务端点不可用",
+        "detail": {
+          "reason": "审计验证失败：链头快照文件损坏（无法解析）：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_http_diagnostic_ba4/chain-head.txt",
+          "hint": "请导出诊断记录，选择服务管理的已验证备份恢复，然后重启并完成两级验证"
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "diagnostic-demo",
+      "user_id": "wangming"
+    },
+    "status": 503,
+    "response": {
+      "error": {
+        "code": "DIAGNOSTIC_MODE",
+        "message": "只读诊断模式：业务端点不可用",
+        "detail": {
+          "reason": "审计验证失败：链头快照文件损坏（无法解析）：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_http_diagnostic_ba4/chain-head.txt",
+          "hint": "请导出诊断记录，选择服务管理的已验证备份恢复，然后重启并完成两级验证"
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/diagnostics/backups",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "diagnostic-new-backup",
+      "kind": "directory"
+    },
+    "status": 503,
+    "response": {
+      "error": {
+        "code": "DIAGNOSTIC_MODE",
+        "message": "只读诊断模式：业务端点不可用",
+        "detail": {
+          "reason": "审计验证失败：链头快照文件损坏（无法解析）：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_http_diagnostic_ba4/chain-head.txt",
+          "hint": "请导出诊断记录，选择服务管理的已验证备份恢复，然后重启并完成两级验证"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/diagnostics/backups",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+          "kind": "directory",
+          "created_at": "2026-10-04T15:46:05.226359+00:00",
+          "verified": true,
+          "database_sha256": "b5269c7ad7bb889b24e8712697f3a28c15fc9762246b3b4c4cbc2b2a7a5ce6eb",
+          "anchor_seq": 22,
+          "anchor_hash": "db4bf03769b35988bc13b2309f63cbb98e05c203f407ff051a8ef86f45410b7e"
+        }
+      ]
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/diagnostics/restore",
+    "effective_user": "owner",
+    "request": {
+      "backup_id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+      "change_id": "audit-restore"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "backup_id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+        "restart_required": true,
+        "preserved_path": "backups/governance/preserved-868cec10699b4a3e2b4272540752f92ad4d7259895917f34084898aa76f94817"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "instruction": "重启之前仍然禁止执行"
+    },
+    "status": 503,
+    "response": {
+      "error": {
+        "code": "DIAGNOSTIC_MODE",
+        "message": "只读诊断模式：业务端点不可用",
+        "detail": {
+          "reason": "审计验证失败：链头快照文件损坏（无法解析）：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_http_diagnostic_ba4/chain-head.txt",
+          "hint": "请导出诊断记录，选择服务管理的已验证备份恢复，然后重启并完成两级验证"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/diagnostics",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "mode": "normal"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/audit/verify",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "ok": true,
+        "internal": {
+          "ok": true,
+          "checked_rows": 23,
+          "broken_at": null,
+          "reason": null
+        },
+        "anchor": {
+          "ok": true,
+          "status": "verified",
+          "seq": 23,
+          "hash": "0063353179ea9f05069e89f7ad7b32add37e9b01451a3c993541073b0948deef"
+        },
+        "reason": null,
+        "broken_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "instruction": "仅用简短文字确认收到本条指令。",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "client_request_id": "27655a6a4404479b97092f5578bfcfc5"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "d72647d09f8c48819ac8be451ea21be8",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-04T15:46:07.904936+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_http_diagnostic_ba4/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_http_diagnostic_ba4/conversations/d72647d09f8c48819ac8be451ea21be8/materials",
+          "folders": []
+        },
+        "task_run_id": "bb98b6d60e264131b97fb6deb1404362"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "queued",
+          "current_attempt_no": 0,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/d72647d09f8c48819ac8be451ea21be8/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "bb98b6d60e264131b97fb6deb1404362",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:46:07.905248+00:00",
+          "finished_at": "2026-10-04T15:46:10.617119+00:00"
+        }
+      ]
+    }
+  }
+]

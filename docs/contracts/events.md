@@ -130,6 +130,9 @@ M1 的会话后台事件没有前台 `task_run_id/seq`；来源任务放入 payl
 | `governance.skill_version_published` | GovernanceChange，加 `version_id: string, version_no: integer, ledger_id: integer, sha256: string` | M2-04，change_id 关联 M1 skill.patched；恢复正文同样发布新版本 |
 | `governance.authorization_checked` | `{scope: GovernanceScope, actor_id: string, agent_id: string, allowed: boolean, reason: string, authorization_sha256: string, call_id?: string}` | M2-05/09，任务或尝试关联时保留其 task_run_id，明确当前有效权限 |
 | `governance.audit_verified` | GovernanceChange，加 `internal: object, anchor: object` | M2-10，仅可信链可追加成功验证；失败切入只读诊断，原断点保留 |
+| `governance.backup_created` | GovernanceChange，加 `kind: "database" \| "directory"` | M2-10，自洽快照和文件校验完成后，与审计及幂等记录同事务提交；恢复请求保存独立持久化计划，诊断期间禁止追加损坏审计链 |
+| `governance.backup_restored` | GovernanceChange，加 `preserved_path: string` | M2-10，启动恢复完成且完整审计校验通过后，按恢复change_id幂等追加真实操作者与保留材料位置；诊断期间不写入损坏链 |
+| `governance.access_denied` | GovernanceChange，加 `method: string, code: string, reason: string` | M2-10，已认证请求的角色或范围拒绝与审计同事务，包含真实凭证身份及有效身份，禁止记录认证头和请求正文 |
 
 治理拒绝使用现有工具失败事件及审计 action=permission.denied。审批请求/决定增加有效 actor、真实 credential_owner_id、agent_id、resource_id 和 authorization_sha256；相同决定重试返回首次记录，失去活动执行方的旧卡返回409并展示失效。run.started/resumed 的 context_fingerprint 增加任务配置修订、skill_versions 和 authorization_sha256，恢复不改写历史尝试。
 

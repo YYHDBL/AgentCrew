@@ -29,11 +29,12 @@ from .api.app import create_app
 from .approvals import ApprovalService
 from .bus import EventBus
 from .config import ConfigError, load_config
-from .db.audit import verify_with_anchor
+from .db.audit import recover_anchor, verify_with_anchor
 from .db.database import Database
 from .db.event_store import EventStore
 from .db.migrations import MigrationFailedError, run_migrations
 from .db.write_channel import WriteChannel
+from .governance.backups import apply_pending_restore
 from .providers import build_provider
 from .questions import QuestionService
 from .recovery import RecoveryService
@@ -264,6 +265,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"启动失败：{e}", file=sys.stderr)
             return 2
 
+        restored = apply_pending_restore(data_dir)
+        if restored is not None:
+            config = load_config(data_dir)
+            for key in config.api_keys():
+                register_secret(key)
+            log.info("startup.restore 受控恢复已经完成 backup=%s preserved=%s", restored["backup_id"], restored["preserved_path"])
+
         try:
             db = Database(data_dir / "agentcrew.db")
         except Exception as e:  # noqa: BLE001 —— SQLite 打开失败按启动失败处理
@@ -296,9 +304,9 @@ def main(argv: list[str] | None = None) -> int:
 
         # §1 第 5 步：审计链两级校验（空链 = 通过；C6 起有写入方）
         if diagnostic is None:
-            verification = verify_with_anchor(
-                db.write_conn, data_dir / "chain-head.txt"
-            )
+            verification = recover_anchor(db.write_conn, data_dir / "chain-head.txt")
+            if verification.ok:
+                verification = verify_with_anchor(db.write_conn, data_dir / "chain-head.txt")
             if not verification.ok:
                 log.error(
                     "startup.audit 审计链校验失败 seq=%s：%s",

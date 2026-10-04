@@ -21,6 +21,7 @@ from ..memory.snapshots import MemorySnapshotError
 from ..tool_outputs import ArtifactIntegrityError
 from ..memory.checkpoints import CheckpointCorrupt
 from agentcrew_core.memory.pagination import MemoryCursorError
+from ..db.write_channel import DiagnosticWriteError
 
 log = logging.getLogger("agentcrew.api.errors")
 
@@ -141,6 +142,10 @@ def error_response(
 
 
 def install_error_handlers(app) -> None:
+    @app.exception_handler(DiagnosticWriteError)
+    async def diagnostic_write_error(_: Request, exc: DiagnosticWriteError) -> JSONResponse:
+        return error_response(ErrorCode.DIAGNOSTIC_MODE, str(exc))
+
     @app.exception_handler(UnicodeDecodeError)
     async def _memory_encoding_error(_: Request, exc: UnicodeDecodeError) -> JSONResponse:
         return error_response(ErrorCode.EXTERNAL_MODIFICATION, "持久化文件的 UTF-8 校验失败",

@@ -1,0 +1,819 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "identity-6103702cc74f4a48a5827bcf2b0bce53"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "lilei",
+          "name": "李蕾",
+          "org_id": "demo-org",
+          "role": "member",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        },
+        "identity_token": "***"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/diagnostics/backups",
+    "effective_user": "lilei",
+    "request": {
+      "change_id": "member-backup",
+      "kind": "directory"
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前角色无权执行该操作"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "audit-soul",
+      "expected_revision": 0,
+      "basis": "所有者配置恢复后的真实模型岗位",
+      "text": "我是负责核查办公材料的数字员工，执行任务时使用当前授权、合法路径和真实工具结果。"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "audit-soul",
+        "ledger_id": 4,
+        "store_type": "soul",
+        "store_id": "xiaowen",
+        "entry_id": "d530309490264515b5de322af16e5f07",
+        "entry_hash": "f617071661893330512964a4d2f5cc032858c4ad42ce1097b5ead74b068df911",
+        "revision": 1,
+        "global_seq": 21,
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/audit/verify",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "ok": true,
+        "internal": {
+          "ok": true,
+          "checked_rows": 21,
+          "broken_at": null,
+          "reason": null
+        },
+        "anchor": {
+          "ok": true,
+          "status": "verified",
+          "seq": 10,
+          "hash": "3d72d28679e26953b5996065debed2086c6a6f4b2621a9cafa3fac650af70500"
+        },
+        "reason": null,
+        "broken_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/diagnostics/backups",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "audit-directory-backup",
+      "kind": "directory"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+        "kind": "directory",
+        "created_at": "2026-10-04T15:45:51.967784+00:00",
+        "verified": true,
+        "database_sha256": "f1c84d545e8a86c72555db602fd1ef5b7744dd9d0d01c0cb2e156430e22f8877",
+        "anchor_seq": 22,
+        "anchor_hash": "0bad1bb591f55a9692c12ac962826f0047f24390df33d2afcbbdbd5ec437cce2"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/diagnostics",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "mode": "diagnostic",
+        "reason": "审计链校验失败（seq=23：锚点 seq=23 在库中不存在）",
+        "hint": "审计账本不可信，系统拒绝进入正常模式；可从 backups/ 快照还原后重启"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/audit/export?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "action": "governance.seed",
+            "actor_id": "owner",
+            "actor_type": "user",
+            "detail": {
+              "credential_owner_id": "owner",
+              "legacy_mapping": {
+                "default": "default"
+              },
+              "scope": {
+                "agent_id": null,
+                "org_id": "demo-org",
+                "owner_id": "owner",
+                "workspace_id": null
+              }
+            },
+            "hash": "f73a3143c8367fc57a36db2352462b7b2a2c3d2c3e35956b3efdd2dfa941393c",
+            "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+            "resource_id": "demo-org",
+            "resource_type": "organization",
+            "seq": 1,
+            "ts": "2026-10-04T15:45:51.886061+00:00"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/audit/verify",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "ok": false,
+        "internal": {
+          "ok": true,
+          "checked_rows": 1,
+          "broken_at": null,
+          "reason": null
+        },
+        "anchor": {
+          "ok": false,
+          "status": "mismatch",
+          "seq": 23,
+          "hash": "233d4fe0bdd0d73bbf13f1846bf10e5efd4c5675d806449a8a0ccc5b4d32e3f8"
+        },
+        "reason": "锚点 seq=23 在库中不存在",
+        "broken_at": 23
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "instruction": "诊断禁止执行"
+    },
+    "status": 503,
+    "response": {
+      "error": {
+        "code": "DIAGNOSTIC_MODE",
+        "message": "只读诊断模式：业务端点不可用",
+        "detail": {
+          "reason": "审计验证失败：锚点 seq=23 在库中不存在",
+          "hint": "请导出诊断记录，选择服务管理的已验证备份恢复，然后重启并完成两级验证"
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "diagnostic-demo",
+      "user_id": "wangming"
+    },
+    "status": 503,
+    "response": {
+      "error": {
+        "code": "DIAGNOSTIC_MODE",
+        "message": "只读诊断模式：业务端点不可用",
+        "detail": {
+          "reason": "审计验证失败：锚点 seq=23 在库中不存在",
+          "hint": "请导出诊断记录，选择服务管理的已验证备份恢复，然后重启并完成两级验证"
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/diagnostics/backups",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "diagnostic-new-backup",
+      "kind": "directory"
+    },
+    "status": 503,
+    "response": {
+      "error": {
+        "code": "DIAGNOSTIC_MODE",
+        "message": "只读诊断模式：业务端点不可用",
+        "detail": {
+          "reason": "审计验证失败：锚点 seq=23 在库中不存在",
+          "hint": "请导出诊断记录，选择服务管理的已验证备份恢复，然后重启并完成两级验证"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/diagnostics/backups",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+          "kind": "directory",
+          "created_at": "2026-10-04T15:45:51.967784+00:00",
+          "verified": true,
+          "database_sha256": "f1c84d545e8a86c72555db602fd1ef5b7744dd9d0d01c0cb2e156430e22f8877",
+          "anchor_seq": 22,
+          "anchor_hash": "0bad1bb591f55a9692c12ac962826f0047f24390df33d2afcbbdbd5ec437cce2"
+        }
+      ]
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/diagnostics/restore",
+    "effective_user": "owner",
+    "request": {
+      "backup_id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+      "change_id": "audit-restore"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "backup_id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+        "restart_required": true,
+        "preserved_path": "backups/governance/preserved-868cec10699b4a3e2b4272540752f92ad4d7259895917f34084898aa76f94817"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "instruction": "重启之前仍然禁止执行"
+    },
+    "status": 503,
+    "response": {
+      "error": {
+        "code": "DIAGNOSTIC_MODE",
+        "message": "只读诊断模式：业务端点不可用",
+        "detail": {
+          "reason": "审计验证失败：锚点 seq=23 在库中不存在",
+          "hint": "请导出诊断记录，选择服务管理的已验证备份恢复，然后重启并完成两级验证"
+        }
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/diagnostics",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "mode": "normal"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/audit/verify",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "ok": true,
+        "internal": {
+          "ok": true,
+          "checked_rows": 23,
+          "broken_at": null,
+          "reason": null
+        },
+        "anchor": {
+          "ok": true,
+          "status": "verified",
+          "seq": 23,
+          "hash": "7065b2377e569107e9796ea3bf8f98b89a1b41bcc57938e49322667f1e7ce0af"
+        },
+        "reason": null,
+        "broken_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "instruction": "仅用简短文字确认收到本条指令。",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "client_request_id": "21028085c278457da1c6715c3679392f"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "50aafa145fd94ec8b290848c1685ea89",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-04T15:45:54.631965+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_http_diagnostic_ba2/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_http_diagnostic_ba2/conversations/50aafa145fd94ec8b290848c1685ea89/materials",
+          "folders": []
+        },
+        "task_run_id": "914cbb4a2e5b49f7bb8f489b70caa06f"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "queued",
+          "current_attempt_no": 0,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/50aafa145fd94ec8b290848c1685ea89/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "914cbb4a2e5b49f7bb8f489b70caa06f",
+          "instruction": "仅用简短文字确认收到本条指令。",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-04T15:45:54.632298+00:00",
+          "finished_at": "2026-10-04T15:45:57.005057+00:00"
+        }
+      ]
+    }
+  }
+]

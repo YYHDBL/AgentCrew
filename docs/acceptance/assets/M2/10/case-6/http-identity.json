@@ -1,0 +1,826 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "cancel-diagnostic-soul",
+      "expected_revision": 0,
+      "basis": "所有者配置实际诊断取消验收",
+      "text": "执行当前用户明确要求的合法工具调用，依据真实文件结果说明状态，遵守当前授权和审批。"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "change_id": "cancel-diagnostic-soul",
+        "ledger_id": 4,
+        "store_type": "soul",
+        "store_id": "xiaowen",
+        "entry_id": "918d9611d9f4471a93823709ef49589a",
+        "entry_hash": "11b4d604ab0cb3ae903c2fa5609eabdcb70f1df04df81040dbac0d594290b4e2",
+        "revision": 1,
+        "global_seq": 19,
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "只调用bash执行下面这条完整命令，在要求审批时等待决定：printf '%s' \"$$\" > diagnostic-pid.txt; printf 'actual' > diagnostic-effect.txt; sleep 120; printf 'forbidden' > diagnostic-delayed.txt",
+      "client_request_id": "b6293dd963354d75be0019ab78ad4691"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "4457d759e6dd41b3b418014c62be9079",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-04T15:46:21.032972+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_diagnostic_cancels0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_diagnostic_cancels0/conversations/4457d759e6dd41b3b418014c62be9079/materials",
+          "folders": []
+        },
+        "task_run_id": "10b497ec1a0e49379127ab168a66e847"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "call_id": "call_00_2ez8ylo7zuoxcob4sk5c47ms",
+          "tool": "bash",
+          "target": "printf '%s' \"$$\" > diagnostic-pid.txt; printf 'actual' > diagnostic-effect.txt; sleep 120; printf 'forbidden' > diagnost",
+          "input_hash": "e7c114c4f84363514a185d061fa76e36a5216bf27d9e3c7e023c6ab55b4f97e1",
+          "risk": "medium",
+          "always_scope_preview": "printf '%s' \"$$\" > diagnostic-pid.txt; printf 'actual' > diagnostic-effect.txt; sleep 120; printf 'forbidden' > diagnostic-delayed.txt",
+          "requested_at": "2026-10-04T15:46:25.037263+00:00",
+          "decision": null,
+          "stale": false,
+          "attempt_no": 1
+        }
+      ]
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/tool-approvals/call_00_2ez8ylo7zuoxcob4sk5c47ms",
+    "effective_user": "owner",
+    "request": {
+      "decision": "allow_once",
+      "input_hash": "e7c114c4f84363514a185d061fa76e36a5216bf27d9e3c7e023c6ab55b4f97e1"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "decision": "allow_once",
+        "decided_at": "2026-10-04T15:46:25.048623+00:00",
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/10b497ec1a0e49379127ab168a66e847/approvals",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "仅用简短文字确认收到这条消息。",
+      "client_request_id": "9d858479b5114f5d9c2dc85fe11a4149"
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "8520d6da5e854e1d83742158d53aa362",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "last_activity_at": "2026-10-04T15:46:25.178138+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_diagnostic_cancels0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m2-intermediate/pytest-audit-final/test_actual_diagnostic_cancels0/conversations/8520d6da5e854e1d83742158d53aa362/materials",
+          "folders": []
+        },
+        "task_run_id": "e6a2856a5d684fa69eebb8406b725208"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/audit/verify",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "ok": false,
+        "internal": {
+          "ok": false,
+          "checked_rows": 2,
+          "broken_at": 2,
+          "reason": "hash 重算不一致（疑似篡改）"
+        },
+        "anchor": {
+          "ok": true,
+          "status": "verified",
+          "seq": 10,
+          "hash": "a9150b7badeb750142867b35758f37109e141f7bd3750edd16885c6780a4109b"
+        },
+        "reason": "hash 重算不一致（疑似篡改）",
+        "broken_at": 2
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "instruction": "诊断中不能派发"
+    },
+    "status": 503,
+    "response": {
+      "error": {
+        "code": "DIAGNOSTIC_MODE",
+        "message": "只读诊断模式：业务端点不可用",
+        "detail": {
+          "reason": "审计验证失败：hash 重算不一致（疑似篡改）",
+          "hint": "请导出诊断记录，选择服务管理的已验证备份恢复，然后重启并完成两级验证"
+        }
+      }
+    }
+  }
+]

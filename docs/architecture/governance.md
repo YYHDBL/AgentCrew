@@ -103,8 +103,8 @@ grants(id PK,
 audit_log(seq INTEGER PK, ts, actor_type CHECK IN (user, agent, system, curator),
           actor_id, action, resource_type, resource_id, detail JSON,
           prev_hash, hash)
-# hash = sha256("v2|" + JSON数组[seq, ts, actor, action, resource, detail, prev_hash])，链式向前
-# （v2，C6 外审回稿 S10：v1 用 "|" 直接拼接存在字段边界歧义——actor_id 含 "|" 时可与相邻字段互换而哈希不变；JSON 数组规范化无歧义）
+# hash = sha256("v2|" + JSON数组[seq, ts, actor_type, actor_id, action,
+#                              resource_type, resource_id, detail, prev_hash])
 ```
 
 **必入链的动作**：审批（请求与四种决定）、三级闸门的所有拒绝、grant 授予/撤销、权限规则的写入与回收、工具执行（risk≥medium 的完成与失败）、角色变更、登录、审计验证本身。
@@ -114,6 +114,14 @@ audit_log(seq INTEGER PK, ts, actor_type CHECK IN (user, agent, system, curator)
 **防整库重写（v1.2 加强；v1.7 断言诚实化）**：**每追加 100 条及每次正常退出**都把链头哈希原子写入库外文件 `data/chain-head.txt`（临时文件 + rename）。校验分两级：① 内部链一致性（全量重算）；② 快照锚点比对（覆盖至最近一次快照，其后新条目由①保护）。**能力边界如实声明**：两级校验防的是"仅改数据库不改文件系统"的篡改（最常见场景）；对拥有整个 data/ 目录写权限的攻击者，库与快照可被同时重写，链条无法自卫——**真正的锚点是用户将 chain-head.txt 备份到数据目录之外**（界面与文档提示此操作）。
 
 **校验失败的行为**：进入只读诊断模式，界面提供断点定位、审计导出、链校验和受控备份恢复入口；任务、工具和治理写入全部禁用。使用已验证备份恢复后，经重启和完整校验恢复业务操作。
+
+M2使用audit_anchor_state登记已经建立的锚点，锚点丢失、格式损坏、登记序号不一致及数据库截断均阻止业务启动。更新锚点先提交audit_anchor_intents，随后原子替换chain-head.txt，再同事务更新登记并删除意图。启动恢复要求内部链完整、意图哈希与实际记录一致、文件仍匹配原登记或已匹配本次意图；这些条件满足后才完成未结束的更新。手动验证分别报告内部全量重算和锚点状态，未建立的非空锚点保持missing，不显示两级验证通过。
+
+审计查询按seq降序提供绑定身份、范围和过滤条件的排他游标，支持actor、action、resource及工作区过滤。member仅查询自身actor，admin限可访问工作区，owner查询本组织。损坏记录的原始detail经过脱敏后保留于诊断导出。角色和范围拒绝、审批、工具结果、治理变更及可信链上的成功验证均与对应事件同事务提交；损坏链上禁止追加验证成功或失败记录。诊断切换同时关闭前台、后台执行及订阅，取消不依赖业务状态写入。
+
+服务管理的备份保存在backups/governance，采用VACUUM INTO包含已提交WAL数据的自洽数据库快照，记录数据库SHA、文件清单、锚点序号及哈希。创建时要求任务、队列、后台作业及记忆意图全部停止；change_id绑定真实凭证身份、有效身份和备份类型。database备份恢复要求关联文件清单及SHA仍一致；directory备份同时保存并恢复配置、记忆、技能、工作区、会话及产物。日志、实例锁和历史备份持续保留。备份及恢复暂存路径均禁止符号链接与未管理入口。
+
+受控恢复仅允许owner在只读诊断中选择服务管理的已验证备份。恢复请求重新执行数据库完整性、外键、文件SHA和两级审计验证，保存pending-restore.json。业务持续禁用，重启持有实例锁后执行计划，将原数据库、WAL及关联文件移入独立preserved目录，逐个原子安装备份内容；中断后继续同一计划。完整验证结束后保留恢复结果，可信链以原change_id幂等记录governance.backup_restored。只有再次启动并通过完整验证才能启用业务。整目录恢复会恢复快照时的配置、资源、授权和文件；数据库恢复保留当前文件且要求其与快照关联一致。chain-head.txt需要由所有者另行保存到数据目录之外，以覆盖同时改写整个数据目录的攻击边界。
 
 ## 4. 提权防线（写死的设计约束）
 

@@ -511,6 +511,9 @@ HANDLERS: dict[RunEventType, Handler] = {
     RunEventType.GOVERNANCE_SKILL_VERSION_PUBLISHED: _noop,
     RunEventType.GOVERNANCE_AUTHORIZATION_CHECKED: _noop,
     RunEventType.GOVERNANCE_AUDIT_VERIFIED: _noop,
+    RunEventType.GOVERNANCE_BACKUP_CREATED: _noop,
+    RunEventType.GOVERNANCE_BACKUP_RESTORED: _noop,
+    RunEventType.GOVERNANCE_ACCESS_DENIED: _noop,
     # C8：question.* 驱动 task_runs 派生态 waiting_user（计数器仍在内存 FSM）
     RunEventType.QUESTION_REQUESTED: _question_requested,
     RunEventType.QUESTION_ANSWERED: _question_answered,

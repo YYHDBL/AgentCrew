@@ -16,6 +16,10 @@ from typing import Callable, TypeVar
 
 T = TypeVar("T")
 
+
+class DiagnosticWriteError(RuntimeError):
+    """写通道已进入只读诊断，拒绝业务写入。"""
+
 _BUSY_RETRIES = 3
 _BACKOFF_BASE = 0.05
 
@@ -32,16 +36,19 @@ class WriteChannel:
             max_workers=1, thread_name_prefix="agentcrew-db-write"
         )
         self.closed = False
+        self.read_only = False
 
-    async def execute(self, fn: Callable[[sqlite3.Connection], T]) -> T:
+    async def execute(self, fn: Callable[[sqlite3.Connection], T], *, diagnostic=False) -> T:
         """异步入口：闭包投递到单写 executor（asyncio.to_thread 语义）。"""
         loop = asyncio.get_running_loop()
-        return await loop.run_in_executor(self._executor, self.execute_sync, fn)
+        return await loop.run_in_executor(self._executor, lambda: self.execute_sync(fn, diagnostic=diagnostic))
 
-    def execute_sync(self, fn: Callable[[sqlite3.Connection], T]) -> T:
+    def execute_sync(self, fn: Callable[[sqlite3.Connection], T], *, diagnostic=False) -> T:
         """同步入口（脚本/测试用）；服务端路径一律走 execute。"""
         if self.closed:
             raise RuntimeError("写通道已关闭")
+        if self.read_only and not diagnostic:
+            raise DiagnosticWriteError("DIAGNOSTIC_MODE：审计诊断期间禁止业务写入")
         attempt = 0
         while True:
             try:

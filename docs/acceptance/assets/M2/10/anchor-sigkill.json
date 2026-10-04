@@ -1,0 +1,12 @@
+{
+  "sigkill_exit": -9,
+  "before_anchor": "10 a9be1510bc46ec38ad0becba8ee33e92881e335994e77562d42148e25ef44354",
+  "after_anchor": "11 caab02be3d3d351b9993f0fe6b46c9a099d41903697acf3152e69da29083e576",
+  "audit_sequence": 11,
+  "event_watermark": 10,
+  "remaining_intents": 0,
+  "verification": {
+    "ok": true,
+    "checked_rows": 11
+  }
+}

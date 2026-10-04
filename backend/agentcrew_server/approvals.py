@@ -97,6 +97,7 @@ class ApprovalService:
         self._store = event_store
         self._channel = event_store.channel  # 唯一写通道（含审计/规则/快照）
         self._chain_head_path = chain_head_path
+        event_store.audit_anchor_path = chain_head_path
         self._pending: dict[str, _Pending] = {}
         self.scheduler: ToolScheduler | None = None  # cli 装配后注入
 
@@ -382,15 +383,6 @@ class ApprovalService:
                 if result.details.get("record_failed") and tool is not None and not tool.metadata.read_only:
                     await ctx.emit("tool.pending_verification", {"call_id": invocation.call_id})
                 raise RuntimeError("EVENT_PERSIST_FAILED：工具事件未持久化，执行立即停止并核对真实效果")
-            # governance §3：risk≥medium 的工具完成/失败入审计链
-            tool = (ctx.registry if ctx.registry is not None else self.scheduler.registry).get(invocation.name)
-            if tool is not None and tool.metadata.risk_level in ("medium", "high"):
-                await self._audit(
-                    "system", "tools",
-                    "tool.completed" if result.ok else "tool.failed",
-                    "tool_call", invocation.call_id,
-                    {"tool": invocation.name, "input_hash": ih,
-                     "ok": result.ok, "error": result.error})
             return result
         finally:
             self._pending.pop(invocation.call_id, None)
@@ -430,9 +422,19 @@ class ApprovalService:
     def _make_emit(self, task_run_id: str, conversation_id: str):
         attempt_no = self._db.read_conn.execute("SELECT current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()[0]
         async def sink(event_type: str, payload: dict) -> None:
+            def audit_result(conn, event):
+                if event_type not in {"tool.completed", "tool.failed", "tool.pending_verification"}:
+                    return
+                row = conn.execute("SELECT tool_name,risk_level,input_hash FROM tool_calls WHERE call_id=?", (payload["call_id"],)).fetchone()
+                if row is not None and (row[1] in {"medium", "high"} or payload.get("error")):
+                    append_audit(conn, ts=event.ts, actor_type="system", actor_id="tools", action=event_type,
+                        resource_type="tool_call", resource_id=payload["call_id"],
+                        detail=_detail(tool=row[0], input_hash=row[2], task_run_id=task_run_id,
+                            ok=event_type == "tool.completed", error=payload.get("error")))
             return await self._store.append(
                 task_run_id=task_run_id, conversation_id=conversation_id,
                 attempt_no=attempt_no, type=RunEventType(event_type), payload=payload,
+                extra_writes=audit_result,
             )
         return sink
 
@@ -495,21 +497,24 @@ class ApprovalService:
                      resource_type: str, resource_id: str,
                      detail: dict) -> None:
         def write(conn):
-            conn.execute("BEGIN IMMEDIATE")
-            try:
+            pending = self._context_for(resource_id)
+            with conn:
+                conn.execute("BEGIN IMMEDIATE")
                 seq = append_audit(
                     conn, ts=_now(), actor_type=actor_type, actor_id=actor_id,
                     action=action, resource_type=resource_type,
                     resource_id=resource_id, detail=_detail(**detail),
                 )
-                conn.execute("COMMIT")
-                return seq
-            except Exception:
-                try:
-                    conn.execute("ROLLBACK")
-                except Exception:
-                    pass
-                raise
+                scope = conn.execute("SELECT c.workspace_id,c.agent_id,w.org_id FROM conversations c LEFT JOIN workspaces w ON w.id=c.workspace_id WHERE c.id=?", (pending.conversation_id,)).fetchone()
+                operator = conn.execute("SELECT effective_user_id FROM task_governance WHERE task_run_id=?", (pending.task_run_id,)).fetchone()
+                authorization = self.grants.view(pending.task_run_id, conn)["sha256"] if hasattr(self, "grants") else input_hash(detail)
+                event = self._store.append_in_tx(conn, task_run_id=pending.task_run_id, conversation_id=pending.conversation_id,
+                    attempt_no=pending.attempt_no, type=RunEventType.GOVERNANCE_AUTHORIZATION_CHECKED,
+                    payload=json.loads(_detail(actor_id=operator[0] if operator else "owner", agent_id=pending.agent_id, allowed=not action.startswith("permission.denied"),
+                        reason=detail.get("reason", action), authorization_sha256=authorization, call_id=resource_id, audit_seq=seq,
+                        scope={"org_id": scope[2], "workspace_id": scope[0], "agent_id": scope[1], "owner_id": None})))
+            self._store.publish(event)
+            return seq
 
         seq = await self._channel.execute(write)
         if seq % SNAPSHOT_EVERY == 0:  # 每 100 条快照链头（governance §3）

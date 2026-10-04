@@ -138,6 +138,7 @@ def test_unverified_completion_keeps_background_subscription_alive(stopped_effec
         try:
             assert not jobs._dispatch_task.done()
             assert service.db.read_conn.execute("SELECT count(*) FROM memory_jobs WHERE task_run_id=?", (created["task_run_id"],)).fetchone()[0] == 0
+            await jobs.recover()
             await recovery.submit_verification("recovery-actual-bash", "confirmed_executed", "真实文件效果已经核验", RequestIdentity("owner", "owner"))
             for _ in range(100):
                 if service.db.read_conn.execute("SELECT count(*) FROM memory_jobs WHERE task_run_id=?", (created["task_run_id"],)).fetchone()[0]:

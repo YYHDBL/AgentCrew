@@ -310,6 +310,8 @@ class MemoryJobs:
             self.events.publish(event)
 
     async def _status(self, job_id, status, error=None, report=None):
+        if self.events.channel.read_only:
+            return
         def tx(conn):
             with conn:
                 conn.execute("BEGIN IMMEDIATE")
@@ -336,6 +338,9 @@ class MemoryJobs:
             for task in done:
                 if not task.cancelled() and task.exception() is not None:
                     _log.error("memory.job.cancel 作业收尾失败：%s", redact(str(task.exception())))
+        if self.events.channel.read_only:
+            self._slots.clear()
+            return
         queued = await asyncio.to_thread(lambda: self.db.read_conn.execute("SELECT id FROM memory_jobs WHERE status='queued'").fetchall())
         for row in queued:
             await self._status(row[0], status, reason)
@@ -361,6 +366,8 @@ class MemoryJobs:
             "AND NOT EXISTS(SELECT 1 FROM memory_jobs j WHERE j.kind='summary' AND j.trigger_key=e.task_run_id) ORDER BY global_seq").fetchall()
         for row in missing:
             job_id = await self.enqueue(row[0])
+            if job_id is None:
+                continue
             await self._status(job_id, "interrupted", "任务完成已经提交，进程终止时摘要尚未开始")
             self._slots.pop(job_id, None)
 

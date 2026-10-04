@@ -1,0 +1,10 @@
+{
+  "sigkill_exit": -9,
+  "restored": {
+    "backup_id": "e748377c82d16188464b4a4b6039d30c69da8f472ea3fe03f924da9c68719a9d",
+    "preserved_path": "backups/governance/preserved-09e41a93926ad8b6ec46f8f9def6eda5a683f479bd7f855c4b71c6637b81a419"
+  },
+  "restored_file_count": 8000,
+  "preserved_file_count": 8000,
+  "pending_after_restore": false
+}

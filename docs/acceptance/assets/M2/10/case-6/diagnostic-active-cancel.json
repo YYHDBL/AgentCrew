@@ -1,0 +1,24 @@
+{
+  "task_run_id": "10b497ec1a0e49379127ab168a66e847",
+  "other_task_run_id": "e6a2856a5d684fa69eebb8406b725208",
+  "pid": 58085,
+  "process_gone": true,
+  "delayed_file_exists": false,
+  "verification": {
+    "ok": false,
+    "internal": {
+      "ok": false,
+      "checked_rows": 2,
+      "broken_at": 2,
+      "reason": "hash 重算不一致（疑似篡改）"
+    },
+    "anchor": {
+      "ok": true,
+      "status": "verified",
+      "seq": 10,
+      "hash": "a9150b7badeb750142867b35758f37109e141f7bd3750edd16885c6780a4109b"
+    },
+    "reason": "hash 重算不一致（疑似篡改）",
+    "broken_at": 2
+  }
+}

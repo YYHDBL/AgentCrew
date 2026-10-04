@@ -65,6 +65,18 @@ class RuntimeState:
     skill_versions: object | None = None
     grants: object | None = None
     connectors: object | None = None
+    audit: object | None = None
+
+    async def stop_execution(self) -> None:
+        cancellations = []
+        if self.memory_jobs is not None:
+            cancellations.append(self.memory_jobs.shutdown())
+        if self.run_manager is not None:
+            cancellations.append(self.run_manager.shutdown())
+        if cancellations:
+            await asyncio.gather(*cancellations)
+        if self.bus is not None:
+            self.bus.shutdown_all()
 
     async def shutdown(self) -> None:
         """优雅关闭（§7 顺序；任务取消不写终态——run_manager.shutdown 在

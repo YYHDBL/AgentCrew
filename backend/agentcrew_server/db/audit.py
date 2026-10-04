@@ -16,6 +16,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
@@ -85,14 +86,10 @@ def read_chain_head(path: Path) -> tuple[int, str] | None:
     if not path.exists():
         return None
     text = path.read_text(encoding="utf-8").strip()
-    parts = text.split(maxsplit=1)
-    if len(parts) != 2:
+    match = re.fullmatch(r"([1-9][0-9]*) ([a-f0-9]{64})", text)
+    if match is None:
         raise CorruptChainHeadError(f"链头快照文件损坏（无法解析）：{path}")
-    try:
-        seq = int(parts[0])
-    except ValueError:
-        raise CorruptChainHeadError(f"链头快照文件损坏（seq 非整数）：{path}") from None
-    return seq, parts[1]
+    return int(match[1]), match[2]
 
 
 def verify_with_anchor(
@@ -111,8 +108,16 @@ def verify_with_anchor(
     except CorruptChainHeadError as e:
         return ChainVerification(False, None, str(e), internal.checked_count)
     if anchor is None:
-        return internal  # 无快照文件（从未写过）：①已覆盖全部条目
+        registered = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='audit_anchor_state'").fetchone()
+        expected = conn.execute("SELECT seq FROM audit_anchor_state WHERE id=1").fetchone() if registered else None
+        if expected or internal.checked_count >= SNAPSHOT_EVERY:
+            return ChainVerification(False, expected[0] if expected else None, "已建立的审计锚点丢失", internal.checked_count)
+        return internal
     seq, expected_hash = anchor
+    registered = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='audit_anchor_state'").fetchone()
+    expected = conn.execute("SELECT seq,hash FROM audit_anchor_state WHERE id=1").fetchone() if registered else None
+    if expected and (seq != expected[0] or expected_hash != expected[1]):
+        return ChainVerification(False, seq, "锚点与已登记的seq及hash不一致", internal.checked_count)
     row = conn.execute(
         "SELECT hash FROM audit_log WHERE seq = ?", (seq,)
     ).fetchone()
@@ -123,6 +128,30 @@ def verify_with_anchor(
     return internal
 
 
+def verify_levels(conn: sqlite3.Connection, path: Path) -> dict:
+    internal = verify_internal(conn)
+    combined = verify_with_anchor(conn, path)
+    anchor = {"ok": False, "status": "missing", "seq": None, "hash": None}
+    if path.exists():
+        match = re.fullmatch(r"([1-9][0-9]*) ([a-f0-9]{64})", path.read_text().strip())
+        if match is None:
+            anchor["status"] = "malformed"
+        else:
+            anchor.update(seq=int(match[1]), hash=match[2])
+            row = conn.execute("SELECT hash FROM audit_log WHERE seq=?", (anchor["seq"],)).fetchone()
+            anchor["ok"] = row is not None and row[0] == anchor["hash"]
+            registered = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='audit_anchor_state'").fetchone()
+            expected = conn.execute("SELECT seq,hash FROM audit_anchor_state WHERE id=1").fetchone() if registered else None
+            if expected:
+                anchor["ok"] = anchor["ok"] and (anchor["seq"], anchor["hash"]) == (expected[0], expected[1])
+            anchor["status"] = "verified" if anchor["ok"] else "mismatch"
+    elif internal.checked_count == 0 and combined.ok:
+        anchor.update(ok=True, status="empty")
+    return {"ok": combined.ok, "internal": {"ok": internal.ok, "checked_rows": internal.checked_count,
+        "broken_at": internal.broken_at_seq, "reason": internal.reason}, "anchor": anchor,
+        "reason": combined.reason, "broken_at": combined.broken_at_seq}
+
+
 def snapshot_chain_head(conn: sqlite3.Connection, path: Path) -> int | None:
     """把链头 (seq, hash) 原子写库外文件；空链返回 None（不写文件）。"""
     row = conn.execute(
@@ -130,10 +159,64 @@ def snapshot_chain_head(conn: sqlite3.Connection, path: Path) -> int | None:
     ).fetchone()
     if row is None:
         return None
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(f"{row[0]} {row[1]}\n", encoding="utf-8")
-    os.replace(tmp, path)
+    registered = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='audit_anchor_state'").fetchone()
+    expected = conn.execute("SELECT seq FROM audit_anchor_state WHERE id=1").fetchone() if registered else None
+    check = verify_with_anchor(conn, path) if path.exists() or expected else verify_internal(conn)
+    if not check.ok:
+        raise RuntimeError(f"审计快照拒绝覆盖不可信链或锚点：{check.reason}")
+    _prepare_anchor_intent(conn, row)
+    _commit_anchor(conn, path, row)
     return int(row[0])
+
+
+def _prepare_anchor_intent(conn, row):
+    if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='audit_anchor_intents'").fetchone():
+        if conn.execute("SELECT 1 FROM audit_anchor_intents WHERE id=1").fetchone():
+            raise RuntimeError("审计锚点存在未完成意图，必须先完成恢复")
+        conn.execute("INSERT INTO audit_anchor_intents VALUES(1,?,?)", row)
+
+
+def _commit_anchor(conn, path, row):
+    tmp = path.with_suffix(".tmp")
+    if path.is_symlink() or tmp.is_symlink():
+        raise RuntimeError("审计锚点及暂存路径不能是符号链接")
+    with tmp.open("w", encoding="utf-8") as stream:
+        stream.write(f"{row[0]} {row[1]}\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(tmp, path)
+    if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='audit_anchor_state'").fetchone():
+        with conn:
+            conn.execute("BEGIN IMMEDIATE")
+            conn.execute("INSERT INTO audit_anchor_state VALUES(1,?,?) ON CONFLICT(id) DO UPDATE SET seq=excluded.seq,hash=excluded.hash", row)
+            conn.execute("DELETE FROM audit_anchor_intents WHERE id=1")
+
+
+def recover_anchor(conn, path):
+    internal = verify_internal(conn)
+    if not internal.ok:
+        return internal
+    if conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='audit_anchor_intents'").fetchone() is None:
+        return internal
+    pending = conn.execute("SELECT seq,hash FROM audit_anchor_intents WHERE id=1").fetchone()
+    if pending is None:
+        return internal
+    recorded = conn.execute("SELECT hash FROM audit_log WHERE seq=?", (pending[0],)).fetchone()
+    if recorded is None or recorded[0] != pending[1]:
+        return ChainVerification(False, pending[0], "锚点意图与实际审计链不一致", internal.checked_count)
+    active = conn.execute("SELECT seq,hash FROM audit_anchor_state WHERE id=1").fetchone()
+    if path.is_symlink() or path.with_suffix(".tmp").is_symlink():
+        return ChainVerification(False, pending[0], "锚点恢复路径包含符号链接", internal.checked_count)
+    actual = None
+    if path.exists():
+        match = re.fullmatch(r"([1-9][0-9]*) ([a-f0-9]{64})", path.read_text().strip())
+        if match is None:
+            return ChainVerification(False, pending[0], "锚点意图恢复时原文件损坏", internal.checked_count)
+        actual = (int(match[1]), match[2])
+    if actual != tuple(pending) and (active is not None and actual != tuple(active) or active is None and actual is not None):
+        return ChainVerification(False, pending[0], "锚点意图恢复时原锚点丢失或不一致", internal.checked_count)
+    _commit_anchor(conn, path, pending)
+    return internal
 
 
 SNAPSHOT_EVERY = 100  # 每追加 100 条快照链头（governance §3）

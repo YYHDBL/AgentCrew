@@ -86,6 +86,9 @@ class RunEventType(StrEnum):
     GOVERNANCE_SKILL_VERSION_PUBLISHED = "governance.skill_version_published"
     GOVERNANCE_AUTHORIZATION_CHECKED = "governance.authorization_checked"
     GOVERNANCE_AUDIT_VERIFIED = "governance.audit_verified"
+    GOVERNANCE_BACKUP_CREATED = "governance.backup_created"
+    GOVERNANCE_BACKUP_RESTORED = "governance.backup_restored"
+    GOVERNANCE_ACCESS_DENIED = "governance.access_denied"
 
 
 @dataclass(frozen=True)

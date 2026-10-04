@@ -1,0 +1,36 @@
+{
+  "damage": "missing-anchor",
+  "backup": {
+    "id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+    "kind": "directory",
+    "created_at": "2026-10-04T15:45:58.543820+00:00",
+    "verified": true,
+    "database_sha256": "96d890939b8eb8f15aaa830af9fff591e6cddef8ab1a76504e15aad0f85b824b",
+    "anchor_seq": 22,
+    "anchor_hash": "bcc5a5854783af545dd6405af372a0676bb7e54c974617a03446ab87ca0f7060"
+  },
+  "restore": {
+    "backup_id": "394cc30f7e981e682c8e48752b1c58c4de9e87b9f56cf6e9470df39713899dd3",
+    "restart_required": true,
+    "preserved_path": "backups/governance/preserved-868cec10699b4a3e2b4272540752f92ad4d7259895917f34084898aa76f94817"
+  },
+  "verification": {
+    "ok": true,
+    "internal": {
+      "ok": true,
+      "checked_rows": 23,
+      "broken_at": null,
+      "reason": null
+    },
+    "anchor": {
+      "ok": true,
+      "status": "verified",
+      "seq": 23,
+      "hash": "94159faffe276d57dd79aa6e0e1b4672125ff366e75eb82ea75930141f88b49f"
+    },
+    "reason": null,
+    "broken_at": null
+  },
+  "task_run_id": "2e8a2230c0fd41a5af99c06fce97aaf8",
+  "task_status": "completed"
+}
