@@ -32,6 +32,7 @@ from .grants import install_grant_routes
 from .connectors import install_connector_routes
 from .rules import install_rule_routes
 from .audit import install_audit_routes
+from .governance import install_governance_routes
 from ..db.audit import snapshot_chain_head
 from ..governance.backups import DiagnosticBackups
 from agentcrew_core.connectors import ConnectorBoundaryError
@@ -133,6 +134,7 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         install_audit_routes(app, runtime)
     if runtime.skill_versions is not None:
         install_skill_version_routes(app, runtime)
+        install_governance_routes(app, runtime)
         install_grant_routes(app, runtime)
         install_connector_routes(app, runtime)
         install_rule_routes(app, runtime)

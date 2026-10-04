@@ -42,7 +42,7 @@ class Identities:
 
     def require(self, identity, operation, workspace_id=None, conn=None):
         value = self.current(identity, conn)
-        if self.resources.get("organization", value["org_id"], conn)["status"] != "active":
+        if operation != "organization_manage" and self.resources.get("organization", value["org_id"], conn)["status"] != "active":
             raise GovernanceError("OUT_OF_SCOPE", "组织已禁用", 403)
         if not role_allows(value["role"], operation):
             raise GovernanceError("OUT_OF_SCOPE", "当前角色无权执行该操作", 403)
@@ -185,7 +185,7 @@ class Identities:
         if path.startswith("/api/memberships/") or "/members/" in path:
             self.require(identity, "owner")
         elif any(path.startswith(prefix) for prefix in ("/api/workspaces", "/api/agents", "/api/skills", "/api/connectors", "/api/grants", "/api/organization")) and method != "GET":
-            self.require(identity, "owner" if path == "/api/organization" else "manage", request.query_params.get("workspace_id"))
+            self.require(identity, "organization_manage" if path == "/api/organization" else "manage", request.query_params.get("workspace_id"))
         if path.startswith("/api/memory/"):
             if method != "GET" and not path.startswith("/api/memory/jobs/"):
                 self.require(identity, "manage", request.query_params.get("workspace_id"))
@@ -269,6 +269,15 @@ class Identities:
         if row is None:
             raise GovernanceError("OUT_OF_SCOPE", "记忆执行来源缺少当前身份", 403)
         return RequestIdentity(row[0], row[1], row[0] != row[1])
+
+    def memory_scope(self, identity, memory_identity, conn=None):
+        if memory_identity.actor_type != "user" or self.current(identity, conn)["role"] == "member":
+            return self.agent(identity, memory_identity.agent_id, memory_identity.workspace_id, conn)
+        self.require(identity, "manage", memory_identity.workspace_id, conn)
+        agent = self.resources.get("agent", memory_identity.agent_id, conn)
+        if agent["workspace_id"] != memory_identity.workspace_id:
+            raise GovernanceError("OUT_OF_SCOPE", "记忆存储身份不属于管理工作区", 403)
+        return agent
 
     async def bind_legacy_tasks(self):
         def operation(conn):

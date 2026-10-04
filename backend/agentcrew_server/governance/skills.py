@@ -55,14 +55,22 @@ class SkillVersions:
         version_id = self._publish(conn, skill_id=skill_id, workspace=plan["identity"]["workspace_id"], name=metadata["name"],
             description=metadata["description"], version_no=plan["revision"], change_id=plan["change_id"], ledger_id=plan["ledger_id"],
             content=plan["after_text"], metadata=metadata, files=files, source=plan["source"], created_at=plan["created_at"])
+        management = (plan.get("request_context") or {}).get("management_resource")
+        if management is not None and "status" in management["body"]:
+            conn.execute("UPDATE skills SET status=? WHERE id=?", (management["body"]["status"], skill_id))
         payload = {"change_id": plan["change_id"], "resource_type": "skill", "resource_id": skill_id, "revision": self.resources.get("skill", skill_id, conn)["revision"],
             "actor_id": plan["source"]["actor_id"], "credential_owner_id": "owner", "scope": self.resources.scope("skill", skill_id, conn),
-            "version_id": version_id, "version_no": plan["revision"], "ledger_id": plan["ledger_id"], "sha256": sha256(plan["after_text"].encode())}
+            "version_id": version_id, "version_no": plan["revision"], "ledger_id": plan["ledger_id"], "sha256": sha256(plan["after_text"].encode()),
+            "status": self.resources.get("skill", skill_id, conn)["status"]}
         audit_seq = append_audit(conn, ts=plan["created_at"], actor_type=plan["source"]["actor_type"], actor_id=plan["source"]["actor_id"],
             action="governance.skill_version_published", resource_type="skill", resource_id=skill_id, detail=canonical(payload))
         event = self.memory.events.append_in_tx(conn, task_run_id=None, conversation_id=plan["identity"]["conversation_id"],
             type=RunEventType.GOVERNANCE_SKILL_VERSION_PUBLISHED, payload={**payload, "audit_seq": audit_seq})
-        return {"version_id": version_id, "version_no": plan["revision"]}, event, audit_seq
+        result = {"version_id": version_id, "version_no": plan["revision"]}
+        creation = (plan.get("request_context") or {}).get("management_request", {}).get("operation") == "governance_create"
+        if management is not None or creation:
+            result["governance_resource"] = self.resources.get("skill", skill_id, conn)
+        return result, event, audit_seq
 
     def version(self, version_id, conn=None):
         connection = conn if conn is not None else self.db.read_conn

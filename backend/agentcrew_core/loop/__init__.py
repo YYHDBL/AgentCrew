@@ -237,7 +237,7 @@ async def run_task(messages: list[dict], deps: LoopDeps) -> LoopResult:
             llm_call_id = uuid.uuid4().hex
             await deps.emit("llm.request_started", {
                 "llm_call_id": llm_call_id, "step_id": step_id,
-                "model": deps.model, "retry_no": retry_no})
+                "model": deps.model, "model_slot": deps.model_slot, "retry_no": retry_no})
             # 每次尝试都从空白缓冲开始——整轮重发前丢弃部分输出（C4 移交）
             text_parts: list[str] = []
             thinking_blocks: list[dict] = []

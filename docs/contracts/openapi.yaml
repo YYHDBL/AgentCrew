@@ -668,17 +668,20 @@ components:
         grantee_type: { type: string, enum: [agent, user] }
         grantee_id: { type: string }
     Grant:
-      allOf:
-        - { $ref: "#/components/schemas/GrantRequest" }
-        - type: object
-          required: [id, workspace_id, revision, granted_by_user_id, created_at, revoked_at]
-          properties:
-            id: { type: string }
-            workspace_id: { type: string }
-            revision: { type: integer, minimum: 1 }
-            granted_by_user_id: { type: string }
-            created_at: { type: string, format: date-time }
-            revoked_at: { type: [string, "null"], format: date-time }
+      type: object
+      required: [id, change_id, resource_type, resource_id, grantee_type, grantee_id, workspace_id, revision, granted_by_user_id, created_at, revoked_at]
+      properties:
+        id: { type: string }
+        change_id: { type: string }
+        resource_type: { type: string, enum: [skill, connector, agent] }
+        resource_id: { type: string }
+        grantee_type: { type: string, enum: [agent, user] }
+        grantee_id: { type: string }
+        workspace_id: { type: string }
+        revision: { type: integer, minimum: 1 }
+        granted_by_user_id: { type: string }
+        created_at: { type: string, format: date-time }
+        revoked_at: { type: [string, "null"], format: date-time }
     PermissionRuleRequest:
       type: object
       additionalProperties: false

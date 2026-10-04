@@ -101,6 +101,13 @@ class Resources:
 
     def create_agent(self, conn, resource_id, workspace_id, name, spec, actor_id="owner"):
         identifier(resource_id)
+        self.validate_agent_spec(conn, workspace_id, spec)
+        timestamp = now()
+        conn.execute("INSERT INTO agents(id,workspace_id,name,spec,created_by_user_id,created_at,updated_at) VALUES(?,?,?,?,?,?,?)",
+            (resource_id, workspace_id, name, canonical(spec), actor_id, timestamp, timestamp))
+        return self.get("agent", resource_id, conn)
+
+    def validate_agent_spec(self, conn, workspace_id, spec):
         if set(spec) != {"position", "model_slot", "skill_ids", "connector_ids"} or not spec["position"] or spec["model_slot"] not in {"main", "aux"}:
             raise GovernanceError("VALIDATION_ERROR", "员工岗位或模型槽无效", 422)
         for key, kind in (("skill_ids", "skill"), ("connector_ids", "connector")):
@@ -108,7 +115,3 @@ class Resources:
                 resource = self.get(kind, reference, conn)
                 if resource["workspace_id"] != workspace_id or resource["status"] != "active":
                     raise GovernanceError("OUT_OF_SCOPE", "员工能力引用超出工作区或已禁用", 403)
-        timestamp = now()
-        conn.execute("INSERT INTO agents(id,workspace_id,name,spec,created_by_user_id,created_at,updated_at) VALUES(?,?,?,?,?,?,?)",
-            (resource_id, workspace_id, name, canonical(spec), actor_id, timestamp, timestamp))
-        return self.get("agent", resource_id, conn)

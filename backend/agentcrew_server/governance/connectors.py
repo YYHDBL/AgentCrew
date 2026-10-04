@@ -22,8 +22,13 @@ from .resources import GovernanceError, canonical, now
 
 
 class Connectors:
-    def __init__(self, resources, identities, grants):
+    def __init__(self, resources, identities, grants, platform_token=None):
         self.resources, self.identities, self.grants, self.db = resources, identities, grants, resources.db
+        self.platform_token = platform_token
+
+    def check_credential(self, value):
+        if self.platform_token and value and self.platform_token in value:
+            raise GovernanceError("CREDENTIAL_REJECTED", "本地治理凭证禁止委派给员工连接器", 422)
 
     @staticmethod
     def stable_name(connector_id, name):
@@ -70,6 +75,7 @@ class Connectors:
         row = self.db.read_conn.execute("SELECT credential FROM connectors WHERE id=?", (connector_id,)).fetchone()
         if row is None:
             raise GovernanceError("NOT_FOUND", "连接器不存在", 404)
+        self.check_credential(row[0])
         register_secret(row[0])
         return row[0]
 
@@ -113,6 +119,7 @@ class Connectors:
     async def create(self, identity, request):
         workspace = request["workspace_id"]
         self.identities.require(identity, "manage", workspace)
+        self.check_credential(request.get("credential"))
         register_secret(request.get("credential"))
         safe_request = {**request, "credential": hashlib.sha256((request.get("credential") or "").encode()).hexdigest()}
         connector_id = uuid.uuid5(uuid.NAMESPACE_URL, "agentcrew:connector:" + request["change_id"]).hex
@@ -132,6 +139,7 @@ class Connectors:
     async def update(self, identity, connector_id, request):
         original = self.resources.get("connector", connector_id)
         self.identities.require(identity, "manage", original["workspace_id"])
+        self.check_credential(request.get("credential"))
         if any(field in request and request[field] is None for field in ("config", "name", "status")):
             raise GovernanceError("VALIDATION_ERROR", "连接器配置、名称和状态不能为null", 422)
         config = request.get("config", original["config"])

@@ -84,7 +84,7 @@ class ConnectorPatch(BaseModel):
 
 
 def install_connector_routes(app, runtime):
-    service = Connectors(runtime.governance, runtime.identities, runtime.grants)
+    service = Connectors(runtime.governance, runtime.identities, runtime.grants, runtime.token)
     runtime.connectors = service
     runtime.grants.connectors = service
     runtime.approvals.connectors = service

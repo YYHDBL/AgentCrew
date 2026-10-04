@@ -107,8 +107,9 @@ def test_deny_committed_after_allow_prevents_serial_dispatch(authorized):
         finally:
             for _ in range(4):
                 approvals.scheduler._sem.release()
-        result = await task
-        assert not result.ok and not target.exists()
+        with pytest.raises(RuntimeError, match="EVENT_PERSIST_FAILED"):
+            await task
+        assert not target.exists()
         assert service.db.read_conn.execute("SELECT count(*) FROM tool_calls WHERE call_id='serial-new-deny' AND dispatched_at IS NOT NULL").fetchone()[0] == 0
     asyncio.run(check())
 
@@ -133,7 +134,9 @@ def test_revoked_auto_allow_cannot_supply_dispatch_approval(authorized):
         finally:
             for _ in range(4):
                 approvals.scheduler._sem.release()
-        assert not (await task).ok and not target.exists()
+        with pytest.raises(RuntimeError, match="EVENT_PERSIST_FAILED"):
+            await task
+        assert not target.exists()
     asyncio.run(check())
 
 

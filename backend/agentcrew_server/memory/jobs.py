@@ -78,7 +78,8 @@ class MemoryJobs:
                 await self._sub.wait_for_data()
                 continue
             if hasattr(self, "grants") and event.type in {RunEventType.GOVERNANCE_GRANT_CHANGED,
-                    RunEventType.GOVERNANCE_ROLE_CHANGED, RunEventType.GOVERNANCE_RESOURCE_CHANGED, RunEventType.GOVERNANCE_RULE_CHANGED}:
+                    RunEventType.GOVERNANCE_ROLE_CHANGED, RunEventType.GOVERNANCE_RESOURCE_CHANGED, RunEventType.GOVERNANCE_RULE_CHANGED,
+                    RunEventType.GOVERNANCE_SKILL_VERSION_PUBLISHED}:
                 for row in self.db.read_conn.execute("SELECT id,task_run_id,workspace_id,agent_id FROM memory_jobs WHERE status IN ('queued','running','waiting_approval')").fetchall():
                     if self.grants.affects_job(event, row[0]):
                         await self.review.cancel(row[0], reason="AUTHORIZATION_REVOKED：当前作业授权已经变化")

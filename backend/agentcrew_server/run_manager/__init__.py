@@ -197,7 +197,8 @@ class RunManager:
 
     def _on_event(self, event) -> None:
         if hasattr(self, "grants") and event.type in {RunEventType.GOVERNANCE_GRANT_CHANGED,
-                RunEventType.GOVERNANCE_ROLE_CHANGED, RunEventType.GOVERNANCE_RESOURCE_CHANGED, RunEventType.GOVERNANCE_RULE_CHANGED}:
+                RunEventType.GOVERNANCE_ROLE_CHANGED, RunEventType.GOVERNANCE_RESOURCE_CHANGED, RunEventType.GOVERNANCE_RULE_CHANGED,
+                RunEventType.GOVERNANCE_SKILL_VERSION_PUBLISHED}:
             for task_id, active in tuple(self._runs.items()):
                 if self.grants.affects(event, task_id):
                     active.fail_reason = "AUTHORIZATION_REVOKED：当前执行授权已经变化"
@@ -277,7 +278,8 @@ class RunManager:
         run.resumed 前取同一份指纹）。DB 读取全在线程内。"""
 
         def build_all():
-            slot = self._bind_slot("main")
+            slot_name = self._employee_slot(task_run_id)
+            slot = self._bind_slot(slot_name)
             conv = self._sessions.conversation_or_404(conversation_id)
             scope = self._sessions.scope_of(conv)
             folders = [f["path"] for f in
@@ -289,9 +291,15 @@ class RunManager:
             system = SYSTEM_PROMPT + "\n\n" + env_block(
                 datetime.now(), scope["workspace_dir"],
                 scope["materials_dir"], folders, conv["workspace_id"])
+            if hasattr(self, "identities"):
+                bound = json.loads(self._db.read_conn.execute("SELECT agent_spec FROM task_governance WHERE task_run_id=?", (task_run_id,)).fetchone()[0])
+                system += "\n\n【当前任务绑定的员工岗位】\n" + bound["position"]
             fingerprint = context_fingerprint(system, tools, self._model_config(slot))
+            fingerprint["model_slot"] = slot_name
             if authorization is not None:
                 fingerprint["authorization_sha256"] = authorization["sha256"]
+            if hasattr(self, "identities"):
+                fingerprint["agent_spec_sha256"] = input_hash(bound)
             return slot, tools, system, conv["agent_id"], fingerprint
 
         slot, tools, system, agent, fingerprint = await asyncio.to_thread(build_all)
@@ -311,8 +319,13 @@ class RunManager:
                 fingerprint["skill_versions"] = self._memory.skill_versions.task_bindings(identity)
             system += "\n\n" + memory_block
             bound_versions = fingerprint.get("skill_versions")
+            slot_name = fingerprint["model_slot"]
+            agent_spec_sha = fingerprint.get("agent_spec_sha256")
             authorization_sha = fingerprint.get("authorization_sha256")
             fingerprint = context_fingerprint(system, tools, self._model_config(slot))
+            fingerprint["model_slot"] = slot_name
+            if agent_spec_sha is not None:
+                fingerprint["agent_spec_sha256"] = agent_spec_sha
             if bound_versions is not None:
                 fingerprint["skill_versions"] = bound_versions
             if authorization_sha is not None:
@@ -320,6 +333,14 @@ class RunManager:
             fingerprint.update(memory_snapshot_id=snapshot["snapshot_id"], memory_snapshot_sha256=snapshot["sha256"],
                                memory_block_sha256=sha256(memory_block.encode()))
         return slot, tools, system, agent, fingerprint
+
+    def _employee_slot(self, task_run_id):
+        if not hasattr(self, "identities"):
+            return "main"
+        row = self._db.read_conn.execute("SELECT agent_spec FROM task_governance WHERE task_run_id=?", (task_run_id,)).fetchone()
+        if row is None:
+            raise GovernanceError("OUT_OF_SCOPE", "员工模型槽缺少任务配置绑定", 403)
+        return json.loads(row[0])["model_slot"]
 
     async def start_resume(self, task_run_id: str, conversation_id: str,
                            resume_reason: str, attempt_no: int, request_identity=None) -> None:
@@ -373,7 +394,8 @@ class RunManager:
             slot, tools, system, _agent_id, fingerprint = \
                 await self._assemble_attempt(conversation_id, task_run_id)
             aux_slot = self._bind_slot("aux") if self._checkpoints is not None else None
-            provider = ConfiguredProvider({"main": slot}, client=self._http,
+            slot_name = fingerprint["model_slot"]
+            provider = ConfiguredProvider({slot_name: slot}, client=self._http,
                                           session_id=conversation_id)
             ctx = await asyncio.to_thread(
                 self._sessions.build_work_context, conversation_id,
@@ -469,11 +491,11 @@ class RunManager:
 
             deps = LoopDeps(
                 request=lambda: provider.stream(
-                    "main", messages, tools, system=system),
+                    slot_name, messages, tools, system=system),
                 execute=execute, emit=sink,
                 on_progress=lambda: setattr(
                     run, "last_progress", time.monotonic()),
-                gates=gates, model=slot.model,
+                gates=gates, model=slot.model, model_slot=slot_name,
                 start_ordinal=(await asyncio.to_thread(
                     self._next_ordinal, task_run_id) if resume else 1),
                 before_request=before_request if self._checkpoints is not None or hasattr(self, "identities") else None,

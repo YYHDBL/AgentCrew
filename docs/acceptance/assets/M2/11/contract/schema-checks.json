@@ -1,0 +1,320 @@
+[
+  {
+    "operation_id": "issueDemoIdentity",
+    "method": "post",
+    "actual_path": "/api/identity/demo",
+    "status": 200
+  },
+  {
+    "operation_id": "issueDemoIdentity",
+    "method": "post",
+    "actual_path": "/api/identity/demo",
+    "status": 200
+  },
+  {
+    "operation_id": "issueDemoIdentity",
+    "method": "post",
+    "actual_path": "/api/identity/demo",
+    "status": 200
+  },
+  {
+    "operation_id": "issueDemoIdentity",
+    "method": "post",
+    "actual_path": "/api/identity/demo",
+    "status": 200
+  },
+  {
+    "operation_id": "readOrganization",
+    "method": "get",
+    "actual_path": "/api/organization",
+    "status": 200
+  },
+  {
+    "operation_id": "editOrganization",
+    "method": "patch",
+    "actual_path": "/api/organization",
+    "status": 403
+  },
+  {
+    "operation_id": "editOrganization",
+    "method": "patch",
+    "actual_path": "/api/organization",
+    "status": 200
+  },
+  {
+    "operation_id": "editWorkspaceMembership",
+    "method": "put",
+    "actual_path": "/api/workspaces/office/members/wangming",
+    "status": 200
+  },
+  {
+    "operation_id": "editWorkspaceMembership",
+    "method": "put",
+    "actual_path": "/api/workspaces/office/members/wangming",
+    "status": 200
+  },
+  {
+    "operation_id": "listWorkspaces",
+    "method": "get",
+    "actual_path": "/api/workspaces?limit=1",
+    "status": 200
+  },
+  {
+    "operation_id": "listWorkspaces",
+    "method": "get",
+    "actual_path": "/api/workspaces?limit=1&after=872d447876bfc3e35de0d88bea72f2d580a3aef7f8b51e8b924ca880c8c04dc2:default",
+    "status": 200
+  },
+  {
+    "operation_id": "listWorkspaces",
+    "method": "get",
+    "actual_path": "/api/workspaces?workspace_id=analytics&after=872d447876bfc3e35de0d88bea72f2d580a3aef7f8b51e8b924ca880c8c04dc2:default",
+    "status": 422
+  },
+  {
+    "operation_id": "createWorkspace",
+    "method": "post",
+    "actual_path": "/api/workspaces",
+    "status": 403
+  },
+  {
+    "operation_id": "createWorkspace",
+    "method": "post",
+    "actual_path": "/api/workspaces",
+    "status": 200
+  },
+  {
+    "operation_id": "createWorkspace",
+    "method": "post",
+    "actual_path": "/api/workspaces",
+    "status": 200
+  },
+  {
+    "operation_id": "createWorkspace",
+    "method": "post",
+    "actual_path": "/api/workspaces",
+    "status": 200
+  },
+  {
+    "operation_id": "readWorkspace",
+    "method": "get",
+    "actual_path": "/api/workspaces/200e1c47d6ee54a096c3745c114ea2ef",
+    "status": 200
+  },
+  {
+    "operation_id": "readWorkspace",
+    "method": "get",
+    "actual_path": "/api/workspaces/200e1c47d6ee54a096c3745c114ea2ef",
+    "status": 403
+  },
+  {
+    "operation_id": "readWorkspace",
+    "method": "get",
+    "actual_path": "/api/workspaces/missing",
+    "status": 404
+  },
+  {
+    "operation_id": "editWorkspace",
+    "method": "patch",
+    "actual_path": "/api/workspaces/200e1c47d6ee54a096c3745c114ea2ef",
+    "status": 200
+  },
+  {
+    "operation_id": "editWorkspace",
+    "method": "patch",
+    "actual_path": "/api/workspaces/6096ddc0e3695509984eba76b4cc190d",
+    "status": 200
+  },
+  {
+    "operation_id": "editWorkspace",
+    "method": "patch",
+    "actual_path": "/api/workspaces/6096ddc0e3695509984eba76b4cc190d",
+    "status": 200
+  },
+  {
+    "operation_id": "disableWorkspace",
+    "method": "delete",
+    "actual_path": "/api/workspaces/200e1c47d6ee54a096c3745c114ea2ef",
+    "status": 200
+  },
+  {
+    "operation_id": "listAgents",
+    "method": "get",
+    "actual_path": "/api/agents?limit=1",
+    "status": 200
+  },
+  {
+    "operation_id": "listAgents",
+    "method": "get",
+    "actual_path": "/api/agents?limit=1&after=26dc60365fb044c0f3db496c3a9231af9f20469c7d850df936dcdb734b68e9f7:default",
+    "status": 200
+  },
+  {
+    "operation_id": "listAgents",
+    "method": "get",
+    "actual_path": "/api/agents?workspace_id=analytics&after=26dc60365fb044c0f3db496c3a9231af9f20469c7d850df936dcdb734b68e9f7:default",
+    "status": 422
+  },
+  {
+    "operation_id": "createAgent",
+    "method": "post",
+    "actual_path": "/api/agents",
+    "status": 200
+  },
+  {
+    "operation_id": "createAgent",
+    "method": "post",
+    "actual_path": "/api/agents",
+    "status": 200
+  },
+  {
+    "operation_id": "readAgent",
+    "method": "get",
+    "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+    "status": 403
+  },
+  {
+    "operation_id": "readAgent",
+    "method": "get",
+    "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+    "status": 200
+  },
+  {
+    "operation_id": "readAgent",
+    "method": "get",
+    "actual_path": "/api/agents/missing",
+    "status": 404
+  },
+  {
+    "operation_id": "readAgent",
+    "method": "get",
+    "actual_path": "/api/agents/xiaowen",
+    "status": 403
+  },
+  {
+    "operation_id": "editAgent",
+    "method": "patch",
+    "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+    "status": 200
+  },
+  {
+    "operation_id": "editAgent",
+    "method": "patch",
+    "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+    "status": 409
+  },
+  {
+    "operation_id": "editAgent",
+    "method": "patch",
+    "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+    "status": 422
+  },
+  {
+    "operation_id": "disableAgent",
+    "method": "delete",
+    "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+    "status": 200
+  },
+  {
+    "operation_id": "listGovernanceSkills",
+    "method": "get",
+    "actual_path": "/api/skills?limit=1",
+    "status": 200
+  },
+  {
+    "operation_id": "listGovernanceSkills",
+    "method": "get",
+    "actual_path": "/api/skills?limit=1&after=7e3afaca10278980f41da2a3a8b2a6221dd7ae39c9e7a044b9f48c77c8a90587:c7b7146c6ea65788b6d4161a4982f34b",
+    "status": 200
+  },
+  {
+    "operation_id": "listGovernanceSkills",
+    "method": "get",
+    "actual_path": "/api/skills?workspace_id=analytics&after=7e3afaca10278980f41da2a3a8b2a6221dd7ae39c9e7a044b9f48c77c8a90587:c7b7146c6ea65788b6d4161a4982f34b",
+    "status": 422
+  },
+  {
+    "operation_id": "createGovernanceSkill",
+    "method": "post",
+    "actual_path": "/api/skills",
+    "status": 200
+  },
+  {
+    "operation_id": "createGovernanceSkill",
+    "method": "post",
+    "actual_path": "/api/skills",
+    "status": 200
+  },
+  {
+    "operation_id": "readGovernanceSkill",
+    "method": "get",
+    "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+    "status": 200
+  },
+  {
+    "operation_id": "readGovernanceSkill",
+    "method": "get",
+    "actual_path": "/api/skills/missing",
+    "status": 404
+  },
+  {
+    "operation_id": "editGovernanceSkill",
+    "method": "patch",
+    "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+    "status": 200
+  },
+  {
+    "operation_id": "editGovernanceSkill",
+    "method": "patch",
+    "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+    "status": 200
+  },
+  {
+    "operation_id": "editGovernanceSkill",
+    "method": "patch",
+    "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+    "status": 200
+  },
+  {
+    "operation_id": "editGovernanceSkill",
+    "method": "patch",
+    "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+    "status": 200
+  },
+  {
+    "operation_id": "editGovernanceSkill",
+    "method": "patch",
+    "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+    "status": 200
+  },
+  {
+    "operation_id": "archiveGovernanceSkill",
+    "method": "delete",
+    "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+    "status": 200
+  },
+  {
+    "operation_id": "listSkillVersions",
+    "method": "get",
+    "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc/versions",
+    "status": 200
+  },
+  {
+    "operation_id": "listSkillVersions",
+    "method": "get",
+    "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc/versions",
+    "status": 200
+  },
+  {
+    "operation_id": "readSkillVersion",
+    "method": "get",
+    "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc/versions/588ecc2f2ccc55e5bd2f2adee29cb25a",
+    "status": 200
+  },
+  {
+    "operation_id": "createConnector",
+    "method": "post",
+    "actual_path": "/api/connectors",
+    "status": 422
+  }
+]

@@ -29,6 +29,28 @@ def capability_active(resource_workspace, resource_status, grant, workspace):
     return resource_workspace == workspace and resource_status == "active" and grant is not None
 
 
+def governance_event_visible(kind, payload, identity, current, visible_agents, workspace=None):
+    scope = payload.get("scope", {})
+    if scope.get("org_id") != current["org_id"]:
+        return False
+    if workspace is not None and scope.get("workspace_id") != workspace:
+        return False
+    if current["role"] == "owner":
+        return True
+    actor = identity.effective_user_id
+    affected_user = payload.get("user_id") or (payload.get("grantee_id") if payload.get("grantee_type") == "user" else None)
+    if kind in {"governance.role_changed", "governance.identity_changed", "governance.audit_verified", "governance.backup_created", "governance.backup_restored"}:
+        return affected_user == actor or payload.get("actor_id") == actor
+    scope_workspace = scope.get("workspace_id")
+    if scope_workspace is not None and scope_workspace not in current["workspace_ids"]:
+        return False
+    if current["role"] == "admin":
+        return scope_workspace is not None
+    if affected_user == actor or payload.get("actor_id") == actor or scope.get("owner_id") == actor:
+        return True
+    return scope_workspace is not None and scope.get("agent_id") in visible_agents
+
+
 def filter_tool_schemas(schemas, http_connector_ids):
     import copy
     result = []

@@ -1,0 +1,178 @@
+[
+  {
+    "operation_id": "readIdentity",
+    "status": 401
+  },
+  {
+    "operation_id": "issueDemoIdentity",
+    "status": 401
+  },
+  {
+    "operation_id": "readOrganization",
+    "status": 401
+  },
+  {
+    "operation_id": "editOrganization",
+    "status": 401
+  },
+  {
+    "operation_id": "listMemberships",
+    "status": 401
+  },
+  {
+    "operation_id": "editMembershipRole",
+    "status": 401
+  },
+  {
+    "operation_id": "editWorkspaceMembership",
+    "status": 401
+  },
+  {
+    "operation_id": "listWorkspaces",
+    "status": 401
+  },
+  {
+    "operation_id": "createWorkspace",
+    "status": 401
+  },
+  {
+    "operation_id": "readWorkspace",
+    "status": 401
+  },
+  {
+    "operation_id": "editWorkspace",
+    "status": 401
+  },
+  {
+    "operation_id": "disableWorkspace",
+    "status": 401
+  },
+  {
+    "operation_id": "listAgents",
+    "status": 401
+  },
+  {
+    "operation_id": "createAgent",
+    "status": 401
+  },
+  {
+    "operation_id": "readAgent",
+    "status": 401
+  },
+  {
+    "operation_id": "editAgent",
+    "status": 401
+  },
+  {
+    "operation_id": "disableAgent",
+    "status": 401
+  },
+  {
+    "operation_id": "listGovernanceSkills",
+    "status": 401
+  },
+  {
+    "operation_id": "createGovernanceSkill",
+    "status": 401
+  },
+  {
+    "operation_id": "readGovernanceSkill",
+    "status": 401
+  },
+  {
+    "operation_id": "editGovernanceSkill",
+    "status": 401
+  },
+  {
+    "operation_id": "archiveGovernanceSkill",
+    "status": 401
+  },
+  {
+    "operation_id": "listSkillVersions",
+    "status": 401
+  },
+  {
+    "operation_id": "publishSkillVersion",
+    "status": 401
+  },
+  {
+    "operation_id": "readSkillVersion",
+    "status": 401
+  },
+  {
+    "operation_id": "listConnectors",
+    "status": 401
+  },
+  {
+    "operation_id": "createConnector",
+    "status": 401
+  },
+  {
+    "operation_id": "readConnector",
+    "status": 401
+  },
+  {
+    "operation_id": "editConnector",
+    "status": 401
+  },
+  {
+    "operation_id": "disableConnector",
+    "status": 401
+  },
+  {
+    "operation_id": "validateConnector",
+    "status": 401
+  },
+  {
+    "operation_id": "listGrants",
+    "status": 401
+  },
+  {
+    "operation_id": "createGrant",
+    "status": 401
+  },
+  {
+    "operation_id": "revokeGrant",
+    "status": 401
+  },
+  {
+    "operation_id": "listPermissionRules",
+    "status": 401
+  },
+  {
+    "operation_id": "createPermissionRule",
+    "status": 401
+  },
+  {
+    "operation_id": "revokePermissionRule",
+    "status": 401
+  },
+  {
+    "operation_id": "streamGovernanceEvents",
+    "status": 401
+  },
+  {
+    "operation_id": "listAudit",
+    "status": 401
+  },
+  {
+    "operation_id": "exportAudit",
+    "status": 401
+  },
+  {
+    "operation_id": "verifyAudit",
+    "status": 401
+  },
+  {
+    "operation_id": "listDiagnosticBackups",
+    "status": 401
+  },
+  {
+    "operation_id": "createDiagnosticBackup",
+    "status": 401
+  },
+  {
+    "operation_id": "restoreDiagnosticBackup",
+    "status": 401
+  }
+]

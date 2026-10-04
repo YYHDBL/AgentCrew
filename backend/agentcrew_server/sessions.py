@@ -44,7 +44,7 @@ from agentcrew_core.events.reducer import (
     replay,
 )
 from agentcrew_core.tools import WorkContext
-from agentcrew_core.tools.judgment import build_protected_paths, normalize_filesystem
+from agentcrew_core.tools.judgment import build_protected_paths, normalize_filesystem, path_is_protected
 
 from .api.errors import ErrorCode
 from .db.event_store import EventStore
@@ -90,7 +90,7 @@ def _unique_stored_name(name: str, used: set[str]) -> str:
 
 
 def import_materials(sources: list[str], materials_dir: Path,
-                     limits: dict[str, int]) -> list[dict[str, Any]]:
+                     limits: dict[str, int], protected=None) -> list[dict[str, Any]]:
     """逐文件：存在 / 常规文件 / ≤max_file_mb / 数量 ≤max_files，复制进
     materials/。部分失败逐文件回报，不抛异常（任务照建）。"""
     results: list[dict[str, Any]] = []
@@ -105,6 +105,14 @@ def import_materials(sources: list[str], materials_dir: Path,
                             "error": f"超出单任务文件数上限（{limits['max_files']}）"})
             continue
         src = Path(raw).expanduser()
+        if path_is_protected(src, protected or []):
+            results.append({"original_path": original, "stored_name": "", "size_bytes": None,
+                "error": "PROTECTED_PATH：保护文件不能导入为员工材料"})
+            continue
+        if src.is_symlink() or any(parent.is_symlink() for parent in src.parents):
+            results.append({"original_path": original, "stored_name": "", "size_bytes": None,
+                "error": "INVALID_PATH：材料来源不能包含符号链接"})
+            continue
         try:
             if not src.exists():
                 raise FileNotFoundError(f"文件不存在：{src}")
@@ -388,7 +396,7 @@ class SessionService:
         limits = self._limits()
         materials_dir = self._data_dir / "conversations" / conv_id / "materials"
         file_results = await asyncio.to_thread(import_materials, list(import_files or []),
-                                                materials_dir, limits)
+                                                materials_dir, limits, build_protected_paths(self._data_dir, Path.home()))
         folder_results = await asyncio.to_thread(validate_folders, list(folders or []), limits)
         provided = len(file_results) + len(folder_results)
         rejected = sum(1 for r in file_results if r["error"]) + \

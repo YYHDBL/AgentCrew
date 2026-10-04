@@ -75,7 +75,7 @@ class MemoryStore:
     def _authorize(self, identity: MemoryIdentity, store_type: str, store_id: str) -> dict | None:
         if hasattr(self, "identities"):
             caller = self.identities.memory_actor(identity)
-            self.identities.agent(caller, identity.agent_id, identity.workspace_id)
+            self.identities.memory_scope(caller, identity)
             if identity.conversation_id:
                 self.identities.conversation(caller, identity.conversation_id)
             if store_type == "skill" and hasattr(self, "grants"):
@@ -399,7 +399,7 @@ class MemoryStore:
             if hasattr(self, "identities"):
                 identity = MemoryIdentity(**plan["identity"])
                 caller = self.identities.memory_actor(identity)
-                self.identities.agent(caller, identity.agent_id, identity.workspace_id, conn)
+                self.identities.memory_scope(caller, identity, conn)
                 if identity.actor_type == "user":
                     self.identities.require(caller, "manage", identity.workspace_id, conn)
                 if plan["store_type"] == "skill" and hasattr(self, "grants"):
@@ -411,6 +411,13 @@ class MemoryStore:
             if (row[0] if row else 0) != plan["before"]["revision"]:
                 return failure("REVISION_CONFLICT", "准备意图时修订发生变化")
             if plan["store_type"] == "skill":
+                management = (plan.get("request_context") or {}).get("management_resource")
+                if management is not None:
+                    if plan["identity"]["actor_type"] != "user" or management["skill_id"] != plan["store_id"]:
+                        return failure("OUT_OF_SCOPE", "技能管理请求缺少人类资源身份")
+                    resource = self.skill_versions.resources.get("skill", plan["store_id"], conn)
+                    if resource["revision"] != management["body"]["expected_revision"]:
+                        return failure("REVISION_CONFLICT", "准备意图时技能管理修订已经改变")
                 occupied = conn.execute("SELECT id FROM memory_skills WHERE workspace_id=? AND name=? AND id<>?",
                     (plan["identity"]["workspace_id"], plan["after_metadata"]["name"], plan["store_id"])).fetchone()
                 if occupied:

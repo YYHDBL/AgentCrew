@@ -210,7 +210,7 @@ class Grants:
         if event.type == T.GOVERNANCE_ROLE_CHANGED:
             owner = self.db.read_conn.execute("SELECT credential_owner_id FROM task_governance WHERE task_run_id=?", (task_id,)).fetchone()[0]
             return p.get("user_id") in {row[2], owner}
-        if event.type == T.GOVERNANCE_RESOURCE_CHANGED and (p.get("status") != "active" or p.get("configuration_changed")):
+        if event.type in {T.GOVERNANCE_RESOURCE_CHANGED, T.GOVERNANCE_SKILL_VERSION_PUBLISHED} and (p.get("status") != "active" or p.get("configuration_changed")):
             kind, resource_id = p.get("resource_type"), p.get("resource_id")
             if kind == "agent":
                 return resource_id == row[1]
@@ -248,7 +248,7 @@ class Grants:
                 (payload.get("grantee_type") == "user" and payload.get("grantee_id") == row[3] and payload.get("capability_id") == row[2])
         if event.type == T.GOVERNANCE_ROLE_CHANGED:
             return payload.get("user_id") in {row[3], row[4]}
-        if event.type == T.GOVERNANCE_RESOURCE_CHANGED and (payload.get("status") != "active" or payload.get("configuration_changed")):
+        if event.type in {T.GOVERNANCE_RESOURCE_CHANGED, T.GOVERNANCE_SKILL_VERSION_PUBLISHED} and (payload.get("status") != "active" or payload.get("configuration_changed")):
             kind, resource_id = payload.get("resource_type"), payload.get("resource_id")
             if kind == "organization":
                 return True

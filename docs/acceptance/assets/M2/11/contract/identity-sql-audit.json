@@ -1,0 +1,1497 @@
+{
+  "queries": [
+    {
+      "sql": "SELECT id,user_id,role,status,revision FROM memberships ORDER BY id",
+      "rows": [
+        {
+          "id": "membership-lilei",
+          "user_id": "lilei",
+          "role": "member",
+          "status": "active",
+          "revision": 2
+        },
+        {
+          "id": "membership-owner",
+          "user_id": "owner",
+          "role": "owner",
+          "status": "active",
+          "revision": 1
+        },
+        {
+          "id": "membership-wangming",
+          "user_id": "wangming",
+          "role": "admin",
+          "status": "active",
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT conversation_id,workspace_id,agent_id,credential_owner_id,effective_user_id FROM governance_conversations ORDER BY conversation_id",
+      "rows": [
+        {
+          "conversation_id": "1fb57fc486124d5aa37ee8be45fd444a",
+          "workspace_id": "office",
+          "agent_id": "xiaowen",
+          "credential_owner_id": "owner",
+          "effective_user_id": "owner"
+        },
+        {
+          "conversation_id": "23f2773bc8d54157837d6c5c00d09707",
+          "workspace_id": "office",
+          "agent_id": "7923ed7d48d35892a91c016431c52b6a",
+          "credential_owner_id": "owner",
+          "effective_user_id": "owner"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT task_run_id,effective_user_id,credential_owner_id,agent_revision FROM task_governance ORDER BY task_run_id",
+      "rows": [
+        {
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner",
+          "agent_revision": 1
+        },
+        {
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner",
+          "agent_revision": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT job_id,effective_user_id,credential_owner_id FROM job_governance ORDER BY job_id",
+      "rows": [
+        {
+          "job_id": "0ce347ce56ca47229234dae29fb012e9",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner"
+        },
+        {
+          "job_id": "b060ca4df91146209ebeb1f7d4445939",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner"
+        },
+        {
+          "job_id": "dd792b2119ba45d3b3102d5698c75d46",
+          "effective_user_id": "owner",
+          "credential_owner_id": "owner"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,resource_type,resource_id,grantee_type,grantee_id,revision,revoked_at FROM grants ORDER BY created_at,id",
+      "rows": [
+        {
+          "id": "2155213f09e759f4a355350a73fd16ad",
+          "resource_type": "skill",
+          "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "grantee_type": "agent",
+          "grantee_id": "xiaowen",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "57718b191d9a5f438c891943b1e36b68",
+          "resource_type": "skill",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "grantee_type": "agent",
+          "grantee_id": "xiaowen",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "97a2879415f6516baf16d3064d5e298c",
+          "resource_type": "skill",
+          "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "grantee_type": "agent",
+          "grantee_id": "xiaogang",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "2a574a78c1915000a23996806e66b2cd",
+          "resource_type": "connector",
+          "resource_id": "office-http",
+          "grantee_type": "agent",
+          "grantee_id": "xiaowen",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "a6a4643dc78058ecbb370d403723dd93",
+          "resource_type": "agent",
+          "resource_id": "xiaowen",
+          "grantee_type": "user",
+          "grantee_id": "lilei",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "fe6d085015035c559a5974c5259a674d",
+          "resource_type": "agent",
+          "resource_id": "xiaogang",
+          "grantee_type": "user",
+          "grantee_id": "lilei",
+          "revision": 1,
+          "revoked_at": null
+        },
+        {
+          "id": "39a2eb38abd356118ec6edc2714bcaae",
+          "resource_type": "connector",
+          "resource_id": "5128a79fdbbd523096581dd7f0cdbbf3",
+          "grantee_type": "agent",
+          "grantee_id": "bceb2b865d4951dea06eb6efe71ee8e4",
+          "revision": 2,
+          "revoked_at": "2026-10-04T16:22:48.970364+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT call_id,task_run_id,tool_name,status,input_hash,dispatched_at,completed_at FROM tool_calls ORDER BY prepared_at,call_id",
+      "rows": [
+        {
+          "call_id": "call_00_s0kko5gqbyhnshseenc64pmi",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc",
+          "tool_name": "bash",
+          "status": "completed",
+          "input_hash": "8b49eacf6d6ba57cd97bcce3189c4a351446a04293d2242e3bd0f1c7e226b203",
+          "dispatched_at": "2026-10-04T16:22:54.188389+00:00",
+          "completed_at": "2026-10-04T16:22:54.331945+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,task_run_id,attempt_no,status FROM run_attempts ORDER BY started_at,id",
+      "rows": [
+        {
+          "id": "1d3ed9a03af943fca6e2ff8858d700c7",
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6",
+          "attempt_no": 1,
+          "status": "completed"
+        },
+        {
+          "id": "2fb445352a614354976d24681bd56271",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc",
+          "attempt_no": 1,
+          "status": "failed"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT global_seq,type,task_run_id FROM run_events ORDER BY global_seq",
+      "rows": [
+        {
+          "global_seq": 1,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 2,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 3,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 4,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 5,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 6,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 7,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 8,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 9,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 10,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 11,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 12,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 13,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 14,
+          "type": "memory.curated",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 15,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 16,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 17,
+          "type": "memory.curated",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 18,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 19,
+          "type": "governance.identity_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 20,
+          "type": "governance.identity_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 21,
+          "type": "governance.access_denied",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 22,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 23,
+          "type": "governance.access_denied",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 24,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 25,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 26,
+          "type": "governance.access_denied",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 27,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 28,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 29,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 30,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 31,
+          "type": "governance.skill_version_published",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 32,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 33,
+          "type": "governance.skill_version_published",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 34,
+          "type": "memory.archived",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 35,
+          "type": "governance.skill_version_published",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 36,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 37,
+          "type": "governance.skill_version_published",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 38,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 39,
+          "type": "governance.skill_version_published",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 40,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 41,
+          "type": "governance.skill_version_published",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 42,
+          "type": "governance.identity_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 43,
+          "type": "governance.access_denied",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 44,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 45,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 46,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 47,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 48,
+          "type": "governance.identity_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 49,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 50,
+          "type": "governance.access_denied",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 51,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 52,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 53,
+          "type": "memory.updated",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 54,
+          "type": "run.queued",
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6"
+        },
+        {
+          "global_seq": 55,
+          "type": "memory.snapshot_created",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 56,
+          "type": "run.started",
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6"
+        },
+        {
+          "global_seq": 57,
+          "type": "step.started",
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6"
+        },
+        {
+          "global_seq": 58,
+          "type": "governance.authorization_checked",
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6"
+        },
+        {
+          "global_seq": 59,
+          "type": "llm.request_started",
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6"
+        },
+        {
+          "global_seq": 60,
+          "type": "context.budget_checked",
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6"
+        },
+        {
+          "global_seq": 61,
+          "type": "llm.request_done",
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6"
+        },
+        {
+          "global_seq": 62,
+          "type": "step.completed",
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6"
+        },
+        {
+          "global_seq": 63,
+          "type": "run.completed",
+          "task_run_id": "972bc90911284ff9a20a8239f291d4f6"
+        },
+        {
+          "global_seq": 64,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 65,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 66,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 67,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 68,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 69,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 70,
+          "type": "governance.grant_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 71,
+          "type": "governance.grant_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 72,
+          "type": "governance.resource_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 73,
+          "type": "governance.rule_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 74,
+          "type": "governance.rule_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 75,
+          "type": "governance.role_changed",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 76,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 77,
+          "type": "governance.skill_version_published",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 78,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 79,
+          "type": "governance.skill_version_published",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 80,
+          "type": "governance.audit_verified",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 81,
+          "type": "memory.updated",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 82,
+          "type": "memory.job_status",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 83,
+          "type": "run.queued",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 84,
+          "type": "memory.snapshot_created",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 85,
+          "type": "run.started",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 86,
+          "type": "step.started",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 87,
+          "type": "governance.authorization_checked",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 88,
+          "type": "llm.request_started",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 89,
+          "type": "context.budget_checked",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 90,
+          "type": "llm.request_done",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 91,
+          "type": "step.completed",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 92,
+          "type": "tool.prepared",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 93,
+          "type": "permission.requested",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 94,
+          "type": "permission.resolved",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 95,
+          "type": "tool.dispatched",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 96,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 97,
+          "type": "governance.skill_version_published",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 98,
+          "type": "tool.pending_verification",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 99,
+          "type": "run.failed",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 100,
+          "type": "tool.verification_submitted",
+          "task_run_id": "c3e5fc5c04944f3c9f00593f37453efc"
+        },
+        {
+          "global_seq": 101,
+          "type": "skill.patched",
+          "task_run_id": null
+        },
+        {
+          "global_seq": 102,
+          "type": "governance.skill_version_published",
+          "task_run_id": null
+        }
+      ]
+    },
+    {
+      "sql": "SELECT seq,actor_type,actor_id,action,resource_type,resource_id,prev_hash,hash FROM audit_log ORDER BY seq",
+      "rows": [
+        {
+          "seq": 1,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.seed",
+          "resource_type": "organization",
+          "resource_id": "demo-org",
+          "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "hash": "636aa5480d2be9238f048e7dd43fcbba2e95c90f85c5fc52e4fc8981fec9ef52"
+        },
+        {
+          "seq": 2,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:c7b7146c6ea65788b6d4161a4982f34b",
+          "prev_hash": "636aa5480d2be9238f048e7dd43fcbba2e95c90f85c5fc52e4fc8981fec9ef52",
+          "hash": "3b52d144e54477328d869877fb093d3a15284a7f8fbc798e97b3e9112da5b4d5"
+        },
+        {
+          "seq": 3,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "prev_hash": "3b52d144e54477328d869877fb093d3a15284a7f8fbc798e97b3e9112da5b4d5",
+          "hash": "5f774efa05d5cae74888e4d610148191f068cd5150ba73a42402974f15d59c08"
+        },
+        {
+          "seq": 4,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:7fb6db7a69e75931b85594e05ed43d2b",
+          "prev_hash": "5f774efa05d5cae74888e4d610148191f068cd5150ba73a42402974f15d59c08",
+          "hash": "e854e48870159b1d3282d11098409eb98326580bcbe7eb3a23b1c24e2d151ea9"
+        },
+        {
+          "seq": 5,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "prev_hash": "e854e48870159b1d3282d11098409eb98326580bcbe7eb3a23b1c24e2d151ea9",
+          "hash": "d5bbf20ef84cdd59b2ab6d6786bc9c7c2d950347d882e44758e004ad028addc7"
+        },
+        {
+          "seq": 6,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:d902cc4eb75d5b9790c0278523e87aa0",
+          "prev_hash": "d5bbf20ef84cdd59b2ab6d6786bc9c7c2d950347d882e44758e004ad028addc7",
+          "hash": "b9b269aa019ba412290a267c147a7a0f9514a7e9c231373dffdffa7fa0d3afd8"
+        },
+        {
+          "seq": 7,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_seeded",
+          "resource_type": "skill",
+          "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "prev_hash": "b9b269aa019ba412290a267c147a7a0f9514a7e9c231373dffdffa7fa0d3afd8",
+          "hash": "6a8dd5153179d6513bbd227f20e2ee1ac19f0561fb54f53381cb20cd42b5cc56"
+        },
+        {
+          "seq": 8,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.seed_completed",
+          "resource_type": "organization",
+          "resource_id": "demo-org",
+          "prev_hash": "6a8dd5153179d6513bbd227f20e2ee1ac19f0561fb54f53381cb20cd42b5cc56",
+          "hash": "989e7d68e9e738cda8c8427b315a8e1e4c0008585f6aa720599c64d471cfc385"
+        },
+        {
+          "seq": 9,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.task_identities_registered",
+          "resource_type": "identity",
+          "resource_id": "legacy-task-identities",
+          "prev_hash": "989e7d68e9e738cda8c8427b315a8e1e4c0008585f6aa720599c64d471cfc385",
+          "hash": "b401b522f6434e7e274fa472d6c801619e66e4ae7e296e103b4e8857a2f124c4"
+        },
+        {
+          "seq": 10,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_history_registered",
+          "resource_type": "identity",
+          "resource_id": "skill-history",
+          "prev_hash": "b401b522f6434e7e274fa472d6c801619e66e4ae7e296e103b4e8857a2f124c4",
+          "hash": "d87804066fcee1c42c889eac04f767e00867e9241099656aa6be654f9b2c6d2e"
+        },
+        {
+          "seq": 11,
+          "actor_type": "system",
+          "actor_id": "dd792b2119ba45d3b3102d5698c75d46",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "dd792b2119ba45d3b3102d5698c75d46",
+          "prev_hash": "d87804066fcee1c42c889eac04f767e00867e9241099656aa6be654f9b2c6d2e",
+          "hash": "3544f78c5e6322928aaea349883eeb6ceafba576fd3ca9dac02a48d0a36cfa52"
+        },
+        {
+          "seq": 12,
+          "actor_type": "system",
+          "actor_id": "0ce347ce56ca47229234dae29fb012e9",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "0ce347ce56ca47229234dae29fb012e9",
+          "prev_hash": "3544f78c5e6322928aaea349883eeb6ceafba576fd3ca9dac02a48d0a36cfa52",
+          "hash": "2f4f30fcaddfef2bdfbd1660aa0a2a295f52e4c501d07ce94f4c483b84df5ddc"
+        },
+        {
+          "seq": 13,
+          "actor_type": "system",
+          "actor_id": "dd792b2119ba45d3b3102d5698c75d46",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "dd792b2119ba45d3b3102d5698c75d46",
+          "prev_hash": "2f4f30fcaddfef2bdfbd1660aa0a2a295f52e4c501d07ce94f4c483b84df5ddc",
+          "hash": "c8807b082a7c1cf534188777ff180b7877f676366f69294dbc6bcfb34d783ca5"
+        },
+        {
+          "seq": 14,
+          "actor_type": "curator",
+          "actor_id": "dd792b2119ba45d3b3102d5698c75d46",
+          "action": "memory.curated",
+          "resource_type": "memory_job",
+          "resource_id": "dd792b2119ba45d3b3102d5698c75d46",
+          "prev_hash": "c8807b082a7c1cf534188777ff180b7877f676366f69294dbc6bcfb34d783ca5",
+          "hash": "b300bdd26c339875697e2b34888e328ebf1824d4dc33ef6c496d73614c161339"
+        },
+        {
+          "seq": 15,
+          "actor_type": "system",
+          "actor_id": "dd792b2119ba45d3b3102d5698c75d46",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "dd792b2119ba45d3b3102d5698c75d46",
+          "prev_hash": "b300bdd26c339875697e2b34888e328ebf1824d4dc33ef6c496d73614c161339",
+          "hash": "976095aefede8a501a0cde469fac5925ef400b4da294eeb654b337c0c411c941"
+        },
+        {
+          "seq": 16,
+          "actor_type": "system",
+          "actor_id": "0ce347ce56ca47229234dae29fb012e9",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "0ce347ce56ca47229234dae29fb012e9",
+          "prev_hash": "976095aefede8a501a0cde469fac5925ef400b4da294eeb654b337c0c411c941",
+          "hash": "44a6676646be2f6cf455c8c080084b71cb8a83137ac73eaf536b24dfcf531457"
+        },
+        {
+          "seq": 17,
+          "actor_type": "curator",
+          "actor_id": "0ce347ce56ca47229234dae29fb012e9",
+          "action": "memory.curated",
+          "resource_type": "memory_job",
+          "resource_id": "0ce347ce56ca47229234dae29fb012e9",
+          "prev_hash": "44a6676646be2f6cf455c8c080084b71cb8a83137ac73eaf536b24dfcf531457",
+          "hash": "948f38a874bef87c1f01e934bf83ebcb6835a3dd0419403d60711b8941e0000e"
+        },
+        {
+          "seq": 18,
+          "actor_type": "system",
+          "actor_id": "0ce347ce56ca47229234dae29fb012e9",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "0ce347ce56ca47229234dae29fb012e9",
+          "prev_hash": "948f38a874bef87c1f01e934bf83ebcb6835a3dd0419403d60711b8941e0000e",
+          "hash": "77f43cf0cf3ee0e071d39ebe375501ab91d71dfaffe57abd598fe53285523e3b"
+        },
+        {
+          "seq": 19,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.identity_changed",
+          "resource_type": "identity",
+          "resource_id": "lilei",
+          "prev_hash": "77f43cf0cf3ee0e071d39ebe375501ab91d71dfaffe57abd598fe53285523e3b",
+          "hash": "e99d9b15ce39f7e53f04c15d43201d5f1c1805c211926aabb0fd8d71b74e128a"
+        },
+        {
+          "seq": 20,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.identity_changed",
+          "resource_type": "identity",
+          "resource_id": "wangming",
+          "prev_hash": "e99d9b15ce39f7e53f04c15d43201d5f1c1805c211926aabb0fd8d71b74e128a",
+          "hash": "2d8ca93d76133e5a15e033e2415e2e1ab721e72406cbf58332b5a787dadf36ad"
+        },
+        {
+          "seq": 21,
+          "actor_type": "user",
+          "actor_id": "lilei",
+          "action": "governance.access_denied",
+          "resource_type": "api_request",
+          "resource_id": "/api/workspaces",
+          "prev_hash": "2d8ca93d76133e5a15e033e2415e2e1ab721e72406cbf58332b5a787dadf36ad",
+          "hash": "f00487a525f969d91c8b9a9795ce56f2fce181d5dbf17dca43681e765d667d92"
+        },
+        {
+          "seq": 22,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.workspace_created",
+          "resource_type": "workspace",
+          "resource_id": "200e1c47d6ee54a096c3745c114ea2ef",
+          "prev_hash": "f00487a525f969d91c8b9a9795ce56f2fce181d5dbf17dca43681e765d667d92",
+          "hash": "778285c92990117a7dc8c98ab94427301c937e578ccc744451f30e1617f1be2d"
+        },
+        {
+          "seq": 23,
+          "actor_type": "user",
+          "actor_id": "wangming",
+          "action": "governance.access_denied",
+          "resource_type": "api_request",
+          "resource_id": "/api/workspaces/200e1c47d6ee54a096c3745c114ea2ef",
+          "prev_hash": "778285c92990117a7dc8c98ab94427301c937e578ccc744451f30e1617f1be2d",
+          "hash": "dc8c098287672dc9ec4e770de122fba459681d9564a3e879a4006037ad08d4f6"
+        },
+        {
+          "seq": 24,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.agent_created",
+          "resource_type": "agent",
+          "resource_id": "02b3fd9d5f4c5d94bdd1e8e3823a552c",
+          "prev_hash": "dc8c098287672dc9ec4e770de122fba459681d9564a3e879a4006037ad08d4f6",
+          "hash": "b5cc8f883bcffaa942887e4f0fcfed5c0f4367280444ba5c9e31d40c3a8be6e4"
+        },
+        {
+          "seq": 25,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.agent_changed",
+          "resource_type": "agent",
+          "resource_id": "02b3fd9d5f4c5d94bdd1e8e3823a552c",
+          "prev_hash": "b5cc8f883bcffaa942887e4f0fcfed5c0f4367280444ba5c9e31d40c3a8be6e4",
+          "hash": "6b767b038f677f6c44e0f985b6a42b5f9f48c9388bc518db049cf35c011cd4ff"
+        },
+        {
+          "seq": 26,
+          "actor_type": "user",
+          "actor_id": "lilei",
+          "action": "governance.access_denied",
+          "resource_type": "api_request",
+          "resource_id": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+          "prev_hash": "6b767b038f677f6c44e0f985b6a42b5f9f48c9388bc518db049cf35c011cd4ff",
+          "hash": "f980d672d640d334e5de3c36ed80aa1576619a6e71da4943b21b8c2c9818265d"
+        },
+        {
+          "seq": 27,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.agent_changed",
+          "resource_type": "agent",
+          "resource_id": "02b3fd9d5f4c5d94bdd1e8e3823a552c",
+          "prev_hash": "f980d672d640d334e5de3c36ed80aa1576619a6e71da4943b21b8c2c9818265d",
+          "hash": "6b947db95b8aeb62f44c79409e9437ae7b563695225687c4d78b13d78d2717a2"
+        },
+        {
+          "seq": 28,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.workspace_changed",
+          "resource_type": "workspace",
+          "resource_id": "200e1c47d6ee54a096c3745c114ea2ef",
+          "prev_hash": "6b947db95b8aeb62f44c79409e9437ae7b563695225687c4d78b13d78d2717a2",
+          "hash": "36f2fe4386b7069cb8a0656e1687d067443be3991ec8727b5879877826f89c7b"
+        },
+        {
+          "seq": 29,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.workspace_changed",
+          "resource_type": "workspace",
+          "resource_id": "200e1c47d6ee54a096c3745c114ea2ef",
+          "prev_hash": "36f2fe4386b7069cb8a0656e1687d067443be3991ec8727b5879877826f89c7b",
+          "hash": "2f08f9bad1df117ea6bf13c8e6905d9b8ac0738d40a1be0af25547cd0a7fa874"
+        },
+        {
+          "seq": 30,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "2f08f9bad1df117ea6bf13c8e6905d9b8ac0738d40a1be0af25547cd0a7fa874",
+          "hash": "a58b2649cd6ff719d782b276051d171ca6716d85df5a1f917a6d9974c1ad3418"
+        },
+        {
+          "seq": 31,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_version_published",
+          "resource_type": "skill",
+          "resource_id": "00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "a58b2649cd6ff719d782b276051d171ca6716d85df5a1f917a6d9974c1ad3418",
+          "hash": "b0fdfd8e730e860056110f4539ff14ffda634a335c778ecad0c5ca4d9d28990c"
+        },
+        {
+          "seq": 32,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "b0fdfd8e730e860056110f4539ff14ffda634a335c778ecad0c5ca4d9d28990c",
+          "hash": "f123208a4eb6c157ae7100df43f5127bbc04496919f7d24aa06b5cadb9c869f2"
+        },
+        {
+          "seq": 33,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_version_published",
+          "resource_type": "skill",
+          "resource_id": "00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "f123208a4eb6c157ae7100df43f5127bbc04496919f7d24aa06b5cadb9c869f2",
+          "hash": "8e3ae396320135780c567ea74c7dca88ee3da6de4a36460439c46bc3ad7c2ca3"
+        },
+        {
+          "seq": 34,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "memory.archived",
+          "resource_type": "memory_store",
+          "resource_id": "skill:00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "8e3ae396320135780c567ea74c7dca88ee3da6de4a36460439c46bc3ad7c2ca3",
+          "hash": "e267861835548b5e45c685110555f4d6dead91e37ee5fbabbf044430ce191d1b"
+        },
+        {
+          "seq": 35,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_version_published",
+          "resource_type": "skill",
+          "resource_id": "00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "e267861835548b5e45c685110555f4d6dead91e37ee5fbabbf044430ce191d1b",
+          "hash": "fa4e34353645e879139553f5d3102d6949c22d3381fa78059131ab64a69f5e88"
+        },
+        {
+          "seq": 36,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "fa4e34353645e879139553f5d3102d6949c22d3381fa78059131ab64a69f5e88",
+          "hash": "2af2b695ae3a1a96798324ab7e7f5e9582fa52d8240ea6f34b4282313d7fc493"
+        },
+        {
+          "seq": 37,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_version_published",
+          "resource_type": "skill",
+          "resource_id": "00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "2af2b695ae3a1a96798324ab7e7f5e9582fa52d8240ea6f34b4282313d7fc493",
+          "hash": "72c14ff0ae04cb3f9e77c0457642de8d85bcbf6dd4fe7510f4a560f37f24b724"
+        },
+        {
+          "seq": 38,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "72c14ff0ae04cb3f9e77c0457642de8d85bcbf6dd4fe7510f4a560f37f24b724",
+          "hash": "d7d8cbba37da97818f330eee12c74087c746e54ccf80f28ff5ff3b592d34c369"
+        },
+        {
+          "seq": 39,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_version_published",
+          "resource_type": "skill",
+          "resource_id": "00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "d7d8cbba37da97818f330eee12c74087c746e54ccf80f28ff5ff3b592d34c369",
+          "hash": "78e1fcd23774c7c3ce7ecd775182dcd300f63d165f1799216d32c371a41a019c"
+        },
+        {
+          "seq": 40,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "78e1fcd23774c7c3ce7ecd775182dcd300f63d165f1799216d32c371a41a019c",
+          "hash": "7b8b810584b28ec6bdf617913bac9638d58c80193717b2ee7249e6b8480c781e"
+        },
+        {
+          "seq": 41,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_version_published",
+          "resource_type": "skill",
+          "resource_id": "00d1f10a0ea259bba3cc8f659fd44ecc",
+          "prev_hash": "7b8b810584b28ec6bdf617913bac9638d58c80193717b2ee7249e6b8480c781e",
+          "hash": "d8959af63aba7b19ece9cbb92bc6f9ceb105caa23a880d5d7d1bf992cac64f48"
+        },
+        {
+          "seq": 42,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.identity_changed",
+          "resource_type": "identity",
+          "resource_id": "wangming",
+          "prev_hash": "d8959af63aba7b19ece9cbb92bc6f9ceb105caa23a880d5d7d1bf992cac64f48",
+          "hash": "82a910ed995e398d4b1bf2b048efbf9b8efd58b8d098faae4cac122d0b124510"
+        },
+        {
+          "seq": 43,
+          "actor_type": "user",
+          "actor_id": "wangming",
+          "action": "governance.access_denied",
+          "resource_type": "api_request",
+          "resource_id": "/api/organization",
+          "prev_hash": "82a910ed995e398d4b1bf2b048efbf9b8efd58b8d098faae4cac122d0b124510",
+          "hash": "0208e56448a8cb93c21ac2b48370399f5a8af3b8bd5cece1c3c3aeefe93cf48a"
+        },
+        {
+          "seq": 44,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.organization_changed",
+          "resource_type": "organization",
+          "resource_id": "demo-org",
+          "prev_hash": "0208e56448a8cb93c21ac2b48370399f5a8af3b8bd5cece1c3c3aeefe93cf48a",
+          "hash": "b8afb46dd7eda78c8a087decc2bd097d6f41b62402f71843ad0e5d83f43e6fb4"
+        },
+        {
+          "seq": 45,
+          "actor_type": "user",
+          "actor_id": "wangming",
+          "action": "governance.workspace_created",
+          "resource_type": "workspace",
+          "resource_id": "6096ddc0e3695509984eba76b4cc190d",
+          "prev_hash": "b8afb46dd7eda78c8a087decc2bd097d6f41b62402f71843ad0e5d83f43e6fb4",
+          "hash": "28be7eda9c8595dff5bf7faa7d0b6b607ebf742a18658f5bd6811b852ee252d1"
+        },
+        {
+          "seq": 46,
+          "actor_type": "user",
+          "actor_id": "wangming",
+          "action": "governance.workspace_changed",
+          "resource_type": "workspace",
+          "resource_id": "6096ddc0e3695509984eba76b4cc190d",
+          "prev_hash": "28be7eda9c8595dff5bf7faa7d0b6b607ebf742a18658f5bd6811b852ee252d1",
+          "hash": "fa45ec3f06274b8645473dc01dffefb3dcddcaa5698b82382a627220e69c8e54"
+        },
+        {
+          "seq": 47,
+          "actor_type": "user",
+          "actor_id": "wangming",
+          "action": "governance.workspace_changed",
+          "resource_type": "workspace",
+          "resource_id": "6096ddc0e3695509984eba76b4cc190d",
+          "prev_hash": "fa45ec3f06274b8645473dc01dffefb3dcddcaa5698b82382a627220e69c8e54",
+          "hash": "ce1b369d86db67ffebed230ec09844879322243be76c6ed426095dc8294d8343"
+        },
+        {
+          "seq": 48,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.identity_changed",
+          "resource_type": "identity",
+          "resource_id": "wangming",
+          "prev_hash": "ce1b369d86db67ffebed230ec09844879322243be76c6ed426095dc8294d8343",
+          "hash": "e13f650c3721d50646038b6a2d2289b0da971d6efb8bb9b955e9fd7ea162a292"
+        },
+        {
+          "seq": 49,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.workspace_member_changed",
+          "resource_type": "workspace_member",
+          "resource_id": "office:wangming",
+          "prev_hash": "e13f650c3721d50646038b6a2d2289b0da971d6efb8bb9b955e9fd7ea162a292",
+          "hash": "401b8c2806ded7633e42e61d768f50f3eea564fb242c58bb846b82a090e818db"
+        },
+        {
+          "seq": 50,
+          "actor_type": "user",
+          "actor_id": "wangming",
+          "action": "governance.access_denied",
+          "resource_type": "api_request",
+          "resource_id": "/api/agents/xiaowen",
+          "prev_hash": "401b8c2806ded7633e42e61d768f50f3eea564fb242c58bb846b82a090e818db",
+          "hash": "8e65be00a0f2863a77b5970f04b4f6cd8ebfd1cf20242685e72254bff78439dc"
+        },
+        {
+          "seq": 51,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.workspace_member_changed",
+          "resource_type": "workspace_member",
+          "resource_id": "office:wangming",
+          "prev_hash": "8e65be00a0f2863a77b5970f04b4f6cd8ebfd1cf20242685e72254bff78439dc",
+          "hash": "f2f8b966b41de2bb8f13412d07b34b70b80699f7f713a24696de30333ae1cdff"
+        },
+        {
+          "seq": 52,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.agent_created",
+          "resource_type": "agent",
+          "resource_id": "7923ed7d48d35892a91c016431c52b6a",
+          "prev_hash": "f2f8b966b41de2bb8f13412d07b34b70b80699f7f713a24696de30333ae1cdff",
+          "hash": "3f7af33fcc5404be11c32c0f4cf377bbc3782cd70d52adf752c4ef83d18295cc"
+        },
+        {
+          "seq": 53,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "memory.updated",
+          "resource_type": "memory_store",
+          "resource_id": "soul:7923ed7d48d35892a91c016431c52b6a",
+          "prev_hash": "3f7af33fcc5404be11c32c0f4cf377bbc3782cd70d52adf752c4ef83d18295cc",
+          "hash": "6ab8c0ac30c8b71895c0aa998dcc30a26442a0a80cc52cf4fb9f7459448ea39e"
+        },
+        {
+          "seq": 54,
+          "actor_type": "system",
+          "actor_id": "b060ca4df91146209ebeb1f7d4445939",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "b060ca4df91146209ebeb1f7d4445939",
+          "prev_hash": "6ab8c0ac30c8b71895c0aa998dcc30a26442a0a80cc52cf4fb9f7459448ea39e",
+          "hash": "180c1c31e85ede777df18b49c102a95a93f7d2fdd24e55641523dc8c423864f7"
+        },
+        {
+          "seq": 55,
+          "actor_type": "system",
+          "actor_id": "b060ca4df91146209ebeb1f7d4445939",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "b060ca4df91146209ebeb1f7d4445939",
+          "prev_hash": "180c1c31e85ede777df18b49c102a95a93f7d2fdd24e55641523dc8c423864f7",
+          "hash": "8358cab3b97e80577daba0e40769399b80a0e8dd992df077784937233401304b"
+        },
+        {
+          "seq": 56,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.agent_created",
+          "resource_type": "agent",
+          "resource_id": "bceb2b865d4951dea06eb6efe71ee8e4",
+          "prev_hash": "8358cab3b97e80577daba0e40769399b80a0e8dd992df077784937233401304b",
+          "hash": "fb0d9efef863cb83363aebf11ff3bc3cf716ad3202be46fb72632602cc709db3"
+        },
+        {
+          "seq": 57,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.connector_created",
+          "resource_type": "connector",
+          "resource_id": "5128a79fdbbd523096581dd7f0cdbbf3",
+          "prev_hash": "fb0d9efef863cb83363aebf11ff3bc3cf716ad3202be46fb72632602cc709db3",
+          "hash": "d4a9c6f144c870f04e2a52ce9c5afd5821853af8bcd1db64d18eec7109752d93"
+        },
+        {
+          "seq": 58,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.connector_validated",
+          "resource_type": "connector",
+          "resource_id": "5128a79fdbbd523096581dd7f0cdbbf3",
+          "prev_hash": "d4a9c6f144c870f04e2a52ce9c5afd5821853af8bcd1db64d18eec7109752d93",
+          "hash": "a124ae03e2ed44ba8d88e8171b0c37aec07d918f66c23c8d7e853210eeb75c09"
+        },
+        {
+          "seq": 59,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.connector_changed",
+          "resource_type": "connector",
+          "resource_id": "5128a79fdbbd523096581dd7f0cdbbf3",
+          "prev_hash": "a124ae03e2ed44ba8d88e8171b0c37aec07d918f66c23c8d7e853210eeb75c09",
+          "hash": "26634e389d3b1131425d0a0d5b0c7054c407522228f2564092e90cc6844809a4"
+        },
+        {
+          "seq": 60,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.grant_created",
+          "resource_type": "grant",
+          "resource_id": "39a2eb38abd356118ec6edc2714bcaae",
+          "prev_hash": "26634e389d3b1131425d0a0d5b0c7054c407522228f2564092e90cc6844809a4",
+          "hash": "bd0158d365f2e99155c9537d6a579701307aef1a8e0616534a8263fd01c99686"
+        },
+        {
+          "seq": 61,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.grant_revoked",
+          "resource_type": "grant",
+          "resource_id": "39a2eb38abd356118ec6edc2714bcaae",
+          "prev_hash": "bd0158d365f2e99155c9537d6a579701307aef1a8e0616534a8263fd01c99686",
+          "hash": "7ef20d9c14f0ef63e10672840e4dc7b39daf68f7f0c25a782eec761d2f5efa21"
+        },
+        {
+          "seq": 62,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.connector_changed",
+          "resource_type": "connector",
+          "resource_id": "5128a79fdbbd523096581dd7f0cdbbf3",
+          "prev_hash": "7ef20d9c14f0ef63e10672840e4dc7b39daf68f7f0c25a782eec761d2f5efa21",
+          "hash": "1f90be2ae8a35522b47a69750eb2718451258e19a1af747630f29e29c86b1865"
+        },
+        {
+          "seq": 63,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.rule_created",
+          "resource_type": "permission_rule",
+          "resource_id": "0d46a241e4215cbb8c330fc4a393ded2",
+          "prev_hash": "1f90be2ae8a35522b47a69750eb2718451258e19a1af747630f29e29c86b1865",
+          "hash": "857aa48bd266ea17486c7b479ba57da59244f2aa166afe632c99b3bf4329e1bf"
+        },
+        {
+          "seq": 64,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.rule_revoked",
+          "resource_type": "permission_rule",
+          "resource_id": "0d46a241e4215cbb8c330fc4a393ded2",
+          "prev_hash": "857aa48bd266ea17486c7b479ba57da59244f2aa166afe632c99b3bf4329e1bf",
+          "hash": "7c18ccb941444de501dcda9945a09950c77b25a123ce943fb9f393ba01ff39a1"
+        },
+        {
+          "seq": 65,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.role_changed",
+          "resource_type": "membership",
+          "resource_id": "membership-lilei",
+          "prev_hash": "7c18ccb941444de501dcda9945a09950c77b25a123ce943fb9f393ba01ff39a1",
+          "hash": "fa8362e567d938b69f97270e0e7858b9e242f6ef1a00db17daad43313c3b838d"
+        },
+        {
+          "seq": 66,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:3e3bf3c3977b51bd8db4dba4fe75ccb3",
+          "prev_hash": "fa8362e567d938b69f97270e0e7858b9e242f6ef1a00db17daad43313c3b838d",
+          "hash": "7acf07758033eee91cb11fb5a1130dd9c9ecde1ccd76ef71db7d97b6f6adf10a"
+        },
+        {
+          "seq": 67,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_version_published",
+          "resource_type": "skill",
+          "resource_id": "3e3bf3c3977b51bd8db4dba4fe75ccb3",
+          "prev_hash": "7acf07758033eee91cb11fb5a1130dd9c9ecde1ccd76ef71db7d97b6f6adf10a",
+          "hash": "09a870dd346e2fd704a0bb6f45c11d3944a87dde07dfe35b41d0655a6c6dbb98"
+        },
+        {
+          "seq": 68,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:3e3bf3c3977b51bd8db4dba4fe75ccb3",
+          "prev_hash": "09a870dd346e2fd704a0bb6f45c11d3944a87dde07dfe35b41d0655a6c6dbb98",
+          "hash": "b9606170cdab3523de0e5b038c53f7de1f7a0675c3846956a2f7324dee980f1d"
+        },
+        {
+          "seq": 69,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_version_published",
+          "resource_type": "skill",
+          "resource_id": "3e3bf3c3977b51bd8db4dba4fe75ccb3",
+          "prev_hash": "b9606170cdab3523de0e5b038c53f7de1f7a0675c3846956a2f7324dee980f1d",
+          "hash": "a5e45ddc7b127c3889e9c6fcacdec20fb1a5aaa8ab19812347e8b818d6b88ee8"
+        },
+        {
+          "seq": 70,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.audit_verified",
+          "resource_type": "audit",
+          "resource_id": "chain",
+          "prev_hash": "a5e45ddc7b127c3889e9c6fcacdec20fb1a5aaa8ab19812347e8b818d6b88ee8",
+          "hash": "1387c9bfa7acef75c2f74a7554f94a538e81cf35d2b1dd181e05b1efb0da0716"
+        },
+        {
+          "seq": 71,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "memory.updated",
+          "resource_type": "memory_store",
+          "resource_id": "soul:xiaowen",
+          "prev_hash": "1387c9bfa7acef75c2f74a7554f94a538e81cf35d2b1dd181e05b1efb0da0716",
+          "hash": "cf83399bae9675bcdf20cbb519001b10709ebc8e66ff5bbc5f343adc0e0a3f37"
+        },
+        {
+          "seq": 72,
+          "actor_type": "system",
+          "actor_id": "b060ca4df91146209ebeb1f7d4445939",
+          "action": "memory.job_status",
+          "resource_type": "memory_job",
+          "resource_id": "b060ca4df91146209ebeb1f7d4445939",
+          "prev_hash": "cf83399bae9675bcdf20cbb519001b10709ebc8e66ff5bbc5f343adc0e0a3f37",
+          "hash": "4b929513a02c5fb4288d2d39130e9ccc1a6af68d96179098682ae78e396fc6bc"
+        },
+        {
+          "seq": 73,
+          "actor_type": "system",
+          "actor_id": "gate",
+          "action": "permission.requested",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_s0kko5gqbyhnshseenc64pmi",
+          "prev_hash": "4b929513a02c5fb4288d2d39130e9ccc1a6af68d96179098682ae78e396fc6bc",
+          "hash": "0ae0f741ffe16831cc302ba3a28c445ab2ad791b26eb0154cc6ef650f58633ff"
+        },
+        {
+          "seq": 74,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "permission.resolved:allow_once",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_s0kko5gqbyhnshseenc64pmi",
+          "prev_hash": "0ae0f741ffe16831cc302ba3a28c445ab2ad791b26eb0154cc6ef650f58633ff",
+          "hash": "b31d93d8fbc79f5d09e1e7ceed3b94902e54996aa3fed6660ead93a9a186330a"
+        },
+        {
+          "seq": 75,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:7fb6db7a69e75931b85594e05ed43d2b",
+          "prev_hash": "b31d93d8fbc79f5d09e1e7ceed3b94902e54996aa3fed6660ead93a9a186330a",
+          "hash": "822fbb6ff8ea5241545e2b22d8ad588397840b9885aef8ae2c98ed6854435398"
+        },
+        {
+          "seq": 76,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_version_published",
+          "resource_type": "skill",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "prev_hash": "822fbb6ff8ea5241545e2b22d8ad588397840b9885aef8ae2c98ed6854435398",
+          "hash": "4d86cedcd946a764d5fc52f1b5036052ae37369207f85ba99ea1cf75a4c43d91"
+        },
+        {
+          "seq": 77,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "tool.verification:confirmed_executed",
+          "resource_type": "tool_call",
+          "resource_id": "call_00_s0kko5gqbyhnshseenc64pmi",
+          "prev_hash": "4d86cedcd946a764d5fc52f1b5036052ae37369207f85ba99ea1cf75a4c43d91",
+          "hash": "84966a7ee738956e0203528802e2c01006e9eecc8b08bc0ea907e94065b7fead"
+        },
+        {
+          "seq": 78,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "skill.patched",
+          "resource_type": "memory_store",
+          "resource_id": "skill:7fb6db7a69e75931b85594e05ed43d2b",
+          "prev_hash": "84966a7ee738956e0203528802e2c01006e9eecc8b08bc0ea907e94065b7fead",
+          "hash": "c155c08216d823f586f2e849add9ee14447db4dbb25f414f5b43e2f023685851"
+        },
+        {
+          "seq": 79,
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "governance.skill_version_published",
+          "resource_type": "skill",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "prev_hash": "c155c08216d823f586f2e849add9ee14447db4dbb25f414f5b43e2f023685851",
+          "hash": "74dd490dc6f7ed859d9f582af565bd537054a7890334e6da4027d5d616026920"
+        }
+      ]
+    }
+  ],
+  "event_watermark": 102,
+  "audit_sequence": 79
+}

@@ -1,0 +1,2290 @@
+{
+  "coverage": [
+    {
+      "operation_id": "readIdentity",
+      "method": "get",
+      "path": "/api/identity",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "path": "/api/identity/demo",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        503
+      ],
+      "actual_requests": 11
+    },
+    {
+      "operation_id": "readOrganization",
+      "method": "get",
+      "path": "/api/organization",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "editOrganization",
+      "method": "patch",
+      "path": "/api/organization",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "actual_requests": 5
+    },
+    {
+      "operation_id": "listMemberships",
+      "method": "get",
+      "path": "/api/memberships",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "editMembershipRole",
+      "method": "patch",
+      "path": "/api/memberships/{id}/role",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "editWorkspaceMembership",
+      "method": "put",
+      "path": "/api/workspaces/{id}/members/{user_id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 5
+    },
+    {
+      "operation_id": "listWorkspaces",
+      "method": "get",
+      "path": "/api/workspaces",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        422
+      ],
+      "actual_requests": 7
+    },
+    {
+      "operation_id": "createWorkspace",
+      "method": "post",
+      "path": "/api/workspaces",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "actual_requests": 9
+    },
+    {
+      "operation_id": "readWorkspace",
+      "method": "get",
+      "path": "/api/workspaces/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        403,
+        404
+      ],
+      "actual_requests": 7
+    },
+    {
+      "operation_id": "editWorkspace",
+      "method": "patch",
+      "path": "/api/workspaces/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 7
+    },
+    {
+      "operation_id": "disableWorkspace",
+      "method": "delete",
+      "path": "/api/workspaces/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "listAgents",
+      "method": "get",
+      "path": "/api/agents",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        422
+      ],
+      "actual_requests": 7
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "path": "/api/agents",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 10
+    },
+    {
+      "operation_id": "readAgent",
+      "method": "get",
+      "path": "/api/agents/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        403,
+        404
+      ],
+      "actual_requests": 9
+    },
+    {
+      "operation_id": "editAgent",
+      "method": "patch",
+      "path": "/api/agents/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        409,
+        422
+      ],
+      "actual_requests": 7
+    },
+    {
+      "operation_id": "disableAgent",
+      "method": "delete",
+      "path": "/api/agents/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 4
+    },
+    {
+      "operation_id": "listGovernanceSkills",
+      "method": "get",
+      "path": "/api/skills",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        422
+      ],
+      "actual_requests": 9
+    },
+    {
+      "operation_id": "createGovernanceSkill",
+      "method": "post",
+      "path": "/api/skills",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 8
+    },
+    {
+      "operation_id": "readGovernanceSkill",
+      "method": "get",
+      "path": "/api/skills/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        404
+      ],
+      "actual_requests": 5
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "path": "/api/skills/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 16
+    },
+    {
+      "operation_id": "archiveGovernanceSkill",
+      "method": "delete",
+      "path": "/api/skills/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "listSkillVersions",
+      "method": "get",
+      "path": "/api/skills/{id}/versions",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 7
+    },
+    {
+      "operation_id": "publishSkillVersion",
+      "method": "post",
+      "path": "/api/skills/{id}/versions",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 4
+    },
+    {
+      "operation_id": "readSkillVersion",
+      "method": "get",
+      "path": "/api/skills/{id}/versions/{version_id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 5
+    },
+    {
+      "operation_id": "listConnectors",
+      "method": "get",
+      "path": "/api/connectors",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "createConnector",
+      "method": "post",
+      "path": "/api/connectors",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        422
+      ],
+      "actual_requests": 5
+    },
+    {
+      "operation_id": "readConnector",
+      "method": "get",
+      "path": "/api/connectors/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "editConnector",
+      "method": "patch",
+      "path": "/api/connectors/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "disableConnector",
+      "method": "delete",
+      "path": "/api/connectors/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "validateConnector",
+      "method": "post",
+      "path": "/api/connectors/{id}/validate",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "listGrants",
+      "method": "get",
+      "path": "/api/grants",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "createGrant",
+      "method": "post",
+      "path": "/api/grants",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 4
+    },
+    {
+      "operation_id": "revokeGrant",
+      "method": "delete",
+      "path": "/api/grants/{id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "listPermissionRules",
+      "method": "get",
+      "path": "/api/agents/{id}/permission-rules",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "createPermissionRule",
+      "method": "post",
+      "path": "/api/agents/{id}/permission-rules",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "revokePermissionRule",
+      "method": "delete",
+      "path": "/api/agents/{id}/permission-rules/{rule_id}",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "streamGovernanceEvents",
+      "method": "get",
+      "path": "/api/governance/stream",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "listAudit",
+      "method": "get",
+      "path": "/api/audit",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 3
+    },
+    {
+      "operation_id": "exportAudit",
+      "method": "get",
+      "path": "/api/audit/export",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 4
+    },
+    {
+      "operation_id": "verifyAudit",
+      "method": "post",
+      "path": "/api/audit/verify",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 6
+    },
+    {
+      "operation_id": "listDiagnosticBackups",
+      "method": "get",
+      "path": "/api/diagnostics/backups",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 2
+    },
+    {
+      "operation_id": "createDiagnosticBackup",
+      "method": "post",
+      "path": "/api/diagnostics/backups",
+      "passed": true,
+      "statuses": [
+        200,
+        401,
+        403,
+        503
+      ],
+      "actual_requests": 4
+    },
+    {
+      "operation_id": "restoreDiagnosticBackup",
+      "method": "post",
+      "path": "/api/diagnostics/restore",
+      "passed": true,
+      "statuses": [
+        200,
+        401
+      ],
+      "actual_requests": 2
+    }
+  ],
+  "schema_checks": [
+    {
+      "operation_id": "readIdentity",
+      "method": "get",
+      "actual_path": "/api/identity",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readIdentity",
+      "method": "get",
+      "actual_path": "/api/identity",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readIdentity",
+      "method": "get",
+      "actual_path": "/api/identity",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 200,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 503,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "issueDemoIdentity",
+      "method": "post",
+      "actual_path": "/api/identity/demo",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readOrganization",
+      "method": "get",
+      "actual_path": "/api/organization",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readOrganization",
+      "method": "get",
+      "actual_path": "/api/organization",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readOrganization",
+      "method": "get",
+      "actual_path": "/api/organization",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editOrganization",
+      "method": "patch",
+      "actual_path": "/api/organization",
+      "status": 403,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editOrganization",
+      "method": "patch",
+      "actual_path": "/api/organization",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editOrganization",
+      "method": "patch",
+      "actual_path": "/api/organization",
+      "status": 403,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editOrganization",
+      "method": "patch",
+      "actual_path": "/api/organization",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editOrganization",
+      "method": "patch",
+      "actual_path": "/api/organization",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listMemberships",
+      "method": "get",
+      "actual_path": "/api/memberships",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listMemberships",
+      "method": "get",
+      "actual_path": "/api/memberships",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listMemberships",
+      "method": "get",
+      "actual_path": "/api/memberships",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editMembershipRole",
+      "method": "patch",
+      "actual_path": "/api/memberships/membership-lilei/role",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editMembershipRole",
+      "method": "patch",
+      "actual_path": "/api/memberships/membership-lilei/role",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editMembershipRole",
+      "method": "patch",
+      "actual_path": "/api/memberships/office/role",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspaceMembership",
+      "method": "put",
+      "actual_path": "/api/workspaces/office/members/wangming",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspaceMembership",
+      "method": "put",
+      "actual_path": "/api/workspaces/office/members/wangming",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspaceMembership",
+      "method": "put",
+      "actual_path": "/api/workspaces/office/members/wangming",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspaceMembership",
+      "method": "put",
+      "actual_path": "/api/workspaces/office/members/wangming",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspaceMembership",
+      "method": "put",
+      "actual_path": "/api/workspaces/office/members/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listWorkspaces",
+      "method": "get",
+      "actual_path": "/api/workspaces?limit=1",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listWorkspaces",
+      "method": "get",
+      "actual_path": "/api/workspaces?limit=1&after=872d447876bfc3e35de0d88bea72f2d580a3aef7f8b51e8b924ca880c8c04dc2:default",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listWorkspaces",
+      "method": "get",
+      "actual_path": "/api/workspaces?workspace_id=analytics&after=872d447876bfc3e35de0d88bea72f2d580a3aef7f8b51e8b924ca880c8c04dc2:default",
+      "status": 422,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listWorkspaces",
+      "method": "get",
+      "actual_path": "/api/workspaces?limit=1",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listWorkspaces",
+      "method": "get",
+      "actual_path": "/api/workspaces?limit=1&after=63399cf8aac10facdf32f5c3dd93a2084738ed5a96028dca4396b1ed586e5820:default",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listWorkspaces",
+      "method": "get",
+      "actual_path": "/api/workspaces?workspace_id=analytics&after=63399cf8aac10facdf32f5c3dd93a2084738ed5a96028dca4396b1ed586e5820:default",
+      "status": 422,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listWorkspaces",
+      "method": "get",
+      "actual_path": "/api/workspaces",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createWorkspace",
+      "method": "post",
+      "actual_path": "/api/workspaces",
+      "status": 403,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createWorkspace",
+      "method": "post",
+      "actual_path": "/api/workspaces",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createWorkspace",
+      "method": "post",
+      "actual_path": "/api/workspaces",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createWorkspace",
+      "method": "post",
+      "actual_path": "/api/workspaces",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createWorkspace",
+      "method": "post",
+      "actual_path": "/api/workspaces",
+      "status": 403,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createWorkspace",
+      "method": "post",
+      "actual_path": "/api/workspaces",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createWorkspace",
+      "method": "post",
+      "actual_path": "/api/workspaces",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createWorkspace",
+      "method": "post",
+      "actual_path": "/api/workspaces",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createWorkspace",
+      "method": "post",
+      "actual_path": "/api/workspaces",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readWorkspace",
+      "method": "get",
+      "actual_path": "/api/workspaces/200e1c47d6ee54a096c3745c114ea2ef",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readWorkspace",
+      "method": "get",
+      "actual_path": "/api/workspaces/200e1c47d6ee54a096c3745c114ea2ef",
+      "status": 403,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readWorkspace",
+      "method": "get",
+      "actual_path": "/api/workspaces/missing",
+      "status": 404,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readWorkspace",
+      "method": "get",
+      "actual_path": "/api/workspaces/2fd5b1121bf35e7fbde59f0a031825dd",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readWorkspace",
+      "method": "get",
+      "actual_path": "/api/workspaces/2fd5b1121bf35e7fbde59f0a031825dd",
+      "status": 403,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readWorkspace",
+      "method": "get",
+      "actual_path": "/api/workspaces/missing",
+      "status": 404,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readWorkspace",
+      "method": "get",
+      "actual_path": "/api/workspaces/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspace",
+      "method": "patch",
+      "actual_path": "/api/workspaces/200e1c47d6ee54a096c3745c114ea2ef",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspace",
+      "method": "patch",
+      "actual_path": "/api/workspaces/6096ddc0e3695509984eba76b4cc190d",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspace",
+      "method": "patch",
+      "actual_path": "/api/workspaces/6096ddc0e3695509984eba76b4cc190d",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspace",
+      "method": "patch",
+      "actual_path": "/api/workspaces/2fd5b1121bf35e7fbde59f0a031825dd",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspace",
+      "method": "patch",
+      "actual_path": "/api/workspaces/fcb8ae06da9d50dfb1187c182ad67217",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspace",
+      "method": "patch",
+      "actual_path": "/api/workspaces/fcb8ae06da9d50dfb1187c182ad67217",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editWorkspace",
+      "method": "patch",
+      "actual_path": "/api/workspaces/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "disableWorkspace",
+      "method": "delete",
+      "actual_path": "/api/workspaces/200e1c47d6ee54a096c3745c114ea2ef",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "disableWorkspace",
+      "method": "delete",
+      "actual_path": "/api/workspaces/2fd5b1121bf35e7fbde59f0a031825dd",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "disableWorkspace",
+      "method": "delete",
+      "actual_path": "/api/workspaces/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listAgents",
+      "method": "get",
+      "actual_path": "/api/agents?limit=1",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listAgents",
+      "method": "get",
+      "actual_path": "/api/agents?limit=1&after=26dc60365fb044c0f3db496c3a9231af9f20469c7d850df936dcdb734b68e9f7:default",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listAgents",
+      "method": "get",
+      "actual_path": "/api/agents?workspace_id=analytics&after=26dc60365fb044c0f3db496c3a9231af9f20469c7d850df936dcdb734b68e9f7:default",
+      "status": 422,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listAgents",
+      "method": "get",
+      "actual_path": "/api/agents?limit=1",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listAgents",
+      "method": "get",
+      "actual_path": "/api/agents?limit=1&after=97205bb85095a99b6aefc8af1b939a4961a8a3b2bfd5909c8a5ee0578f41bb1e:default",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listAgents",
+      "method": "get",
+      "actual_path": "/api/agents?workspace_id=analytics&after=97205bb85095a99b6aefc8af1b939a4961a8a3b2bfd5909c8a5ee0578f41bb1e:default",
+      "status": 422,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listAgents",
+      "method": "get",
+      "actual_path": "/api/agents",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "actual_path": "/api/agents",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "actual_path": "/api/agents",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "actual_path": "/api/agents",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "actual_path": "/api/agents",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "actual_path": "/api/agents",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "actual_path": "/api/agents",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "actual_path": "/api/agents",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "actual_path": "/api/agents",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "actual_path": "/api/agents",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createAgent",
+      "method": "post",
+      "actual_path": "/api/agents",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readAgent",
+      "method": "get",
+      "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+      "status": 403,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readAgent",
+      "method": "get",
+      "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readAgent",
+      "method": "get",
+      "actual_path": "/api/agents/missing",
+      "status": 404,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readAgent",
+      "method": "get",
+      "actual_path": "/api/agents/xiaowen",
+      "status": 403,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readAgent",
+      "method": "get",
+      "actual_path": "/api/agents/d34075e646a25724b37c5505e7bcaf69",
+      "status": 403,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readAgent",
+      "method": "get",
+      "actual_path": "/api/agents/d34075e646a25724b37c5505e7bcaf69",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readAgent",
+      "method": "get",
+      "actual_path": "/api/agents/missing",
+      "status": 404,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readAgent",
+      "method": "get",
+      "actual_path": "/api/agents/xiaowen",
+      "status": 403,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readAgent",
+      "method": "get",
+      "actual_path": "/api/agents/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editAgent",
+      "method": "patch",
+      "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editAgent",
+      "method": "patch",
+      "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+      "status": 409,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editAgent",
+      "method": "patch",
+      "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+      "status": 422,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editAgent",
+      "method": "patch",
+      "actual_path": "/api/agents/d34075e646a25724b37c5505e7bcaf69",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editAgent",
+      "method": "patch",
+      "actual_path": "/api/agents/d34075e646a25724b37c5505e7bcaf69",
+      "status": 409,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editAgent",
+      "method": "patch",
+      "actual_path": "/api/agents/d34075e646a25724b37c5505e7bcaf69",
+      "status": 422,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editAgent",
+      "method": "patch",
+      "actual_path": "/api/agents/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "disableAgent",
+      "method": "delete",
+      "actual_path": "/api/agents/02b3fd9d5f4c5d94bdd1e8e3823a552c",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "disableAgent",
+      "method": "delete",
+      "actual_path": "/api/agents/d34075e646a25724b37c5505e7bcaf69",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "disableAgent",
+      "method": "delete",
+      "actual_path": "/api/agents/3edd78c5550c5d668aa10f6542c48d8a",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "disableAgent",
+      "method": "delete",
+      "actual_path": "/api/agents/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGovernanceSkills",
+      "method": "get",
+      "actual_path": "/api/skills?limit=1",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGovernanceSkills",
+      "method": "get",
+      "actual_path": "/api/skills?limit=1&after=7e3afaca10278980f41da2a3a8b2a6221dd7ae39c9e7a044b9f48c77c8a90587:c7b7146c6ea65788b6d4161a4982f34b",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGovernanceSkills",
+      "method": "get",
+      "actual_path": "/api/skills?workspace_id=analytics&after=7e3afaca10278980f41da2a3a8b2a6221dd7ae39c9e7a044b9f48c77c8a90587:c7b7146c6ea65788b6d4161a4982f34b",
+      "status": 422,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGovernanceSkills",
+      "method": "get",
+      "actual_path": "/api/skills?workspace_id=office&limit=200",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGovernanceSkills",
+      "method": "get",
+      "actual_path": "/api/skills?limit=1",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGovernanceSkills",
+      "method": "get",
+      "actual_path": "/api/skills?limit=1&after=a4a257f2ed7764e78fadd86e4d7bbb1dbae9f3bec7d81702460298bc3eb2450c:c7b7146c6ea65788b6d4161a4982f34b",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGovernanceSkills",
+      "method": "get",
+      "actual_path": "/api/skills?workspace_id=analytics&after=a4a257f2ed7764e78fadd86e4d7bbb1dbae9f3bec7d81702460298bc3eb2450c:c7b7146c6ea65788b6d4161a4982f34b",
+      "status": 422,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGovernanceSkills",
+      "method": "get",
+      "actual_path": "/api/skills?workspace_id=office&limit=200",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGovernanceSkills",
+      "method": "get",
+      "actual_path": "/api/skills",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGovernanceSkill",
+      "method": "post",
+      "actual_path": "/api/skills",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGovernanceSkill",
+      "method": "post",
+      "actual_path": "/api/skills",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGovernanceSkill",
+      "method": "post",
+      "actual_path": "/api/skills",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGovernanceSkill",
+      "method": "post",
+      "actual_path": "/api/skills",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGovernanceSkill",
+      "method": "post",
+      "actual_path": "/api/skills",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGovernanceSkill",
+      "method": "post",
+      "actual_path": "/api/skills",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGovernanceSkill",
+      "method": "post",
+      "actual_path": "/api/skills",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGovernanceSkill",
+      "method": "post",
+      "actual_path": "/api/skills",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readGovernanceSkill",
+      "method": "get",
+      "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readGovernanceSkill",
+      "method": "get",
+      "actual_path": "/api/skills/missing",
+      "status": 404,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readGovernanceSkill",
+      "method": "get",
+      "actual_path": "/api/skills/97fa83cc5a5454fbadbcf08e88f117b4",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readGovernanceSkill",
+      "method": "get",
+      "actual_path": "/api/skills/missing",
+      "status": 404,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readGovernanceSkill",
+      "method": "get",
+      "actual_path": "/api/skills/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/7fb6db7a69e75931b85594e05ed43d2b",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/7fb6db7a69e75931b85594e05ed43d2b",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/97fa83cc5a5454fbadbcf08e88f117b4",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/97fa83cc5a5454fbadbcf08e88f117b4",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/97fa83cc5a5454fbadbcf08e88f117b4",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/97fa83cc5a5454fbadbcf08e88f117b4",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/97fa83cc5a5454fbadbcf08e88f117b4",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/7fb6db7a69e75931b85594e05ed43d2b",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/7fb6db7a69e75931b85594e05ed43d2b",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/fb4627f7fa285e6bad8bf1d9213c029e",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editGovernanceSkill",
+      "method": "patch",
+      "actual_path": "/api/skills/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "archiveGovernanceSkill",
+      "method": "delete",
+      "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "archiveGovernanceSkill",
+      "method": "delete",
+      "actual_path": "/api/skills/97fa83cc5a5454fbadbcf08e88f117b4",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "archiveGovernanceSkill",
+      "method": "delete",
+      "actual_path": "/api/skills/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listSkillVersions",
+      "method": "get",
+      "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc/versions",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listSkillVersions",
+      "method": "get",
+      "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc/versions",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listSkillVersions",
+      "method": "get",
+      "actual_path": "/api/skills/3e3bf3c3977b51bd8db4dba4fe75ccb3/versions",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listSkillVersions",
+      "method": "get",
+      "actual_path": "/api/skills/97fa83cc5a5454fbadbcf08e88f117b4/versions",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listSkillVersions",
+      "method": "get",
+      "actual_path": "/api/skills/97fa83cc5a5454fbadbcf08e88f117b4/versions",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listSkillVersions",
+      "method": "get",
+      "actual_path": "/api/skills/24fe7eeb05ff594b9bcf8dab602f6f44/versions",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listSkillVersions",
+      "method": "get",
+      "actual_path": "/api/skills/office/versions",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "publishSkillVersion",
+      "method": "post",
+      "actual_path": "/api/skills/3e3bf3c3977b51bd8db4dba4fe75ccb3/versions",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "publishSkillVersion",
+      "method": "post",
+      "actual_path": "/api/skills/24fe7eeb05ff594b9bcf8dab602f6f44/versions",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "publishSkillVersion",
+      "method": "post",
+      "actual_path": "/api/skills/fb4627f7fa285e6bad8bf1d9213c029e/versions",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "publishSkillVersion",
+      "method": "post",
+      "actual_path": "/api/skills/office/versions",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readSkillVersion",
+      "method": "get",
+      "actual_path": "/api/skills/00d1f10a0ea259bba3cc8f659fd44ecc/versions/588ecc2f2ccc55e5bd2f2adee29cb25a",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readSkillVersion",
+      "method": "get",
+      "actual_path": "/api/skills/3e3bf3c3977b51bd8db4dba4fe75ccb3/versions/6557cf2518235a029115eb03d55a2955",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readSkillVersion",
+      "method": "get",
+      "actual_path": "/api/skills/97fa83cc5a5454fbadbcf08e88f117b4/versions/f22f0800c7155731ad1fa060b35a79c5",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readSkillVersion",
+      "method": "get",
+      "actual_path": "/api/skills/24fe7eeb05ff594b9bcf8dab602f6f44/versions/9ae2cc8b5894526189acbd17f4d9d630",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readSkillVersion",
+      "method": "get",
+      "actual_path": "/api/skills/office/versions/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listConnectors",
+      "method": "get",
+      "actual_path": "/api/connectors",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listConnectors",
+      "method": "get",
+      "actual_path": "/api/connectors",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listConnectors",
+      "method": "get",
+      "actual_path": "/api/connectors",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createConnector",
+      "method": "post",
+      "actual_path": "/api/connectors",
+      "status": 422,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createConnector",
+      "method": "post",
+      "actual_path": "/api/connectors",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createConnector",
+      "method": "post",
+      "actual_path": "/api/connectors",
+      "status": 422,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createConnector",
+      "method": "post",
+      "actual_path": "/api/connectors",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createConnector",
+      "method": "post",
+      "actual_path": "/api/connectors",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readConnector",
+      "method": "get",
+      "actual_path": "/api/connectors/5128a79fdbbd523096581dd7f0cdbbf3",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readConnector",
+      "method": "get",
+      "actual_path": "/api/connectors/1e5a629bcbb5563d823dbac0b8e6ce65",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "readConnector",
+      "method": "get",
+      "actual_path": "/api/connectors/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editConnector",
+      "method": "patch",
+      "actual_path": "/api/connectors/5128a79fdbbd523096581dd7f0cdbbf3",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editConnector",
+      "method": "patch",
+      "actual_path": "/api/connectors/1e5a629bcbb5563d823dbac0b8e6ce65",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "editConnector",
+      "method": "patch",
+      "actual_path": "/api/connectors/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "disableConnector",
+      "method": "delete",
+      "actual_path": "/api/connectors/5128a79fdbbd523096581dd7f0cdbbf3",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "disableConnector",
+      "method": "delete",
+      "actual_path": "/api/connectors/1e5a629bcbb5563d823dbac0b8e6ce65",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "disableConnector",
+      "method": "delete",
+      "actual_path": "/api/connectors/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "validateConnector",
+      "method": "post",
+      "actual_path": "/api/connectors/5128a79fdbbd523096581dd7f0cdbbf3/validate",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "validateConnector",
+      "method": "post",
+      "actual_path": "/api/connectors/1e5a629bcbb5563d823dbac0b8e6ce65/validate",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "validateConnector",
+      "method": "post",
+      "actual_path": "/api/connectors/office/validate",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGrants",
+      "method": "get",
+      "actual_path": "/api/grants",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGrants",
+      "method": "get",
+      "actual_path": "/api/grants",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listGrants",
+      "method": "get",
+      "actual_path": "/api/grants",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGrant",
+      "method": "post",
+      "actual_path": "/api/grants",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGrant",
+      "method": "post",
+      "actual_path": "/api/grants",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGrant",
+      "method": "post",
+      "actual_path": "/api/grants",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createGrant",
+      "method": "post",
+      "actual_path": "/api/grants",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "revokeGrant",
+      "method": "delete",
+      "actual_path": "/api/grants/39a2eb38abd356118ec6edc2714bcaae",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "revokeGrant",
+      "method": "delete",
+      "actual_path": "/api/grants/0473f8eb5ec45e7787c0eae6267beffd",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "revokeGrant",
+      "method": "delete",
+      "actual_path": "/api/grants/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listPermissionRules",
+      "method": "get",
+      "actual_path": "/api/agents/bceb2b865d4951dea06eb6efe71ee8e4/permission-rules",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listPermissionRules",
+      "method": "get",
+      "actual_path": "/api/agents/a2876a8fd98357f1a1e9a2de445a3760/permission-rules",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listPermissionRules",
+      "method": "get",
+      "actual_path": "/api/agents/office/permission-rules",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createPermissionRule",
+      "method": "post",
+      "actual_path": "/api/agents/bceb2b865d4951dea06eb6efe71ee8e4/permission-rules",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createPermissionRule",
+      "method": "post",
+      "actual_path": "/api/agents/a2876a8fd98357f1a1e9a2de445a3760/permission-rules",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createPermissionRule",
+      "method": "post",
+      "actual_path": "/api/agents/office/permission-rules",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "revokePermissionRule",
+      "method": "delete",
+      "actual_path": "/api/agents/bceb2b865d4951dea06eb6efe71ee8e4/permission-rules/0d46a241e4215cbb8c330fc4a393ded2",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "revokePermissionRule",
+      "method": "delete",
+      "actual_path": "/api/agents/a2876a8fd98357f1a1e9a2de445a3760/permission-rules/d3c5b3114b755fb2b5f0cd39670f9f94",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "revokePermissionRule",
+      "method": "delete",
+      "actual_path": "/api/agents/office/permission-rules/office",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "streamGovernanceEvents",
+      "method": "get",
+      "actual_path": "/api/governance/stream?workspace_id=office&from=0",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": false
+    },
+    {
+      "operation_id": "streamGovernanceEvents",
+      "method": "get",
+      "actual_path": "/api/governance/stream?workspace_id=office&from=0",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": false
+    },
+    {
+      "operation_id": "streamGovernanceEvents",
+      "method": "get",
+      "actual_path": "/api/governance/stream",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listAudit",
+      "method": "get",
+      "actual_path": "/api/audit",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listAudit",
+      "method": "get",
+      "actual_path": "/api/audit",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listAudit",
+      "method": "get",
+      "actual_path": "/api/audit",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "exportAudit",
+      "method": "get",
+      "actual_path": "/api/audit/export",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "exportAudit",
+      "method": "get",
+      "actual_path": "/api/audit/export?limit=200",
+      "status": 200,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "exportAudit",
+      "method": "get",
+      "actual_path": "/api/audit/export",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "exportAudit",
+      "method": "get",
+      "actual_path": "/api/audit/export",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "verifyAudit",
+      "method": "post",
+      "actual_path": "/api/audit/verify",
+      "status": 200,
+      "evidence_source": "contract/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "verifyAudit",
+      "method": "post",
+      "actual_path": "/api/audit/verify",
+      "status": 200,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "verifyAudit",
+      "method": "post",
+      "actual_path": "/api/audit/verify",
+      "status": 200,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "verifyAudit",
+      "method": "post",
+      "actual_path": "/api/audit/verify",
+      "status": 200,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "verifyAudit",
+      "method": "post",
+      "actual_path": "/api/audit/verify",
+      "status": 200,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "verifyAudit",
+      "method": "post",
+      "actual_path": "/api/audit/verify",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listDiagnosticBackups",
+      "method": "get",
+      "actual_path": "/api/diagnostics/backups",
+      "status": 200,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "listDiagnosticBackups",
+      "method": "get",
+      "actual_path": "/api/diagnostics/backups",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createDiagnosticBackup",
+      "method": "post",
+      "actual_path": "/api/diagnostics/backups",
+      "status": 403,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createDiagnosticBackup",
+      "method": "post",
+      "actual_path": "/api/diagnostics/backups",
+      "status": 200,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createDiagnosticBackup",
+      "method": "post",
+      "actual_path": "/api/diagnostics/backups",
+      "status": 503,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "createDiagnosticBackup",
+      "method": "post",
+      "actual_path": "/api/diagnostics/backups",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "restoreDiagnosticBackup",
+      "method": "post",
+      "actual_path": "/api/diagnostics/restore",
+      "status": 200,
+      "evidence_source": "diagnostics/http-evidence.json",
+      "schema_checked": true
+    },
+    {
+      "operation_id": "restoreDiagnosticBackup",
+      "method": "post",
+      "actual_path": "/api/diagnostics/restore",
+      "status": 401,
+      "evidence_source": "followup/http-evidence.json",
+      "schema_checked": true
+    }
+  ]
+}

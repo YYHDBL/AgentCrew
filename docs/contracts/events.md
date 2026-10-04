@@ -33,7 +33,7 @@
 | `queue.paused` / `queue.resumed` | `{}` | 暂停或继续队列；合法动作读取 state 的能力字段。 |
 | `step.started` | `{step_id: string, ordinal: integer, model_slot?: string}` | 建立步骤，`step_id` 用于关联同一步骤中的请求重试。 |
 | `step.completed` | `{step_id: string, input_tokens?: integer, output_tokens?: integer, latency_ms?: integer}` | 模型回合完成；后续工具事件独立表示工具执行状态。 |
-| `llm.request_started` | `{llm_call_id: string, step_id: string, model: string, retry_no?: integer}` | 每次请求尝试有独立 `llm_call_id`；同一步骤重试保留 `step_id`。 |
+| `llm.request_started` | `{llm_call_id: string, step_id: string, model: string, model_slot?: string, retry_no?: integer}` | 每次请求尝试有独立 `llm_call_id`；同一步骤重试保留 `step_id`，model_slot记录实际使用的main或aux配置槽。 |
 | `llm.request_done` | `{llm_call_id: string, step_id: string, text: string, tool_uses: ToolUse[], thinking_blocks: ThinkingBlock[], prompt_tokens: integer, completion_tokens: integer, latency_ms: integer, stop_reason: string \| null}` | C8 完整回复。`tool_uses=[]` 表示最终文本回合；包含工具调用的回合继续执行工具，文本保留在事件中。 |
 | `llm.request_failed` | `{llm_call_id: string, step_id: string, error: string, retry_no: integer}` | `error` 含错误分类与说明。该请求结束，后续允许同一步骤重试；后续成功应显示已恢复。 |
 
@@ -127,7 +127,7 @@ M1 的会话后台事件没有前台 `task_run_id/seq`；来源任务放入 payl
 | `governance.role_changed` | GovernanceChange，加 `user_id: string, role: "owner" \| "admin" \| "member", status: "active" \| "disabled"` | M2-03，重新查询当前权限并结束无权订阅 |
 | `governance.grant_changed` | GovernanceChange，加 `grantee_type: "user" \| "agent", grantee_id: string, revoked_at: string \| null, capability_type: string, capability_id: string, revocation_changed?: boolean` | M2-05，实际撤销后重新组装工具与索引，已派发调用取消并核验；重复撤销旧记录的revocation_changed=false保留审计，不触发新Grant的执行取消 |
 | `governance.rule_changed` | GovernanceChange，加 `agent_id: string, tool_name: string, effect: "allow" \| "deny", revoked_at: string \| null`；撤销带 `revocation_changed: boolean`，永久审批带 `source_task_run_id/source_call_id` | M2-07，员工规则查询刷新，deny 优先；无实际撤销变化保持任务状态，永久拒绝决定保留当前审批任务的正常收尾 |
-| `governance.skill_version_published` | GovernanceChange，加 `version_id: string, version_no: integer, ledger_id: integer, sha256: string` | M2-04，change_id 关联 M1 skill.patched；恢复正文同样发布新版本 |
+| `governance.skill_version_published` | GovernanceChange，加 `version_id: string, version_no: integer, ledger_id: integer, sha256: string, status: string` | M2-04/11，change_id关联M1 skill.patched；恢复正文发布新版本，当前禁用或归档状态触发执行取消及副作用核验 |
 | `governance.authorization_checked` | `{scope: GovernanceScope, actor_id: string, agent_id: string, allowed: boolean, reason: string, authorization_sha256: string, call_id?: string}` | M2-05/09，任务或尝试关联时保留其 task_run_id，明确当前有效权限 |
 | `governance.audit_verified` | GovernanceChange，加 `internal: object, anchor: object` | M2-10，仅可信链可追加成功验证；失败切入只读诊断，原断点保留 |
 | `governance.backup_created` | GovernanceChange，加 `kind: "database" \| "directory"` | M2-10，自洽快照和文件校验完成后，与审计及幂等记录同事务提交；恢复请求保存独立持久化计划，诊断期间禁止追加损坏审计链 |
