@@ -45,7 +45,16 @@ export class Sidecar {
   getBackendPort(): number | null { return this.port }
   getToken(): string | null { return this.port === null ? null : this.token }
 
-  async start(): Promise<void> {
+  async restart(): Promise<void> {
+    if (!await this.stop()) throw new Error('任务服务未完成关闭，禁止重复启动')
+    this.port = null
+    this.token = null
+    this.stopping = false
+    this.restarts = []
+    await this.start(true)
+  }
+
+  async start(waitForReady = false): Promise<void> {
     if (this.stopping) return
     const requestedPort = await new Promise<number>((resolvePort, reject) => {
       const server = createServer()
@@ -59,7 +68,10 @@ export class Sidecar {
       this.failed(`无法分配本地端口：${error.message}`)
       return null
     })
-    if (requestedPort === null || this.stopping) return
+    if (requestedPort === null || this.stopping) {
+      if (waitForReady) throw new Error('任务服务启动未能分配端口或已经停止')
+      return
+    }
     const token = randomBytes(32).toString('hex')
     const child = spawn('uv', ['run', 'python', '-m', 'agentcrew_server', '--port', String(requestedPort), '--data-dir', this.dataDir, '--parent-pid', String(process.pid)], {
       cwd: resolve(app.getAppPath(), '../backend'),
@@ -68,6 +80,9 @@ export class Sidecar {
       stdio: ['pipe', 'pipe', 'pipe']
     })
     child.stdin.end()
+    let readyResolve: (() => void) | undefined
+    let readyReject: ((error: Error) => void) | undefined
+    const ready = waitForReady ? new Promise<void>((resolveReady, rejectReady) => { readyResolve = resolveReady; readyReject = rejectReady }) : null
     this.child = child
     this.port = null
     this.token = null
@@ -102,6 +117,7 @@ export class Sidecar {
       clearTimeout(timeout)
       clearInterval(health)
       failureReason = reason
+      readyReject?.(new Error(reason))
       terminate()
     }
     child.stdout.on('data', (chunk: Buffer) => {
@@ -141,6 +157,7 @@ export class Sidecar {
     child.once('error', (error) => fail(`启动进程失败：${error.message}`))
     child.once('close', (code, signal) => {
       if (this.child !== child) return
+      if (!settled) { readyReject?.(new Error(`任务服务在就绪前退出：${code ?? signal}`)); settled = true }
       this.child = null
       this.port = null
       this.token = null
@@ -163,8 +180,10 @@ export class Sidecar {
         clearInterval(health)
         this.port = actualPort
         this.token = token
+        readyResolve?.()
       } catch { /* 启动期间继续轮询。 */ }
     }, 250)
+    if (ready) await ready
   }
 
   private failed(reason: string, output = ''): void {

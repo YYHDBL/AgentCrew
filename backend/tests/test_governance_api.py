@@ -132,6 +132,7 @@ def test_organization_and_admin_workspace_management(server):
     assert workspace.status_code == 200
     resource = workspace.json()["data"]
     assert request(server, "PATCH", f'/api/workspaces/{resource["id"]}', identity=admin, user="wangming", body=change(1, status="disabled")).status_code == 200
+    assert any(item["id"] == resource["id"] for item in request(server, "GET", "/api/workspaces", identity=admin, user="wangming").json()["data"]["items"])
     assert request(server, "PATCH", f'/api/workspaces/{resource["id"]}', identity=admin, user="wangming", body=change(2, status="active")).status_code == 200
 
 

@@ -274,6 +274,8 @@ class SessionService:
             "title": conv["title"],
             "status": conv["status"],
             "agent_name": conv["agent_id"],
+            "agent_id": conv["agent_id"],
+            "workspace_id": conv["workspace_id"],
             "last_activity_at": conv["updated_at"],
             "state_badge": self._badge(fsm, self._last_task_status(conv["id"])),
         }

@@ -65,7 +65,8 @@ def install_identity_routes(app, runtime):
         value = service.current(identity)
         rows = runtime.db.read_conn.execute("SELECT m.*,u.name FROM memberships m JOIN users u ON u.id=m.user_id WHERE m.org_id=? AND (?='owner' OR m.user_id=?) ORDER BY m.id",
             (value["org_id"], value["role"], identity.effective_user_id)).fetchall()
-        items = [{**dict(row), "workspace_ids": [r[0] for r in runtime.db.read_conn.execute("SELECT workspace_id FROM workspace_members WHERE user_id=? AND enabled=1 ORDER BY workspace_id", (row["user_id"],))]} for row in rows]
+        items = [{**dict(row), "workspace_ids": [r[0] for r in runtime.db.read_conn.execute("SELECT workspace_id FROM workspace_members WHERE user_id=? AND enabled=1 ORDER BY workspace_id", (row["user_id"],))],
+            "workspace_access": [{"workspace_id": item[0], "enabled": bool(item[1]), "revision": item[2]} for item in runtime.db.read_conn.execute("SELECT workspace_id,enabled,revision FROM workspace_members WHERE user_id=? ORDER BY workspace_id", (row["user_id"],))]} for row in rows]
         return memory_page(items, {"actor": identity.effective_user_id, "org": value["org_id"], "order": "membership-id"}, limit, after, key="id")
 
     @app.patch("/api/memberships/{id}/role")

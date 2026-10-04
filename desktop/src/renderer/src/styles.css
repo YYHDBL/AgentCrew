@@ -1,5 +1,37 @@
 @import 'antd/dist/reset.css';
 
+.identity-control { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.identity-control select { max-width: 160px; min-height: 30px; border: 1px solid #dce3eb; border-radius: 8px; background: white; }
+.task-selection { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.task-selection label { display: flex; gap: 8px; align-items: center; font-size: 13px; }
+.task-selection select { max-width: 200px; min-height: 36px; border: 1px solid #dce3eb; border-radius: 8px; background: white; }
+.governance-page { flex: 1; min-width: 0; overflow: auto; padding: 28px 32px; background: white; }
+.governance-page h1 { font-size: 28px; margin: 0 0 12px; }
+.governance-page h2 { font-size: 18px; margin: 24px 0 16px; }
+.governance-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.governance-heading h2 { margin: 0; }
+.governance-field { display: flex; flex-direction: column; gap: 8px; min-width: 120px; margin-bottom: 16px; font-size: 13px; }
+.governance-field input, .governance-field select, .governance-field textarea { padding: 8px 12px; min-height: 38px; border: 1px solid #dce3eb; border-radius: 8px; width: 100%; background: white; }
+.governance-field textarea { min-height: 110px; resize: vertical; }
+.governance-field select[multiple] { min-height: 90px; }
+.governance-form-inline { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px; }
+.governance-form-inline .governance-field { flex: 1; max-width: 320px; margin: 0; }
+.governance-table { width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed; font-size: 13px; }
+.governance-table th { background: #f6f8fb; color: #5b6a7d; font-weight: 600; }
+.governance-table td, .governance-table th { padding: 16px; vertical-align: top; border-bottom: 1px solid #dce3eb; overflow-wrap: anywhere; }
+.governance-table th:first-child { width: 38%; }
+.governance-table th:last-child { width: 32%; }
+.governance-table small, .governance-backup small { display: block; margin-top: 6px; color: #5b6a7d; overflow-wrap: anywhere; }
+.governance-table pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
+.governance-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.governance-permission, .governance-empty { padding: 16px; background: #eef3fa; border-radius: 12px; color: #5b6a7d; }
+.governance-diagnostic { padding: 20px; border: 1px solid #a35c13; border-radius: 12px; color: #a35c13; background: #fff7ed; margin-bottom: 20px; }
+.governance-verification, .governance-backup { padding: 20px; border: 1px solid #dce3eb; border-radius: 12px; margin: 16px 0; overflow-wrap: anywhere; }
+.governance-verification small { display: block; overflow-wrap: anywhere; color: #5b6a7d; }
+.governance-code { font-family: ui-monospace, SFMono-Regular, monospace; font-size: 12px; }
+.governance-page [role="alert"] { color: #bf4148; }
+@media (max-width: 1100px) { .governance-page { padding: 24px; } .identity-control span { display: none; } .governance-table td, .governance-table th { padding: 10px; } }
+
 :root {
   font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans SC', sans-serif;
   color: #17243b;

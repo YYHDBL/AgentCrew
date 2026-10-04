@@ -496,6 +496,7 @@ components:
         role: { type: string, enum: [owner, admin, member] }
         demo: { type: boolean }
         workspace_ids: { type: array, items: { type: string } }
+        organization_status: { type: string, enum: [active, disabled, archived] }
     DemoIdentityRequest:
       type: object
       additionalProperties: false
@@ -573,6 +574,15 @@ components:
         status: { type: string, enum: [active, disabled] }
         revision: { type: integer, minimum: 1 }
         workspace_ids: { type: array, items: { type: string } }
+        workspace_access:
+          type: array
+          items:
+            type: object
+            required: [workspace_id, enabled, revision]
+            properties:
+              workspace_id: { type: string }
+              enabled: { type: boolean }
+              revision: { type: integer, minimum: 1 }
     MembershipRoleRequest:
       allOf:
         - { $ref: "#/components/schemas/GovernanceChangeRequest" }

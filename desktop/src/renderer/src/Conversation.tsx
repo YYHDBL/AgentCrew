@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Button } from 'antd'
-import type { Frame } from './session'
+import { Button, Modal } from 'antd'
+import { api, type Frame } from './session'
 import { MemoryNotice } from './Memory'
 
 export function TypedText({ text }: { text: string }): JSX.Element {
@@ -41,7 +41,8 @@ function Question({ event, action, busy }: { event: Frame; action: Action; busy:
 type Action = (path: string, body: unknown) => void
 const decisions = [['allow_once', '允许'], ['allow_always', '总是允许'], ['reject_once', '拒绝'], ['reject_always', '总是拒绝']]
 
-export function Details({ events, action, busy }: { events: Frame[]; action: Action; busy: boolean }): JSX.Element {
+export function Details({ events, action, busy, canManage = true }: { events: Frame[]; action: Action; busy: boolean; canManage?: boolean }): JSX.Element {
+  const [permanent, setPermanent] = useState<{ call: Record<string, unknown>; decision: string } | null>(null)
   const resolved = new Set(events.filter((e) => e.type === 'permission.resolved').map((e) => e.payload.tool_call_id))
   const answered = new Set(events.filter((e) => e.type === 'question.answered').map((e) => e.payload.request_id))
   const completedSteps = new Set(events.filter((e) => e.type === 'step.completed').map((e) => e.payload.step_id))
@@ -83,7 +84,7 @@ export function Details({ events, action, busy }: { events: Frame[]; action: Act
     </section>
     if (event.type === 'permission.requested' && !resolved.has(p.tool_call_id) && !terminal.has(event.task_run_id)) return <section className="process-card approval" key={event.global_seq}>
       <h3>等待审批：{String(p.tool)}</h3><p>风险等级：{String(p.risk)}</p><p>目标：<span className="file-path">{String(p.target)}</span></p><p>持续授权范围：<span className="file-path">{String(p.always_scope_preview)}</span></p>
-      <div className="card-actions">{decisions.map(([decision, label]) => <Button key={decision} disabled={busy} onClick={() => action(`/tool-approvals/${p.tool_call_id}`, { decision, input_hash: p.input_hash })}>{label}</Button>)}</div>
+      <div className="card-actions">{decisions.map(([decision, label]) => <Button key={decision} disabled={busy || (decision.endsWith('always') && !canManage)} onClick={() => { if (decision.endsWith('always')) setPermanent({ call: p, decision }); else action(`/tool-approvals/${p.tool_call_id}`, { decision, input_hash: p.input_hash }) }}>{label}</Button>)}</div>{!canManage && <p>永久规则只能由owner或admin保存。</p>}
     </section>
     if (event.type === 'question.requested' && !answered.has(p.request_id) && !terminal.has(event.task_run_id)) return <Question key={event.global_seq} event={event} action={action} busy={busy} />
     if (event.type === 'step.started') {
@@ -108,5 +109,23 @@ export function Details({ events, action, busy }: { events: Frame[]; action: Act
     if (event.type === 'run.interrupted') return <section className="process-card" key={event.global_seq}><h3>任务已中断</h3><p>{String(p.reason)}</p></section>
     if (event.type === 'run.resumed') return <section className="process-card" key={event.global_seq}><h3>已恢复 · 第 {String(p.attempt_no)} 次尝试</h3></section>
     return null
-  })}</div>
+  })}<Modal title="确认永久权限规则" open={Boolean(permanent)} okText="确认保存永久规则" cancelText="取消决定" confirmLoading={busy} onCancel={() => setPermanent(null)} onOk={() => { if (permanent) { action(`/tool-approvals/${permanent.call.tool_call_id}`, { decision: permanent.decision, input_hash: permanent.call.input_hash }); setPermanent(null) } }}><p>工具：{String(permanent?.call.tool)}</p><p>持续授权范围：{String(permanent?.call.always_scope_preview)}</p><p>{permanent?.decision === 'allow_always' ? '在此范围保存允许规则；后续执行继续受当前scope、protected、角色与Grant限制。' : '在此范围保存deny规则，后续匹配调用直接拒绝。'}</p></Modal></div>
+}
+
+export interface PendingVerification { call_id: string; tool: string; input: Record<string, unknown>; dispatched_at: string; evidence: string }
+
+export function VerificationCards({ calls, refreshed }: { calls: PendingVerification[]; refreshed: () => void }): JSX.Element | null {
+  const [note, setNote] = useState('')
+  const [choice, setChoice] = useState<{ call: PendingVerification; verdict: string } | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  if (!calls.length) return null
+  const submit = async (): Promise<void> => {
+    if (!choice) return
+    setBusy(true); setError('')
+    try { await api(`/tool-calls/${choice.call.call_id}/verification`, { verdict: choice.verdict, note }); setChoice(null); setNote(''); refreshed() }
+    catch (reason) { setError(reason instanceof Error ? reason.message : String(reason)) }
+    finally { setBusy(false) }
+  }
+  return <section className="verification-calls" aria-label="待核验副作用"><h2>等待真实效果核验</h2><p>核验结束前，后续任务、模型请求与工具派发均停止。</p>{calls.map((call) => <article className="process-card" key={call.call_id}><h3>{call.tool} · 待核验</h3><p>调用：{call.call_id} · 派发时间：{new Date(call.dispatched_at).toLocaleString('zh-CN')}</p><pre>{JSON.stringify(call.input, null, 2)}</pre><p>{call.evidence}</p><div className="card-actions"><Button disabled={busy} onClick={() => setChoice({ call, verdict: 'confirmed_executed' })}>核验为已执行</Button><Button disabled={busy} onClick={() => setChoice({ call, verdict: 'confirmed_not_executed' })}>核验为未执行</Button></div></article>)}<Modal title="提交真实效果核验" open={Boolean(choice)} okText="确认核验结果" cancelText="取消核验" confirmLoading={busy} onCancel={() => { if (!busy) setChoice(null) }} onOk={() => void submit()}><p>调用：{choice?.call.call_id} · 结果：{choice?.verdict === 'confirmed_executed' ? '已执行' : '未执行'}</p><p>请根据实际文件、上游记录或操作次数核查效果。核验继续使用当前身份与权限。</p><label className="governance-field"><span>核验依据</span><textarea value={note} onChange={(event) => setNote(event.target.value)} /></label>{error && <p role="alert">{error}</p>}</Modal></section>
 }

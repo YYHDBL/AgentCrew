@@ -38,6 +38,8 @@ def governance_event_visible(kind, payload, identity, current, visible_agents, w
     if current["role"] == "owner":
         return True
     actor = identity.effective_user_id
+    if payload.get("resource_type") == "workspace_member" and scope.get("owner_id") == actor:
+        return True
     affected_user = payload.get("user_id") or (payload.get("grantee_id") if payload.get("grantee_type") == "user" else None)
     if kind in {"governance.role_changed", "governance.identity_changed", "governance.audit_verified", "governance.backup_created", "governance.backup_restored"}:
         return affected_user == actor or payload.get("actor_id") == actor

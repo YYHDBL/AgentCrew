@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 
-export interface Conversation { id: string; title: string | null; state_badge: string; last_activity_at: string; agent_name: string }
+export interface Conversation { id: string; title: string | null; state_badge: string; last_activity_at: string; agent_name: string; agent_id?: string; workspace_id?: string }
 export interface Snapshot {
   state: string; at_global_seq: number; waiting_approvals: number; waiting_questions: number
   queue_paused: boolean; queue: { id: string; text: string }[]
@@ -14,10 +14,21 @@ export interface Frame {
 }
 export interface Scope { workspace_dir: string; materials_dir: string; folders: { path: string; access: string }[] }
 
+let identityGeneration = 0
+export function setIdentityToken(token: string): void {
+  identityGeneration += 1
+  sessionStorage.clear()
+  if (token) sessionStorage.setItem('agentcrew-identity', token)
+  window.dispatchEvent(new Event('agentcrew-identity-changed'))
+}
+
 export async function connection(): Promise<{ url: string; headers: Record<string, string> }> {
+  const identity = sessionStorage.getItem('agentcrew-identity')
+  const generation = identityGeneration
   const [port, token] = await Promise.all([window.agentcrew.getBackendPort(), window.agentcrew.getToken()])
+  if (generation !== identityGeneration) throw new ApiFailure('当前请求身份已更换', 'IDENTITY_CHANGED', 0)
   if (!port || !token) throw new Error('任务服务尚未就绪')
-  return { url: `http://127.0.0.1:${port}`, headers: { Authorization: `Bearer ${token}` } }
+  return { url: `http://127.0.0.1:${port}`, headers: { Authorization: `Bearer ${token}`, ...(identity ? { 'X-AgentCrew-Identity': identity } : {}) } }
 }
 
 export class ApiFailure extends Error {
@@ -25,6 +36,7 @@ export class ApiFailure extends Error {
 }
 
 export async function api<T>(path: string, body?: unknown, signal?: AbortSignal, method?: string): Promise<T> {
+  const generation = identityGeneration
   const { url, headers } = await connection()
   const response = await fetch(url + '/api' + path, {
     method: method ?? (body === undefined ? 'GET' : 'POST'),
@@ -34,6 +46,7 @@ export async function api<T>(path: string, body?: unknown, signal?: AbortSignal,
   })
   const text = await response.text()
   const envelope = text ? JSON.parse(text) : {}
+  if (generation !== identityGeneration) throw new ApiFailure('当前请求身份已更换', 'IDENTITY_CHANGED', 0)
   if (!response.ok) throw new ApiFailure(envelope.error?.message ?? `请求失败（${response.status}）`, envelope.error?.code ?? 'CONNECTION_ERROR', response.status)
   return envelope.data as T
 }
@@ -131,7 +144,8 @@ export function useSession(id: string | null, revision = 0): {
         headers, signal: subscription.signal, openWhenHidden: true,
         async onopen(response) {
           if (lifetime.signal.aborted || subscription.signal.aborted) return
-          if (!response.ok || !response.headers.get('content-type')?.startsWith('text/event-stream')) throw new Error(`事件订阅失败（${response.status}）`)
+          if (!response.ok) throw new ApiFailure(`事件订阅权限或状态拒绝（${response.status}）`, 'STREAM_DENIED', response.status)
+          if (!response.headers.get('content-type')?.startsWith('text/event-stream')) throw new Error(`事件订阅失败（${response.status}）`)
           if (!needsSnapshot) setStatus('已连接')
         },
         onmessage(message) {
@@ -183,6 +197,7 @@ export function useSession(id: string | null, revision = 0): {
             })
           })
         } catch (reason) {
+          if (reason instanceof ApiFailure && [401, 403].includes(reason.status)) { setSnapshot(null); setEvents([]); setScope(null); setReplayedThrough(0) }
           if (!lifetime.signal.aborted && !resyncRequested) setError(reason instanceof Error ? reason.message : String(reason))
         }
       } while (resyncRequested && !lifetime.signal.aborted)

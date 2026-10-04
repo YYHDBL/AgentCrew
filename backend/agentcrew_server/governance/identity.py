@@ -38,7 +38,8 @@ class Identities:
         workspaces = [r[0] for r in connection.execute("SELECT w.id FROM workspaces w LEFT JOIN workspace_members m ON m.workspace_id=w.id AND m.user_id=? WHERE w.org_id=? AND w.status='active' AND (?='owner' OR m.enabled=1) ORDER BY w.id",
             (identity.effective_user_id, row[0], row[1]))]
         return {"credential_owner_id": identity.credential_owner_id, "effective_user_id": identity.effective_user_id,
-                "name": row[4], "org_id": row[0], "role": row[1], "demo": identity.demo, "workspace_ids": workspaces}
+                "name": row[4], "org_id": row[0], "role": row[1], "demo": identity.demo, "workspace_ids": workspaces,
+                "organization_status": self.resources.get("organization", row[0], connection)["status"]}
 
     def require(self, identity, operation, workspace_id=None, conn=None):
         value = self.current(identity, conn)

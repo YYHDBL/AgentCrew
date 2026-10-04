@@ -46,6 +46,7 @@ class Management:
 
     def list(self, identity, kind, workspace_id, limit, after):
         member = self.identities.current(identity)
+        self.identities.require(identity, "organization_manage" if member["role"] == "owner" else "use")
         if workspace_id is not None:
             self.access(identity, "workspace", workspace_id)
         table = self.resources.TABLES[kind]
@@ -59,7 +60,10 @@ class Management:
         for row in rows:
             resource = self.resources.get(kind, row[0])
             workspace = row[0] if kind == "workspace" else resource["workspace_id"]
-            if member["role"] != "owner" and workspace not in member["workspace_ids"]:
+            if member["role"] == "admin" and self.db.read_conn.execute("SELECT 1 FROM workspace_members WHERE workspace_id=? AND user_id=? AND enabled=1",
+                    (workspace, identity.effective_user_id)).fetchone() is None:
+                continue
+            if member["role"] == "member" and workspace not in member["workspace_ids"]:
                 continue
             if member["role"] == "member":
                 if resource["status"] != "active":

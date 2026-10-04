@@ -18,6 +18,17 @@ import pytest
 
 from agentcrew_server.secrets import redact, register_secret
 from test_governance_resources import resources
+from agentcrew_core.governance import RequestIdentity, governance_event_visible
+
+
+def test_workspace_revocation_notice_is_visible_to_affected_identity():
+    identity = RequestIdentity("owner", "wangming", True)
+    current = {"org_id": "demo-org", "role": "admin", "workspace_ids": ["office"]}
+    payload = {"resource_type": "workspace_member", "resource_id": "analytics:wangming", "actor_id": "owner", "enabled": False,
+        "scope": {"org_id": "demo-org", "workspace_id": "analytics", "agent_id": None, "owner_id": "wangming"}}
+    assert governance_event_visible("governance.resource_changed", payload, identity, current, set())
+    assert not governance_event_visible("governance.resource_changed", payload, RequestIdentity("owner", "lilei", True),
+        {"org_id": "demo-org", "role": "member", "workspace_ids": ["office"]}, set())
 
 
 @pytest.fixture(scope="module")

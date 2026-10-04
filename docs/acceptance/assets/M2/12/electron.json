@@ -1,0 +1,1102 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791153092854",
+  "cases": [
+    {
+      "name": "成员管理操作不可用，当前身份来自服务端",
+      "passed": true
+    },
+    {
+      "name": "员工岗位通过实际接口持久化",
+      "passed": true
+    },
+    {
+      "name": "陈旧修订拒绝并保留实际编辑草稿",
+      "passed": true
+    },
+    {
+      "name": "Skill版本发布、不可变历史与恢复旧正文产生新版本",
+      "passed": true
+    },
+    {
+      "name": "连接器通过真实HTTP服务并持久化实际请求",
+      "passed": true
+    },
+    {
+      "name": "Grant授予与撤销显示实际修订和状态",
+      "passed": true
+    },
+    {
+      "name": "完整bash命令规则创建与回收",
+      "passed": true
+    },
+    {
+      "name": "真实成员角色修改与恢复",
+      "passed": true
+    },
+    {
+      "name": "成员资格通过真实界面禁用与启用",
+      "passed": true
+    },
+    {
+      "name": "组织禁用停止业务并允许真实owner重新启用",
+      "passed": true
+    },
+    {
+      "name": "非当前工作区撤权通知到达并清理跨工作区审计缓存",
+      "passed": true
+    },
+    {
+      "name": "篡改后的只读诊断、真实受控备份恢复和重启完整验证",
+      "passed": true
+    },
+    {
+      "name": "全部工作区禁用后仍可通过真实管理界面重新启用",
+      "passed": true
+    },
+    {
+      "name": "键盘打开、Escape取消及焦点返回",
+      "passed": true
+    },
+    {
+      "name": "真实成员任务撤权后清理私有正文和当前会话缓存",
+      "passed": true
+    },
+    {
+      "name": "成员资格失效后认证拒绝并清理私有界面",
+      "passed": true
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/workspaces",
+      "request": {
+        "change_id": "b2307ba8-b7bd-4295-9b92-8def98314445",
+        "expected_revision": 0,
+        "name": "成员无权创建"
+      },
+      "status": 403,
+      "response": {
+        "error": {
+          "code": "OUT_OF_SCOPE",
+          "message": "当前角色无权执行该操作"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/agents?workspace_id=office&limit=200",
+      "status": 200,
+      "response": {
+        "data": {
+          "items": [
+            {
+              "id": "xiaowen",
+              "workspace_id": "office",
+              "name": "小文",
+              "spec": {
+                "connector_ids": [
+                  "office-http"
+                ],
+                "model_slot": "main",
+                "position": "办公助理",
+                "skill_ids": [
+                  "c7b7146c6ea65788b6d4161a4982f34b",
+                  "7fb6db7a69e75931b85594e05ed43d2b"
+                ]
+              },
+              "status": "active",
+              "revision": 1,
+              "created_by_user_id": "owner",
+              "created_at": "2026-10-04T22:31:36.508479+00:00",
+              "updated_at": "2026-10-04T22:31:36.508479+00:00"
+            },
+            {
+              "id": "ce0182dfd66f501f926f0d4b1410dddd",
+              "workspace_id": "office",
+              "name": "真实治理界面员工",
+              "spec": {
+                "connector_ids": [],
+                "model_slot": "main",
+                "position": "核查真实材料与工具输出，遵守当前授权和审批",
+                "skill_ids": []
+              },
+              "status": "active",
+              "revision": 1,
+              "created_by_user_id": "owner",
+              "created_at": "2026-10-04T22:31:38.845320+00:00",
+              "updated_at": "2026-10-04T22:31:38.845320+00:00"
+            }
+          ],
+          "next_after": null
+        }
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/agents/ce0182dfd66f501f926f0d4b1410dddd",
+      "request": {
+        "change_id": "c32b0267-5150-4c91-86ba-a4fdd7065e61",
+        "expected_revision": 1,
+        "name": "真实治理界面员工"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "ce0182dfd66f501f926f0d4b1410dddd",
+          "workspace_id": "office",
+          "name": "真实治理界面员工",
+          "spec": {
+            "connector_ids": [],
+            "model_slot": "main",
+            "position": "核查真实材料与工具输出，遵守当前授权和审批",
+            "skill_ids": []
+          },
+          "status": "active",
+          "revision": 2,
+          "created_by_user_id": "owner",
+          "created_at": "2026-10-04T22:31:38.845320+00:00",
+          "updated_at": "2026-10-04T22:31:39.227534+00:00"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/connectors?workspace_id=office&limit=200",
+      "status": 200,
+      "response": {
+        "data": {
+          "items": [
+            {
+              "id": "office-http",
+              "workspace_id": "office",
+              "name": "HTTP",
+              "type": "http",
+              "config": {
+                "allow_loopback": false,
+                "allowed_hosts": [
+                  "example.com"
+                ],
+                "allowed_ports": [
+                  443
+                ],
+                "url": "https://example.com"
+              },
+              "status": "active",
+              "revision": 1,
+              "created_at": "2026-10-04T22:31:36.539085+00:00",
+              "updated_at": "2026-10-04T22:31:36.539085+00:00",
+              "credential_configured": false
+            },
+            {
+              "id": "a4498120436f5768b2b33691139d7ba6",
+              "workspace_id": "office",
+              "name": "真实界面HTTP服务",
+              "type": "http",
+              "config": {
+                "allow_loopback": true,
+                "allowed_hosts": [
+                  "127.0.0.1"
+                ],
+                "allowed_ports": [
+                  55574
+                ],
+                "args": [],
+                "credential_header": "Authorization",
+                "idempotent_endpoints": [],
+                "startup_files": [],
+                "tool_policies": {},
+                "url": "http://127.0.0.1:55574/"
+              },
+              "status": "active",
+              "revision": 1,
+              "created_at": "2026-10-04T22:31:41.631193+00:00",
+              "updated_at": "2026-10-04T22:31:41.631193+00:00",
+              "credential_configured": false
+            }
+          ],
+          "next_after": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/agents/xiaogang/permission-rules",
+      "request": {
+        "change_id": "f76e57bc-afa2-4117-a0bb-a684f2f1cecb",
+        "tool_name": "bash",
+        "pattern": "printf analytics-audit-a2bc076b-6d96-4525-b88a-47fc4b63c000",
+        "effect": "deny"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "e6ee99d06e925731ba2d50cc150d5c62",
+          "agent_id": "xiaogang",
+          "tool_name": "bash",
+          "pattern": "printf analytics-audit-a2bc076b-6d96-4525-b88a-47fc4b63c000",
+          "effect": "deny",
+          "created_by_user_id": "owner",
+          "created_at": "2026-10-04T22:31:50.082386+00:00",
+          "revoked_at": null,
+          "revision": 1,
+          "change_id": "f76e57bc-afa2-4117-a0bb-a684f2f1cecb"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/memberships",
+      "status": 200,
+      "response": {
+        "data": {
+          "items": [
+            {
+              "id": "membership-lilei",
+              "org_id": "demo-org",
+              "user_id": "lilei",
+              "role": "member",
+              "status": "active",
+              "revision": 5,
+              "created_at": "2026-10-04T22:31:36.507734+00:00",
+              "updated_at": "2026-10-04T22:31:47.605318+00:00",
+              "name": "李蕾",
+              "workspace_ids": [
+                "analytics",
+                "office"
+              ],
+              "workspace_access": [
+                {
+                  "workspace_id": "analytics",
+                  "enabled": true,
+                  "revision": 1
+                },
+                {
+                  "workspace_id": "office",
+                  "enabled": true,
+                  "revision": 1
+                }
+              ]
+            },
+            {
+              "id": "membership-owner",
+              "org_id": "demo-org",
+              "user_id": "owner",
+              "role": "owner",
+              "status": "active",
+              "revision": 1,
+              "created_at": "2026-10-04T22:31:36.507734+00:00",
+              "updated_at": "2026-10-04T22:31:36.507734+00:00",
+              "name": "所有者",
+              "workspace_ids": [],
+              "workspace_access": []
+            },
+            {
+              "id": "membership-wangming",
+              "org_id": "demo-org",
+              "user_id": "wangming",
+              "role": "admin",
+              "status": "active",
+              "revision": 1,
+              "created_at": "2026-10-04T22:31:36.507734+00:00",
+              "updated_at": "2026-10-04T22:31:36.507734+00:00",
+              "name": "王明",
+              "workspace_ids": [
+                "analytics",
+                "office"
+              ],
+              "workspace_access": [
+                {
+                  "workspace_id": "analytics",
+                  "enabled": true,
+                  "revision": 1
+                },
+                {
+                  "workspace_id": "office",
+                  "enabled": true,
+                  "revision": 1
+                }
+              ]
+            }
+          ],
+          "next_after": null
+        }
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/workspaces/analytics/members/wangming",
+      "request": {
+        "change_id": "b3fb57e7-1ca6-4eb0-ad0b-3f521334e51b",
+        "expected_revision": 1,
+        "enabled": false
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "workspace_id": "analytics",
+          "user_id": "wangming",
+          "enabled": false,
+          "revision": 2
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/diagnostics",
+      "status": 200,
+      "response": {
+        "data": {
+          "mode": "normal"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/workspaces?limit=200",
+      "status": 200,
+      "response": {
+        "data": {
+          "items": [
+            {
+              "id": "default",
+              "org_id": "demo-org",
+              "name": "默认工作区",
+              "data_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791153092854/data/workspaces/default",
+              "status": "active",
+              "revision": 1,
+              "created_at": "2026-10-04T22:31:36.508061+00:00",
+              "updated_at": "2026-10-04T22:31:36.508061+00:00"
+            },
+            {
+              "id": "office",
+              "org_id": "demo-org",
+              "name": "日常办公",
+              "data_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791153092854/data/workspaces/office/files",
+              "status": "active",
+              "revision": 1,
+              "created_at": "2026-10-04T22:31:36.508394+00:00",
+              "updated_at": "2026-10-04T22:31:36.508394+00:00"
+            },
+            {
+              "id": "analytics",
+              "org_id": "demo-org",
+              "name": "数据分析",
+              "data_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791153092854/data/workspaces/analytics/files",
+              "status": "active",
+              "revision": 1,
+              "created_at": "2026-10-04T22:31:36.508449+00:00",
+              "updated_at": "2026-10-04T22:31:36.508449+00:00"
+            }
+          ],
+          "next_after": null
+        }
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/workspaces/default",
+      "request": {
+        "change_id": "965f6771-31e7-4fe1-a176-12f680f26ebd",
+        "expected_revision": 1,
+        "status": "disabled"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "default",
+          "org_id": "demo-org",
+          "name": "默认工作区",
+          "data_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791153092854/data/workspaces/default",
+          "status": "disabled",
+          "revision": 2,
+          "created_at": "2026-10-04T22:31:36.508061+00:00",
+          "updated_at": "2026-10-04T22:31:54.135280+00:00"
+        }
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/workspaces/office",
+      "request": {
+        "change_id": "27b7077f-190d-42c0-ad9e-df9a0a0212ca",
+        "expected_revision": 1,
+        "status": "disabled"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "office",
+          "org_id": "demo-org",
+          "name": "日常办公",
+          "data_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791153092854/data/workspaces/office/files",
+          "status": "disabled",
+          "revision": 2,
+          "created_at": "2026-10-04T22:31:36.508394+00:00",
+          "updated_at": "2026-10-04T22:31:54.138452+00:00"
+        }
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/workspaces/analytics",
+      "request": {
+        "change_id": "6bbddbbc-3dfa-4923-af2a-227a34b0f7f8",
+        "expected_revision": 1,
+        "status": "disabled"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "analytics",
+          "org_id": "demo-org",
+          "name": "数据分析",
+          "data_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791153092854/data/workspaces/analytics/files",
+          "status": "disabled",
+          "revision": 2,
+          "created_at": "2026-10-04T22:31:36.508449+00:00",
+          "updated_at": "2026-10-04T22:31:54.141436+00:00"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/workspaces/office",
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "office",
+          "org_id": "demo-org",
+          "name": "日常办公",
+          "data_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791153092854/data/workspaces/office/files",
+          "status": "active",
+          "revision": 3,
+          "created_at": "2026-10-04T22:31:36.508394+00:00",
+          "updated_at": "2026-10-04T22:31:55.131507+00:00"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen",
+      "status": 200,
+      "response": {
+        "data": {
+          "store_type": "soul",
+          "store_id": "xiaowen",
+          "revision": 0,
+          "text": "",
+          "metadata": {
+            "revision": 0,
+            "entries": []
+          },
+          "text_sha256": null,
+          "metadata_sha256": "5b31205c26480a4aa906dbaf7e1b2790651383422e2e5c1324d26e25f9d0c5c4",
+          "entries": [],
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "used_characters": 0,
+          "quota": 2700,
+          "at_global_seq": 55,
+          "workspace_id": "office",
+          "agent_id": "xiaowen",
+          "next_after": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen",
+      "request": {
+        "change_id": "b2d1e234-8a22-445f-bc95-7dcacdccb690",
+        "expected_revision": 0,
+        "basis": "所有者配置真实成员任务与撤权缓存核查",
+        "text": "我是负责办公材料核查的数字员工，按真实任务指令简短说明，遵守当前角色、Grant和文件范围。"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "change_id": "b2d1e234-8a22-445f-bc95-7dcacdccb690",
+          "ledger_id": 7,
+          "store_type": "soul",
+          "store_id": "xiaowen",
+          "entry_id": "4c3400b0dfb74d029c95462a893fcfa9",
+          "entry_hash": "69c3d686b0eb7d80c8a32af9d994f01133182ee7378e7c0cc3fb16574eb78f61",
+          "revision": 1,
+          "global_seq": 56,
+          "idempotent_replay": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/586dce7b3f2e44658a2fdbb5e830dc08/task-runs",
+      "status": 200,
+      "response": {
+        "data": [
+          {
+            "id": "78f1469f076e4d78aa1e0278725b078e",
+            "instruction": "只用简短文字确认收到指令，核查标识真实成员私有任务-47e668f7-a9c3-4d38-bf31-79d174528897。",
+            "status": "running",
+            "current_attempt_no": 1,
+            "cron_job_id": null,
+            "created_at": "2026-10-04T22:31:55.874185+00:00",
+            "finished_at": null
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/78f1469f076e4d78aa1e0278725b078e/events?after_seq=0&limit=500",
+      "status": 200,
+      "response": {
+        "data": {
+          "items": [
+            {
+              "global_seq": 58,
+              "type": "run.queued",
+              "payload": {
+                "client_request_id": "945f2c62-1d08-4dae-ab59-127e2b6a694f",
+                "instruction": "只用简短文字确认收到指令，核查标识真实成员私有任务-47e668f7-a9c3-4d38-bf31-79d174528897。"
+              },
+              "ts": "2026-10-04T22:31:55.874185+00:00",
+              "task_run_id": "78f1469f076e4d78aa1e0278725b078e",
+              "seq": 1
+            },
+            {
+              "global_seq": 60,
+              "type": "run.started",
+              "payload": {
+                "attempt_id": "33c2b37430d044a0beed7e844233449f",
+                "attempt_no": 1,
+                "context_fingerprint": {
+                  "agent_spec_sha256": "9b1a7c5c47f649d68397d6ddc154846c2c7c65bbee23767510115f6435c26952",
+                  "authorization_sha256": "437032de5b15161e42c4f2eb93836473c6040c80ac244ee44cf8e7b282f9b7ad",
+                  "memory_block_sha256": "e867cbd7f1ecad753f45b5169d32f13c8c67b7ecf0885c4c44dd3bb2809aa42a",
+                  "memory_snapshot_id": "21a42279ba3c4dc7a3259c3471d61e1e",
+                  "memory_snapshot_sha256": "b73aaf6599a07c7f3729e81029b34dbac9295ef8b1a71a5a5bb77a1a5e07c8c6",
+                  "model_config": {
+                    "api_key_sha256": "a72258b07a769071",
+                    "base_url": "https://opencode.ai/zen/go/v1",
+                    "context_window": 1000000,
+                    "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+                    "max_tokens": 8192,
+                    "model": "deepseek-v4.1-flash",
+                    "prompt_format": "deepseek-v4.1",
+                    "provider": "openai-compatible",
+                    "tokenizer_repository": "deepseek-ai/DeepSeek-V4.1-Flash",
+                    "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+                    "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+                  },
+                  "model_slot": "main",
+                  "skill_versions": {
+                    "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+                    "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+                  },
+                  "system_prompt_hash": "aa10b5587856c50b4b6ed87324ef837b61d725435862f51f5f4fdb80cff6c009",
+                  "tools_schema_hash": "14961fa3521d5f77869b18fc5fd9aedd890bc86069bc9fc745050156245c4c95"
+                },
+                "kind": "initial"
+              },
+              "ts": "2026-10-04T22:31:55.913987+00:00",
+              "task_run_id": "78f1469f076e4d78aa1e0278725b078e",
+              "seq": 2,
+              "attempt_no": 1
+            },
+            {
+              "global_seq": 61,
+              "type": "step.started",
+              "payload": {
+                "model_slot": "main",
+                "ordinal": 1,
+                "step_id": "09d2a0d7950e4051b4140d74786f3deb"
+              },
+              "ts": "2026-10-04T22:31:55.917124+00:00",
+              "task_run_id": "78f1469f076e4d78aa1e0278725b078e",
+              "seq": 3,
+              "attempt_no": 1
+            },
+            {
+              "global_seq": 62,
+              "type": "governance.authorization_checked",
+              "payload": {
+                "actor_id": "lilei",
+                "agent_id": "xiaowen",
+                "allowed": true,
+                "authorization_sha256": "437032de5b15161e42c4f2eb93836473c6040c80ac244ee44cf8e7b282f9b7ad",
+                "reason": "当前角色、资源及Grant已核查",
+                "scope": {
+                  "agent_id": "xiaowen",
+                  "org_id": "demo-org",
+                  "owner_id": null,
+                  "workspace_id": "office"
+                },
+                "tool_names": [
+                  "read_file",
+                  "write_file",
+                  "bash",
+                  "http_request",
+                  "memory_write",
+                  "session_search",
+                  "skill_view",
+                  "skill_patch",
+                  "ask_user"
+                ]
+              },
+              "ts": "2026-10-04T22:31:55.918679+00:00",
+              "task_run_id": "78f1469f076e4d78aa1e0278725b078e",
+              "seq": 4,
+              "attempt_no": 1
+            }
+          ],
+          "next_after_seq": 4
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/78f1469f076e4d78aa1e0278725b078e/events?after_seq=0&limit=500",
+      "status": 200,
+      "response": {
+        "data": {
+          "items": [
+            {
+              "global_seq": 58,
+              "type": "run.queued",
+              "payload": {
+                "client_request_id": "945f2c62-1d08-4dae-ab59-127e2b6a694f",
+                "instruction": "只用简短文字确认收到指令，核查标识真实成员私有任务-47e668f7-a9c3-4d38-bf31-79d174528897。"
+              },
+              "ts": "2026-10-04T22:31:55.874185+00:00",
+              "task_run_id": "78f1469f076e4d78aa1e0278725b078e",
+              "seq": 1
+            },
+            {
+              "global_seq": 60,
+              "type": "run.started",
+              "payload": {
+                "attempt_id": "33c2b37430d044a0beed7e844233449f",
+                "attempt_no": 1,
+                "context_fingerprint": {
+                  "agent_spec_sha256": "9b1a7c5c47f649d68397d6ddc154846c2c7c65bbee23767510115f6435c26952",
+                  "authorization_sha256": "437032de5b15161e42c4f2eb93836473c6040c80ac244ee44cf8e7b282f9b7ad",
+                  "memory_block_sha256": "e867cbd7f1ecad753f45b5169d32f13c8c67b7ecf0885c4c44dd3bb2809aa42a",
+                  "memory_snapshot_id": "21a42279ba3c4dc7a3259c3471d61e1e",
+                  "memory_snapshot_sha256": "b73aaf6599a07c7f3729e81029b34dbac9295ef8b1a71a5a5bb77a1a5e07c8c6",
+                  "model_config": {
+                    "api_key_sha256": "a72258b07a769071",
+                    "base_url": "https://opencode.ai/zen/go/v1",
+                    "context_window": 1000000,
+                    "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+                    "max_tokens": 8192,
+                    "model": "deepseek-v4.1-flash",
+                    "prompt_format": "deepseek-v4.1",
+                    "provider": "openai-compatible",
+                    "tokenizer_repository": "deepseek-ai/DeepSeek-V4.1-Flash",
+                    "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+                    "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+                  },
+                  "model_slot": "main",
+                  "skill_versions": {
+                    "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+                    "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+                  },
+                  "system_prompt_hash": "aa10b5587856c50b4b6ed87324ef837b61d725435862f51f5f4fdb80cff6c009",
+                  "tools_schema_hash": "14961fa3521d5f77869b18fc5fd9aedd890bc86069bc9fc745050156245c4c95"
+                },
+                "kind": "initial"
+              },
+              "ts": "2026-10-04T22:31:55.913987+00:00",
+              "task_run_id": "78f1469f076e4d78aa1e0278725b078e",
+              "seq": 2,
+              "attempt_no": 1
+            },
+            {
+              "global_seq": 61,
+              "type": "step.started",
+              "payload": {
+                "model_slot": "main",
+                "ordinal": 1,
+                "step_id": "09d2a0d7950e4051b4140d74786f3deb"
+              },
+              "ts": "2026-10-04T22:31:55.917124+00:00",
+              "task_run_id": "78f1469f076e4d78aa1e0278725b078e",
+              "seq": 3,
+              "attempt_no": 1
+            },
+            {
+              "global_seq": 62,
+              "type": "governance.authorization_checked",
+              "payload": {
+                "actor_id": "lilei",
+                "agent_id": "xiaowen",
+                "allowed": true,
+                "authorization_sha256": "437032de5b15161e42c4f2eb93836473c6040c80ac244ee44cf8e7b282f9b7ad",
+                "reason": "当前角色、资源及Grant已核查",
+                "scope": {
+                  "agent_id": "xiaowen",
+                  "org_id": "demo-org",
+                  "owner_id": null,
+                  "workspace_id": "office"
+                },
+                "tool_names": [
+                  "read_file",
+                  "write_file",
+                  "bash",
+                  "http_request",
+                  "memory_write",
+                  "session_search",
+                  "skill_view",
+                  "skill_patch",
+                  "ask_user"
+                ]
+              },
+              "ts": "2026-10-04T22:31:55.918679+00:00",
+              "task_run_id": "78f1469f076e4d78aa1e0278725b078e",
+              "seq": 4,
+              "attempt_no": 1
+            },
+            {
+              "global_seq": 63,
+              "type": "llm.request_started",
+              "payload": {
+                "authorization_sha256": "437032de5b15161e42c4f2eb93836473c6040c80ac244ee44cf8e7b282f9b7ad",
+                "llm_call_id": "d32649a82b7a4efc9228513cf498e77f",
+                "model": "deepseek-v4.1-flash",
+                "model_slot": "main",
+                "retry_no": 0,
+                "step_id": "09d2a0d7950e4051b4140d74786f3deb",
+                "tool_names": [
+                  "read_file",
+                  "write_file",
+                  "bash",
+                  "http_request",
+                  "memory_write",
+                  "session_search",
+                  "skill_view",
+                  "skill_patch",
+                  "ask_user"
+                ]
+              },
+              "ts": "2026-10-04T22:31:56.134139+00:00",
+              "task_run_id": "78f1469f076e4d78aa1e0278725b078e",
+              "seq": 5,
+              "attempt_no": 1
+            },
+            {
+              "global_seq": 64,
+              "type": "context.budget_checked",
+              "payload": {
+                "context_window": 1000000,
+                "counting_method": "tokenizers/official-deepseek-v4.1",
+                "history_tokens": 40,
+                "model": "deepseek-v4.1-flash",
+                "output_reserved": 8192,
+                "scope": {
+                  "agent_id": "xiaowen",
+                  "owner_id": "owner",
+                  "workspace_id": "office"
+                },
+                "system_tokens": 2132,
+                "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+                "tool_result_tokens": 0,
+                "total_input_tokens": 2172
+              },
+              "ts": "2026-10-04T22:31:56.155813+00:00",
+              "task_run_id": "78f1469f076e4d78aa1e0278725b078e",
+              "seq": 6,
+              "attempt_no": 1
+            }
+          ],
+          "next_after_seq": 6
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/586dce7b3f2e44658a2fdbb5e830dc08/task-runs",
+      "status": 200,
+      "response": {
+        "data": [
+          {
+            "id": "78f1469f076e4d78aa1e0278725b078e",
+            "instruction": "只用简短文字确认收到指令，核查标识真实成员私有任务-47e668f7-a9c3-4d38-bf31-79d174528897。",
+            "status": "running",
+            "current_attempt_no": 1,
+            "cron_job_id": null,
+            "created_at": "2026-10-04T22:31:55.874185+00:00",
+            "finished_at": null
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/586dce7b3f2e44658a2fdbb5e830dc08/task-runs",
+      "status": 200,
+      "response": {
+        "data": [
+          {
+            "id": "78f1469f076e4d78aa1e0278725b078e",
+            "instruction": "只用简短文字确认收到指令，核查标识真实成员私有任务-47e668f7-a9c3-4d38-bf31-79d174528897。",
+            "status": "cancelled",
+            "current_attempt_no": 1,
+            "cron_job_id": null,
+            "created_at": "2026-10-04T22:31:55.874185+00:00",
+            "finished_at": "2026-10-04T22:31:56.436907+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/grants?workspace_id=office&grantee_id=lilei&limit=200",
+      "status": 200,
+      "response": {
+        "data": {
+          "items": [
+            {
+              "id": "a6a4643dc78058ecbb370d403723dd93",
+              "resource_type": "agent",
+              "resource_id": "xiaowen",
+              "grantee_type": "user",
+              "grantee_id": "lilei",
+              "granted_by_user_id": "owner",
+              "created_at": "2026-10-04T22:31:36.539282+00:00",
+              "revoked_at": null,
+              "revision": 1,
+              "change_id": "seed-visibility-xiaowen",
+              "workspace_id": "office"
+            }
+          ],
+          "next_after": null
+        }
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/grants/a6a4643dc78058ecbb370d403723dd93",
+      "request": {
+        "change_id": "21ad9463-fe5a-418b-a676-3eeaa7181e1a",
+        "expected_revision": 1
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "a6a4643dc78058ecbb370d403723dd93",
+          "resource_type": "agent",
+          "resource_id": "xiaowen",
+          "grantee_type": "user",
+          "grantee_id": "lilei",
+          "granted_by_user_id": "owner",
+          "created_at": "2026-10-04T22:31:36.539282+00:00",
+          "revoked_at": "2026-10-04T22:31:56.507645+00:00",
+          "revision": 2,
+          "change_id": "seed-visibility-xiaowen",
+          "workspace_id": "office"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/memberships",
+      "status": 200,
+      "response": {
+        "data": {
+          "items": [
+            {
+              "id": "membership-lilei",
+              "org_id": "demo-org",
+              "user_id": "lilei",
+              "role": "member",
+              "status": "active",
+              "revision": 5,
+              "created_at": "2026-10-04T22:31:36.507734+00:00",
+              "updated_at": "2026-10-04T22:31:47.605318+00:00",
+              "name": "李蕾",
+              "workspace_ids": [
+                "analytics",
+                "office"
+              ],
+              "workspace_access": [
+                {
+                  "workspace_id": "analytics",
+                  "enabled": true,
+                  "revision": 1
+                },
+                {
+                  "workspace_id": "office",
+                  "enabled": true,
+                  "revision": 1
+                }
+              ]
+            },
+            {
+              "id": "membership-owner",
+              "org_id": "demo-org",
+              "user_id": "owner",
+              "role": "owner",
+              "status": "active",
+              "revision": 1,
+              "created_at": "2026-10-04T22:31:36.507734+00:00",
+              "updated_at": "2026-10-04T22:31:36.507734+00:00",
+              "name": "所有者",
+              "workspace_ids": [],
+              "workspace_access": []
+            },
+            {
+              "id": "membership-wangming",
+              "org_id": "demo-org",
+              "user_id": "wangming",
+              "role": "admin",
+              "status": "active",
+              "revision": 1,
+              "created_at": "2026-10-04T22:31:36.507734+00:00",
+              "updated_at": "2026-10-04T22:31:36.507734+00:00",
+              "name": "王明",
+              "workspace_ids": [
+                "office"
+              ],
+              "workspace_access": [
+                {
+                  "workspace_id": "analytics",
+                  "enabled": false,
+                  "revision": 2
+                },
+                {
+                  "workspace_id": "office",
+                  "enabled": true,
+                  "revision": 1
+                }
+              ]
+            }
+          ],
+          "next_after": null
+        }
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/memberships/membership-lilei/role",
+      "request": {
+        "change_id": "f8ed8bbe-a506-443a-937a-3a7fdb3d9910",
+        "expected_revision": 5,
+        "role": "member",
+        "status": "disabled"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "membership-lilei",
+          "org_id": "demo-org",
+          "user_id": "lilei",
+          "name": "李蕾",
+          "role": "member",
+          "status": "disabled",
+          "revision": 6,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/identity",
+      "status": 401,
+      "response": {
+        "error": {
+          "code": "UNAUTHORIZED",
+          "message": "当前成员资格已失效"
+        }
+      }
+    }
+  ],
+  "screenshots": [
+    "audit.png",
+    "diagnostic.png",
+    "restored.png"
+  ],
+  "audit_export": {
+    "filename": "AgentCrew-audit.json",
+    "rows": 46,
+    "download_state": "completed"
+  },
+  "private_task": {
+    "id": "78f1469f076e4d78aa1e0278725b078e",
+    "conversation_id": "586dce7b3f2e44658a2fdbb5e830dc08",
+    "status": "cancelled",
+    "actual_requests": [
+      {
+        "authorization_sha256": "437032de5b15161e42c4f2eb93836473c6040c80ac244ee44cf8e7b282f9b7ad",
+        "llm_call_id": "d32649a82b7a4efc9228513cf498e77f",
+        "model": "deepseek-v4.1-flash",
+        "model_slot": "main",
+        "retry_no": 0,
+        "step_id": "09d2a0d7950e4051b4140d74786f3deb",
+        "tool_names": [
+          "read_file",
+          "write_file",
+          "bash",
+          "http_request",
+          "memory_write",
+          "session_search",
+          "skill_view",
+          "skill_patch",
+          "ask_user"
+        ]
+      }
+    ]
+  },
+  "resources": [
+    {
+      "id": "default",
+      "name": "默认员工",
+      "spec": "{\"connector_ids\":[],\"model_slot\":\"main\",\"position\":\"通用助理\",\"skill_ids\":[]}",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "xiaowen",
+      "name": "小文",
+      "spec": "{\"connector_ids\":[\"office-http\"],\"model_slot\":\"main\",\"position\":\"办公助理\",\"skill_ids\":[\"c7b7146c6ea65788b6d4161a4982f34b\",\"7fb6db7a69e75931b85594e05ed43d2b\"]}",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "xiaogang",
+      "name": "小刚",
+      "spec": "{\"connector_ids\":[],\"model_slot\":\"main\",\"position\":\"数据分析\",\"skill_ids\":[\"d902cc4eb75d5b9790c0278523e87aa0\"]}",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "ce0182dfd66f501f926f0d4b1410dddd",
+      "name": "真实治理界面员工",
+      "spec": "{\"connector_ids\":[\"a4498120436f5768b2b33691139d7ba6\"],\"model_slot\":\"main\",\"position\":\"核查真实材料与工具输出，遵守当前授权和审批\",\"skill_ids\":[]}",
+      "status": "active",
+      "revision": 3
+    }
+  ],
+  "event_watermark": 67,
+  "audit_sequence": 59,
+  "upstream_requests": [
+    {
+      "id": 1,
+      "method": "GET",
+      "path": "/",
+      "body": ""
+    }
+  ],
+  "models": {
+    "main": {
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash"
+    },
+    "aux": {
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash"
+    }
+  }
+}
