@@ -138,5 +138,26 @@ M1 的会话后台事件没有前台 `task_run_id/seq`；来源任务放入 payl
 
 连接器tool.prepared附加connector_id及connector_revision，工具目录绑定相同配置修订；审批和dispatched登记在同一写通道内核对当前修订，实际HTTP/MCP传输继续核对当前Grant与该次绑定修订。服务端认证头和凭据不进入输入、目录、事件或产物，HTTP响应正文及派生元数据执行凭据脱敏。明确承诺external_idempotency的写入端点禁止重定向；普通HTTP/MCP写入保持outcome_unknown。stdio传输使用官方SDK、固定环境白名单和Seatbelt，服务退出时清理整个进程组。
 
-## 定时与审计（M3/P5，cron-and-audit §3）
-`cron.job_fired / cron.job_missed / cron.job_skipped / cron.job_failed / audit.reported`
+## M3 自动化、模型审查及生命周期
+
+作业域事件使用既有 run_events 的 global_seq 和 scope，未关联任务时省略 task_run_id/seq/conversation_id。已关联任务时保留真实任务身份及任务内 seq，attempt_no来自实际尝试；通知通过独立 notification_id 关联。M2安全审计 audit_seq 与模型报告 report_id 分别保存。
+
+`CronPayload = {job_id: string, occurrence_id: string, revision: integer, trigger: scheduled|manual, scheduled_at: integer|null, triggered_at: integer, source_task_run_id: string|null, retry_no: integer, status: string, reason: string|null, scope: GovernanceScope, notification_id: string|null, audit_seq: integer}`。时间为UTC Unix毫秒；手动发生保留client_request_id。各次重试保持同一occurrence_id。
+
+| 事件 | 必填载荷与附加字段 | 归属及消费 |
+|---|---|---|
+| `cron.job_changed` | `{job_id, revision, change_id, enabled, deleted_at, scope, audit_seq}` | M3-03，修改与审计同事务，旧定时器复查revision |
+| `cron.job_fired` | CronPayload | M3-04/05，提交发生及任务关联后派发，重试不重复初始计数 |
+| `cron.job_missed` | CronPayload，加`missed_count: integer, missed_through: integer` | M3-04，覆盖错过范围，不创建执行任务 |
+| `cron.job_skipped` | CronPayload | M3-04/05，冲突、暂停、等待人工或待核验，无排队副作用 |
+| `cron.job_failed` | CronPayload，加`retry_at: integer|null` | M3-05/06，当前权限拒绝、未知副作用等不得设置重试 |
+| `cron.job_status` | CronPayload，加`retry_at: integer|null` | M3-05/06，completed/interrupted/pending_verification/retry_wait/cancelled真实收敛 |
+| `cron.proposal_requested` | `{proposal_id, call_id, input_hash, revision, source_task_run_id, scope}` | M3-07，不可变提案通过鉴权API读取，必经真人决定 |
+| `cron.proposal_resolved` | `{proposal_id, call_id, decision, selected, input_hash, revision, actor_id, job_id, scope, audit_seq}` | M3-07，批准绑定选择与计划；过期decision=expired |
+| `review.job_status` | `{job_id, kind, status, source_task_run_id, attempt_no, trigger_global_seq, model, config_version, reason, report_id, skill_id, usage, scope}` | M3-08/09，作业域事件，状态见TraceJob；无报告保存实际skipped原因 |
+| `audit.reported` | `{report_id, job_id, source_task_run_id, attempt_no, source_global_seq, model, root_cause_event, scope}` | M3-08，有有效真实报告才发送，引用必须属于输入任务、尝试及水位 |
+| `notification.created` | `{notification_id, source_global_seq, job_id, source_task_run_id, severity, scope}` | M3-14，与领域终态同事务创建，持久唯一 |
+| `notification.updated` | `{notification_id, read_at, presented_at, scope}` | M3-14，独立已读与认领，重放不重复弹出 |
+| `runtime.power_changed` | `{event: suspend|resume, observed_at: string, source: electron_power_monitor, scope}` | M3-14，记录实际macOS事件，resume重新核查到期 |
+
+回放API返回展示投影，移除thinking_blocks、reasoning_content、认证值和隐藏推理；原始事实继续由服务器保留。事件精确引用为`{task_run_id, attempt_no, seq, global_seq}`，任务内seq和global_seq分别核对。报告水位之后的恢复或新事件不改变既有报告的适用尝试。

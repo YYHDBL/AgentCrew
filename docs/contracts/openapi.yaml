@@ -1,4 +1,4 @@
-# AgentCrew Sidecar API（v0.3-draft——第四轮审查回稿：M0 操作具备可执行 schema）
+# AgentCrew Sidecar API（v0.6，M3 契约）
 # 维护：后端 Agent。x-phase 标注实现批次（m0 = 当前切片；p3/p4/p5 = 增量池）。
 # 鉴权：除 /api/health 外全部 Bearer（AGENTCREW_TOKEN 环境变量注入，不经 stdout）。
 # 信封：成功 JSON = {"data": ...}；错误 = {"error": {code, message, detail}}；
@@ -9,12 +9,12 @@
 openapi: 3.1.0
 info:
   title: AgentCrew Sidecar API
-  version: 0.5.0-draft
+  version: 0.6.0
   description: |
     单用户本地 sidecar。M0 操作带完整请求/响应/错误 schema；
     M2 操作定义当前身份、资源、授权、审计和诊断边界；实施归属见 x-domain-card。
     演示身份通过服务端签发的 X-AgentCrew-Identity 标识固定于每个请求。
-    p3/p5 操作 schema 随对应切片细化（当前为方向性描述）。
+    M3 操作定义运行查询、自动化、轨迹审查与桌面生命周期；实现状态见实施卡。
 servers:
   - url: http://127.0.0.1:{port}
     variables:
@@ -36,7 +36,8 @@ tags:
   - { name: memory, description: 三库、Skill、审核、账本与后台作业（M1-11 实施） }
   - { name: governance, description: 当前身份、资源、Grant、角色和权限规则（M2） }
   - { name: audit, description: 审计查询、两级验证和受控诊断恢复（M2） }
-  - { name: cron, description: 定时任务（F007，phase p5） }
+  - { name: cron, description: 定时任务及发生记录（F007，M3） }
+  - { name: reviews, description: 辅助模型轨迹审查与技能固化 }
 
 components:
   securitySchemes:
@@ -761,6 +762,329 @@ components:
         database_sha256: { type: string }
         anchor_seq: { type: integer }
         anchor_hash: { type: string }
+    RunEvent:
+      type: object
+      required: [global_seq, type, payload, ts]
+      properties:
+        global_seq: { type: integer, minimum: 1 }
+        task_run_id: { type: string }
+        seq: { type: integer, minimum: 1 }
+        attempt_no: { type: [integer, "null"] }
+        conversation_id: { type: string }
+        type: { type: string }
+        payload: { type: object, additionalProperties: true, description: 展示投影移除凭据与隐藏推理；完整事实仍保存在服务端 }
+        ts: { type: string, format: date-time }
+    RunRecord:
+      allOf:
+        - { $ref: "#/components/schemas/TaskRunSummary" }
+        - type: object
+          required: [id, instruction, status, current_attempt_no, conversation_id, workspace_id, agent_id, source, owner_id, created_at, finished_at, at_global_seq]
+          properties:
+            conversation_id: { type: string }
+            workspace_id: { type: string }
+            agent_id: { type: string }
+            owner_id: { type: string }
+            source: { type: string, enum: [user, cron, manual] }
+            occurrence_id: { type: [string, "null"] }
+            agent_spec_snapshot: { type: object, additionalProperties: true }
+            skill_versions: { type: object, additionalProperties: { type: string } }
+            error: { type: [string, "null"] }
+            at_global_seq: { type: integer, minimum: 0 }
+    RunMetrics:
+      type: object
+      required: [task_count, completed_count, completion_rate, status_counts, step_count, llm_call_count, tool_call_count, tool_status_counts, prompt_tokens, completion_tokens, usage_complete, missing_usage_calls, latency_ms, at_global_seq]
+      properties:
+        task_count: { type: integer, minimum: 0 }
+        completed_count: { type: integer, minimum: 0 }
+        completion_rate: { type: [number, "null"], description: completed_count/task_count；空集合为null，任务完成率不证明产物正确性 }
+        status_counts: { type: object, additionalProperties: { type: integer } }
+        step_count: { type: integer, minimum: 0 }
+        llm_call_count: { type: integer, minimum: 0 }
+        tool_call_count: { type: integer, minimum: 0 }
+        tool_status_counts: { type: object, additionalProperties: { type: integer } }
+        prompt_tokens: { type: [integer, "null"], description: 任一相关调用usage缺失时为null，已知部分单独保留 }
+        completion_tokens: { type: [integer, "null"] }
+        known_prompt_tokens: { type: integer, minimum: 0 }
+        known_completion_tokens: { type: integer, minimum: 0 }
+        usage_complete: { type: boolean }
+        missing_usage_calls: { type: integer, minimum: 0 }
+        latency_ms: { type: [integer, "null"] }
+        at_global_seq: { type: integer, minimum: 0 }
+    RunCall:
+      type: object
+      required: [id, kind, task_run_id, attempt_no, seq, status, summary]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [model, tool] }
+        task_run_id: { type: string }
+        attempt_no: { type: [integer, "null"] }
+        seq: { type: integer, minimum: 1 }
+        step_id: { type: [string, "null"] }
+        status: { type: string }
+        summary: { type: object, additionalProperties: true }
+        events: { type: array, items: { $ref: "#/components/schemas/RunEvent" } }
+        missing: { type: array, items: { type: string }, description: 分别指出缺失的投影、事件或工件 }
+    CronSchedule:
+      oneOf:
+        - type: object
+          additionalProperties: false
+          required: [kind, at_ms, tz]
+          properties:
+            kind: { const: at }
+            at_ms: { type: integer, minimum: 0, description: UTC Unix毫秒；过期时登记missed并结束一次性计划 }
+            tz: { type: string, minLength: 1, description: IANA时区 }
+        - type: object
+          additionalProperties: false
+          required: [kind, every_ms, tz]
+          properties:
+            kind: { const: every }
+            every_ms: { type: integer, minimum: 1000 }
+            tz: { type: string, minLength: 1 }
+        - type: object
+          additionalProperties: false
+          required: [kind, expr, tz]
+          properties:
+            kind: { const: cron }
+            expr: { type: string, minLength: 1, description: croniter五字段标准表达式，或第六字段为秒；拒绝宏及年度字段，分钟/小时/日期/月份/星期按库语义解释 }
+            tz: { type: string, minLength: 1 }
+    CronAuthorization:
+      type: object
+      additionalProperties: false
+      required: [tool, pattern]
+      properties:
+        tool: { type: string, minLength: 1 }
+        pattern: { type: string, minLength: 1, description: 与M2员工规则相同的规范化匹配语义；只能从当前合法候选范围缩小 }
+    CronTarget:
+      type: object
+      additionalProperties: false
+      required: [instruction, execution_mode, conversation_id]
+      properties:
+        instruction: { type: string, minLength: 1, maxLength: 100000 }
+        execution_mode: { type: string, enum: [existing, new_conversation] }
+        conversation_id: { type: [string, "null"], description: existing必须为同工作区同员工可见会话；new_conversation必须为null }
+    CronCreateRequest:
+      type: object
+      additionalProperties: false
+      required: [change_id, workspace_id, agent_id, name, schedule, target, pre_authorized]
+      properties:
+        change_id: { type: string, minLength: 1, maxLength: 128 }
+        workspace_id: { type: string, minLength: 1 }
+        agent_id: { type: string, minLength: 1 }
+        name: { type: string, minLength: 1, maxLength: 80 }
+        schedule: { $ref: "#/components/schemas/CronSchedule" }
+        target: { $ref: "#/components/schemas/CronTarget" }
+        pre_authorized: { type: array, maxItems: 100, items: { $ref: "#/components/schemas/CronAuthorization" } }
+        enabled: { type: boolean, default: true }
+    CronPatchRequest:
+      type: object
+      additionalProperties: false
+      required: [change_id, expected_revision]
+      properties:
+        change_id: { type: string, minLength: 1, maxLength: 128 }
+        expected_revision: { type: integer, minimum: 1 }
+        name: { type: string, minLength: 1, maxLength: 80 }
+        schedule: { $ref: "#/components/schemas/CronSchedule" }
+        target: { $ref: "#/components/schemas/CronTarget" }
+        pre_authorized: { type: array, maxItems: 100, items: { $ref: "#/components/schemas/CronAuthorization" } }
+        enabled: { type: boolean }
+    CronJob:
+      type: object
+      required: [id, workspace_id, name, revision, schedule, target, metadata, state, created_at, updated_at, deleted_at]
+      properties:
+        id: { type: string }
+        workspace_id: { type: string }
+        name: { type: string }
+        revision: { type: integer, minimum: 1 }
+        schedule: { $ref: "#/components/schemas/CronSchedule" }
+        target: { $ref: "#/components/schemas/CronTarget" }
+        metadata:
+          type: object
+          required: [agent_id, agent_spec_snapshot, skill_versions, pre_authorized, created_by, owner_id, credential_owner_id, created_via_task_run_id, proposal_id]
+          properties:
+            agent_id: { type: string }
+            agent_spec_snapshot: { type: object, additionalProperties: true }
+            skill_versions: { type: object, additionalProperties: { type: string } }
+            pre_authorized: { type: array, items: { $ref: "#/components/schemas/CronAuthorization" } }
+            created_by: { type: string, enum: [user, agent] }
+            owner_id: { type: string }
+            credential_owner_id: { type: string }
+            created_via_task_run_id: { type: [string, "null"] }
+            proposal_id: { type: [string, "null"] }
+        state:
+          type: object
+          required: [enabled, next_run_at, last_run_at, last_status, run_count, retry_count, max_retries]
+          properties:
+            enabled: { type: boolean }
+            next_run_at: { type: [integer, "null"], description: UTC Unix毫秒 }
+            last_run_at: { type: [integer, "null"] }
+            last_status: { type: [string, "null"], enum: [fired, missed, skipped, failed, completed, interrupted, pending_verification, retry_wait, cancelled, null] }
+            run_count: { type: integer, minimum: 0, description: 初始派发的occurrence数量，不包含重试 }
+            retry_count: { type: integer, minimum: 0 }
+            max_retries: { type: integer, const: 3 }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        deleted_at: { type: [string, "null"], format: date-time }
+    CronOccurrence:
+      type: object
+      required: [id, job_id, revision, trigger, scheduled_at, triggered_at, client_request_id, status, note, retry_count, retry_at, task_run_id, attempts, missed_count, missed_through]
+      properties:
+        id: { type: string }
+        job_id: { type: string }
+        revision: { type: integer }
+        trigger: { type: string, enum: [scheduled, manual] }
+        scheduled_at: { type: [integer, "null"], description: 仅定时发生使用，UNIQUE(job_id, scheduled_at) }
+        triggered_at: { type: integer }
+        client_request_id: { type: [string, "null"], description: 手动发生使用UNIQUE(job_id, actor_id, client_request_id) }
+        status: { type: string, enum: [fired, missed, skipped, failed, completed, interrupted, pending_verification, retry_wait, cancelled] }
+        note: { type: [string, "null"] }
+        retry_count: { type: integer, minimum: 0, maximum: 3 }
+        retry_at: { type: [integer, "null"] }
+        task_run_id: { type: [string, "null"] }
+        missed_count: { type: integer, minimum: 0 }
+        missed_through: { type: [integer, "null"] }
+        attempts:
+          type: array
+          items:
+            type: object
+            required: [retry_no, task_run_id, attempt_no, status, started_at, finished_at]
+            properties:
+              retry_no: { type: integer, minimum: 0, maximum: 3 }
+              task_run_id: { type: string }
+              attempt_no: { type: integer, minimum: 1 }
+              status: { type: string }
+              started_at: { type: [string, "null"], format: date-time }
+              finished_at: { type: [string, "null"], format: date-time }
+    EventReference:
+      type: object
+      additionalProperties: false
+      required: [task_run_id, attempt_no, seq, global_seq]
+      properties:
+        task_run_id: { type: string }
+        attempt_no: { type: [integer, "null"] }
+        seq: { type: integer, minimum: 1 }
+        global_seq: { type: integer, minimum: 1 }
+    TraceReport:
+      type: object
+      required: [id, job_id, task_run_id, attempt_no, source_global_seq, model, created_at, report]
+      properties:
+        id: { type: string }
+        job_id: { type: string }
+        task_run_id: { type: string }
+        attempt_no: { type: integer, minimum: 1 }
+        source_global_seq: { type: integer, minimum: 1 }
+        model: { type: string }
+        created_at: { type: string, format: date-time }
+        report:
+          type: object
+          additionalProperties: false
+          required: [summary, verdict, root_cause, root_cause_event, improvement_suggestions, anomalies, skill_proposal]
+          properties:
+            summary: { type: string, minLength: 1 }
+            verdict: { type: string, enum: [good, needs_attention, failed_analyzed] }
+            root_cause: { type: [string, "null"] }
+            root_cause_event:
+              oneOf:
+                - { type: "null" }
+                - { $ref: "#/components/schemas/EventReference" }
+            improvement_suggestions: { type: array, items: { type: string } }
+            anomalies: { type: array, items: { type: string } }
+            skill_proposal:
+              oneOf:
+                - { type: "null" }
+                - type: object
+                  additionalProperties: false
+                  required: [name, description, outline, mechanism]
+                  properties:
+                    name: { type: string, minLength: 1, maxLength: 80 }
+                    description: { type: string, minLength: 1, maxLength: 60 }
+                    outline: { type: string, minLength: 1 }
+                    mechanism: { type: string, minLength: 1 }
+                    existing_skill_id: { type: [string, "null"] }
+    TraceJob:
+      type: object
+      required: [id, kind, status, task_run_id, attempt_no, trigger_global_seq, model, config_version, reason, report_id, skill_id, usage]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [trace_audit, promote_skill] }
+        status: { type: string, enum: [queued, running, completed, skipped, cancelled, interrupted, failed] }
+        task_run_id: { type: string }
+        attempt_no: { type: integer, minimum: 1 }
+        trigger_global_seq: { type: integer, minimum: 1 }
+        model: { type: [string, "null"] }
+        config_version: { type: string }
+        reason: { type: [string, "null"] }
+        report_id: { type: [string, "null"] }
+        skill_id: { type: [string, "null"] }
+        version_id: { type: [string, "null"] }
+        usage: { type: [object, "null"], additionalProperties: true, description: 缺失usage保留null }
+    PromoteSkillRequest:
+      type: object
+      additionalProperties: false
+      required: [client_request_id, confirmed, expected_report_id]
+      properties:
+        client_request_id: { type: string, minLength: 1, maxLength: 128 }
+        confirmed: { type: boolean, const: true }
+        expected_report_id: { type: string, minLength: 1 }
+    ScheduleProposal:
+      type: object
+      required: [id, task_run_id, attempt_no, call_id, input_hash, revision, proposal, candidates, selected, status, job_id, decided_by, decided_at]
+      properties:
+        id: { type: string }
+        task_run_id: { type: string }
+        attempt_no: { type: integer }
+        call_id: { type: string }
+        input_hash: { type: string }
+        revision: { type: integer, minimum: 1 }
+        proposal: { $ref: "#/components/schemas/CronCreateRequest" }
+        candidates: { type: array, items: { $ref: "#/components/schemas/CronAuthorization" } }
+        selected: { type: array, items: { $ref: "#/components/schemas/CronAuthorization" } }
+        status: { type: string, enum: [pending, approved, rejected, expired] }
+        job_id: { type: [string, "null"] }
+        decided_by: { type: [string, "null"] }
+        decided_at: { type: [string, "null"], format: date-time }
+    ScheduleProposalDecision:
+      type: object
+      additionalProperties: false
+      required: [decision, input_hash, expected_revision, selected]
+      properties:
+        decision: { type: string, enum: [allow_once, reject_once] }
+        input_hash: { type: string }
+        expected_revision: { type: integer, minimum: 1 }
+        selected: { type: array, maxItems: 100, items: { $ref: "#/components/schemas/CronAuthorization" } }
+    Notification:
+      type: object
+      required: [id, global_seq, owner_id, workspace_id, agent_id, job_id, task_run_id, kind, severity, message, read_at, presented_at, created_at]
+      properties:
+        id: { type: string, description: 持久唯一身份；重复补播和重启只查询同一记录 }
+        global_seq: { type: integer }
+        owner_id: { type: string }
+        workspace_id: { type: string }
+        agent_id: { type: string }
+        job_id: { type: [string, "null"] }
+        task_run_id: { type: [string, "null"] }
+        kind: { type: string }
+        severity: { type: string, enum: [badge, warning, error] }
+        message: { type: string }
+        read_at: { type: [string, "null"], format: date-time }
+        presented_at: { type: [string, "null"], format: date-time }
+        created_at: { type: string, format: date-time }
+    DesktopPreferences:
+      type: object
+      additionalProperties: false
+      required: [close_to_quit, prevent_sleep]
+      properties:
+        close_to_quit: { type: boolean }
+        prevent_sleep: { type: boolean }
+    ExitImpact:
+      type: object
+      required: [active_runs, pending_verifications, upcoming_jobs, background_jobs, at_global_seq, observed_at]
+      properties:
+        active_runs: { type: array, items: { $ref: "#/components/schemas/RunRecord" } }
+        pending_verifications: { type: array, items: { $ref: "#/components/schemas/PendingVerification" } }
+        upcoming_jobs: { type: array, items: { $ref: "#/components/schemas/CronJob" }, description: 真实当前时间之后24小时内到期的启用计划 }
+        background_jobs: { type: array, items: { type: object, additionalProperties: true } }
+        at_global_seq: { type: integer }
+        observed_at: { type: string, format: date-time }
   parameters:
     GovernanceId: { name: id, in: path, required: true, schema: { type: string, minLength: 1 } }
     GovernanceWorkspace: { name: workspace_id, in: query, schema: { type: string, minLength: 1 } }
@@ -774,6 +1098,24 @@ components:
     MemoryWorkspace: { name: workspace_id, in: query, required: true, schema: { type: string, minLength: 1 } }
     MemoryAgent: { name: agent_id, in: query, required: true, schema: { type: string, minLength: 1 } }
   responses:
+    CronJobEnvelope:
+      description: 已持久化计划及实际修订
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data]
+            properties:
+              data: { $ref: "#/components/schemas/CronJob" }
+    TraceJobEnvelope:
+      description: 实际辅助作业，202仅代表已受理
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [data]
+            properties:
+              data: { $ref: "#/components/schemas/TraceJob" }
     GovernanceResourceEnvelope:
       description: 真实资源及修订，凭据只返回configured状态
       content:
@@ -1831,15 +2173,37 @@ paths:
         "409": { $ref: "#/components/responses/ErrEnvelope" }
   /api/task-runs/{id}/events:
     get:
+      operationId: readRunEvents
       tags: [runs]
+      x-domain-card: M3-02
+      x-implementation-card: M3-02
       summary: SSE 流（from=任务内排他 seq）；带 limit 时为 JSON 分页（after_seq 排他，limit ≤500）
       parameters:
         - { name: id, in: path, required: true, schema: { type: string } }
         - { name: from, in: query, schema: { type: integer, default: 0 } }
         - { name: after_seq, in: query, schema: { type: integer } }
         - { name: limit, in: query, schema: { type: integer, maximum: 500 } }
+        - { name: through_global_seq, in: query, schema: { type: integer, minimum: 0 }, description: 首次读取返回的快照水位；后续页面固定上界 }
+        - { name: attempt_no, in: query, schema: { type: integer, minimum: 1 } }
       responses:
-        "200": { description: "text/event-stream，或 JSON：{data:{items:[事件信封], next_after_seq}}" }
+        <<: *memory_errors
+        "200":
+          description: 未指定limit时为SSE；JSON读取使用固定水位和排他任务seq
+          content:
+            text/event-stream: { schema: { type: string } }
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items, next_after_seq, at_global_seq, has_more]
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/RunEvent" } }
+                      next_after_seq: { type: [integer, "null"] }
+                      at_global_seq: { type: integer, minimum: 0 }
+                      has_more: { type: boolean }
   /api/task-runs/{id}/attempts:
     get:
       tags: [runs]
@@ -2401,75 +2765,523 @@ paths:
         "200": { description: "text/event-stream，既有事件信封及 resync/shutdown 控制帧，无 JSON 信封" }
   /api/cron/jobs:
     get:
+      operationId: listCronJobs
       tags: [cron]
+      x-domain-card: M3-03
+      x-implementation-card: M3-03
+      parameters: *workspace_page_parameters
       responses:
-        "200": { description: "p5：{data:[job]}（schema 随切片细化）" }
-    post:
-      tags: [cron]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [name, instruction, agent_id, schedule, execution_mode]
-              properties:
-                name: { type: string }
-                instruction: { type: string }
-                agent_id: { type: string }
-                schedule:
-                  type: object
-                  properties:
-                    kind: { type: string, enum: [at, every, cron] }
-                    at_ms: { type: integer }
-                    every_ms: { type: integer }
-                    expr: { type: string }
-                    tz: { type: string }
-                execution_mode: { type: string, enum: [existing, new_conversation] }
-                conversation_id: { type: [string, "null"] }
-                pre_authorized:
-                  type: array
-                  items:
+        <<: *memory_errors
+        "200":
+          description: 可见计划按created_at、id降序排他分页
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
                     type: object
+                    required: [items, next_after, at_global_seq]
                     properties:
-                      tool: { type: string }
-                      pattern: { type: string }
-                created_by: { type: string, enum: [user, agent], default: user }
-      responses:
-        "201": { description: "p5：已创建" }
-  /api/cron/jobs/{id}:
-    parameters:
-      - { name: id, in: path, required: true, schema: { type: string } }
-    patch:
+                      items: { type: array, items: { $ref: "#/components/schemas/CronJob" } }
+                      next_after: { type: [string, "null"] }
+                      at_global_seq: { type: integer }
+    post:
+      operationId: createCronJob
       tags: [cron]
+      x-domain-card: M3-03
+      x-implementation-card: M3-03
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CronCreateRequest" }
+      responses:
+        <<: *memory_errors
+        "201": { $ref: "#/components/responses/CronJobEnvelope" }
+  /api/cron/jobs/{id}:
+    parameters: *governance_id_parameters
+    get:
+      operationId: readCronJob
+      tags: [cron]
+      x-domain-card: M3-03
+      x-implementation-card: M3-03
+      responses:
+        <<: *memory_errors
+        "200": { $ref: "#/components/responses/CronJobEnvelope" }
+    patch:
+      operationId: editCronJob
+      tags: [cron]
+      x-domain-card: M3-03
+      x-implementation-card: M3-03
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CronPatchRequest" }
+      responses:
+        <<: *memory_errors
+        "200": { $ref: "#/components/responses/CronJobEnvelope" }
+    delete:
+      operationId: deleteCronJob
+      tags: [cron]
+      x-domain-card: M3-03
+      x-implementation-card: M3-03
+      requestBody: *governance_change_body
+      responses:
+        <<: *memory_errors
+        "200": { $ref: "#/components/responses/CronJobEnvelope" }
+  /api/cron/jobs/{id}/run-now:
+    parameters: *governance_id_parameters
+    post:
+      operationId: runCronJobNow
+      tags: [cron]
+      x-domain-card: M3-05
+      x-implementation-card: M3-03
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              additionalProperties: false
+              required: [client_request_id, expected_revision]
               properties:
-                enabled: { type: boolean }
-                name: { type: string }
-                schedule: { type: object, additionalProperties: true }
-                pre_authorized: { type: array, items: { type: object, additionalProperties: true } }
+                client_request_id: { type: string, minLength: 1, maxLength: 128 }
+                expected_revision: { type: integer, minimum: 1 }
       responses:
-        "200": { description: "p5：已更新" }
-    delete:
-      tags: [cron]
-      responses:
-        "204": { description: "p5：已删除（无信封）" }
-  /api/cron/jobs/{id}/run-now:
-    post:
-      tags: [cron]
-      parameters:
-        - { name: id, in: path, required: true, schema: { type: string } }
-      responses:
-        "202": { description: "p5：已触发（仍走预授权闸门）" }
+        <<: *memory_errors
+        "202":
+          description: 已登记独立手动发生，仍经过无人值守权限与冲突检查
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/CronOccurrence" }
   /api/cron/jobs/{id}/runs:
+    parameters: *governance_id_parameters
     get:
+      operationId: listCronOccurrences
       tags: [cron]
-      parameters:
-        - { name: id, in: path, required: true, schema: { type: string } }
+      x-domain-card: M3-03
+      x-implementation-card: M3-03
+      parameters: *governance_page_parameters
       responses:
-        "200": { description: "p5：{data:[run]}（fired/missed/skipped/failed）" }
+        <<: *memory_errors
+        "200":
+          description: 发生记录与重试关联按triggered_at、id降序；删除计划保留历史
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items, next_after, at_global_seq]
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/CronOccurrence" } }
+                      next_after: { type: [string, "null"] }
+                      at_global_seq: { type: integer }
+  /api/cron/authorization-preview:
+    post:
+      operationId: previewCronAuthorization
+      tags: [cron]
+      x-domain-card: M3-07
+      x-implementation-card: M3-03
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CronCreateRequest" }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 当前角色、Grant、scope、protected与员工规则限定的候选范围，预览不授予权限
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [candidates, next_run_at, authorization_sha256]
+                    properties:
+                      candidates: { type: array, items: { $ref: "#/components/schemas/CronAuthorization" } }
+                      next_run_at: { type: [integer, "null"] }
+                      authorization_sha256: { type: string }
+  /api/cron/proposals/{id}:
+    parameters: *governance_id_parameters
+    get:
+      operationId: readScheduleProposal
+      tags: [cron, approvals]
+      x-domain-card: M3-07
+      x-implementation-card: M3-07
+      responses: &proposal_responses
+        <<: *memory_errors
+        "200":
+          description: 持久不可变员工提案及人工选择
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/ScheduleProposal" }
+    post:
+      operationId: decideScheduleProposal
+      tags: [cron, approvals]
+      x-domain-card: M3-07
+      x-implementation-card: M3-07
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ScheduleProposalDecision" }
+      responses: *proposal_responses
+  /api/cron/stream:
+    get:
+      operationId: streamCronEvents
+      tags: [cron]
+      x-domain-card: M3-03
+      x-implementation-card: M3-10
+      parameters:
+        - { $ref: "#/components/parameters/GovernanceWorkspace" }
+        - { name: from, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+      responses:
+        <<: *memory_errors
+        "200": { description: "text/event-stream；作业域global_seq排他，先注册后补读，当前身份逐次复查" }
+  /api/task-runs:
+    get:
+      operationId: listRunCenterRuns
+      tags: [runs]
+      x-domain-card: M3-02
+      x-implementation-card: M3-02
+      parameters: &run_filters
+        - { $ref: "#/components/parameters/GovernanceWorkspace" }
+        - { $ref: "#/components/parameters/GovernanceLimit" }
+        - { $ref: "#/components/parameters/GovernanceAfter" }
+        - { name: agent_id, in: query, schema: { type: string } }
+        - { name: conversation_id, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [queued, running, waiting_user, waiting_verification, interrupted, completed, failed, cancelled] } }
+        - { name: source, in: query, schema: { type: string, enum: [user, cron, manual] } }
+        - { name: since, in: query, schema: { type: string, format: date-time } }
+        - { name: until, in: query, schema: { type: string, format: date-time } }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 同一SQL读取快照内取得记录与水位；created_at、id降序且游标绑定身份和过滤
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items, next_after, at_global_seq]
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/RunRecord" } }
+                      next_after: { type: [string, "null"] }
+                      at_global_seq: { type: integer }
+  /api/runs/metrics:
+    get:
+      operationId: readRunMetrics
+      tags: [runs]
+      x-domain-card: M3-02
+      x-implementation-card: M3-02
+      parameters: *run_filters
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 各表分别聚合的SQL指标，同一可见任务集合，无一对多重复累计
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/RunMetrics" }
+  /api/task-runs/{id}:
+    parameters: *governance_id_parameters
+    get:
+      operationId: readRunCenterRun
+      tags: [runs]
+      x-domain-card: M3-02
+      x-implementation-card: M3-02
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 可见运行及历史员工配置、技能版本
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/RunRecord" }
+  /api/task-runs/{id}/events/{seq}:
+    parameters:
+      - { $ref: "#/components/parameters/GovernanceId" }
+      - { name: seq, in: path, required: true, schema: { type: integer, minimum: 1 } }
+    get:
+      operationId: locateRunEvent
+      tags: [runs]
+      x-domain-card: M3-02
+      x-implementation-card: M3-02
+      parameters:
+        - { name: attempt_no, in: query, schema: { type: integer, minimum: 1 } }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 精确定位原始任务事件；尝试不匹配或事件缺失返回404
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/RunEvent" }
+  /api/task-runs/{id}/calls/{call_id}:
+    parameters:
+      - { $ref: "#/components/parameters/GovernanceId" }
+      - { name: call_id, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: readRunCall
+      tags: [runs]
+      x-domain-card: M3-02
+      x-implementation-card: M3-02
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 真实模型请求摘要与工具明细，保留声明，去除凭据及隐藏推理
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/RunCall" }
+  /api/task-runs/{id}/audit-report:
+    parameters: *governance_id_parameters
+    get:
+      operationId: readTraceReport
+      tags: [reviews]
+      x-domain-card: M3-08
+      x-implementation-card: M3-10
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 当前适用尝试的模型报告及实际作业状态；无报告返回null
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [report, job, applicable]
+                    properties:
+                      report:
+                        oneOf:
+                          - { type: "null" }
+                          - { $ref: "#/components/schemas/TraceReport" }
+                      job:
+                        oneOf:
+                          - { type: "null" }
+                          - { $ref: "#/components/schemas/TraceJob" }
+                      applicable: { type: boolean }
+  /api/task-runs/{id}/review:
+    parameters: *governance_id_parameters
+    post:
+      operationId: requestTraceReview
+      tags: [reviews]
+      x-domain-card: M3-08
+      x-implementation-card: M3-10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [client_request_id]
+              properties:
+                client_request_id: { type: string, minLength: 1, maxLength: 128 }
+      responses:
+        <<: *memory_errors
+        "202": { $ref: "#/components/responses/TraceJobEnvelope" }
+  /api/reviews/jobs/{id}:
+    parameters: *governance_id_parameters
+    get:
+      operationId: readTraceJob
+      tags: [reviews]
+      x-domain-card: M3-08
+      x-implementation-card: M3-10
+      responses:
+        <<: *memory_errors
+        "200": { $ref: "#/components/responses/TraceJobEnvelope" }
+  /api/reviews/jobs/{id}/cancel:
+    parameters: *governance_id_parameters
+    post:
+      operationId: cancelTraceJob
+      tags: [reviews]
+      x-domain-card: M3-08
+      x-implementation-card: M3-10
+      responses:
+        <<: *memory_errors
+        "200": { $ref: "#/components/responses/TraceJobEnvelope" }
+  /api/audit-reports/{id}/promote-skill:
+    parameters: *governance_id_parameters
+    post:
+      operationId: promoteTraceSkill
+      tags: [reviews]
+      x-domain-card: M3-09
+      x-implementation-card: M3-10
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PromoteSkillRequest" }
+      responses:
+        <<: *memory_errors
+        "202": { $ref: "#/components/responses/TraceJobEnvelope" }
+  /api/notifications:
+    get:
+      operationId: listNotifications
+      tags: [cron]
+      x-domain-card: M3-14
+      x-implementation-card: M3-14
+      parameters: *workspace_page_parameters
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 当前授权范围内的持久通知，按global_seq、id降序排他分页
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items, next_after, unread_count]
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/Notification" } }
+                      next_after: { type: [string, "null"] }
+                      unread_count: { type: integer, minimum: 0 }
+  /api/notifications/{id}:
+    parameters: *governance_id_parameters
+    patch:
+      operationId: acknowledgeNotification
+      tags: [cron]
+      x-domain-card: M3-14
+      x-implementation-card: M3-14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [action]
+              properties:
+                action: { type: string, enum: [read, presented], description: presented以持久compare-and-set认领，仅首次响应claimed=true允许弹出 }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 幂等标记与是否首次认领
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [notification, claimed]
+                    properties:
+                      notification: { $ref: "#/components/schemas/Notification" }
+                      claimed: { type: boolean }
+  /api/runtime/exit-impact:
+    get:
+      operationId: readExitImpact
+      tags: [settings]
+      x-domain-card: M3-14
+      x-implementation-card: M3-14
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 真实生命周期影响的SQL快照
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/ExitImpact" }
+  /api/runtime/power-event:
+    post:
+      operationId: recordPowerEvent
+      tags: [settings]
+      x-domain-card: M3-14
+      x-implementation-card: M3-14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [event, observed_at]
+              properties:
+                event: { type: string, enum: [suspend, resume] }
+                observed_at: { type: string, format: date-time }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: Electron powerMonitor实际事件已持久化，resume完成调度重新核查
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [global_seq]
+                    properties:
+                      global_seq: { type: integer, minimum: 1 }
+  /api/settings/desktop:
+    get:
+      operationId: readDesktopPreferences
+      tags: [settings]
+      x-domain-card: M3-14
+      x-implementation-card: M3-14
+      responses: &desktop_preference_responses
+        <<: *memory_errors
+        "200":
+          description: 实际保存的桌面行为
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/DesktopPreferences" }
+    patch:
+      operationId: editDesktopPreferences
+      tags: [settings]
+      x-domain-card: M3-14
+      x-implementation-card: M3-14
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DesktopPreferences" }
+      responses: *desktop_preference_responses

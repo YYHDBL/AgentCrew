@@ -3,7 +3,7 @@
 > 模块深潜 #4 ｜ 日期：2026-09-28 ｜ 状态：**已定稿（C1–C2 对齐，其余直接设计；C2 按用户指示参考 hermes）**
 > 上游依据：[01-设计对齐纪要](../decisions/alignment-record.md)（Q17 cron 语义）、[02-Harness与Session事件模型](./harness-session.md)（闸门/事件/排队）、[03-Memory系统详设](./memory-system.md)（fork 基础设施、skill 账本）、[04-权限治理详设](./governance.md)（pattern 规则、审计链）
 > 参考源码：`workMate/AionCore/crates/aionui-cron/`（四段式/错过语义）、`workMate/AionUi/packages/desktop/src/common/adapter/ipcBridge.ts`（ICronJob 契约）、`workMate/hermes-agent/agent/background_review.py`（fork 机制）
-> 实施任务：[M3 监控回放与自动化实施卡](../tasks/M3-cards.md)，15 张卡均未开始，依赖 M2 收口确认。
+> 实施任务：[M3 监控回放与自动化实施卡](../tasks/M3-cards.md)，依据[所有者开工授权](../acceptance/M3-start-authorization.md)进入实施；M1/M2 人工核验与收口确认继续待完成。
 
 ---
 
@@ -17,6 +17,8 @@
 ---
 
 ## 1. 定时任务
+
+M3实施的具体时间窗口、DST、身份、重试和生命周期使用[ADR-013](../decisions/ADR-013-automation-and-trace.md)，完整请求与响应使用OpenAPI v0.6，操作归属见[M3操作矩阵](../contracts/m3-operations.md)。模型报告与安全审计链分别保存；报告字段使用TraceReport，包含适用尝试、真实事件引用和输入水位。
 
 ### 1.1 数据模型（四段式，AionUi 契约裁剪）
 

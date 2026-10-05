@@ -1,0 +1,667 @@
+{
+  "observed_at": "2026-10-05T11:51:59.534443+00:00",
+  "session_id": "bd6c178e5eb545afabff2e0fc68859e5",
+  "config_sha256": "70c2c807b818d3751ec05af21619c63f6dc4145cdfb25fbb2004538ec0af9bbd",
+  "slots": {
+    "main": {
+      "model": "deepseek-v4.1-flash",
+      "provider": "openai-compatible",
+      "base_url": "https://opencode.ai/zen/go/v1",
+      "context_window": 1000000,
+      "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+      "api_key_configured": true,
+      "effective_source": "file",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "请用一句中文确认你已经收到本次真实连接检查。"
+          }
+        ],
+        "tools": [],
+        "max_tokens": 256
+      },
+      "events": [
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "已收到",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "本次真实连接检查。",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "usage",
+          "text": null,
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": {
+            "input_tokens": 42,
+            "output_tokens": 63,
+            "cache_read_input_tokens": 0
+          },
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "done",
+          "text": null,
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": "end_turn",
+          "error": null
+        }
+      ]
+    },
+    "aux": {
+      "model": "deepseek-v4.1-flash",
+      "provider": "openai-compatible",
+      "base_url": "https://opencode.ai/zen/go/v1",
+      "context_window": 1000000,
+      "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+      "api_key_configured": true,
+      "effective_source": "file",
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "请用一句中文确认你已经收到本次真实连接检查。"
+          }
+        ],
+        "tools": [],
+        "max_tokens": 256
+      },
+      "events": [
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "我已",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "收到",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "本次",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "text_delta",
+          "text": "真实连接检查。",
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "usage",
+          "text": null,
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": {
+            "input_tokens": 42,
+            "output_tokens": 64,
+            "cache_read_input_tokens": 0
+          },
+          "stop_reason": null,
+          "error": null
+        },
+        {
+          "type": "done",
+          "text": null,
+          "signature": null,
+          "tool_name": null,
+          "tool_call": null,
+          "usage": null,
+          "stop_reason": "end_turn",
+          "error": null
+        }
+      ]
+    }
+  }
+}
