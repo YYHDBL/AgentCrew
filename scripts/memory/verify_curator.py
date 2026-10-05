@@ -46,12 +46,18 @@ async def owned_data(root, *, restore=False):
                 basis="人类恢复完整的自有历史偏好", operations=[{"action": "restore", "entry_hash": entry["entry_hash"]}])
             assert "error" not in result
             return result
+        soul = await store.read(identity, "soul", "skill-validator")
+        if not soul["entries"]:
+            configured = await store.change(identity, "soul", "skill-validator", change_id="curator-acceptance-soul", expected_revision=soul["revision"],
+                basis="所有者配置真实治理验收员工岗位", operations=[{"action": "add", "text": "负责核查记忆治理与原始材料，遵守当前授权，依据真实工具与模型结果说明。"}])
+            assert "error" not in configured
         value = store._load("user", "owner")
         entries = value["metadata"]["entries"]
         current = datetime.now(timezone.utc)
         for text, age in (("陈旧核验偏好：保留来源信息。", 14.1), ("归档恢复偏好：汇报使用简洁中文。", 30.1), ("固定核验偏好：保留核验编号。", 45)):
             entries = transform(entries, [{"action": "add", "text": text}], identity.source("curator-history-input"),
                 "自有治理数据的历史时间输入", (current - timedelta(days=age)).isoformat())
+            assert isinstance(entries, list), entries
         plan = store._plan(identity, value, entries, render_entries(entries), "历史使用时间为治理验收输入，使用真实当前时间判定",
             current.isoformat(), "curator-history-input", None, "create", [])
         assert "error" not in await store._prepare_and_finish("curator-history-input", "owned-history-input", plan)

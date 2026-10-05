@@ -1,0 +1,3270 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-recovery-1791160244271",
+  "models": {
+    "main": {
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash"
+    },
+    "aux": {
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash"
+    }
+  },
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen",
+      "request": {
+        "change_id": "configure-recovery-soul-60e30012-309f-4044-b4bb-78da72486ebc",
+        "expected_revision": 0,
+        "basis": "所有者为治理恢复验收配置员工岗位与工作规则",
+        "text": "我是负责整理办公材料和核对实际输出的数字员工。执行任务时遵守当前工作区、工具授权和审批，核查真实文件、调用结果与副作用账本；中断后保留已完成工作，并根据当前授权继续合法的剩余步骤。"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "change_id": "configure-recovery-soul-60e30012-309f-4044-b4bb-78da72486ebc",
+          "ledger_id": 4,
+          "store_type": "soul",
+          "store_id": "xiaowen",
+          "entry_id": "e56e24bc9b7f40848bbaf7af3399087c",
+          "entry_hash": "221a8d504a6b84b81929fd9cb505257dd626381f2a8d0370c0517d357ce3b81d",
+          "revision": 1,
+          "global_seq": 19,
+          "idempotent_replay": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/connectors",
+      "request": {
+        "change_id": "recovery-connector-4303efae-b561-426f-b346-6440df18ce9f",
+        "expected_revision": 0,
+        "workspace_id": "office",
+        "name": "真实恢复持久化服务",
+        "type": "http",
+        "config": {
+          "url": "http://127.0.0.1:61479",
+          "allowed_hosts": [
+            "127.0.0.1"
+          ],
+          "allowed_ports": [
+            61479
+          ],
+          "allow_loopback": true,
+          "idempotent_endpoints": [
+            {
+              "method": "POST",
+              "path": "/deduplicated",
+              "guarantee": "真实SQLite唯一幂等键事务只保存一次操作"
+            }
+          ]
+        }
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "908e304ea9e05510ab1e0cefb2ed0b0b",
+          "workspace_id": "office",
+          "name": "真实恢复持久化服务",
+          "type": "http",
+          "config": {
+            "allow_loopback": true,
+            "allowed_hosts": [
+              "127.0.0.1"
+            ],
+            "allowed_ports": [
+              61479
+            ],
+            "args": [],
+            "credential_header": "Authorization",
+            "idempotent_endpoints": [
+              {
+                "guarantee": "真实SQLite唯一幂等键事务只保存一次操作",
+                "method": "POST",
+                "path": "/deduplicated"
+              }
+            ],
+            "startup_files": [],
+            "tool_policies": {},
+            "url": "http://127.0.0.1:61479/"
+          },
+          "status": "active",
+          "revision": 1,
+          "created_at": "2026-10-05T00:30:56.241270+00:00",
+          "updated_at": "2026-10-05T00:30:56.241270+00:00",
+          "credential_configured": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/grants",
+      "request": {
+        "change_id": "recovery-grant-c4deec6d-f96f-4aa0-93cb-e192eaa36389",
+        "resource_type": "connector",
+        "resource_id": "908e304ea9e05510ab1e0cefb2ed0b0b",
+        "grantee_type": "agent",
+        "grantee_id": "xiaowen"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "df9fe7c0ee485e5c857d9d2a906857f1",
+          "resource_type": "connector",
+          "resource_id": "908e304ea9e05510ab1e0cefb2ed0b0b",
+          "grantee_type": "agent",
+          "grantee_id": "xiaowen",
+          "granted_by_user_id": "owner",
+          "created_at": "2026-10-05T00:30:56.248940+00:00",
+          "revoked_at": null,
+          "revision": 1,
+          "change_id": "recovery-grant-c4deec6d-f96f-4aa0-93cb-e192eaa36389",
+          "workspace_id": "office"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/conversations",
+      "request": {
+        "workspace_id": "office",
+        "agent_id": "xiaowen",
+        "instruction": "请先用write_file写入m2-09/retained.txt，完整正文为M2 retained file，然后调用http_request，参数为{\"connector_id\":\"908e304ea9e05510ab1e0cefb2ed0b0b\",\"url\":\"http://127.0.0.1:61479/deduplicated\",\"method\":\"POST\",\"body\":\"真实恢复材料-dd442776-d6d2-450d-8d63-74706ce83b45\"}。需要审批时等待决定。收到真实HTTP结果后再用write_file写入m2-09/after.txt，正文为M2 resumed after verification。中断恢复时依据副作用账本与当前授权，已确认执行的调用保持完整，继续仍然合法的剩余文件步骤。",
+        "client_request_id": "6d04bc02-c7af-431d-bc16-286ff1be5199"
+      },
+      "status": 201,
+      "response": {
+        "data": {
+          "conversation": {
+            "id": "c32707047eee43a19a718dc5b3f14ce5",
+            "title": null,
+            "status": "active",
+            "agent_name": "xiaowen",
+            "agent_id": "xiaowen",
+            "workspace_id": "office",
+            "last_activity_at": "2026-10-05T00:30:56.253906+00:00",
+            "state_badge": "running"
+          },
+          "materials": [],
+          "folders": [],
+          "scope": {
+            "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-recovery-1791160244271/data/workspaces/office/files",
+            "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-recovery-1791160244271/data/conversations/c32707047eee43a19a718dc5b3f14ce5/materials",
+            "folders": []
+          },
+          "task_run_id": "f66c4b5d036a466baba75be09aed401e"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations",
+      "status": 200,
+      "response": {
+        "data": [
+          {
+            "id": "c32707047eee43a19a718dc5b3f14ce5",
+            "title": null,
+            "status": "active",
+            "agent_name": "xiaowen",
+            "agent_id": "xiaowen",
+            "workspace_id": "office",
+            "last_activity_at": "2026-10-05T00:30:56.253906+00:00",
+            "state_badge": "running"
+          }
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": [
+          {
+            "call_id": "call_01_qilgzuuemiphdc91peoafhsx",
+            "tool": "http_request",
+            "target": "http://127.0.0.1:61479/deduplicated",
+            "input_hash": "0a3aebfef815a56115d066e0c41fb4c9b38ec20f16b94d0becbaadda3fc36f88",
+            "risk": "medium",
+            "always_scope_preview": "127.0.0.1",
+            "requested_at": "2026-10-05T00:31:01.096709+00:00",
+            "decision": null,
+            "stale": false,
+            "attempt_no": 1
+          }
+        ]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/tool-approvals/call_01_qilgzuuemiphdc91peoafhsx",
+      "request": {
+        "decision": "allow_once",
+        "input_hash": "0a3aebfef815a56115d066e0c41fb4c9b38ec20f16b94d0becbaadda3fc36f88"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "decision": "allow_once",
+          "decided_at": "2026-10-05T00:31:01.142754+00:00",
+          "idempotent_replay": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/pending-verifications",
+      "status": 200,
+      "response": {
+        "data": [
+          {
+            "call_id": "call_01_qilgzuuemiphdc91peoafhsx",
+            "tool": "http_request",
+            "input": {
+              "body": "真实恢复材料-dd442776-d6d2-450d-8d63-74706ce83b45",
+              "connector_id": "908e304ea9e05510ab1e0cefb2ed0b0b",
+              "method": "POST",
+              "url": "http://127.0.0.1:61479/deduplicated"
+            },
+            "dispatched_at": "2026-10-05T00:31:01.143631+00:00",
+            "evidence": "http_request 申报副作用类 external_idempotency：dispatched 后无终态记录，执行结果不明，待人工确认"
+          }
+        ]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/resume",
+      "request": {},
+      "status": 409,
+      "response": {
+        "error": {
+          "code": "PENDING_VERIFICATION",
+          "message": "存在待核验调用，处理后才能恢复",
+          "detail": {
+            "pending_verifications": [
+              {
+                "call_id": "call_01_qilgzuuemiphdc91peoafhsx",
+                "tool": "http_request",
+                "dispatched_at": "2026-10-05T00:31:01.143631+00:00"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/grants/df9fe7c0ee485e5c857d9d2a906857f1",
+      "request": {
+        "change_id": "revoke-recovery-6f840e23-43e2-44a7-9a9b-9bf329a2812c",
+        "expected_revision": 1
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "id": "df9fe7c0ee485e5c857d9d2a906857f1",
+          "resource_type": "connector",
+          "resource_id": "908e304ea9e05510ab1e0cefb2ed0b0b",
+          "grantee_type": "agent",
+          "grantee_id": "xiaowen",
+          "granted_by_user_id": "owner",
+          "created_at": "2026-10-05T00:30:56.248940+00:00",
+          "revoked_at": "2026-10-05T00:31:04.679243+00:00",
+          "revision": 2,
+          "change_id": "recovery-grant-c4deec6d-f96f-4aa0-93cb-e192eaa36389",
+          "workspace_id": "office"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/tool-calls/call_01_qilgzuuemiphdc91peoafhsx/verification",
+      "request": {
+        "verdict": "confirmed_executed",
+        "note": "实际查询上游SQLite，原幂等键与正文均存在，操作次数1"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "call_id": "call_01_qilgzuuemiphdc91peoafhsx",
+          "status": "completed",
+          "verdict": "confirmed_executed"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": [
+          {
+            "call_id": "call_00_ehkdaxz81i1g55ctqrg5e84c",
+            "tool": "bash",
+            "target": "cd /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-recovery-1791160244271/data/workspaces/office/",
+            "input_hash": "1e926064f6a3f846a2cee5afe386ff9a4800a976f288907d167f575733321e42",
+            "risk": "medium",
+            "always_scope_preview": "cd /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-recovery-1791160244271/data/workspaces/office/files && ls -l m2-09/ && echo '---' && cat m2-09/retained.txt && echo '' && echo '---' && cat m2-09/after.txt",
+            "requested_at": "2026-10-05T00:31:12.028298+00:00",
+            "decision": null,
+            "stale": false,
+            "attempt_no": 2
+          }
+        ]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/tool-approvals/call_00_ehkdaxz81i1g55ctqrg5e84c",
+      "request": {
+        "decision": "reject_once",
+        "input_hash": "1e926064f6a3f846a2cee5afe386ff9a4800a976f288907d167f575733321e42"
+      },
+      "status": 200,
+      "response": {
+        "data": {
+          "decision": "reject_once",
+          "decided_at": "2026-10-05T00:31:12.082789+00:00",
+          "idempotent_replay": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/task-runs/f66c4b5d036a466baba75be09aed401e/approvals",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/c32707047eee43a19a718dc5b3f14ce5/questions",
+      "status": 200,
+      "response": {
+        "data": []
+      }
+    }
+  ],
+  "screenshots": [
+    "recovered.png"
+  ],
+  "task_run_id": "f66c4b5d036a466baba75be09aed401e",
+  "conversation_id": "c32707047eee43a19a718dc5b3f14ce5",
+  "killed_python_pid": 6210,
+  "old_port": 61525,
+  "resumed_outcome": {
+    "status": "completed",
+    "terminal_events": [
+      {
+        "type": "run.completed",
+        "payload": "{\"final_text\": \"已完成，两个文件的最终状态如下：\\n\\n**1. write_file → `m2-09/retained.txt`**\\n- 正文：`M2 retained file`\\n- 状态：✅ 已就位（内容与中断前一致，未产生冲突）\\n\\n**2. http_request → `http://127.0.0.1:61479/deduplicated`（POST）**\\n- 正文：`真实恢复材料-dd442776-d6d2-450d-8d63-74706ce83b45`\\n- 状态：⚠️ 依据副作用账本与工具返回，该调用**在中断前已执行**，原始输出未记录；按恢复指令**未重复调用**，避免重复副作用。\\n\\n**3. write_file → `m2-09/after.txt`**\\n- 正文：`M2 resumed after verification`\\n- 状态：✅ 已写入 29 字节，sha256=`84b12deaf5e14d5f…`\\n\\n核验结果：\\n```\\nm2-09/retained.txt  →  M2 retained file\\nm2-09/after.txt     →  M2 resumed after verification\\n```\\n\\n**说明与需你留意的点：**\\n- 中断恢复期间，我对已确认执行的 HTTP 调用**未做重放**（符合\\\"已执行的调用不再产生重复副作用\\\"）。但该调用的**原始响应体本身没有留存**，我拿不到它的真实返回内容。因此 `after.txt` 是基于\\\"调用已确认执行\\\"这一事实继续写入的，而非基于新的 HTTP 响应体。\\n- 如果你需要一条**带真实响应记录**的调用结果，请告知，我可以改用不同的标识/端点重发一次（避免与既有记录冲突），并记录完整响应后再决定是否覆写 `after.txt`。\\n- 另：`bash`（`ls`/`cat`）调用返回 `PERMISSION_DENIED`，我改用 `read_file` 完成了文件内容核验；文件内容读取正常。\\n\\n需要我补发一次带完整响应的 HTTP 调用吗？\", \"outcome\": \"completed\"}"
+      }
+    ]
+  },
+  "attempts": [
+    {
+      "id": "0e9ad29feedf43c5801cde7aad3c9d10",
+      "attempt_no": 1,
+      "status": "interrupted",
+      "context_fingerprint": "{\"agent_spec_sha256\": \"91988b7748280919600c14c54b603c1df0a19b61ef4e9c849016f3ad061b8907\", \"authorization_sha256\": \"5d9435b9956d6316484a6fc5c5ab17974537f1d88f70eb8591e57f7340dc3b16\", \"memory_block_sha256\": \"85c794809a5a33f6a2beac5009c0d637d0acea99da042cfeebadc8098cb8c04b\", \"memory_snapshot_id\": \"333ba0798b444c62a45a7e76c1b02231\", \"memory_snapshot_sha256\": \"78abf0522dbae6b90515c7daf1280c5270c6ec8af3f17dc58aa3174733d9e582\", \"model_config\": {\"api_key_sha256\": \"a72258b07a769071\", \"base_url\": \"https://opencode.ai/zen/go/v1\", \"context_window\": 1000000, \"context_window_source\": \"https://models.dev/api.json#opencode-go/deepseek-v4.1-flash\", \"max_tokens\": 8192, \"model\": \"deepseek-v4.1-flash\", \"prompt_format\": \"deepseek-v4.1\", \"provider\": \"openai-compatible\", \"tokenizer_repository\": \"deepseek-ai/DeepSeek-V4.1-Flash\", \"tokenizer_revision\": \"2cba9e42aa026125f3ed06c6d98c1db82f7ca027\", \"tokenizer_sha256\": \"c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b\"}, \"model_slot\": \"main\", \"skill_versions\": {\"7fb6db7a69e75931b85594e05ed43d2b\": \"314222aa9401532b96ae08867bc734a5\", \"c7b7146c6ea65788b6d4161a4982f34b\": \"ce7f36c35b735d43a30a8a4b0b4c0f3b\"}, \"system_prompt_hash\": \"3fe976d4c752dd73b1b8d173c5a2f08f22d40089faa89c938d92642a2b3570c4\", \"tools_schema_hash\": \"49c26e6968dd7a9002271d128dcce7aa1cd7cd2a658de89789d68a3186e1119b\"}"
+    },
+    {
+      "id": "3439c9cb485e47ebb77f9271138b6b22",
+      "attempt_no": 2,
+      "status": "completed",
+      "context_fingerprint": "{\"agent_spec_sha256\": \"91988b7748280919600c14c54b603c1df0a19b61ef4e9c849016f3ad061b8907\", \"authorization_sha256\": \"3214df80b928502130440e0a8651671c1df1d91f6068f8344f886a54419d12f6\", \"memory_block_sha256\": \"85c794809a5a33f6a2beac5009c0d637d0acea99da042cfeebadc8098cb8c04b\", \"memory_snapshot_id\": \"333ba0798b444c62a45a7e76c1b02231\", \"memory_snapshot_sha256\": \"78abf0522dbae6b90515c7daf1280c5270c6ec8af3f17dc58aa3174733d9e582\", \"model_config\": {\"api_key_sha256\": \"a72258b07a769071\", \"base_url\": \"https://opencode.ai/zen/go/v1\", \"context_window\": 1000000, \"context_window_source\": \"https://models.dev/api.json#opencode-go/deepseek-v4.1-flash\", \"max_tokens\": 8192, \"model\": \"deepseek-v4.1-flash\", \"prompt_format\": \"deepseek-v4.1\", \"provider\": \"openai-compatible\", \"tokenizer_repository\": \"deepseek-ai/DeepSeek-V4.1-Flash\", \"tokenizer_revision\": \"2cba9e42aa026125f3ed06c6d98c1db82f7ca027\", \"tokenizer_sha256\": \"c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b\"}, \"model_slot\": \"main\", \"skill_versions\": {\"7fb6db7a69e75931b85594e05ed43d2b\": \"314222aa9401532b96ae08867bc734a5\", \"c7b7146c6ea65788b6d4161a4982f34b\": \"ce7f36c35b735d43a30a8a4b0b4c0f3b\"}, \"system_prompt_hash\": \"405a2c7205422cc576149e1e7096177051c6703f1a95bc3aeaf5a3074b285a7d\", \"tools_schema_hash\": \"14961fa3521d5f77869b18fc5fd9aedd890bc86069bc9fc745050156245c4c95\"}"
+    }
+  ],
+  "resumed_requests": [
+    {
+      "authorization_sha256": "3214df80b928502130440e0a8651671c1df1d91f6068f8344f886a54419d12f6",
+      "llm_call_id": "763b0f1ad75a473aae6bf62a6e57fb28",
+      "model": "deepseek-v4.1-flash",
+      "model_slot": "main",
+      "retry_no": 0,
+      "step_id": "36989c42076a4778bbbc453b8e223fdd",
+      "tool_names": [
+        "read_file",
+        "write_file",
+        "bash",
+        "http_request",
+        "memory_write",
+        "session_search",
+        "skill_view",
+        "skill_patch",
+        "ask_user"
+      ]
+    },
+    {
+      "authorization_sha256": "3214df80b928502130440e0a8651671c1df1d91f6068f8344f886a54419d12f6",
+      "llm_call_id": "4dccc3f3b72c47df8c707214640bb41c",
+      "model": "deepseek-v4.1-flash",
+      "model_slot": "main",
+      "retry_no": 0,
+      "step_id": "418c97d21cee4fc48a2663c09d49c178",
+      "tool_names": [
+        "read_file",
+        "write_file",
+        "bash",
+        "http_request",
+        "memory_write",
+        "session_search",
+        "skill_view",
+        "skill_patch",
+        "ask_user"
+      ]
+    },
+    {
+      "authorization_sha256": "3214df80b928502130440e0a8651671c1df1d91f6068f8344f886a54419d12f6",
+      "llm_call_id": "2b0f9dd17836477bb8c520728a7b470f",
+      "model": "deepseek-v4.1-flash",
+      "model_slot": "main",
+      "retry_no": 0,
+      "step_id": "4887dfad0ebc4e82b373bb5005c59dea",
+      "tool_names": [
+        "read_file",
+        "write_file",
+        "bash",
+        "http_request",
+        "memory_write",
+        "session_search",
+        "skill_view",
+        "skill_patch",
+        "ask_user"
+      ]
+    },
+    {
+      "authorization_sha256": "3214df80b928502130440e0a8651671c1df1d91f6068f8344f886a54419d12f6",
+      "llm_call_id": "d821ab60cb6148a5889fb9b5575a497d",
+      "model": "deepseek-v4.1-flash",
+      "model_slot": "main",
+      "retry_no": 0,
+      "step_id": "a321de025cf14e12923d33f1b657dbfd",
+      "tool_names": [
+        "read_file",
+        "write_file",
+        "bash",
+        "http_request",
+        "memory_write",
+        "session_search",
+        "skill_view",
+        "skill_patch",
+        "ask_user"
+      ]
+    }
+  ],
+  "snapshot": {
+    "sha256": "78abf0522dbae6b90515c7daf1280c5270c6ec8af3f17dc58aa3174733d9e582",
+    "mtime_ns": "1791160256267247105"
+  },
+  "retained_file": {
+    "sha256": "213b4aece45a684c34ce44f048bdc2e27c8b967e12c72d9580ec615091ce2e20",
+    "mtime_ns": "1791160261129503397"
+  },
+  "upstream": {
+    "operations": [
+      {
+        "id": 1,
+        "idempotency_key": "f66c4b5d036a466baba75be09aed401e:call_01_qilgzuuemiphdc91peoafhsx",
+        "body": "真实恢复材料-dd442776-d6d2-450d-8d63-74706ce83b45"
+      }
+    ],
+    "requests": [
+      {
+        "id": 1,
+        "idempotency_key": "f66c4b5d036a466baba75be09aed401e:call_01_qilgzuuemiphdc91peoafhsx",
+        "body": "真实恢复材料-dd442776-d6d2-450d-8d63-74706ce83b45"
+      },
+      {
+        "id": 2,
+        "idempotency_key": "f66c4b5d036a466baba75be09aed401e:call_01_qilgzuuemiphdc91peoafhsx",
+        "body": "真实恢复材料-dd442776-d6d2-450d-8d63-74706ce83b45"
+      }
+    ]
+  },
+  "final_status": "completed",
+  "event_watermark": 90,
+  "audit_sequence": 37,
+  "actual_task_states": [
+    {
+      "id": "f66c4b5d036a466baba75be09aed401e",
+      "status": "completed",
+      "current_attempt_no": 2
+    }
+  ],
+  "actual_tool_states": [
+    {
+      "call_id": "call_00_5tx3vu5erbej7dgi1yd9xiuo",
+      "task_run_id": "f66c4b5d036a466baba75be09aed401e",
+      "tool_name": "write_file",
+      "status": "completed",
+      "input_hash": "da80c4d672943def8b16f0e4ebbccca2857f9cc2efacf0134f1fd37317b8c194",
+      "dispatched_at": "2026-10-05T00:31:01.097291+00:00"
+    },
+    {
+      "call_id": "call_01_qilgzuuemiphdc91peoafhsx",
+      "task_run_id": "f66c4b5d036a466baba75be09aed401e",
+      "tool_name": "http_request",
+      "status": "completed",
+      "input_hash": "0a3aebfef815a56115d066e0c41fb4c9b38ec20f16b94d0becbaadda3fc36f88",
+      "dispatched_at": "2026-10-05T00:31:01.143631+00:00"
+    },
+    {
+      "call_id": "call_00_rucd9r56tme5p0565pcsrf03",
+      "task_run_id": "f66c4b5d036a466baba75be09aed401e",
+      "tool_name": "write_file",
+      "status": "completed",
+      "input_hash": "70ff0f85c1f45756823ee92840f2ef9f1310c633b2149e903919756ef498c9bb",
+      "dispatched_at": "2026-10-05T00:31:09.341175+00:00"
+    },
+    {
+      "call_id": "call_00_ehkdaxz81i1g55ctqrg5e84c",
+      "task_run_id": "f66c4b5d036a466baba75be09aed401e",
+      "tool_name": "bash",
+      "status": "failed",
+      "input_hash": "1e926064f6a3f846a2cee5afe386ff9a4800a976f288907d167f575733321e42",
+      "dispatched_at": null
+    },
+    {
+      "call_id": "call_00_5qtom112b197grs31cw2x076",
+      "task_run_id": "f66c4b5d036a466baba75be09aed401e",
+      "tool_name": "read_file",
+      "status": "completed",
+      "input_hash": "64f1794127294ab2a0fd82552dc50471a657367eb34a3eab428271b3bb8319e0",
+      "dispatched_at": "2026-10-05T00:31:15.030480+00:00"
+    },
+    {
+      "call_id": "call_01_ykalv4s2kg3j69rvczbjmij6",
+      "task_run_id": "f66c4b5d036a466baba75be09aed401e",
+      "tool_name": "read_file",
+      "status": "completed",
+      "input_hash": "7d701ed8dffa35c89d86d0a0cc49be1a2f207063bd4be3a236d126234093bc7a",
+      "dispatched_at": "2026-10-05T00:31:15.048641+00:00"
+    }
+  ]
+}

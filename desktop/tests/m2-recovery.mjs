@@ -167,7 +167,7 @@ try {
   }
   if (db.prepare("SELECT count(*) AS count FROM artifacts WHERE task_run_id=? AND path LIKE '%after.txt' AND status='ready'").get(taskId).count === 0) {
     const followup = await request('POST', `/conversations/${conversationId}/instructions`, { text: '保持已核验HTTP调用与原retained.txt完整。现在仅调用write_file，在当前工作空间写入m2-09/after.txt，正文为M2 resumed after verification。无需任何网络操作，按真实文件结果说明。', client_request_id: randomUUID() })
-    assert.equal(followup.status, 200)
+    assert.equal(followup.status, 202)
     evidence.legal_followup_task_run_id = followup.value.task_run_id
     await waitFor(async () => {
       const cards = await request('GET', `/task-runs/${followup.value.task_run_id}/approvals`)

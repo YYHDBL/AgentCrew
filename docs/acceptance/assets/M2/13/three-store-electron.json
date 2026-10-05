@@ -1,0 +1,21 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-final-memory",
+  "screenshots": [
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-final-memory/user.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-final-memory/workspace.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-final-memory/soul.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-final-memory/chinese-search.png"
+  ],
+  "operations": [
+    "USER 记忆",
+    "工作区记忆",
+    "员工 soul",
+    "中文检索：资料",
+    "中文检索：项目资"
+  ],
+  "search_model_calls": {
+    "before": 23,
+    "after": 23
+  },
+  "all_checks_passed": true
+}

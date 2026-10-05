@@ -7,9 +7,11 @@ import { DatabaseSync } from 'node:sqlite'
 const seed = resolve(process.argv[2])
 const source = JSON.parse(await readFile(resolve(process.argv[3]), 'utf8'))
 assert.equal(source.all_checks_passed, true)
-const directory = resolve('.artifacts', `m1-final-view-${Date.now()}`)
+const reuse = process.argv.includes('--reuse')
+const directory = reuse ? resolve(seed, '..') : resolve('.artifacts', `m1-final-view-${Date.now()}`)
+if (reuse) assert.equal(resolve(directory, 'data'), seed)
 await mkdir(directory, { recursive: true })
-await cp(seed, `${directory}/data`, { recursive: true,
+if (!reuse) await cp(seed, `${directory}/data`, { recursive: true,
   filter: (path) => !['instance.lock', 'requests.jsonl', 'streams.jsonl', 'main-streams.jsonl', 'service.log'].includes(basename(path)) })
 const app = await electron.launch({ args: ['.', `--user-data-dir=${directory}`],
   executablePath: resolve('node_modules/electron/dist/Electron.app/Contents/MacOS/Electron') })

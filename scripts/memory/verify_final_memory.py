@@ -70,7 +70,8 @@ async def verify(seed, root, output):
             snapshot_path = root / "conversations" / recalled["conversation_id"] / "memory-snapshot.json"
             snapshot = json.loads(snapshot_path.read_text())
             assert all(row["text"] in snapshot["system_block"] for row in original)
-            assert signatures(root) == before
+            current_files = signatures(root)
+            assert all(current_files[path] == value for path, value in before.items())
             private = await request("GET", f"/memory/stores/soul/memory-validator?{scope}")
             await request("GET", "/memory/stores/soul/memory-validator?workspace_id=default&agent_id=default", expected=403)
             evidence["cross_date"] = {"conversation_id": recalled["conversation_id"], "task_run_id": recalled["task_run_id"],

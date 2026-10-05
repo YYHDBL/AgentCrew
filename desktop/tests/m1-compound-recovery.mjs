@@ -63,7 +63,7 @@ try {
   output.task_run_id = task.id
   const oldPort = await page.evaluate(() => window.agentcrew.getBackendPort())
   const line = execFileSync('ps', ['-axo', 'pid,command'], { encoding: 'utf8' }).split('\n')
-    .find((line) => line.includes('/python3 -m agentcrew_server') && line.includes(directory))
+    .find((line) => /\/python(?:3(?:\.12)?)? -m agentcrew_server/.test(line) && line.includes(directory))
   assert.ok(line)
   const pid = Number(line.trim().split(/\s+/)[0])
   const intent = await waitFor(async () => {

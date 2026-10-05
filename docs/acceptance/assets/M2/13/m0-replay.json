@@ -1,0 +1,36 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-m0-1791159790781",
+  "task_run_id": "aaa3fc9cfebc40afb0bec96c7c8169d0",
+  "file_before_restart": {
+    "sha256": "ccb690f4def6fb38ba4372daeef399ba7f8e5b33c31a59f63492f8622a632ace",
+    "mtime_ns": "1791159812250981712"
+  },
+  "write_file_ledger": [
+    {
+      "call_id": "call_00_mif9o4yn4kudw5z209gejohm",
+      "status": "completed",
+      "dispatched_at": "2026-10-05T00:23:32.214474+00:00",
+      "completed_at": "2026-10-05T00:23:32.253335+00:00",
+      "input_hash": "f31e0cf850298b555dcfdf2f2f8fc32e449828f522ffb4e67519dc66af44a7bb"
+    }
+  ],
+  "actual_event_counts": [
+    {
+      "type": "tool.prepared",
+      "count": 1
+    },
+    {
+      "type": "tool.dispatched",
+      "count": 1
+    },
+    {
+      "type": "tool.completed",
+      "count": 1
+    }
+  ],
+  "file_after_restart_and_refresh": {
+    "sha256": "ccb690f4def6fb38ba4372daeef399ba7f8e5b33c31a59f63492f8622a632ace",
+    "mtime_ns": "1791159812250981712"
+  },
+  "all_checks_passed": true
+}

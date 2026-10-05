@@ -1,6 +1,6 @@
 # M2 · 安全与治理实施任务卡
 
-> 日期：2026-10-05 ｜ 状态：M2-01 至 M2-12 已完成，M2-13未开始 ｜ 代码依据：desktop-shell，本卡证据见 docs/acceptance/M2-12.md
+> 日期：2026-10-05 ｜ 状态：M2-01 至 M2-13 实施与自动验收完成，等待所有者人工核验与收口确认 ｜ 实际结果：[M2验收报告](../acceptance/M2.md)
 > 设计依据：[权限治理详设](../architecture/governance.md)、[Harness 与 Session](../architecture/harness-session.md)、[M1 实施卡](./M1-cards.md)、[ADR-008](../decisions/ADR-008-tool-admission-and-sandbox.md)、[F009 数字员工与授权管理](../features/F009-employee-and-governance.md)。
 
 ## 领取与交付约定
@@ -51,7 +51,7 @@
 | M2-10 | 治理审计、锚点与只读诊断 | M2-03、M2-05、M2-07、M2-09 | 后端 | 已完成，见 [验收](../acceptance/M2-10.md) |
 | M2-11 | 管理 API 与契约贯穿核对 | M2-02 至 M2-10 | 后端 | 已完成，见 [验收](../acceptance/M2-11.md) |
 | M2-12 | 治理操作、授权清单与诊断界面 | M2-11 | 前端 | 已完成，见 [验收](../acceptance/M2-12.md) |
-| M2-13 | 七项治理验收与安全贯穿回归 | M2-12 | 前端、后端共同验收 | 未开始 |
+| M2-13 | 七项治理验收与安全贯穿回归 | M2-12 | 前端、后端共同验收 | 已完成，见 [验收](../acceptance/M2-13.md) |
 
 ```mermaid
 flowchart TD

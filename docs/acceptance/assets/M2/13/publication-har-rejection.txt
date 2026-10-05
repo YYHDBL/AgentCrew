@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/backend/../scripts/governance/publish_final_evidence.py", line 125, in <module>
+    publish(parser.parse_args())
+  File "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/backend/../scripts/governance/publish_final_evidence.py", line 67, in publish
+    raise ValueError("公开材料只接受脱敏JSON或测试文本输出；HAR必须经过专用发布服务处理")
+ValueError: 公开材料只接受脱敏JSON或测试文本输出；HAR必须经过专用发布服务处理

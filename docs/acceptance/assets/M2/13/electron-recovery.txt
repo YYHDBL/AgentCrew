@@ -1,0 +1,1 @@
+{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-recovery-1791160244271","task_run_id":"f66c4b5d036a466baba75be09aed401e","status":"completed","actual_operations":1}

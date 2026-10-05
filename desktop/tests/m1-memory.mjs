@@ -222,6 +222,6 @@ if (process.argv.includes('--final')) {
   execFileSync(resolve('../backend/.venv/bin/python'), [resolve('../scripts/memory/verify_final_memory.py'),
     '--seed-data-dir', resolve('../data/m1-store-validation-04'), '--data-dir', `${finalDirectory}/data`,
     '--output', `${finalDirectory}/memory-http.json`], { stdio: 'inherit' })
-  execFileSync(process.execPath, ['tests/m1-final-memory-view.mjs', `${finalDirectory}/data`, `${finalDirectory}/memory-http.json`],
+  execFileSync(process.execPath, ['tests/m1-final-memory-view.mjs', `${finalDirectory}/data`, `${finalDirectory}/memory-http.json`, '--reuse'],
     { stdio: 'inherit' })
 }

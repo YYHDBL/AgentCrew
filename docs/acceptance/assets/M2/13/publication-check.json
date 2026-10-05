@@ -1,0 +1,263 @@
+{
+  "credential_matches": 0,
+  "files": [
+    {
+      "path": "backend-boundaries.json",
+      "sha256": "b3b95bfd7c6dbc21d13f2f090d953d07a7f846d2d2bd81d534d783e964766b0b",
+      "bytes": 1341310,
+      "credential_matches": 0
+    },
+    {
+      "path": "backend-tests.txt",
+      "sha256": "46f939364a6686470d14cadbd82e26e189e14209f066c9d5593b8602170f77f1",
+      "bytes": 1357,
+      "credential_matches": 0
+    },
+    {
+      "path": "build.txt",
+      "sha256": "18eb1ea76bdf4f6c7a35ef5139df97682398997bf0266271b46e6c254d0c12bd",
+      "bytes": 835,
+      "credential_matches": 0
+    },
+    {
+      "path": "chinese-search.png",
+      "sha256": "b86ed2ecbb3d4f552a390f91c14c5ffada0ab32ef9b4a956be6ca5c6d18570e1",
+      "bytes": 439053,
+      "credential_matches": 0
+    },
+    {
+      "path": "compound-recovery.json",
+      "sha256": "8f706f54e54eeb93829b1deb850856aee3c8e7d9edebb16f67ffc9dd62889929",
+      "bytes": 10306,
+      "credential_matches": 0
+    },
+    {
+      "path": "compound-replay.json",
+      "sha256": "1439969ab68f8162ea40cc82ae6dbbc4345fa16dd43d31f14f0f33c03ca3bc98",
+      "bytes": 1055,
+      "credential_matches": 0
+    },
+    {
+      "path": "compound-replay.png",
+      "sha256": "839224b709e45a0a555c68cb1e8060dcfee6644dc3b1a80c6d38bbdc53f9e6f8",
+      "bytes": 372846,
+      "credential_matches": 0
+    },
+    {
+      "path": "compound-sql-audit.json",
+      "sha256": "c164599c3df622700868b9a16d9e12705ea8ed7d5e6abfb520347db469c35b6e",
+      "bytes": 354856,
+      "credential_matches": 0
+    },
+    {
+      "path": "curator-sql-audit.json",
+      "sha256": "fe29a78db05adb74248657dcdecc813f40fbf4776dddb4f1ff049264681d7999",
+      "bytes": 74687,
+      "credential_matches": 0
+    },
+    {
+      "path": "electron-governance.txt",
+      "sha256": "2f9126e42e4a4c9caa368b0e885a194d0fe6a68c0fa8edec5a88082efbe7817c",
+      "bytes": 123,
+      "credential_matches": 0
+    },
+    {
+      "path": "electron-recovery.txt",
+      "sha256": "e998036451ee3ef4002e05fb33511c84b0755d3686f87d38e1b605076cef5896",
+      "bytes": 202,
+      "credential_matches": 0
+    },
+    {
+      "path": "final-memory.json",
+      "sha256": "35998492abae6b4fcfb06934e27287ae074e97d5fadfaef4b0c83dc4a81fd3d0",
+      "bytes": 351728,
+      "credential_matches": 0
+    },
+    {
+      "path": "governance/audit-export.json",
+      "sha256": "8ef4a4036292dd85943f74a5250a21a58ad7e7f28e444fd86d1c7711ac3f5da4",
+      "bytes": 98679,
+      "credential_matches": 0
+    },
+    {
+      "path": "governance/audit.png",
+      "sha256": "d83e201199113594bf41cc8c95ca9c6cede64895185b63ed7bf1b5936ef24897",
+      "bytes": 201077,
+      "credential_matches": 0
+    },
+    {
+      "path": "governance/diagnostic.png",
+      "sha256": "5b18282949b47485ab958aad37276e6ebefb9aa9a689070937a73780ab5a3faf",
+      "bytes": 204998,
+      "credential_matches": 0
+    },
+    {
+      "path": "governance/electron.json",
+      "sha256": "2526377cda051a2210908f9717215e367993f5c7c3f98e14e127a276da2f3206",
+      "bytes": 717881,
+      "credential_matches": 0
+    },
+    {
+      "path": "governance/http.json",
+      "sha256": "d923649280150c75abafafb20d1eda797b04e2915a696bad55e3d103f76424c4",
+      "bytes": 4134258,
+      "credential_matches": 0
+    },
+    {
+      "path": "governance/permanent-rule.png",
+      "sha256": "7d4a7f000f46bc1b1905033931008a3879fd6574911c04b055abf943331acea1",
+      "bytes": 337028,
+      "credential_matches": 0
+    },
+    {
+      "path": "governance/restored.png",
+      "sha256": "f2a8e8826b9560f9625ef911c7027463666616e50d6cb228ec68de2c1d2183a4",
+      "bytes": 194185,
+      "credential_matches": 0
+    },
+    {
+      "path": "governance/sql-audit.json",
+      "sha256": "64ae727c4c8b1d5524dc4fe02e6c7fb5c96de889df77ac3b98a38fcae74625b0",
+      "bytes": 300512,
+      "credential_matches": 0
+    },
+    {
+      "path": "m0-regression.json",
+      "sha256": "7e6a9761c7381ba537e26e168bd1fbe46075393231f5c82bf4debf32ca910ada",
+      "bytes": 227906,
+      "credential_matches": 0
+    },
+    {
+      "path": "m0-replay.json",
+      "sha256": "3b896078c44fda8a92368315b1f2c4b9e4056a8e316ada3481f0f742d15e1c6f",
+      "bytes": 1051,
+      "credential_matches": 0
+    },
+    {
+      "path": "m0-replay.png",
+      "sha256": "88d222cd06f4c8b2e9769e84c985303db946ec85eb71116ef1a0dd9e0e19abdb",
+      "bytes": 299657,
+      "credential_matches": 0
+    },
+    {
+      "path": "m0-sql-audit.json",
+      "sha256": "07c9d1fec6adef36c7643a1114ebf6c3eca1f2918e0a4277af4ff7442e796557",
+      "bytes": 1036590,
+      "credential_matches": 0
+    },
+    {
+      "path": "management-background.png",
+      "sha256": "1fb658016bf0c4ded2987bbea4db42cc658e412c9c3c1b0f88699b3c5aba266b",
+      "bytes": 245080,
+      "credential_matches": 0
+    },
+    {
+      "path": "management-electron.json",
+      "sha256": "17fa9265798c4e37a87ed8c2aefec049d718c4bfc69cd47007652a66a9515ae8",
+      "bytes": 9335,
+      "credential_matches": 0
+    },
+    {
+      "path": "management-skill.png",
+      "sha256": "75e3bebcf1c69b2b821c74e8b45d8b1fc112d69728fc587c7c19a4992d5ba1a7",
+      "bytes": 178604,
+      "credential_matches": 0
+    },
+    {
+      "path": "management-sql-audit.json",
+      "sha256": "7bcf5e07058aa2939f04494e7f7919ba07734448dd7a828397b7ab5346e7c044",
+      "bytes": 940602,
+      "credential_matches": 0
+    },
+    {
+      "path": "management-user.png",
+      "sha256": "43d769bad0cc1100b506e7f9881966c9f91b8a62b736523ec27ba69ec4d67180",
+      "bytes": 218060,
+      "credential_matches": 0
+    },
+    {
+      "path": "memory-curator.json",
+      "sha256": "fed29bcd1910bef21b4ca6af4474afa500a3484316b1956cb7d6c87bd7f3ce64",
+      "bytes": 51474,
+      "credential_matches": 0
+    },
+    {
+      "path": "memory-sql-audit.json",
+      "sha256": "5c106998c9843c5671c8478c0b76e922a9555f066f9ea9f4fca825a4c3cb4bb1",
+      "bytes": 135037,
+      "credential_matches": 0
+    },
+    {
+      "path": "openapi.txt",
+      "sha256": "966f6467c8283f27690d06b0f2d8842ec8c434e6556c43013381b1162b89ddfe",
+      "bytes": 60,
+      "credential_matches": 0
+    },
+    {
+      "path": "publication-har-rejection.txt",
+      "sha256": "aeb2947202e453e533d8ca23ac37e471187f12e02c883a2cfe3a0748a6cd1f3d",
+      "bytes": 566,
+      "credential_matches": 0
+    },
+    {
+      "path": "recovery/electron-recovery.json",
+      "sha256": "58e63f761c2c85f100d19983c38611907c2b6a1cd7600ed771207643bdf4a543",
+      "bytes": 82985,
+      "credential_matches": 0
+    },
+    {
+      "path": "recovery/recovered.png",
+      "sha256": "fcaa64007da526ef0c556cba39429efb0eff7f6e5aba0f17f04d372e3a514cb9",
+      "bytes": 389009,
+      "credential_matches": 0
+    },
+    {
+      "path": "recovery/sql-audit.json",
+      "sha256": "70ba6b99b383c98e74c45661a01615b9cb2773163825dcf4b6d432b0c7b1582b",
+      "bytes": 87286,
+      "credential_matches": 0
+    },
+    {
+      "path": "soul.png",
+      "sha256": "8045a63526d0357a611409d740f99f6cbaaafab1ee1cc0a3e025493cf5382b72",
+      "bytes": 213026,
+      "credential_matches": 0
+    },
+    {
+      "path": "three-store-electron.json",
+      "sha256": "869edffe123738892b6ce7fa3d0bc741c6ba01313b63753035c1dac0df9d1f90",
+      "bytes": 781,
+      "credential_matches": 0
+    },
+    {
+      "path": "three-store-tests.txt",
+      "sha256": "893dd5b4aff855fd14fc657cc7ae90b3318838be1abe244b4fad28de92e4da97",
+      "bytes": 140,
+      "credential_matches": 0
+    },
+    {
+      "path": "typecheck.txt",
+      "sha256": "47507bd31216f03b60b882cad65146eef0e5338222ab87f1769804bb2213169a",
+      "bytes": 111,
+      "credential_matches": 0
+    },
+    {
+      "path": "user.png",
+      "sha256": "1a918ab0d8e3ffd653552a3964ff2ee8b3c13d8097208fb87dd9fb755b5f22d2",
+      "bytes": 273930,
+      "credential_matches": 0
+    },
+    {
+      "path": "uv-sync.txt",
+      "sha256": "d175572535ccea7fbe9cd9cd82d99adf81d4fc34c6064c69241135be07683e58",
+      "bytes": 57,
+      "credential_matches": 0
+    },
+    {
+      "path": "workspace.png",
+      "sha256": "242e8a95bc0a54ad914593d27ed7939e5fc708bc86e8ed6691985c8922b095ff",
+      "bytes": 213226,
+      "credential_matches": 0
+    }
+  ]
+}

@@ -49,7 +49,7 @@ try {
   assert.ok(before.items.some((event) => event.type === 'permission.requested'), JSON.stringify(before.items.filter((event) => event.type.startsWith('run.'))))
   await page.getByRole('button', { name: '允许', exact: true }).first().waitFor()
   const oldPort = await page.evaluate(() => window.agentcrew.getBackendPort())
-  const processLine = execFileSync('ps', ['-axo', 'pid,command'], { encoding: 'utf8' }).split('\n').find((line) => line.includes('/python3 -m agentcrew_server') && line.includes(directory))
+  const processLine = execFileSync('ps', ['-axo', 'pid,command'], { encoding: 'utf8' }).split('\n').find((line) => /\/python(?:3(?:\.12)?)? -m agentcrew_server/.test(line) && line.includes(directory))
   assert.ok(processLine)
   const pid = Number(processLine.trim().split(/\s+/)[0])
   process.kill(pid, 'SIGKILL')

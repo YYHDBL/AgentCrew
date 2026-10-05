@@ -5,6 +5,7 @@ import { resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
 import { createServer } from 'node:http'
+import { governanceWorkflows } from './m2-governance-workflows.mjs'
 
 const directory = resolve('.artifacts', `m2-governance-${Date.now()}`)
 await mkdir(`${directory}/data`, { recursive: true })
@@ -54,7 +55,9 @@ const request = async (method, path, body, owner = false) => {
   return { status: observed.status, value: observed.response.data }
 }
 try {
+  await page.getByText('任务服务已连接', { exact: true }).waitFor()
   await page.getByRole('button', { name: '治理管理', exact: true }).waitFor()
+  await governanceWorkflows({ page, directory, endpoint, upstream, request, waitFor, result })
   await page.getByRole('button', { name: '治理管理', exact: true }).click()
   await page.getByRole('heading', { name: '员工与治理', exact: true }).waitFor()
   await page.getByLabel('演示身份').selectOption('lilei')
