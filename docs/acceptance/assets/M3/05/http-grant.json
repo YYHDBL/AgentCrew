@@ -1,0 +1,71 @@
+{
+  "job_id": "70f2d47586055515a9e067cf00f6a47e",
+  "first_occurrence": {
+    "id": "922fc462ba524a549825796168eed309",
+    "job_id": "70f2d47586055515a9e067cf00f6a47e",
+    "revision": 1,
+    "trigger": "manual",
+    "scheduled_at": null,
+    "triggered_at": 1791211009704,
+    "actor_id": "owner",
+    "client_request_id": "ca5e857f8802403a92e6a3a12852e00b",
+    "status": "completed",
+    "note": null,
+    "retry_count": 0,
+    "retry_at": null,
+    "task_run_id": "ea521ff756a74965a4f539cb871abb37",
+    "missed_count": 0,
+    "missed_through": null,
+    "created_at": "2026-10-05T14:36:49.704983+00:00",
+    "updated_at": "2026-10-05T14:36:58.826687+00:00",
+    "attempts": [
+      {
+        "retry_no": 0,
+        "task_run_id": "ea521ff756a74965a4f539cb871abb37",
+        "attempt_no": 1,
+        "status": "completed",
+        "started_at": "2026-10-05T14:36:49.732908+00:00",
+        "finished_at": "2026-10-05T14:36:58.826687+00:00"
+      }
+    ]
+  },
+  "revoked_occurrence": {
+    "id": "fa6fdc2e73bc427eb41efabd1e623d0e",
+    "job_id": "70f2d47586055515a9e067cf00f6a47e",
+    "revision": 1,
+    "trigger": "manual",
+    "scheduled_at": null,
+    "triggered_at": 1791211018906,
+    "actor_id": "owner",
+    "client_request_id": "77fdb5ae7864469fb36138148ad1cd72",
+    "status": "failed",
+    "note": "OUT_OF_SCOPE：当前任务没有所选HTTP连接器授权",
+    "retry_count": 0,
+    "retry_at": null,
+    "task_run_id": "dd33f7525c0e4267ba24d43feb87e947",
+    "missed_count": 0,
+    "missed_through": null,
+    "created_at": "2026-10-05T14:36:58.906819+00:00",
+    "updated_at": "2026-10-05T14:37:02.563409+00:00",
+    "attempts": [
+      {
+        "retry_no": 0,
+        "task_run_id": "dd33f7525c0e4267ba24d43feb87e947",
+        "attempt_no": 1,
+        "status": "failed",
+        "started_at": "2026-10-05T14:36:58.953672+00:00",
+        "finished_at": "2026-10-05T14:37:02.563409+00:00"
+      }
+    ]
+  },
+  "connector_id": "c3686550fced5abfb98419f9dbffd7a5",
+  "grant_id": "6ba668f87f255e81b9cfc1f8e58ca759",
+  "upstream_sql": "SELECT id,body,auth_sha256 FROM operations",
+  "upstream_rows": [
+    [
+      1,
+      "M3 actual HTTP",
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    ]
+  ]
+}

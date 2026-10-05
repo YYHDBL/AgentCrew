@@ -179,14 +179,16 @@ class ToolScheduler:
         # 挂钩内部完成 ask 的挂起等待；deny 时补记 tool.failed 事件。
         if self._gate is not None:
             decision = await self._gate(invocation, meta, effective_readonly)
-            if decision != "allow":
+            action = decision.action if hasattr(decision, "action") else decision
+            if action != "allow":
+                error = "PERMISSION_DENIED" + (": " + decision.reason if hasattr(decision, "reason") else "")
                 await self._emit_strict(ctx, "tool.failed", {
                     "call_id": invocation.call_id,
-                    "error": "PERMISSION_DENIED",
+                    "error": error,
                     "output_summary": "",
                 })
-                return ToolResult(ok=False, error="PERMISSION_DENIED",
-                                  details={"gate": decision})
+                return ToolResult(ok=False, error=error,
+                                  details={"gate": action})
 
         # dispatched 紧邻实际执行写入（外审回稿 S08）：取得并发名额与串行锁
         # 之前不声明 dispatched——否则等待名额期间被取消的调用会被恢复流程

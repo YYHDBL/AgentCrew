@@ -168,6 +168,13 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         install_cron_routes(app, runtime)
         from ..cron.scheduler import CronScheduler
         runtime.cron_scheduler = CronScheduler(runtime)
+        from ..cron.executor import CronExecutor
+        runtime.cron_executor = CronExecutor(runtime)
+        runtime.cron_scheduler.executor = runtime.cron_executor
+        runtime.approvals.automation = runtime.cron_executor
+        runtime.grants.automation = runtime.cron_executor
+        runtime.run_manager.automation = runtime.cron_executor
+        runtime.event_store.task_observer = runtime.cron_executor.observe_in_tx
     if runtime.recovery is not None:
         install_recovery_routes(app, runtime)
     app.add_middleware(EnvelopeMiddleware)

@@ -119,20 +119,28 @@ class CronScheduler:
                 conn.execute("INSERT INTO cron_job_runs(id,job_id,revision,trigger,scheduled_at,triggered_at,actor_id,status,note,missed_count,missed_through,created_at,updated_at) VALUES(?,?,?,'scheduled',?,?,?,?,?,?,?,?,?)",
                     (occurrence_id, job["id"], job["revision"], scheduled, triggered_at, row["owner_id"], status, note,
                      coverage["count"] if coverage else 0, coverage["through"] if coverage else None, timestamp, timestamp))
+                prepared = self.executor.prepare_in_tx(conn, job, occurrence_id) if self.executor is not None else []
+                occurrence = self.store.occurrence(occurrence_id, conn)
+                status, note = occurrence["status"], occurrence["note"]
                 conn.execute("UPDATE cron_jobs SET next_run_at=?,last_status=?,updated_at=?,enabled=? WHERE id=?",
                     (next_at, status, timestamp, 0 if status == "missed" and job["schedule"]["kind"] == "at" else row["enabled"], job["id"]))
                 current = self.store.decode(conn.execute("SELECT * FROM cron_jobs WHERE id=?", (job["id"],)).fetchone())
                 self.store.references(conn, current)
                 payload = {"job_id": job["id"], "occurrence_id": occurrence_id, "revision": job["revision"], "trigger": "scheduled",
-                    "scheduled_at": scheduled, "triggered_at": triggered_at, "source_task_run_id": None, "retry_no": 0,
+                    "scheduled_at": scheduled, "triggered_at": triggered_at, "source_task_run_id": occurrence["task_run_id"], "retry_no": 0,
                     "status": status, "reason": note, "scope": self.store.scope(job, conn), "notification_id": None,
                     "missed_count": coverage["count"] if coverage else 0, "missed_through": coverage["through"] if coverage else None}
                 payload["audit_seq"] = append_audit(conn, ts=timestamp, actor_type="system", actor_id="cron", action="cron.job_" + status,
                     resource_type="cron_job", resource_id=job["id"], detail=canonical(payload))
-                kind = {"missed": T.CRON_JOB_MISSED, "skipped": T.CRON_JOB_SKIPPED, "fired": T.CRON_JOB_FIRED}[status]
+                kind = {"missed": T.CRON_JOB_MISSED, "skipped": T.CRON_JOB_SKIPPED, "fired": T.CRON_JOB_FIRED, "failed": T.CRON_JOB_FAILED}[status]
                 event = self.events.append_in_tx(conn, task_run_id=None, conversation_id=None, type=kind, payload=payload)
+                notification = self.executor.notify_in_tx(conn, occurrence, job, event) if self.executor is not None and status != "fired" else None
                 result = self.store.occurrence(occurrence_id, conn)
+            for queued in prepared:
+                self.events.publish(queued)
             self.events.publish(event)
+            if notification is not None:
+                self.events.publish(notification)
             if payload["audit_seq"] % SNAPSHOT_EVERY == 0:
                 snapshot_chain_head(conn, self.runtime.data_dir / "chain-head.txt")
             return result

@@ -152,6 +152,8 @@ class Grants:
     def check_dispatch(self, conn, kind, task_id, payload):
         if task_id is None:
             return
+        if hasattr(self, "automation") and kind in {T.TOOL_DISPATCHED, T.LLM_REQUEST_STARTED, T.RUN_RESUMED}:
+            self.automation.check_task(task_id, conn)
         if kind == T.TOOL_DISPATCHED:
             self.check_binding(task_id, payload["call_id"], conn)
             status = conn.execute("SELECT status FROM task_runs WHERE id=?", (task_id,)).fetchone()

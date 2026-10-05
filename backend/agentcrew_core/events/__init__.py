@@ -121,6 +121,7 @@ class Event:
     attempt_no: int | None = None
     agent_run_id: str | None = None
     ts: str = ""
+    followups: tuple["Event", ...] = field(default=(), compare=False, repr=False)
 
     def as_frame(self) -> dict[str, Any]:
         frame: dict[str, Any] = {

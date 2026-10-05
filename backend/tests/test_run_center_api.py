@@ -48,7 +48,9 @@ def server(tmp_path_factory):
         child.terminate()
         child.wait(15)
         log.close()
-        (root / "run-center-http-evidence.json").write_text(json.dumps(record["requests"], ensure_ascii=False, indent=2) + "\n")
+        serialized = json.dumps(record["requests"], ensure_ascii=False, indent=2) + "\n"
+        (root / "run-center-http-evidence.json").write_text(serialized)
+        (tmp_path_factory.getbasetemp() / "http-evidence.json").write_text(serialized)
 
 
 @pytest.fixture(scope="module")

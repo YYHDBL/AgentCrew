@@ -245,15 +245,24 @@ class CronStore:
                 status = "skipped" if busy else "fired"
                 conn.execute("INSERT INTO cron_job_runs(id,job_id,revision,trigger,scheduled_at,triggered_at,actor_id,client_request_id,status,note,created_at,updated_at) VALUES(?,?,?,'manual',NULL,?,?,?,?,?,?,?)",
                     (occurrence_id, job_id, job["revision"], stamp, identity.effective_user_id, request["client_request_id"], status, note, timestamp, timestamp))
+                prepared = self.runtime.cron_executor.prepare_in_tx(conn, job, occurrence_id) if self.runtime.cron_executor is not None else []
+                occurrence = self.occurrence(occurrence_id, conn)
+                status, note = occurrence["status"], occurrence["note"]
+                conn.execute("UPDATE cron_jobs SET last_status=?,updated_at=? WHERE id=?", (status, timestamp, job_id))
                 payload = {"job_id": job_id, "occurrence_id": occurrence_id, "revision": job["revision"], "trigger": "manual",
-                    "scheduled_at": None, "triggered_at": stamp, "source_task_run_id": None, "retry_no": 0,
+                    "scheduled_at": None, "triggered_at": stamp, "source_task_run_id": occurrence["task_run_id"], "retry_no": 0,
                     "status": status, "reason": note, "scope": self.scope(job, conn), "notification_id": None}
                 payload["audit_seq"] = append_audit(conn, ts=timestamp, actor_type="user", actor_id=identity.effective_user_id,
                     action="cron.manual_requested", resource_type="cron_job", resource_id=job_id, detail=canonical(payload))
                 event = self.events.append_in_tx(conn, task_run_id=None, conversation_id=None,
-                    type=T.CRON_JOB_SKIPPED if busy else T.CRON_JOB_FIRED, payload=payload)
+                    type=T.CRON_JOB_FAILED if status == "failed" else T.CRON_JOB_SKIPPED if busy else T.CRON_JOB_FIRED, payload=payload)
+                notification = self.runtime.cron_executor.notify_in_tx(conn, occurrence, job, event) if self.runtime.cron_executor is not None and status != "fired" else None
                 result = self.occurrence(occurrence_id, conn)
+            for queued in prepared:
+                self.events.publish(queued)
             self.events.publish(event)
+            if notification is not None:
+                self.events.publish(notification)
             if payload["audit_seq"] % SNAPSHOT_EVERY == 0:
                 snapshot_chain_head(conn, self.resources.data_dir / "chain-head.txt")
             return result

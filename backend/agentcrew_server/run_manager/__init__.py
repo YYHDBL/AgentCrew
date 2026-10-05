@@ -196,6 +196,13 @@ class RunManager:
             self._on_event(item)
 
     def _on_event(self, event) -> None:
+        if hasattr(self, "automation") and event.type == RunEventType.CRON_JOB_CHANGED:
+            for task_id, active in tuple(self._runs.items()):
+                row = self.automation.task(task_id)
+                if row is not None and row["id"] == event.payload["job_id"] and (not row["enabled"] or row["deleted_at"] or row["revision"] != row["occurrence_revision"]):
+                    active.fail_reason = "PLAN_DISABLED：计划已停用或修订已经改变"
+                    active.task.cancel()
+            return
         if hasattr(self, "grants") and event.type in {RunEventType.GOVERNANCE_GRANT_CHANGED,
                 RunEventType.GOVERNANCE_ROLE_CHANGED, RunEventType.GOVERNANCE_RESOURCE_CHANGED, RunEventType.GOVERNANCE_RULE_CHANGED,
                 RunEventType.GOVERNANCE_SKILL_VERSION_PUBLISHED}:
@@ -460,7 +467,8 @@ class RunManager:
             async def execute(call: ToolCall) -> ToolResult:
                 if hasattr(self, "identities"):
                     self.identities.task(task_run_id)
-                if call.name == "ask_user":
+                automated = hasattr(self, "automation") and self.automation.task(task_run_id) is not None
+                if call.name == "ask_user" and not automated:
                     return await self._ask_user_direct(
                         run, sink, ctx, call)
                 return await self._approvals.run_tool(

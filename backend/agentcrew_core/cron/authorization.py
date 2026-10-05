@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from ..tools.gate import rule_matches
+from ..tools.gate import evaluate_gate, GateResult
 
 
 def path_candidates(tool, allowed, roots):
@@ -44,3 +45,20 @@ def conflict_reason(*, active_occurrence, conversation_active=True, queue_paused
     if queued_items:
         return "目标会话已有排队指令"
     return None
+
+
+def unattended_gate(metadata, inputs, readonly, rules, pre_authorized, agent_id, cwd):
+    if metadata.name in {"ask_user", "schedule_task"}:
+        return GateResult("deny", "UNATTENDED_INTERACTION：无人值守不能等待人工决定")
+    current = evaluate_gate(metadata, inputs, readonly, rules, agent_id, cwd)
+    if current.action == "deny":
+        return current
+    if not metadata.needs_approval or metadata.name == "bash" and readonly:
+        return current
+    employee = any(rule.agent_id == agent_id and rule.tool_name == metadata.name and rule.effect == "allow"
+                   and rule_matches(metadata.name, inputs, rule.pattern, cwd) for rule in rules)
+    plan = any(choice["tool"] == metadata.name and rule_matches(metadata.name, inputs, choice["pattern"], cwd)
+               for choice in pre_authorized)
+    if employee and plan:
+        return GateResult("allow", "pre_authorized_pass：员工allow与计划预授权均匹配")
+    return GateResult("deny", "PRE_AUTH_EXCEEDED：员工allow与计划预授权必须同时匹配")

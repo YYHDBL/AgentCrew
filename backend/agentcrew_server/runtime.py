@@ -68,6 +68,7 @@ class RuntimeState:
     audit: object | None = None
     cron_store: object | None = None
     cron_scheduler: object | None = None
+    cron_executor: object | None = None
 
     async def stop_execution(self) -> None:
         cancellations = []

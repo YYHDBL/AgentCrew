@@ -103,7 +103,7 @@ class ApprovalService:
 
     # ── 闸门（调度器挂钩，ask 在此挂起）──────────────────────────
     async def gate(self, invocation: ToolInvocation, meta: ToolMetadata,
-                   readonly_verdict: bool) -> str:
+                   readonly_verdict: bool) -> str | GateResult:
         # task_run_id 由 run_tool 的调用链经 invocation 侧上下文携带——
         # 闸门挂钩本身拿不到 WorkContext，改从 pending 上下文注册表按
         # call_id 取（run_tool 先注册再执行）
@@ -114,9 +114,12 @@ class ApprovalService:
         boundary = self._file_boundary(invocation, ctx_info.ctx)
         result = GateResult("deny", boundary) if boundary else evaluate_gate(
             meta, invocation.input, readonly_verdict, rules, ctx_info.agent_id, cwd)
+        automation = self.automation.current_gate(ctx_info.task_run_id, meta, invocation.input, readonly_verdict, rules, cwd) if hasattr(self, "automation") else None
+        if automation is not None:
+            result = GateResult("deny", boundary) if boundary else automation
         if result.action == "allow":
             # governance §3：闸门放行（自动/规则命中）全部入审计链
-            action = ("permission.rule_allowed" if result.matched_pattern
+            action = ("permission.pre_authorized_pass" if automation is not None and result.reason.startswith("pre_authorized_pass") else "permission.rule_allowed" if result.matched_pattern
                       else "permission.auto_allowed")
             await self._audit("system", "gate", action, "tool_call",
                               invocation.call_id,
@@ -133,7 +136,7 @@ class ApprovalService:
                               {"tool": meta.name, "input_hash": ih,
                                "pattern": result.matched_pattern,
                                "agent_id": ctx_info.agent_id})
-            return "deny"
+            return result if automation is not None else "deny"
         # ask：发卡（含四选项/input_hash/target/范围预览）→ 挂起。
         # 请求事件与请求审计同事务（governance §2.3"全部进审计链"）
         pattern = always_scope_pattern(meta.name, invocation.input, cwd)
@@ -412,6 +415,10 @@ class ApprovalService:
         meta = registry.get(row[0]).metadata
         readonly = bash_readonly(inputs["command"], pending.ctx.cwd)[0] if row[0] == "bash" else meta.read_only
         result = evaluate_gate(meta, inputs, readonly, self._load_rules(pending.agent_id, conn), pending.agent_id, pending.ctx.cwd)
+        if hasattr(self, "automation"):
+            automated = self.automation.current_gate(task_run_id, meta, inputs, readonly, self._load_rules(pending.agent_id, conn), pending.ctx.cwd, conn)
+            if automated is not None:
+                result = automated
         if boundary or result.action == "deny":
             raise ApprovalStale(boundary or result.reason)
         if result.action == "ask":

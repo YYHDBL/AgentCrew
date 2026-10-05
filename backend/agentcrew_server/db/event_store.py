@@ -13,6 +13,7 @@ import json
 import logging
 import sqlite3
 import uuid
+from dataclasses import replace
 from datetime import datetime, timezone
 from typing import Callable
 
@@ -36,6 +37,7 @@ class EventStore:
         self._channel = channel
         self._publisher = publisher
         self.task_preparer = None
+        self.task_observer = None
         self.authorization_checker = None
         self.audit_anchor_path = None
 
@@ -141,6 +143,8 @@ class EventStore:
                 self.task_preparer(conn, event)
             if extra_writes is not None:
                 extra_writes(conn, event)  # 抛异常 → 整体回滚（事件不落库）
+            if self.task_observer is not None:
+                event = replace(event, followups=tuple(self.task_observer(conn, event)))
             conn.execute("COMMIT")
         except Exception:
             try:
@@ -168,6 +172,8 @@ class EventStore:
                 "不重试、不重复追加）",
                 event.global_seq,
             )
+        for followup in event.followups:
+            self.publish(followup)
 
     def append_in_tx(
         self,
@@ -211,4 +217,6 @@ class EventStore:
         apply_projection(conn, event)
         if self.task_preparer is not None:
             self.task_preparer(conn, event)
+        if self.task_observer is not None:
+            event = replace(event, followups=tuple(self.task_observer(conn, event)))
         return event
