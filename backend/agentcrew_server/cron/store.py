@@ -7,7 +7,7 @@ import uuid
 from pathlib import Path
 
 from agentcrew_core.cron.schedule import next_run_at
-from agentcrew_core.cron.authorization import authorization_contains, path_candidates
+from agentcrew_core.cron.authorization import authorization_contains, path_candidates, conflict_reason
 from agentcrew_core.events import RunEventType as T
 from agentcrew_core.memory.pagination import memory_page
 from ..db.audit import append_audit, SNAPSHOT_EVERY, snapshot_chain_head
@@ -204,6 +204,19 @@ class CronStore:
         value["attempts"] = [dict(attempt) for attempt in connection.execute("SELECT retry_no,task_run_id,attempt_no,status,started_at,finished_at FROM cron_run_attempts WHERE occurrence_id=? ORDER BY retry_no", (occurrence_id,))]
         return value
 
+    def conflict(self, conn, job):
+        active = conn.execute("SELECT 1 FROM cron_job_runs WHERE job_id=? AND status IN ('fired','retry_wait','interrupted','pending_verification') LIMIT 1", (job["id"],)).fetchone() is not None
+        if job["target"]["execution_mode"] != "existing":
+            return conflict_reason(active_occurrence=active)
+        conversation = job["target"]["conversation_id"]
+        row = conn.execute("SELECT status,queue_paused,pending_queue FROM conversations WHERE id=?", (conversation,)).fetchone()
+        task = conn.execute("SELECT 1 FROM task_runs WHERE conversation_id=? AND status IN ('queued','running','waiting_user','waiting_verification','interrupted') LIMIT 1", (conversation,)).fetchone() is not None
+        pending = conn.execute("SELECT 1 FROM tool_calls c JOIN task_runs t ON t.id=c.task_run_id WHERE t.conversation_id=? AND c.status='pending_verification' LIMIT 1", (conversation,)).fetchone() is not None
+        return conflict_reason(active_occurrence=active, conversation_active=row is not None and row[0] == "active",
+            queue_paused=bool(row[1]) if row else False,
+            queued_items=any(item.get("state") == "queued" for item in json.loads(row[2])) if row else False,
+            active_task=task, pending_verification=pending)
+
     def history(self, identity, job_id, limit, after):
         with Runs(self.runtime).snapshot(identity) as conn:
             self.get(identity, job_id, conn)
@@ -227,9 +240,9 @@ class CronStore:
                 if not job["state"]["enabled"] or job["deleted_at"]:
                     raise GovernanceError("REVISION_CONFLICT", "计划已停用或删除")
                 stamp, timestamp, occurrence_id = now_ms(), now(), uuid.uuid4().hex
-                busy = conn.execute("SELECT 1 FROM cron_job_runs WHERE job_id=? AND status IN ('fired','retry_wait','interrupted','pending_verification') LIMIT 1", (job_id,)).fetchone()
+                note = self.conflict(conn, job)
+                busy = note is not None
                 status = "skipped" if busy else "fired"
-                note = "该计划存在未结束发生" if busy else None
                 conn.execute("INSERT INTO cron_job_runs(id,job_id,revision,trigger,scheduled_at,triggered_at,actor_id,client_request_id,status,note,created_at,updated_at) VALUES(?,?,?,'manual',NULL,?,?,?,?,?,?,?)",
                     (occurrence_id, job_id, job["revision"], stamp, identity.effective_user_id, request["client_request_id"], status, note, timestamp, timestamp))
                 payload = {"job_id": job_id, "occurrence_id": occurrence_id, "revision": job["revision"], "trigger": "manual",

@@ -1,0 +1,2817 @@
+[
+  {
+    "pid": 59659,
+    "port": 52408
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "request": {
+      "change_id": "fb678298d8c54c6e9585a00ffed6af01",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实暂停计划",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 1000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "54415870af6553e48bdc85960f33850c",
+        "workspace_id": "office",
+        "name": "真实暂停计划",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 1000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209434810,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:33.810351+00:00",
+        "updated_at": "2026-10-05T14:10:33.810351+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 20
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "54415870af6553e48bdc85960f33850c",
+        "workspace_id": "office",
+        "name": "真实暂停计划",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 1000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209435810,
+          "last_run_at": null,
+          "last_status": "fired",
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:33.810351+00:00",
+        "updated_at": "2026-10-05T14:10:34.811771+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 20
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 21
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "44cee6d65e714eea9cd3a6fd3da0a68d",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209439810,
+            "triggered_at": 1791209439811,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "skipped",
+            "note": "该计划存在未结束发生",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:39.812042+00:00",
+            "updated_at": "2026-10-05T14:10:39.812042+00:00",
+            "attempts": []
+          },
+          {
+            "id": "bf497c4a95664f81a211011c972d0afe",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209435810,
+            "triggered_at": 1791209439040,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 4,
+            "missed_through": 1791209438810,
+            "created_at": "2026-10-05T14:10:39.044631+00:00",
+            "updated_at": "2026-10-05T14:10:39.044631+00:00",
+            "attempts": []
+          },
+          {
+            "id": "5d76ea6e6294483ea25e910e09bb2672",
+            "job_id": "54415870af6553e48bdc85960f33850c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209434810,
+            "triggered_at": 1791209434810,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:34.811771+00:00",
+            "updated_at": "2026-10-05T14:10:34.811771+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "54415870af6553e48bdc85960f33850c",
+        "workspace_id": "office",
+        "name": "真实暂停计划",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 1000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209440810,
+          "last_run_at": null,
+          "last_status": "skipped",
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:33.810351+00:00",
+        "updated_at": "2026-10-05T14:10:39.812042+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/54415870af6553e48bdc85960f33850c",
+    "request": {
+      "change_id": "48a973dea6dc43f1899c0c920812cb32",
+      "expected_revision": 1,
+      "enabled": false
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "54415870af6553e48bdc85960f33850c",
+        "workspace_id": "office",
+        "name": "真实暂停计划",
+        "revision": 2,
+        "schedule": {
+          "every_ms": 1000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791209440810,
+          "last_run_at": null,
+          "last_status": "skipped",
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:33.810351+00:00",
+        "updated_at": "2026-10-05T14:10:39.843115+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "signal": "SIGSTOP/SIGCONT",
+    "stopped_at": 1791209434833,
+    "resumed_at": 1791209439039,
+    "missed": {
+      "id": "bf497c4a95664f81a211011c972d0afe",
+      "job_id": "54415870af6553e48bdc85960f33850c",
+      "revision": 1,
+      "trigger": "scheduled",
+      "scheduled_at": 1791209435810,
+      "triggered_at": 1791209439040,
+      "actor_id": "owner",
+      "client_request_id": null,
+      "status": "missed",
+      "note": "错过到期窗口，不补跑",
+      "retry_count": 0,
+      "retry_at": null,
+      "task_run_id": null,
+      "missed_count": 4,
+      "missed_through": 1791209438810,
+      "created_at": "2026-10-05T14:10:39.044631+00:00",
+      "updated_at": "2026-10-05T14:10:39.044631+00:00",
+      "attempts": []
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "request": {
+      "change_id": "f4f9b7aa57d442529992fbe45e51fa33",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "跨越到期但迟延小于宽限",
+      "schedule": {
+        "kind": "at",
+        "at_ms": 1791209442847,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "fd06ac1e11545a3785955c0ee6a3bdff",
+        "workspace_id": "office",
+        "name": "跨越到期但迟延小于宽限",
+        "revision": 1,
+        "schedule": {
+          "at_ms": 1791209442847,
+          "kind": "at",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209442847,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:39.850199+00:00",
+        "updated_at": "2026-10-05T14:10:39.850199+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/fd06ac1e11545a3785955c0ee6a3bdff/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 24
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/fd06ac1e11545a3785955c0ee6a3bdff/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "33663d2fef754af0b670583743316c71",
+            "job_id": "fd06ac1e11545a3785955c0ee6a3bdff",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209442847,
+            "triggered_at": 1791209443860,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 1,
+            "missed_through": 1791209442847,
+            "created_at": "2026-10-05T14:10:43.862651+00:00",
+            "updated_at": "2026-10-05T14:10:43.862651+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 25
+      }
+    }
+  },
+  {
+    "signal": "SIGSTOP/SIGCONT",
+    "crossing_at_job_id": "fd06ac1e11545a3785955c0ee6a3bdff",
+    "occurrences": [
+      {
+        "id": "33663d2fef754af0b670583743316c71",
+        "job_id": "fd06ac1e11545a3785955c0ee6a3bdff",
+        "revision": 1,
+        "trigger": "scheduled",
+        "scheduled_at": 1791209442847,
+        "triggered_at": 1791209443860,
+        "actor_id": "owner",
+        "client_request_id": null,
+        "status": "missed",
+        "note": "错过到期窗口，不补跑",
+        "retry_count": 0,
+        "retry_at": null,
+        "task_run_id": null,
+        "missed_count": 1,
+        "missed_through": 1791209442847,
+        "created_at": "2026-10-05T14:10:43.862651+00:00",
+        "updated_at": "2026-10-05T14:10:43.862651+00:00",
+        "attempts": []
+      }
+    ]
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "request": {
+      "change_id": "70f9b7aead67499da65de6c594ad766e",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "终止后过期at",
+      "schedule": {
+        "kind": "at",
+        "at_ms": 1791209445892,
+        "tz": "Asia/Shanghai"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "3f9ef59c351058e8a4be45870b1ff235",
+        "workspace_id": "office",
+        "name": "终止后过期at",
+        "revision": 1,
+        "schedule": {
+          "at_ms": 1791209445892,
+          "kind": "at",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209445892,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:43.894108+00:00",
+        "updated_at": "2026-10-05T14:10:43.894108+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "pid": 59681,
+    "port": 52536
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/3f9ef59c351058e8a4be45870b1ff235/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/3f9ef59c351058e8a4be45870b1ff235/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/3f9ef59c351058e8a4be45870b1ff235/runs?limit=200",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "afce23b0af5f415986d1eb52484b36b0",
+            "job_id": "3f9ef59c351058e8a4be45870b1ff235",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209445892,
+            "triggered_at": 1791209448435,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 1,
+            "missed_through": 1791209445892,
+            "created_at": "2026-10-05T14:10:48.531093+00:00",
+            "updated_at": "2026-10-05T14:10:48.531093+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/3f9ef59c351058e8a4be45870b1ff235",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "3f9ef59c351058e8a4be45870b1ff235",
+        "workspace_id": "office",
+        "name": "终止后过期at",
+        "revision": 1,
+        "schedule": {
+          "at_ms": 1791209445892,
+          "kind": "at",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": null,
+          "last_run_at": null,
+          "last_status": "missed",
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:43.894108+00:00",
+        "updated_at": "2026-10-05T14:10:48.531093+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "signal": "SIGKILL/restart",
+    "at_job_id": "3f9ef59c351058e8a4be45870b1ff235",
+    "ended": [
+      {
+        "id": "afce23b0af5f415986d1eb52484b36b0",
+        "job_id": "3f9ef59c351058e8a4be45870b1ff235",
+        "revision": 1,
+        "trigger": "scheduled",
+        "scheduled_at": 1791209445892,
+        "triggered_at": 1791209448435,
+        "actor_id": "owner",
+        "client_request_id": null,
+        "status": "missed",
+        "note": "错过到期窗口，不补跑",
+        "retry_count": 0,
+        "retry_at": null,
+        "task_run_id": null,
+        "missed_count": 1,
+        "missed_through": 1791209445892,
+        "created_at": "2026-10-05T14:10:48.531093+00:00",
+        "updated_at": "2026-10-05T14:10:48.531093+00:00",
+        "attempts": []
+      }
+    ],
+    "state": {
+      "enabled": false,
+      "next_run_at": null,
+      "last_run_at": null,
+      "last_status": "missed",
+      "run_count": 0,
+      "retry_count": 0,
+      "max_retries": 3
+    }
+  }
+]

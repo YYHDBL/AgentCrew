@@ -117,6 +117,8 @@ def create_app(runtime: RuntimeState) -> FastAPI:
             await runtime.memory_jobs.start()
         if runtime.run_manager is not None and runtime.diagnostic is None:
             await runtime.run_manager.start()  # 总线订阅 + 派发协程（C8）
+        if runtime.cron_scheduler is not None and runtime.diagnostic is None:
+            await runtime.cron_scheduler.start()
         yield
         await runtime.shutdown()
 
@@ -164,6 +166,8 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         install_run_routes(app, runtime)
     if runtime.governance is not None and runtime.approvals is not None:
         install_cron_routes(app, runtime)
+        from ..cron.scheduler import CronScheduler
+        runtime.cron_scheduler = CronScheduler(runtime)
     if runtime.recovery is not None:
         install_recovery_routes(app, runtime)
     app.add_middleware(EnvelopeMiddleware)

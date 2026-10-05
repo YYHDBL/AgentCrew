@@ -1,0 +1,5236 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "55a218c107e941929ba90f9ec7fc6666",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "at",
+        "at_ms": 1791209425373,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "61b4189c9bf457399075ae67a0489577",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 1,
+        "schedule": {
+          "at_ms": 1791209425373,
+          "kind": "at",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209425373,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:23.894017+00:00",
+        "updated_at": "2026-10-05T14:10:23.894017+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 19
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "6ba4dfc12fac415aaf0111d82933544d",
+            "job_id": "61b4189c9bf457399075ae67a0489577",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209425373,
+            "triggered_at": 1791209425375,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:25.375904+00:00",
+            "updated_at": "2026-10-05T14:10:25.375904+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 20
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "61b4189c9bf457399075ae67a0489577",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 1,
+        "schedule": {
+          "at_ms": 1791209425373,
+          "kind": "at",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": null,
+          "last_run_at": null,
+          "last_status": "fired",
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:23.894017+00:00",
+        "updated_at": "2026-10-05T14:10:25.375904+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/61b4189c9bf457399075ae67a0489577",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "61b4189c9bf457399075ae67a0489577-disable",
+      "expected_revision": 1,
+      "enabled": false
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "61b4189c9bf457399075ae67a0489577",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 2,
+        "schedule": {
+          "at_ms": 1791209425373,
+          "kind": "at",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": null,
+          "last_run_at": null,
+          "last_status": "fired",
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:23.894017+00:00",
+        "updated_at": "2026-10-05T14:10:25.396200+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "a436bc8efc294a1b81a5e3a942966281",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 1000,
+        "tz": "Asia/Shanghai"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "6f568f6d236e5c4d8fb1062a46a4063c",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 1000,
+          "kind": "every",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209426401,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:25.401708+00:00",
+        "updated_at": "2026-10-05T14:10:25.401708+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 22
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 23
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "bfccd4f9ac434ca8812017cb8d0cefc8",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209427401,
+            "triggered_at": 1791209427402,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "skipped",
+            "note": "该计划存在未结束发生",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:27.403187+00:00",
+            "updated_at": "2026-10-05T14:10:27.403187+00:00",
+            "attempts": []
+          },
+          {
+            "id": "74a969e79c3f4a278fdc4369df13c8f2",
+            "job_id": "6f568f6d236e5c4d8fb1062a46a4063c",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209426401,
+            "triggered_at": 1791209426403,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:26.404682+00:00",
+            "updated_at": "2026-10-05T14:10:26.404682+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 24
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "6f568f6d236e5c4d8fb1062a46a4063c",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 1000,
+          "kind": "every",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209428401,
+          "last_run_at": null,
+          "last_status": "skipped",
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:25.401708+00:00",
+        "updated_at": "2026-10-05T14:10:27.403187+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/6f568f6d236e5c4d8fb1062a46a4063c",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "6f568f6d236e5c4d8fb1062a46a4063c-disable",
+      "expected_revision": 1,
+      "enabled": false
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "6f568f6d236e5c4d8fb1062a46a4063c",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 2,
+        "schedule": {
+          "every_ms": 1000,
+          "kind": "every",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791209428401,
+          "last_run_at": null,
+          "last_status": "skipped",
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:25.401708+00:00",
+        "updated_at": "2026-10-05T14:10:27.437254+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "f61e7022df1242639de6b486be1cd279",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "cron",
+        "expr": "* * * * * *",
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "c8cd5f94d1975ed482acdc830ce534a5",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 1,
+        "schedule": {
+          "expr": "* * * * * *",
+          "kind": "cron",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209428000,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:27.444030+00:00",
+        "updated_at": "2026-10-05T14:10:27.444030+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 26
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 27
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "b3a3679dabb24f20bf82777aa76a11ca",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209429000,
+            "triggered_at": 1791209429001,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "skipped",
+            "note": "该计划存在未结束发生",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:29.002946+00:00",
+            "updated_at": "2026-10-05T14:10:29.002946+00:00",
+            "attempts": []
+          },
+          {
+            "id": "30808fc34b9d4f8f98e9100808af6ff7",
+            "job_id": "c8cd5f94d1975ed482acdc830ce534a5",
+            "revision": 1,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209428000,
+            "triggered_at": 1791209428002,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T14:10:28.003863+00:00",
+            "updated_at": "2026-10-05T14:10:28.003863+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 28
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "c8cd5f94d1975ed482acdc830ce534a5",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 1,
+        "schedule": {
+          "expr": "* * * * * *",
+          "kind": "cron",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209430000,
+          "last_run_at": null,
+          "last_status": "skipped",
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:27.444030+00:00",
+        "updated_at": "2026-10-05T14:10:29.002946+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/c8cd5f94d1975ed482acdc830ce534a5",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "c8cd5f94d1975ed482acdc830ce534a5-disable",
+      "expected_revision": 1,
+      "enabled": false
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "c8cd5f94d1975ed482acdc830ce534a5",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 2,
+        "schedule": {
+          "expr": "* * * * * *",
+          "kind": "cron",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791209430000,
+          "last_run_at": null,
+          "last_status": "skipped",
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:27.444030+00:00",
+        "updated_at": "2026-10-05T14:10:29.034657+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "c894e6d4939b4c9b9fd9d56203ea36b8",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "at",
+        "at_ms": 1791209430239,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "ddeb37ba5e0f50caaa2ad4e815da570e",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 1,
+        "schedule": {
+          "at_ms": 1791209430239,
+          "kind": "at",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209430239,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:29.042147+00:00",
+        "updated_at": "2026-10-05T14:10:29.042147+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/ddeb37ba5e0f50caaa2ad4e815da570e",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "fb4a751bdba6428bad4cac9f9a916ca9",
+      "expected_revision": 1,
+      "schedule": {
+        "kind": "at",
+        "at_ms": 1791209429250,
+        "tz": "UTC"
+      }
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "ddeb37ba5e0f50caaa2ad4e815da570e",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 2,
+        "schedule": {
+          "at_ms": 1791209429250,
+          "kind": "at",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209429250,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:29.042147+00:00",
+        "updated_at": "2026-10-05T14:10:29.352998+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/ddeb37ba5e0f50caaa2ad4e815da570e/runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "fffdce1b96f84d1384fd0b543233bdc6",
+            "job_id": "ddeb37ba5e0f50caaa2ad4e815da570e",
+            "revision": 2,
+            "trigger": "scheduled",
+            "scheduled_at": 1791209429250,
+            "triggered_at": 1791209429355,
+            "actor_id": "owner",
+            "client_request_id": null,
+            "status": "missed",
+            "note": "错过到期窗口，不补跑",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 1,
+            "missed_through": 1791209429250,
+            "created_at": "2026-10-05T14:10:29.355697+00:00",
+            "updated_at": "2026-10-05T14:10:29.355697+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 32
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "d89d5bff6a84494fbe20ab0b6e642581",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 1000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "5e09eb485c3d5ed0b76ec99fdaeac75b",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 1000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791209431865,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:30.865610+00:00",
+        "updated_at": "2026-10-05T14:10:30.865610+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/5e09eb485c3d5ed0b76ec99fdaeac75b",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "eff76bced86a4604b120c77230df594b",
+      "expected_revision": 1,
+      "enabled": false
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "5e09eb485c3d5ed0b76ec99fdaeac75b",
+        "workspace_id": "office",
+        "name": "真实定时配置",
+        "revision": 2,
+        "schedule": {
+          "every_ms": 1000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791209431865,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T14:10:30.865610+00:00",
+        "updated_at": "2026-10-05T14:10:30.873397+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/5e09eb485c3d5ed0b76ec99fdaeac75b/runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null,
+        "at_global_seq": 34
+      }
+    }
+  }
+]

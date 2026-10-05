@@ -1,7 +1,8 @@
 """成熟 croniter 解析及 ZoneInfo 时间计算，调用者显式提供当前时刻。"""
 
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from bisect import bisect_left, bisect_right
 from functools import lru_cache
 from zoneinfo import ZoneInfo, available_timezones
 
@@ -60,3 +61,59 @@ def next_run_at(schedule, now_ms, anchor_ms):
         stamp = int(absolute.timestamp() * 1000)
         if stamp > now_ms:
             return stamp
+
+
+def missed_range(schedule, scheduled_ms, now_ms, anchor_ms):
+    validate_schedule(schedule)
+    if now_ms < scheduled_ms:
+        raise ScheduleError("错过范围的结束时间早于发生时间")
+    if schedule["kind"] == "at":
+        return {"count": 1, "through": scheduled_ms, "next": None}
+    if schedule["kind"] == "every":
+        count = (now_ms - scheduled_ms) // schedule["every_ms"] + 1
+        through = scheduled_ms + (count - 1) * schedule["every_ms"]
+        return {"count": count, "through": through, "next": through + schedule["every_ms"]}
+    zone = ZoneInfo(schedule["tz"])
+    first = datetime.fromtimestamp(scheduled_ms / 1000, timezone.utc).astimezone(zone)
+    last = datetime.fromtimestamp(now_ms / 1000, timezone.utc).astimezone(zone)
+    fields = schedule["expr"].split()
+    expanded = croniter(schedule["expr"], first.replace(tzinfo=None)).expanded
+    minutes = list(range(60)) if expanded[0] == ["*"] else expanded[0]
+    seconds = ([0] if len(fields) == 5 else list(range(60)) if expanded[5] == ["*"] else expanded[5])
+    hour_expression = " ".join(["0", *fields[1:5]])
+    base = first.replace(tzinfo=None, minute=0, second=0, microsecond=0) - timedelta(seconds=1)
+    upper = last.replace(tzinfo=None, minute=0, second=0, microsecond=0)
+    hours = croniter(hour_expression, base, max_years_between_matches=50)
+    count, through = 0, None
+    while True:
+        hour = hours.get_next(datetime)
+        if hour > upper:
+            break
+        for minute in minutes:
+            wall = hour.replace(minute=minute)
+            beginning = wall.replace(tzinfo=zone, fold=0)
+            ending = (wall + timedelta(seconds=59)).replace(tzinfo=zone, fold=0)
+            first_valid = beginning.astimezone(timezone.utc).astimezone(zone).replace(tzinfo=None) == wall
+            last_valid = ending.astimezone(timezone.utc).astimezone(zone).replace(tzinfo=None) == wall + timedelta(seconds=59)
+            if not first_valid and not last_valid:
+                continue
+            if first_valid and last_valid and beginning.utcoffset() == ending.utcoffset():
+                stamp = int(beginning.timestamp() * 1000)
+                left = bisect_left(seconds, max(0, (scheduled_ms - stamp + 999) // 1000))
+                right = bisect_right(seconds, min(59, (now_ms - stamp) // 1000))
+                if right > left:
+                    count += right - left
+                    through = max(through or 0, stamp + seconds[right - 1] * 1000)
+            else:
+                for second in seconds:
+                    candidate = (wall + timedelta(seconds=second)).replace(tzinfo=zone, fold=0)
+                    absolute = candidate.astimezone(timezone.utc)
+                    if absolute.astimezone(zone).replace(tzinfo=None) != candidate.replace(tzinfo=None):
+                        continue
+                    stamp = int(absolute.timestamp() * 1000)
+                    if scheduled_ms <= stamp <= now_ms:
+                        count += 1
+                        through = max(through or 0, stamp)
+    if not count:
+        raise ScheduleError("持久化的到期时间不属于该cron表达式")
+    return {"count": count, "through": through, "next": next_run_at(schedule, now_ms, anchor_ms)}

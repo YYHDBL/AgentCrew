@@ -71,6 +71,8 @@ class RuntimeState:
 
     async def stop_execution(self) -> None:
         cancellations = []
+        if self.cron_scheduler is not None:
+            cancellations.append(self.cron_scheduler.shutdown())
         if self.memory_jobs is not None:
             cancellations.append(self.memory_jobs.shutdown())
         if self.run_manager is not None:
@@ -84,6 +86,8 @@ class RuntimeState:
         """优雅关闭（§7 顺序；任务取消不写终态——run_manager.shutdown 在
         总线停收之前执行，被取消任务不落 run.* 终态，C9 对账收敛）。"""
         self.log.info("shutdown.begin 优雅关闭（总预算 10s；停收新请求由 uvicorn 完成）")
+        if self.cron_scheduler is not None:
+            await self.cron_scheduler.shutdown()
         if self.memory_jobs is not None:
             await self.memory_jobs.shutdown()
         if self.run_manager is not None:
