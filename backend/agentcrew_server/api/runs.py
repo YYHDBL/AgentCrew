@@ -9,18 +9,38 @@ from __future__ import annotations
 
 import asyncio
 import json
+from datetime import datetime, timezone
 from typing import Any
+from typing import Literal
 
-from fastapi import Response
+from fastapi import Depends, Query, Request, Response
 from pydantic import BaseModel
 
 from ..questions import QuestionNotFound, QuestionStale
 from ..sessions import SessionError
 from .errors import ApiError, ErrorCode
+from ..runs import Runs
 
 
 class QuestionAnswerRequest(BaseModel):
     answer: str | None = None  # null = 用户取消，按"拒绝回答"告知模型
+
+
+def run_filters(workspace_id: str | None = None, agent_id: str | None = None,
+                conversation_id: str | None = None,
+                status: Literal["queued", "running", "waiting_user", "waiting_verification", "interrupted", "completed", "failed", "cancelled"] | None = None,
+                source: Literal["user", "cron", "manual"] | None = None,
+                since: datetime | None = None, until: datetime | None = None):
+    values = {"workspace_id": workspace_id, "agent_id": agent_id,
+              "conversation_id": conversation_id, "status": status, "source": source}
+    for name, value in (("since", since), ("until", until)):
+        if value is not None:
+            if value.tzinfo is None:
+                raise ApiError(ErrorCode.VALIDATION_ERROR, "时间筛选必须包含时区")
+            values[name] = value.astimezone(timezone.utc).isoformat()
+    if since is not None and until is not None and since > until:
+        raise ApiError(ErrorCode.VALIDATION_ERROR, "开始时间不能晚于结束时间")
+    return {key: value for key, value in values.items() if value is not None}
 
 
 def install_run_routes(app, runtime) -> None:
@@ -28,6 +48,29 @@ def install_run_routes(app, runtime) -> None:
     questions = runtime.questions
     run_manager = runtime.run_manager
     db = runtime.db
+    center = Runs(runtime) if runtime.identities is not None else None
+
+    @app.get("/api/task-runs")
+    async def list_runs(request: Request, filters: dict = Depends(run_filters),
+                        limit: int = Query(50, ge=1, le=200), after: str | None = None):
+        return await asyncio.to_thread(center.list, request.state.identity, filters, limit, after)
+
+    @app.get("/api/runs/metrics")
+    async def metrics(request: Request, filters: dict = Depends(run_filters)):
+        return await asyncio.to_thread(center.metrics, request.state.identity, filters)
+
+    @app.get("/api/task-runs/{task_run_id}")
+    async def read_run(task_run_id: str, request: Request):
+        return {"data": await asyncio.to_thread(center.read, request.state.identity, task_run_id)}
+
+    @app.get("/api/task-runs/{task_run_id}/events/{seq}")
+    async def locate_event(task_run_id: str, seq: int, request: Request,
+                           attempt_no: int | None = Query(None, ge=1)):
+        return await asyncio.to_thread(center.locate, request.state.identity, task_run_id, seq, attempt_no)
+
+    @app.get("/api/task-runs/{task_run_id}/calls/{run_call_id}")
+    async def read_call(task_run_id: str, run_call_id: str, request: Request):
+        return await asyncio.to_thread(center.call, request.state.identity, task_run_id, run_call_id)
 
     @app.get("/api/conversations/{conversation_id}/task-runs")
     async def list_task_runs(conversation_id: str):

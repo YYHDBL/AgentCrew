@@ -33,6 +33,7 @@ from ..db.queries import (
     task_run_exists,
 )
 from .errors import ApiError, ErrorCode
+from ..runs import Runs, event_frame
 
 _log = logging.getLogger("agentcrew.api.sse")
 
@@ -51,7 +52,7 @@ def _retry_hint() -> ServerSentEvent:
 
 def _data_frame(event) -> ServerSentEvent:
     return ServerSentEvent(
-        data=json.dumps(event.as_frame(), ensure_ascii=False, separators=(",", ":"))
+        data=json.dumps(event_frame(event), ensure_ascii=False, separators=(",", ":"))
     )
 
 
@@ -220,8 +221,10 @@ def install_sse_routes(app, runtime) -> None:
     async def task_run_events(
         task_run_id: str, request: Request,
         from_seq: int = Query(0, alias="from"),
-        after_seq: int | None = Query(None),
-        limit: int | None = Query(None, le=500),
+        after_seq: int | None = Query(None, ge=0),
+        limit: int | None = Query(None, ge=1, le=500),
+        through_global_seq: int | None = Query(None, ge=0),
+        attempt_no: int | None = Query(None, ge=1),
     ):
         if not await asyncio.to_thread(_task_run_exists, runtime.db, task_run_id):
             raise ApiError(ErrorCode.NOT_FOUND, f"任务不存在：{task_run_id}")
@@ -230,12 +233,15 @@ def install_sse_routes(app, runtime) -> None:
             # JSON 分页模式（契约：{data:{items, next_after_seq}}；after_seq 排他）
             effective_after = after_seq if after_seq is not None else 0
             effective_limit = limit if limit is not None else 500
+            if runtime.identities is not None:
+                return await asyncio.to_thread(Runs(runtime).events, request.state.identity,
+                    task_run_id, effective_after, effective_limit, through_global_seq, attempt_no)
             events = await asyncio.to_thread(
                 _task_events_page, runtime.db, task_run_id,
                 effective_after, effective_limit,
             )
             return {
-                "items": [event.as_frame() for event in events],
+                "items": [event_frame(event) for event in events],
                 "next_after_seq": events[-1].seq if events else effective_after,
             }
 

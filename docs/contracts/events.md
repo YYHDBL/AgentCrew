@@ -33,8 +33,8 @@
 | `queue.paused` / `queue.resumed` | `{}` | 暂停或继续队列；合法动作读取 state 的能力字段。 |
 | `step.started` | `{step_id: string, ordinal: integer, model_slot?: string}` | 建立步骤，`step_id` 用于关联同一步骤中的请求重试。 |
 | `step.completed` | `{step_id: string, input_tokens?: integer, output_tokens?: integer, latency_ms?: integer}` | 模型回合完成；后续工具事件独立表示工具执行状态。 |
-| `llm.request_started` | `{llm_call_id: string, step_id: string, model: string, model_slot?: string, retry_no?: integer}` | 每次请求尝试有独立 `llm_call_id`；同一步骤重试保留 `step_id`，model_slot记录实际使用的main或aux配置槽。 |
-| `llm.request_done` | `{llm_call_id: string, step_id: string, text: string, tool_uses: ToolUse[], thinking_blocks: ThinkingBlock[], prompt_tokens: integer, completion_tokens: integer, latency_ms: integer, stop_reason: string \| null}` | C8 完整回复。`tool_uses=[]` 表示最终文本回合；包含工具调用的回合继续执行工具，文本保留在事件中。 |
+| `llm.request_started` | `{llm_call_id: string, step_id: string, model: string, model_slot?: string, retry_no?: integer, tool_declarations?: object[]}` | 每次请求尝试有独立 `llm_call_id`；同一步骤重试保留 `step_id`，model_slot记录实际使用的main或aux配置槽。M3起保存本次实际工具声明，历史缺失单独标明。 |
+| `llm.request_done` | `{llm_call_id: string, step_id: string, text: string, tool_uses: ToolUse[], thinking_blocks: ThinkingBlock[], prompt_tokens: integer|null, completion_tokens: integer|null, usage_received?: boolean, latency_ms: integer, stop_reason: string \| null}` | C8 完整回复。`tool_uses=[]` 表示最终文本回合；包含工具调用的回合继续执行工具，文本保留在事件中。M3起缺失usage保存null。 |
 | `llm.request_failed` | `{llm_call_id: string, step_id: string, error: string, retry_no: integer}` | `error` 含错误分类与说明。该请求结束，后续允许同一步骤重试；后续成功应显示已恢复。 |
 
 `ToolUse = {id: string, name: string, input: object}`；`ThinkingBlock = {text: string, signature: string}`。C8 的 `llm.request_done` 总是携带数组，空数组和空字符串也保留。文本 delta 当前未公开为会话事件；D2 逐字呈现读取持久化全文，历史恢复立即呈现全文。

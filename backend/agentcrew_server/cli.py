@@ -22,7 +22,6 @@ from pathlib import Path
 
 import uvicorn
 
-from agentcrew_core.provider.glm_anthropic import DEFAULT_BASE_URL
 from agentcrew_core.tools import ToolScheduler, build_default_registry
 
 from .api.app import create_app
@@ -379,10 +378,11 @@ def main(argv: list[str] | None = None) -> int:
         )
         log.info("startup.bus 事件总线就绪（队列上限 1000，SSE 连接上限 32）")
         log.info(
-            "startup.provider main=%s aux=%s @ %s",
+            "startup.provider main=%s @ %s aux=%s @ %s",
             config.values.get("models", {}).get("main", {}).get("model", "?"),
+            provider.slots["main"].base_url,
             config.values.get("models", {}).get("aux", {}).get("model", "?"),
-            DEFAULT_BASE_URL,
+            provider.slots["aux"].base_url,
         )
         app = create_app(runtime)
 

@@ -305,7 +305,9 @@ async def run_task(messages: list[dict], deps: LoopDeps) -> LoopResult:
         # 块与签名）——C9 恢复重建对话与结果配对的唯一依据（v1.7）
         request_event = await deps.emit("llm.request_done", {
             "llm_call_id": llm_call_id, "step_id": step_id,
-            "prompt_tokens": in_tok, "completion_tokens": out_tok,
+            "prompt_tokens": in_tok if usage is not None else None,
+            "completion_tokens": out_tok if usage is not None else None,
+            "usage_received": usage is not None,
             "latency_ms": latency_ms, "text": full_text,
             "tool_uses": [{"id": c.id, "name": c.name, "input": c.input}
                           for c in calls],

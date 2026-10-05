@@ -410,6 +410,8 @@ class RunManager:
                 ctx.memory_skills = self._memory_skills.run_tool
 
             async def sink(event_type: str, payload: dict) -> None:
+                if event_type == "llm.request_started":
+                    payload = {**payload, "tool_declarations": tools}
                 return await self._emit(task_run_id, conversation_id,
                                  event_type, payload, attempt_no=attempt_no)
 
