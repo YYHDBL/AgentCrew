@@ -89,6 +89,19 @@ class RunEventType(StrEnum):
     GOVERNANCE_BACKUP_CREATED = "governance.backup_created"
     GOVERNANCE_BACKUP_RESTORED = "governance.backup_restored"
     GOVERNANCE_ACCESS_DENIED = "governance.access_denied"
+    CRON_JOB_CHANGED = "cron.job_changed"
+    CRON_JOB_FIRED = "cron.job_fired"
+    CRON_JOB_MISSED = "cron.job_missed"
+    CRON_JOB_SKIPPED = "cron.job_skipped"
+    CRON_JOB_FAILED = "cron.job_failed"
+    CRON_JOB_STATUS = "cron.job_status"
+    CRON_PROPOSAL_REQUESTED = "cron.proposal_requested"
+    CRON_PROPOSAL_RESOLVED = "cron.proposal_resolved"
+    REVIEW_JOB_STATUS = "review.job_status"
+    AUDIT_REPORTED = "audit.reported"
+    NOTIFICATION_CREATED = "notification.created"
+    NOTIFICATION_UPDATED = "notification.updated"
+    RUNTIME_POWER_CHANGED = "runtime.power_changed"
 
 
 @dataclass(frozen=True)

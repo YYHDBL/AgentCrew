@@ -1,0 +1,3232 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "433b003ddac94bdf94b7a23e6646e5ed",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实at",
+      "schedule": {
+        "kind": "at",
+        "at_ms": 1791207505190,
+        "tz": "Asia/Shanghai"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "4d8ff47ac04257bdbe2e8dffc0d3464c",
+        "workspace_id": "office",
+        "name": "真实at",
+        "revision": 1,
+        "schedule": {
+          "at_ms": 1791207505190,
+          "kind": "at",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791207505190,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.295813+00:00",
+        "updated_at": "2026-10-05T13:37:25.295813+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "433b003ddac94bdf94b7a23e6646e5ed",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实at",
+      "schedule": {
+        "kind": "at",
+        "at_ms": 1791207505190,
+        "tz": "Asia/Shanghai"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "created_at": "2026-10-05T13:37:25.295813+00:00",
+        "deleted_at": null,
+        "id": "4d8ff47ac04257bdbe2e8dffc0d3464c",
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "name": "真实at",
+        "revision": 1,
+        "schedule": {
+          "at_ms": 1791207505190,
+          "kind": "at",
+          "tz": "Asia/Shanghai"
+        },
+        "state": {
+          "enabled": true,
+          "last_run_at": null,
+          "last_status": null,
+          "max_retries": 3,
+          "next_run_at": 1791207505190,
+          "retry_count": 0,
+          "run_count": 0
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "updated_at": "2026-10-05T13:37:25.295813+00:00",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "433b003ddac94bdf94b7a23e6646e5ed",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "不同内容",
+      "schedule": {
+        "kind": "at",
+        "at_ms": 1791207505190,
+        "tz": "Asia/Shanghai"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "IDEMPOTENCY_CONFLICT",
+        "message": "change_id 已绑定不同请求"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/4d8ff47ac04257bdbe2e8dffc0d3464c",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "4d8ff47ac04257bdbe2e8dffc0d3464c",
+        "workspace_id": "office",
+        "name": "真实at",
+        "revision": 1,
+        "schedule": {
+          "at_ms": 1791207505190,
+          "kind": "at",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791207505190,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.295813+00:00",
+        "updated_at": "2026-10-05T13:37:25.295813+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/4d8ff47ac04257bdbe2e8dffc0d3464c",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "276b46f56ebc41c191be21999fee6f71",
+      "expected_revision": 1,
+      "enabled": false,
+      "name": "真实at已停用"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "4d8ff47ac04257bdbe2e8dffc0d3464c",
+        "workspace_id": "office",
+        "name": "真实at已停用",
+        "revision": 2,
+        "schedule": {
+          "at_ms": 1791207505190,
+          "kind": "at",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207505190,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.295813+00:00",
+        "updated_at": "2026-10-05T13:37:25.301798+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/4d8ff47ac04257bdbe2e8dffc0d3464c",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "643d0d36134a4925ba50cfbd5230319c",
+      "expected_revision": 1,
+      "enabled": true
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "REVISION_CONFLICT",
+        "message": "计划修订已经改变"
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/cron/jobs/4d8ff47ac04257bdbe2e8dffc0d3464c",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "b0a025d3f04e4fd68a7c8d984825fc20",
+      "expected_revision": 2
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "4d8ff47ac04257bdbe2e8dffc0d3464c",
+        "workspace_id": "office",
+        "name": "真实at已停用",
+        "revision": 3,
+        "schedule": {
+          "at_ms": 1791207505190,
+          "kind": "at",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207505190,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.295813+00:00",
+        "updated_at": "2026-10-05T13:37:25.304637+00:00",
+        "deleted_at": "2026-10-05T13:37:25.304637+00:00"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/4d8ff47ac04257bdbe2e8dffc0d3464c",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "4d8ff47ac04257bdbe2e8dffc0d3464c",
+        "workspace_id": "office",
+        "name": "真实at已停用",
+        "revision": 3,
+        "schedule": {
+          "at_ms": 1791207505190,
+          "kind": "at",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207505190,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.295813+00:00",
+        "updated_at": "2026-10-05T13:37:25.304637+00:00",
+        "deleted_at": "2026-10-05T13:37:25.304637+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "86e1211de7494d7b88821aca0fc98d9a",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实every",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "79d5a62ec36c5cb5a823fb1725454eb5",
+        "workspace_id": "office",
+        "name": "真实every",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791207450307,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.307437+00:00",
+        "updated_at": "2026-10-05T13:37:25.307437+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "86e1211de7494d7b88821aca0fc98d9a",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实every",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "created_at": "2026-10-05T13:37:25.307437+00:00",
+        "deleted_at": null,
+        "id": "79d5a62ec36c5cb5a823fb1725454eb5",
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "name": "真实every",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "state": {
+          "enabled": true,
+          "last_run_at": null,
+          "last_status": null,
+          "max_retries": 3,
+          "next_run_at": 1791207450307,
+          "retry_count": 0,
+          "run_count": 0
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "updated_at": "2026-10-05T13:37:25.307437+00:00",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "86e1211de7494d7b88821aca0fc98d9a",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "不同内容",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "IDEMPOTENCY_CONFLICT",
+        "message": "change_id 已绑定不同请求"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/79d5a62ec36c5cb5a823fb1725454eb5",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "79d5a62ec36c5cb5a823fb1725454eb5",
+        "workspace_id": "office",
+        "name": "真实every",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791207450307,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.307437+00:00",
+        "updated_at": "2026-10-05T13:37:25.307437+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/79d5a62ec36c5cb5a823fb1725454eb5",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "3df111eeef944b3596ab3921776b08e0",
+      "expected_revision": 1,
+      "enabled": false,
+      "name": "真实every已停用"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "79d5a62ec36c5cb5a823fb1725454eb5",
+        "workspace_id": "office",
+        "name": "真实every已停用",
+        "revision": 2,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207450307,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.307437+00:00",
+        "updated_at": "2026-10-05T13:37:25.312035+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/79d5a62ec36c5cb5a823fb1725454eb5",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "119bc58d83264b2c9c5fcb6d7464ab2f",
+      "expected_revision": 1,
+      "enabled": true
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "REVISION_CONFLICT",
+        "message": "计划修订已经改变"
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/cron/jobs/79d5a62ec36c5cb5a823fb1725454eb5",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "374bad1e23c14ca7b9a6b1769c5a46b0",
+      "expected_revision": 2
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "79d5a62ec36c5cb5a823fb1725454eb5",
+        "workspace_id": "office",
+        "name": "真实every已停用",
+        "revision": 3,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207450307,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.307437+00:00",
+        "updated_at": "2026-10-05T13:37:25.314700+00:00",
+        "deleted_at": "2026-10-05T13:37:25.314700+00:00"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/79d5a62ec36c5cb5a823fb1725454eb5",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "79d5a62ec36c5cb5a823fb1725454eb5",
+        "workspace_id": "office",
+        "name": "真实every已停用",
+        "revision": 3,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207450307,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.307437+00:00",
+        "updated_at": "2026-10-05T13:37:25.314700+00:00",
+        "deleted_at": "2026-10-05T13:37:25.314700+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "6cafe97cb5ee4da2b90658c35eba54b0",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实cron",
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/5 * * * *",
+        "tz": "Europe/Berlin"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "6722ac61d44a5f8a9fe4a845428aa8e5",
+        "workspace_id": "office",
+        "name": "真实cron",
+        "revision": 1,
+        "schedule": {
+          "expr": "*/5 * * * *",
+          "kind": "cron",
+          "tz": "Europe/Berlin"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791207600000,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.317930+00:00",
+        "updated_at": "2026-10-05T13:37:25.317930+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "6cafe97cb5ee4da2b90658c35eba54b0",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实cron",
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/5 * * * *",
+        "tz": "Europe/Berlin"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "created_at": "2026-10-05T13:37:25.317930+00:00",
+        "deleted_at": null,
+        "id": "6722ac61d44a5f8a9fe4a845428aa8e5",
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "name": "真实cron",
+        "revision": 1,
+        "schedule": {
+          "expr": "*/5 * * * *",
+          "kind": "cron",
+          "tz": "Europe/Berlin"
+        },
+        "state": {
+          "enabled": true,
+          "last_run_at": null,
+          "last_status": null,
+          "max_retries": 3,
+          "next_run_at": 1791207600000,
+          "retry_count": 0,
+          "run_count": 0
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "updated_at": "2026-10-05T13:37:25.317930+00:00",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "6cafe97cb5ee4da2b90658c35eba54b0",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "不同内容",
+      "schedule": {
+        "kind": "cron",
+        "expr": "*/5 * * * *",
+        "tz": "Europe/Berlin"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "IDEMPOTENCY_CONFLICT",
+        "message": "change_id 已绑定不同请求"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6722ac61d44a5f8a9fe4a845428aa8e5",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "6722ac61d44a5f8a9fe4a845428aa8e5",
+        "workspace_id": "office",
+        "name": "真实cron",
+        "revision": 1,
+        "schedule": {
+          "expr": "*/5 * * * *",
+          "kind": "cron",
+          "tz": "Europe/Berlin"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791207600000,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.317930+00:00",
+        "updated_at": "2026-10-05T13:37:25.317930+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/6722ac61d44a5f8a9fe4a845428aa8e5",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "532b4bf433724dd7a94c7511e47084d7",
+      "expected_revision": 1,
+      "enabled": false,
+      "name": "真实cron已停用"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "6722ac61d44a5f8a9fe4a845428aa8e5",
+        "workspace_id": "office",
+        "name": "真实cron已停用",
+        "revision": 2,
+        "schedule": {
+          "expr": "*/5 * * * *",
+          "kind": "cron",
+          "tz": "Europe/Berlin"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207600000,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.317930+00:00",
+        "updated_at": "2026-10-05T13:37:25.322667+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/6722ac61d44a5f8a9fe4a845428aa8e5",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "9f04fb88b3504c4e881c8a9e1b19e4de",
+      "expected_revision": 1,
+      "enabled": true
+    },
+    "status": 409,
+    "response": {
+      "error": {
+        "code": "REVISION_CONFLICT",
+        "message": "计划修订已经改变"
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/cron/jobs/6722ac61d44a5f8a9fe4a845428aa8e5",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "b1a49bf4adf04e748a588f7974dc2d37",
+      "expected_revision": 2
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "6722ac61d44a5f8a9fe4a845428aa8e5",
+        "workspace_id": "office",
+        "name": "真实cron已停用",
+        "revision": 3,
+        "schedule": {
+          "expr": "*/5 * * * *",
+          "kind": "cron",
+          "tz": "Europe/Berlin"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207600000,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.317930+00:00",
+        "updated_at": "2026-10-05T13:37:25.325497+00:00",
+        "deleted_at": "2026-10-05T13:37:25.325497+00:00"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/6722ac61d44a5f8a9fe4a845428aa8e5",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "6722ac61d44a5f8a9fe4a845428aa8e5",
+        "workspace_id": "office",
+        "name": "真实cron已停用",
+        "revision": 3,
+        "schedule": {
+          "expr": "*/5 * * * *",
+          "kind": "cron",
+          "tz": "Europe/Berlin"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207600000,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.317930+00:00",
+        "updated_at": "2026-10-05T13:37:25.325497+00:00",
+        "deleted_at": "2026-10-05T13:37:25.325497+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "26d0956b139a46a48d298094d960caaf",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 0,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "greater_than_equal",
+              "loc": [
+                "body",
+                "schedule",
+                "every",
+                "every_ms"
+              ],
+              "msg": "Input should be greater than or equal to 1000",
+              "ctx": {
+                "ge": 1000
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "84dea893c2794e8d9331ac30bf216f2f",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 9223372036854775807,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "less_than_equal",
+              "loc": [
+                "body",
+                "schedule",
+                "every",
+                "every_ms"
+              ],
+              "msg": "Input should be less than or equal to 253402300799999",
+              "ctx": {
+                "le": 253402300799999
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "1decebb1449d472da33017747543ee8c",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "at",
+        "at_ms": true,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "int_type",
+              "loc": [
+                "body",
+                "schedule",
+                "at",
+                "at_ms"
+              ],
+              "msg": "Input should be a valid integer"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "a76e8b1463a2498491294045da04b78a",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "cron",
+        "expr": "",
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "string_too_short",
+              "loc": [
+                "body",
+                "schedule",
+                "cron",
+                "expr"
+              ],
+              "msg": "String should have at least 1 character",
+              "ctx": {
+                "min_length": 1
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "48a1ce6a972c436cbec28af176354b74",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 0 31 2 *",
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "value_error",
+              "loc": [
+                "body",
+                "schedule",
+                "cron"
+              ],
+              "msg": "Value error, cron 表达式无效或无法对应实际日期",
+              "ctx": {
+                "error": {}
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "f0106369e93a4269820b43de754327d0",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "cron",
+        "expr": "@daily",
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "value_error",
+              "loc": [
+                "body",
+                "schedule",
+                "cron"
+              ],
+              "msg": "Value error, cron 仅接受确定性的五字段或末尾秒字段表达式",
+              "ctx": {
+                "error": {}
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "123c3d37b1a54c2ca9d082a8694be089",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "cron",
+        "expr": "0 0 * * *",
+        "tz": "invalid-zone"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "value_error",
+              "loc": [
+                "body",
+                "schedule",
+                "cron"
+              ],
+              "msg": "Value error, 计划时区必须为有效 IANA 名称",
+              "ctx": {
+                "error": {}
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "lilei",
+      "change_id": "identity-a240576270b4444eab967b57ad0efb5e"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "lilei",
+          "name": "李蕾",
+          "org_id": "demo-org",
+          "role": "member",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ],
+          "organization_status": "active"
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "lilei",
+    "request": {
+      "change_id": "f474f73bc7c84d6e95d3bc9923709ec7",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前角色无权执行该操作"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "f474f73bc7c84d6e95d3bc9923709ec7",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": [],
+      "created_by": "agent"
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "extra_forbidden",
+              "loc": [
+                "body",
+                "created_by"
+              ],
+              "msg": "Extra inputs are not permitted"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "f474f73bc7c84d6e95d3bc9923709ec7",
+      "workspace_id": "office",
+      "agent_id": "xiaogang",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "员工不属于请求工作区"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "f474f73bc7c84d6e95d3bc9923709ec7",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": [
+        {
+          "tool": "write_file",
+          "pattern": "/Users"
+        }
+      ]
+    },
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "计划预授权超出当前员工允许候选"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "f474f73bc7c84d6e95d3bc9923709ec7",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实定时配置",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "existing",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 422,
+    "response": {
+      "error": {
+        "code": "VALIDATION_ERROR",
+        "message": "请求体校验失败",
+        "detail": {
+          "errors": [
+            {
+              "type": "value_error",
+              "loc": [
+                "body",
+                "target"
+              ],
+              "msg": "Value error, existing 必须指定会话标识",
+              "ctx": {
+                "error": {}
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "8a1c02d929c745cdae628ca1414cc6dc",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "独立手动发生",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "72a144eeeea056269dae2c15279e76dd",
+        "workspace_id": "office",
+        "name": "独立手动发生",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791207450342,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.342617+00:00",
+        "updated_at": "2026-10-05T13:37:25.342617+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs/72a144eeeea056269dae2c15279e76dd/run-now",
+    "effective_user": "owner",
+    "request": {
+      "client_request_id": "6310b3e9ce2a479dbb61aab17ffaaef5",
+      "expected_revision": 1
+    },
+    "status": 202,
+    "response": {
+      "data": {
+        "id": "6ede4ad6878346bbb22188204c5b35f1",
+        "job_id": "72a144eeeea056269dae2c15279e76dd",
+        "revision": 1,
+        "trigger": "manual",
+        "scheduled_at": null,
+        "triggered_at": 1791207445344,
+        "actor_id": "owner",
+        "client_request_id": "6310b3e9ce2a479dbb61aab17ffaaef5",
+        "status": "fired",
+        "note": null,
+        "retry_count": 0,
+        "retry_at": null,
+        "task_run_id": null,
+        "missed_count": 0,
+        "missed_through": null,
+        "created_at": "2026-10-05T13:37:25.344578+00:00",
+        "updated_at": "2026-10-05T13:37:25.344578+00:00",
+        "attempts": []
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs/72a144eeeea056269dae2c15279e76dd/run-now",
+    "effective_user": "owner",
+    "request": {
+      "client_request_id": "6310b3e9ce2a479dbb61aab17ffaaef5",
+      "expected_revision": 1
+    },
+    "status": 202,
+    "response": {
+      "data": {
+        "id": "6ede4ad6878346bbb22188204c5b35f1",
+        "job_id": "72a144eeeea056269dae2c15279e76dd",
+        "revision": 1,
+        "trigger": "manual",
+        "scheduled_at": null,
+        "triggered_at": 1791207445344,
+        "actor_id": "owner",
+        "client_request_id": "6310b3e9ce2a479dbb61aab17ffaaef5",
+        "status": "fired",
+        "note": null,
+        "retry_count": 0,
+        "retry_at": null,
+        "task_run_id": null,
+        "missed_count": 0,
+        "missed_through": null,
+        "created_at": "2026-10-05T13:37:25.344578+00:00",
+        "updated_at": "2026-10-05T13:37:25.344578+00:00",
+        "attempts": []
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs/72a144eeeea056269dae2c15279e76dd/run-now",
+    "effective_user": "owner",
+    "request": {
+      "client_request_id": "805fdf67df9242c19a21faa012597cd5",
+      "expected_revision": 1
+    },
+    "status": 202,
+    "response": {
+      "data": {
+        "id": "f74a4752ca914669b69117551a40b60d",
+        "job_id": "72a144eeeea056269dae2c15279e76dd",
+        "revision": 1,
+        "trigger": "manual",
+        "scheduled_at": null,
+        "triggered_at": 1791207445346,
+        "actor_id": "owner",
+        "client_request_id": "805fdf67df9242c19a21faa012597cd5",
+        "status": "skipped",
+        "note": "该计划存在未结束发生",
+        "retry_count": 0,
+        "retry_at": null,
+        "task_run_id": null,
+        "missed_count": 0,
+        "missed_through": null,
+        "created_at": "2026-10-05T13:37:25.346934+00:00",
+        "updated_at": "2026-10-05T13:37:25.346934+00:00",
+        "attempts": []
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/72a144eeeea056269dae2c15279e76dd/runs?limit=1",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "f74a4752ca914669b69117551a40b60d",
+            "job_id": "72a144eeeea056269dae2c15279e76dd",
+            "revision": 1,
+            "trigger": "manual",
+            "scheduled_at": null,
+            "triggered_at": 1791207445346,
+            "actor_id": "owner",
+            "client_request_id": "805fdf67df9242c19a21faa012597cd5",
+            "status": "skipped",
+            "note": "该计划存在未结束发生",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T13:37:25.346934+00:00",
+            "updated_at": "2026-10-05T13:37:25.346934+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": "f43021aab84c715c155d976c21fa9cca52d51caeacdc13ffb5f87a62e7cd44fa:f74a4752ca914669b69117551a40b60d",
+        "at_global_seq": 34
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/72a144eeeea056269dae2c15279e76dd/runs?limit=1&after=f43021aab84c715c155d976c21fa9cca52d51caeacdc13ffb5f87a62e7cd44fa:f74a4752ca914669b69117551a40b60d",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "6ede4ad6878346bbb22188204c5b35f1",
+            "job_id": "72a144eeeea056269dae2c15279e76dd",
+            "revision": 1,
+            "trigger": "manual",
+            "scheduled_at": null,
+            "triggered_at": 1791207445344,
+            "actor_id": "owner",
+            "client_request_id": "6310b3e9ce2a479dbb61aab17ffaaef5",
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T13:37:25.344578+00:00",
+            "updated_at": "2026-10-05T13:37:25.344578+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 34
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/cron/jobs/72a144eeeea056269dae2c15279e76dd",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "e56ed3042c434a039039a5f462a027f6",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "72a144eeeea056269dae2c15279e76dd",
+        "workspace_id": "office",
+        "name": "独立手动发生",
+        "revision": 2,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207450342,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.342617+00:00",
+        "updated_at": "2026-10-05T13:37:25.352511+00:00",
+        "deleted_at": "2026-10-05T13:37:25.352511+00:00"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/72a144eeeea056269dae2c15279e76dd/runs?limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "f74a4752ca914669b69117551a40b60d",
+            "job_id": "72a144eeeea056269dae2c15279e76dd",
+            "revision": 1,
+            "trigger": "manual",
+            "scheduled_at": null,
+            "triggered_at": 1791207445346,
+            "actor_id": "owner",
+            "client_request_id": "805fdf67df9242c19a21faa012597cd5",
+            "status": "skipped",
+            "note": "该计划存在未结束发生",
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T13:37:25.346934+00:00",
+            "updated_at": "2026-10-05T13:37:25.346934+00:00",
+            "attempts": []
+          },
+          {
+            "id": "6ede4ad6878346bbb22188204c5b35f1",
+            "job_id": "72a144eeeea056269dae2c15279e76dd",
+            "revision": 1,
+            "trigger": "manual",
+            "scheduled_at": null,
+            "triggered_at": 1791207445344,
+            "actor_id": "owner",
+            "client_request_id": "6310b3e9ce2a479dbb61aab17ffaaef5",
+            "status": "fired",
+            "note": null,
+            "retry_count": 0,
+            "retry_at": null,
+            "task_run_id": null,
+            "missed_count": 0,
+            "missed_through": null,
+            "created_at": "2026-10-05T13:37:25.344578+00:00",
+            "updated_at": "2026-10-05T13:37:25.344578+00:00",
+            "attempts": []
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 35
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "550a9b827a5f490691038b70adbb008c",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "并发修订",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "da86ef9a98fb5e21b1fd1c77a32e2cce",
+        "workspace_id": "office",
+        "name": "并发修订",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791207450355,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.355672+00:00",
+        "updated_at": "2026-10-05T13:37:25.355672+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/workspaces/office",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "office",
+        "org_id": "demo-org",
+        "name": "日常办公",
+        "data_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files",
+        "status": "active",
+        "revision": 1,
+        "created_at": "2026-10-05T13:37:25.129683+00:00",
+        "updated_at": "2026-10-05T13:37:25.129683+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/authorization-preview",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "c5c1bfdba59c42799da188e7eea87818",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实技能引用",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": [
+        {
+          "tool": "write_file",
+          "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files"
+        }
+      ]
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "candidates": [
+          {
+            "tool": "write_file",
+            "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files"
+          }
+        ],
+        "next_run_at": 1791207450365,
+        "authorization_sha256": "fa412a97e8507d83f574d55fa41d286849c60335895ef6dbef06fff3a19f0696",
+        "selected": [
+          {
+            "tool": "write_file",
+            "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "c5c1bfdba59c42799da188e7eea87818",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "真实技能引用",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 5000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": [
+        {
+          "tool": "write_file",
+          "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files"
+        }
+      ]
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "3aac32cefe2651bca373dea0bf53bb98",
+        "workspace_id": "office",
+        "name": "真实技能引用",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [
+            {
+              "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files",
+              "tool": "write_file"
+            }
+          ],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791207450369,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.369141+00:00",
+        "updated_at": "2026-10-05T13:37:25.369141+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/cron/jobs/3aac32cefe2651bca373dea0bf53bb98",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "f980ac869ac54701a8030c3de3f86a98",
+      "expected_revision": 1,
+      "enabled": false
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "3aac32cefe2651bca373dea0bf53bb98",
+        "workspace_id": "office",
+        "name": "真实技能引用",
+        "revision": 2,
+        "schedule": {
+          "every_ms": 5000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [
+            {
+              "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files",
+              "tool": "write_file"
+            }
+          ],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": false,
+          "next_run_at": 1791207450369,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.369141+00:00",
+        "updated_at": "2026-10-05T13:37:25.373045+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/identity/demo",
+    "effective_user": "owner",
+    "request": {
+      "user_id": "wangming",
+      "change_id": "identity-c66830c246f44fe3b65d11d62b60b2a7"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "identity": {
+          "credential_owner_id": "owner",
+          "effective_user_id": "wangming",
+          "name": "王明",
+          "org_id": "demo-org",
+          "role": "admin",
+          "demo": true,
+          "workspace_ids": [
+            "analytics",
+            "office"
+          ],
+          "organization_status": "active"
+        }
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/agents",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "1217c3c476df4fcc941c194d9e06df52",
+      "expected_revision": 0,
+      "workspace_id": "office",
+      "name": "计划可见性员工",
+      "spec": {
+        "position": "核查实际材料",
+        "model_slot": "main",
+        "skill_ids": [],
+        "connector_ids": []
+      }
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "02e6930e9cc85d97a024e4f2eee72b87",
+        "workspace_id": "office",
+        "name": "计划可见性员工",
+        "spec": {
+          "connector_ids": [],
+          "model_slot": "main",
+          "position": "核查实际材料",
+          "skill_ids": []
+        },
+        "status": "active",
+        "revision": 1,
+        "created_by_user_id": "owner",
+        "created_at": "2026-10-05T13:37:25.378920+00:00",
+        "updated_at": "2026-10-05T13:37:25.378920+00:00"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/grants?workspace_id=office&grantee_id=wangming&limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/grants",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "b17e88277fdc4a17b837a66497d368e5",
+      "resource_type": "agent",
+      "resource_id": "xiaowen",
+      "grantee_type": "user",
+      "grantee_id": "wangming"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "7f4c3e612046528a9225650307557c75",
+        "resource_type": "agent",
+        "resource_id": "xiaowen",
+        "grantee_type": "user",
+        "grantee_id": "wangming",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-05T13:37:25.381816+00:00",
+        "revoked_at": null,
+        "revision": 1,
+        "change_id": "b17e88277fdc4a17b837a66497d368e5",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/grants",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "9640f7781ad14cc49c0ec4ed16e02e6b",
+      "resource_type": "agent",
+      "resource_id": "02e6930e9cc85d97a024e4f2eee72b87",
+      "grantee_type": "user",
+      "grantee_id": "wangming"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "9b0598917d1151ada760f0cc7068d9b9",
+        "resource_type": "agent",
+        "resource_id": "02e6930e9cc85d97a024e4f2eee72b87",
+        "grantee_type": "user",
+        "grantee_id": "wangming",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-05T13:37:25.384379+00:00",
+        "revoked_at": null,
+        "revision": 1,
+        "change_id": "9640f7781ad14cc49c0ec4ed16e02e6b",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "wangming",
+    "request": {
+      "change_id": "844e2737476c473990c7f3ef270e4ccb",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "成员当前计划",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 86400000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "c9649af964895f6e8460d68d718e84e3",
+        "workspace_id": "office",
+        "name": "成员当前计划",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 86400000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "wangming",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791293845387,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.387382+00:00",
+        "updated_at": "2026-10-05T13:37:25.387382+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "wangming",
+    "request": {
+      "change_id": "6e5cb1814bb54bd2815910b277df2fa4",
+      "workspace_id": "office",
+      "agent_id": "02e6930e9cc85d97a024e4f2eee72b87",
+      "name": "成员当前计划",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 86400000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "fd6331cfe07a57c0b913743b07dad84a",
+        "workspace_id": "office",
+        "name": "成员当前计划",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 86400000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "02e6930e9cc85d97a024e4f2eee72b87",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [],
+            "model_slot": "main",
+            "position": "核查实际材料",
+            "skill_ids": []
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "wangming",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {}
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791293845389,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.389675+00:00",
+        "updated_at": "2026-10-05T13:37:25.389675+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "PATCH",
+    "path": "/api/memberships/membership-wangming/role",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "01c697b0e3ef48db8f9e44d8ee02154f",
+      "expected_revision": 1,
+      "role": "member"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "membership-wangming",
+        "org_id": "demo-org",
+        "user_id": "wangming",
+        "name": "王明",
+        "role": "member",
+        "status": "active",
+        "revision": 2,
+        "workspace_ids": [
+          "analytics",
+          "office"
+        ]
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/grants/9b0598917d1151ada760f0cc7068d9b9",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "fadac097e1b84355b03a1f4537fd2034",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "9b0598917d1151ada760f0cc7068d9b9",
+        "resource_type": "agent",
+        "resource_id": "02e6930e9cc85d97a024e4f2eee72b87",
+        "grantee_type": "user",
+        "grantee_id": "wangming",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-05T13:37:25.384379+00:00",
+        "revoked_at": "2026-10-05T13:37:25.393347+00:00",
+        "revision": 2,
+        "change_id": "9640f7781ad14cc49c0ec4ed16e02e6b",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs?workspace_id=office",
+    "effective_user": "wangming",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "c9649af964895f6e8460d68d718e84e3",
+            "workspace_id": "office",
+            "name": "成员当前计划",
+            "revision": 1,
+            "schedule": {
+              "every_ms": 86400000,
+              "kind": "every",
+              "tz": "UTC"
+            },
+            "target": {
+              "conversation_id": null,
+              "execution_mode": "new_conversation",
+              "instruction": "核查当前实际工作目录并记录结果。"
+            },
+            "metadata": {
+              "agent_id": "xiaowen",
+              "agent_revision": 1,
+              "agent_spec_snapshot": {
+                "connector_ids": [
+                  "office-http"
+                ],
+                "model_slot": "main",
+                "position": "办公助理",
+                "skill_ids": [
+                  "c7b7146c6ea65788b6d4161a4982f34b",
+                  "7fb6db7a69e75931b85594e05ed43d2b"
+                ]
+              },
+              "created_by": "user",
+              "created_via_task_run_id": null,
+              "credential_owner_id": "owner",
+              "owner_id": "wangming",
+              "pre_authorized": [],
+              "proposal_id": null,
+              "skill_versions": {
+                "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+                "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+              }
+            },
+            "state": {
+              "enabled": true,
+              "next_run_at": 1791293845387,
+              "last_run_at": null,
+              "last_status": null,
+              "run_count": 0,
+              "retry_count": 0,
+              "max_retries": 3
+            },
+            "created_at": "2026-10-05T13:37:25.387382+00:00",
+            "updated_at": "2026-10-05T13:37:25.387382+00:00",
+            "deleted_at": null
+          }
+        ],
+        "next_after": null,
+        "at_global_seq": 47
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/fd6331cfe07a57c0b913743b07dad84a",
+    "effective_user": "wangming",
+    "request": null,
+    "status": 403,
+    "response": {
+      "error": {
+        "code": "OUT_OF_SCOPE",
+        "message": "当前成员没有员工使用授权"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/agents/xiaowen/permission-rules",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "be71e817f32e4aa58c44108e70eb3359",
+      "tool_name": "http_request",
+      "pattern": "example.com",
+      "effect": "allow"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "4adb2c2db2af5cdd83773b775c47516f",
+        "agent_id": "xiaowen",
+        "tool_name": "http_request",
+        "pattern": "example.com",
+        "effect": "allow",
+        "created_by_user_id": "owner",
+        "created_at": "2026-10-05T13:37:25.398313+00:00",
+        "revoked_at": null,
+        "revision": 1,
+        "change_id": "be71e817f32e4aa58c44108e70eb3359"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/grants?workspace_id=office&grantee_id=xiaowen&limit=200",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "items": [
+          {
+            "id": "2155213f09e759f4a355350a73fd16ad",
+            "resource_type": "skill",
+            "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-05T13:37:25.144817+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-skill-xiaowen-cda8b927ff2d5b45a9330b91ec1b1789",
+            "workspace_id": "office"
+          },
+          {
+            "id": "57718b191d9a5f438c891943b1e36b68",
+            "resource_type": "skill",
+            "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-05T13:37:25.150125+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408",
+            "workspace_id": "office"
+          },
+          {
+            "id": "2a574a78c1915000a23996806e66b2cd",
+            "resource_type": "connector",
+            "resource_id": "office-http",
+            "grantee_type": "agent",
+            "grantee_id": "xiaowen",
+            "granted_by_user_id": "owner",
+            "created_at": "2026-10-05T13:37:25.157594+00:00",
+            "revoked_at": null,
+            "revision": 1,
+            "change_id": "seed-http",
+            "workspace_id": "office"
+          }
+        ],
+        "next_after": null
+      }
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/grants/2a574a78c1915000a23996806e66b2cd",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "fcab25b3dd8c46458d704c86934a3c40",
+      "expected_revision": 1
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "2a574a78c1915000a23996806e66b2cd",
+        "resource_type": "connector",
+        "resource_id": "office-http",
+        "grantee_type": "agent",
+        "grantee_id": "xiaowen",
+        "granted_by_user_id": "owner",
+        "created_at": "2026-10-05T13:37:25.157594+00:00",
+        "revoked_at": "2026-10-05T13:37:25.400773+00:00",
+        "revision": 2,
+        "change_id": "seed-http",
+        "workspace_id": "office"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/workspaces/office",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "office",
+        "org_id": "demo-org",
+        "name": "日常办公",
+        "data_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files",
+        "status": "active",
+        "revision": 1,
+        "created_at": "2026-10-05T13:37:25.129683+00:00",
+        "updated_at": "2026-10-05T13:37:25.129683+00:00"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/authorization-preview",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "2951d47091f94fbc950adcbb62a476a6",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "当前文件候选",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 86400000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": [
+        {
+          "tool": "write_file",
+          "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files"
+        }
+      ]
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "candidates": [
+          {
+            "tool": "write_file",
+            "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files"
+          }
+        ],
+        "next_run_at": 1791293845405,
+        "authorization_sha256": "fa412a97e8507d83f574d55fa41d286849c60335895ef6dbef06fff3a19f0696",
+        "selected": [
+          {
+            "tool": "write_file",
+            "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "effective_user": "owner",
+    "request": {
+      "change_id": "2951d47091f94fbc950adcbb62a476a6",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "当前文件候选",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 86400000,
+        "tz": "UTC"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": [
+        {
+          "tool": "write_file",
+          "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files"
+        }
+      ]
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "0f6ec0bf73c95f8b9f8741255d75a000",
+        "workspace_id": "office",
+        "name": "当前文件候选",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 86400000,
+          "kind": "every",
+          "tz": "UTC"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [
+            {
+              "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/03-verified/identity-http0/workspaces/office/files",
+              "tool": "write_file"
+            }
+          ],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791293845409,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:37:25.409943+00:00",
+        "updated_at": "2026-10-05T13:37:25.409943+00:00",
+        "deleted_at": null
+      }
+    }
+  }
+]

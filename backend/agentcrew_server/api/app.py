@@ -33,6 +33,7 @@ from .connectors import install_connector_routes
 from .rules import install_rule_routes
 from .audit import install_audit_routes
 from .governance import install_governance_routes
+from .cron import install_cron_routes
 from ..db.audit import snapshot_chain_head
 from ..governance.backups import DiagnosticBackups
 from agentcrew_core.connectors import ConnectorBoundaryError
@@ -161,6 +162,8 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         install_settings_routes(app, runtime)
     if runtime.questions is not None and runtime.run_manager is not None:
         install_run_routes(app, runtime)
+    if runtime.governance is not None and runtime.approvals is not None:
+        install_cron_routes(app, runtime)
     if runtime.recovery is not None:
         install_recovery_routes(app, runtime)
     app.add_middleware(EnvelopeMiddleware)

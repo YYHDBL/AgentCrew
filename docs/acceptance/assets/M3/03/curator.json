@@ -1,0 +1,122 @@
+{
+  "job_id": "8f0eb9af20535a0f8e4e390d537e18a1",
+  "skill_id": "9564eda90e05511bb260735603731601",
+  "first_curator_job": "d198d47b4f614ddcb1edc2f108537cb9",
+  "second_curator_job": "79c8e512ddff40ff9328559ae52bf5a2",
+  "enabled_report": {
+    "archived": [],
+    "changes": [],
+    "checked": 3,
+    "exempt": [
+      {
+        "entry_id": "ebbc375c353e4c46848506d760b17c2f",
+        "reason": "active_skill_reference",
+        "references": [
+          {
+            "active": 1,
+            "created_at": "2026-10-05T13:37:26.195197+00:00",
+            "resource_id": "xiaowen",
+            "resource_type": "agent",
+            "skill_id": "7fb6db7a69e75931b85594e05ed43d2b"
+          },
+          {
+            "active": 1,
+            "created_at": "2026-10-05T13:37:26.241498+00:00",
+            "resource_id": "8f0eb9af20535a0f8e4e390d537e18a1",
+            "resource_type": "cron",
+            "skill_id": "7fb6db7a69e75931b85594e05ed43d2b"
+          }
+        ],
+        "store_id": "7fb6db7a69e75931b85594e05ed43d2b",
+        "store_type": "skill"
+      },
+      {
+        "entry_id": "534d14f648ac4302975ad54054be229d",
+        "reason": "active_skill_reference",
+        "references": [
+          {
+            "active": 1,
+            "created_at": "2026-10-05T13:37:26.241527+00:00",
+            "resource_id": "8f0eb9af20535a0f8e4e390d537e18a1",
+            "resource_type": "cron",
+            "skill_id": "9564eda90e05511bb260735603731601"
+          }
+        ],
+        "store_id": "9564eda90e05511bb260735603731601",
+        "store_type": "skill"
+      },
+      {
+        "entry_id": "e811671eaf5840adba1eae5025545585",
+        "reason": "active_skill_reference",
+        "references": [
+          {
+            "active": 1,
+            "created_at": "2026-10-05T13:37:26.189974+00:00",
+            "resource_id": "xiaowen",
+            "resource_type": "agent",
+            "skill_id": "c7b7146c6ea65788b6d4161a4982f34b"
+          },
+          {
+            "active": 1,
+            "created_at": "2026-10-05T13:37:26.241533+00:00",
+            "resource_id": "8f0eb9af20535a0f8e4e390d537e18a1",
+            "resource_type": "cron",
+            "skill_id": "c7b7146c6ea65788b6d4161a4982f34b"
+          }
+        ],
+        "store_id": "c7b7146c6ea65788b6d4161a4982f34b",
+        "store_type": "skill"
+      }
+    ],
+    "stale": []
+  },
+  "disabled_report": {
+    "archived": [],
+    "changes": [],
+    "checked": 3,
+    "exempt": [
+      {
+        "entry_id": "ebbc375c353e4c46848506d760b17c2f",
+        "reason": "active_skill_reference",
+        "references": [
+          {
+            "active": 1,
+            "created_at": "2026-10-05T13:37:26.195197+00:00",
+            "resource_id": "xiaowen",
+            "resource_type": "agent",
+            "skill_id": "7fb6db7a69e75931b85594e05ed43d2b"
+          }
+        ],
+        "store_id": "7fb6db7a69e75931b85594e05ed43d2b",
+        "store_type": "skill"
+      },
+      {
+        "entry_id": "e811671eaf5840adba1eae5025545585",
+        "reason": "active_skill_reference",
+        "references": [
+          {
+            "active": 1,
+            "created_at": "2026-10-05T13:37:26.189974+00:00",
+            "resource_id": "xiaowen",
+            "resource_type": "agent",
+            "skill_id": "c7b7146c6ea65788b6d4161a4982f34b"
+          }
+        ],
+        "store_id": "c7b7146c6ea65788b6d4161a4982f34b",
+        "store_type": "skill"
+      }
+    ],
+    "stale": []
+  },
+  "pure_time_parameter": "2026-11-05T13:37:26.252434+00:00",
+  "released_curation_plan": [
+    {
+      "action": "archive",
+      "entry_hash": "8697c269ff28556df4154199d92138e3294080de0d47f15eb5bb126a99dfd28a",
+      "entry_id": "534d14f648ac4302975ad54054be229d",
+      "reason": "unused_30_days"
+    }
+  ],
+  "actual_clock": "2026-10-05T13:37:26.258621+00:00",
+  "model_calls": 0
+}

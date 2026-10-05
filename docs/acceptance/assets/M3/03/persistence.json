@@ -1,0 +1,231 @@
+[
+  {
+    "pid": 55256,
+    "port": 58515
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs",
+    "request": {
+      "change_id": "68e790d87cd9439db7209b109c57c2b5",
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "name": "重启持久计划",
+      "schedule": {
+        "kind": "every",
+        "every_ms": 86400000,
+        "tz": "Asia/Shanghai"
+      },
+      "target": {
+        "instruction": "核查当前实际工作目录并记录结果。",
+        "execution_mode": "new_conversation",
+        "conversation_id": null
+      },
+      "pre_authorized": []
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "id": "49e7f8a7b94753489c8a7ab49d7233a7",
+        "workspace_id": "office",
+        "name": "重启持久计划",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 86400000,
+          "kind": "every",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791294070800,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:41:10.800955+00:00",
+        "updated_at": "2026-10-05T13:41:10.800955+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs/49e7f8a7b94753489c8a7ab49d7233a7/run-now",
+    "request": {
+      "client_request_id": "8b06bf3742064c37b6b7f1f114603b86",
+      "expected_revision": 1
+    },
+    "status": 202,
+    "response": {
+      "data": {
+        "id": "f9a96e0d00ef4f3cb3fbb597e0b23eda",
+        "job_id": "49e7f8a7b94753489c8a7ab49d7233a7",
+        "revision": 1,
+        "trigger": "manual",
+        "scheduled_at": null,
+        "triggered_at": 1791207670804,
+        "actor_id": "owner",
+        "client_request_id": "8b06bf3742064c37b6b7f1f114603b86",
+        "status": "fired",
+        "note": null,
+        "retry_count": 0,
+        "retry_at": null,
+        "task_run_id": null,
+        "missed_count": 0,
+        "missed_through": null,
+        "created_at": "2026-10-05T13:41:10.804401+00:00",
+        "updated_at": "2026-10-05T13:41:10.804401+00:00",
+        "attempts": []
+      }
+    }
+  },
+  {
+    "pid": 55258,
+    "port": 58524
+  },
+  {
+    "method": "GET",
+    "path": "/api/cron/jobs/49e7f8a7b94753489c8a7ab49d7233a7",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": {
+        "id": "49e7f8a7b94753489c8a7ab49d7233a7",
+        "workspace_id": "office",
+        "name": "重启持久计划",
+        "revision": 1,
+        "schedule": {
+          "every_ms": 86400000,
+          "kind": "every",
+          "tz": "Asia/Shanghai"
+        },
+        "target": {
+          "conversation_id": null,
+          "execution_mode": "new_conversation",
+          "instruction": "核查当前实际工作目录并记录结果。"
+        },
+        "metadata": {
+          "agent_id": "xiaowen",
+          "agent_revision": 1,
+          "agent_spec_snapshot": {
+            "connector_ids": [
+              "office-http"
+            ],
+            "model_slot": "main",
+            "position": "办公助理",
+            "skill_ids": [
+              "c7b7146c6ea65788b6d4161a4982f34b",
+              "7fb6db7a69e75931b85594e05ed43d2b"
+            ]
+          },
+          "created_by": "user",
+          "created_via_task_run_id": null,
+          "credential_owner_id": "owner",
+          "owner_id": "owner",
+          "pre_authorized": [],
+          "proposal_id": null,
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          }
+        },
+        "state": {
+          "enabled": true,
+          "next_run_at": 1791294070800,
+          "last_run_at": null,
+          "last_status": null,
+          "run_count": 0,
+          "retry_count": 0,
+          "max_retries": 3
+        },
+        "created_at": "2026-10-05T13:41:10.800955+00:00",
+        "updated_at": "2026-10-05T13:41:10.800955+00:00",
+        "deleted_at": null
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/cron/jobs/49e7f8a7b94753489c8a7ab49d7233a7/run-now",
+    "request": {
+      "client_request_id": "8b06bf3742064c37b6b7f1f114603b86",
+      "expected_revision": 1
+    },
+    "status": 202,
+    "response": {
+      "data": {
+        "id": "f9a96e0d00ef4f3cb3fbb597e0b23eda",
+        "job_id": "49e7f8a7b94753489c8a7ab49d7233a7",
+        "revision": 1,
+        "trigger": "manual",
+        "scheduled_at": null,
+        "triggered_at": 1791207670804,
+        "actor_id": "owner",
+        "client_request_id": "8b06bf3742064c37b6b7f1f114603b86",
+        "status": "fired",
+        "note": null,
+        "retry_count": 0,
+        "retry_at": null,
+        "task_run_id": null,
+        "missed_count": 0,
+        "missed_through": null,
+        "created_at": "2026-10-05T13:41:10.804401+00:00",
+        "updated_at": "2026-10-05T13:41:10.804401+00:00",
+        "attempts": []
+      }
+    }
+  },
+  {
+    "job_id": "49e7f8a7b94753489c8a7ab49d7233a7",
+    "occurrence_id": "f9a96e0d00ef4f3cb3fbb597e0b23eda",
+    "configuration_row": [
+      "49e7f8a7b94753489c8a7ab49d7233a7",
+      1,
+      "{\"every_ms\":86400000,\"kind\":\"every\",\"tz\":\"Asia/Shanghai\"}",
+      "{\"conversation_id\":null,\"execution_mode\":\"new_conversation\",\"instruction\":\"核查当前实际工作目录并记录结果。\"}",
+      "{\"agent_id\":\"xiaowen\",\"agent_revision\":1,\"agent_spec_snapshot\":{\"connector_ids\":[\"office-http\"],\"model_slot\":\"main\",\"position\":\"办公助理\",\"skill_ids\":[\"c7b7146c6ea65788b6d4161a4982f34b\",\"7fb6db7a69e75931b85594e05ed43d2b\"]},\"created_by\":\"user\",\"created_via_task_run_id\":null,\"credential_owner_id\":\"owner\",\"owner_id\":\"owner\",\"pre_authorized\":[],\"proposal_id\":null,\"skill_versions\":{\"7fb6db7a69e75931b85594e05ed43d2b\":\"314222aa9401532b96ae08867bc734a5\",\"c7b7146c6ea65788b6d4161a4982f34b\":\"ce7f36c35b735d43a30a8a4b0b4c0f3b\"}}",
+      1791294070800
+    ],
+    "occurrence_row": [
+      "f9a96e0d00ef4f3cb3fbb597e0b23eda",
+      "49e7f8a7b94753489c8a7ab49d7233a7",
+      "manual",
+      null,
+      "8b06bf3742064c37b6b7f1f114603b86"
+    ],
+    "event_watermark": 20,
+    "audit_seq": 20
+  }
+]

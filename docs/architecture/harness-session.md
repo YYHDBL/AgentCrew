@@ -416,7 +416,7 @@ agentcrew/
       events/        # RunEventType、payload 类型、reducer（会话 FSM 纯函数）
       loop/          # run_task 主循环、回合守门
       tools/         # ToolMetadata、registry、scheduler、幂等钥匙
-      provider/      # Provider 协议、StreamEvent、GLM 适配、FauxProvider
+      provider/      # Provider 协议、StreamEvent、配置供应商流式适配
       recovery/      # 对账、重放器、resume 组装
       ports/         # EventStore / Clock / AuditWriter 等接口定义
     agentcrew_server/               # FastAPI 应用：实现 core 的 Port

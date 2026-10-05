@@ -831,21 +831,21 @@ components:
           required: [kind, at_ms, tz]
           properties:
             kind: { const: at }
-            at_ms: { type: integer, minimum: 0, description: UTC Unix毫秒；过期时登记missed并结束一次性计划 }
+            at_ms: { type: integer, minimum: 0, maximum: 253402300799999, description: UTC Unix毫秒；过期时登记missed并结束一次性计划 }
             tz: { type: string, minLength: 1, description: IANA时区 }
         - type: object
           additionalProperties: false
           required: [kind, every_ms, tz]
           properties:
             kind: { const: every }
-            every_ms: { type: integer, minimum: 1000 }
+            every_ms: { type: integer, minimum: 1000, maximum: 253402300799999, description: 下一次时间仍须位于支持的日期范围，越界返回422 }
             tz: { type: string, minLength: 1 }
         - type: object
           additionalProperties: false
           required: [kind, expr, tz]
           properties:
             kind: { const: cron }
-            expr: { type: string, minLength: 1, description: croniter五字段标准表达式，或第六字段为秒；拒绝宏及年度字段，分钟/小时/日期/月份/星期按库语义解释 }
+            expr: { type: string, minLength: 1, maxLength: 200, description: croniter五字段标准表达式，或第六字段为秒；拒绝宏、年度字段及H/R非确定性表达式，分钟/小时/日期/月份/星期按库语义解释 }
             tz: { type: string, minLength: 1 }
     CronAuthorization:
       type: object

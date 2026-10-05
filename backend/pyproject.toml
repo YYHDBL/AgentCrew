@@ -16,6 +16,7 @@ dependencies = [
     "huggingface-hub>=0.35,<1",
     "anyio>=4.12,<5",
     "mcp==1.26.0",
+    "croniter>=6,<7",
 ]
 
 [dependency-groups]

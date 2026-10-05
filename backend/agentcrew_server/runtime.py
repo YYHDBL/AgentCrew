@@ -66,6 +66,8 @@ class RuntimeState:
     grants: object | None = None
     connectors: object | None = None
     audit: object | None = None
+    cron_store: object | None = None
+    cron_scheduler: object | None = None
 
     async def stop_execution(self) -> None:
         cancellations = []
