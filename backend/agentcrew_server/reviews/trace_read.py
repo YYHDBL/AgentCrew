@@ -4,6 +4,7 @@ import asyncio
 
 from agentcrew_core.governance import RequestIdentity
 from agentcrew_core.events.run_projection import project_run_state, project_attempts
+from agentcrew_core.reviews import automation_approval_facts
 from ..governance.resources import GovernanceError
 from ..runs import Runs, display_value, event_frame
 from ..db.projections import _row_to_event
@@ -33,7 +34,7 @@ class TraceReader:
                 raise GovernanceError("OUT_OF_SCOPE", "轨迹不属于当前员工、工作区及请求者", 403)
             head = runs.head(snapshot)
             if context.job_id:
-                bound = snapshot.execute("SELECT source_global_seq FROM trace_targets WHERE job_id=? AND task_run_id=?", (context.job_id, task_id)).fetchone()
+                bound = snapshot.execute("SELECT source_global_seq FROM trace_targets WHERE job_id=? AND task_run_id=? UNION ALL SELECT r.source_global_seq FROM skill_promotions p JOIN trace_reports r ON r.id=p.report_id WHERE p.job_id=? AND r.task_run_id=?", (context.job_id, task_id, context.job_id, task_id)).fetchone()
                 if bound is None:
                     raise GovernanceError("OUT_OF_SCOPE", "任务不属于该审查的冻结目标", 403)
                 head = min(head, bound[0])
@@ -48,7 +49,9 @@ class TraceReader:
             task.update(project_run_state(all_events))
             attempts = project_attempts(all_events)
             summaries = [dict(row) for row in snapshot.execute("SELECT s.id,s.text FROM session_summaries s JOIN memory_jobs j ON j.id=s.job_id WHERE s.task_run_id=? AND j.trigger_global_seq<=?", (task_id, head))]
-            result = display_value({"task": task, "attempts": attempts, "summaries": summaries,
+            automation = [event_frame(_row_to_event(row)) for row in snapshot.execute("SELECT * FROM run_events WHERE global_seq<=? AND type IN ('cron.proposal_resolved','cron.job_changed') AND json_extract(payload,'$.job_id')=? ORDER BY global_seq", (head, task["cron_job_id"]))] if task["cron_job_id"] else []
+            result = display_value({"task": task, "attempts": attempts, "summaries": summaries, "automation_events": automation,
+                "automation_facts": automation_approval_facts(automation, [event_frame(event) for event in all_events]),
                 "items": [event_frame(_row_to_event(row)) for row in rows[:limit]], "has_more": len(rows) > limit,
                 "next_after_seq": rows[limit - 1]["seq"] if len(rows) > limit else None, "at_global_seq": head})
         runs.require_task(self.db.read_conn, actor, task_id)

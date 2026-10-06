@@ -80,7 +80,9 @@ class MemoryStore:
                 self.identities.conversation(caller, identity.conversation_id)
             if store_type == "skill" and hasattr(self, "grants"):
                 current = self.identities.current(caller)
-                if identity.actor_type != "user" or current["role"] == "member":
+                if hasattr(self, "promotions") and self.promotions.is_promotion(identity):
+                    self.promotions.authorize(identity, store_id)
+                elif identity.actor_type != "user" or current["role"] == "member":
                     if not self.skill_versions.permitted(identity, store_id):
                         return failure("OUT_OF_SCOPE", "技能当前授权或资源状态已经失效")
         if any(not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value) for value in (identity.workspace_id, identity.agent_id)):
@@ -88,7 +90,8 @@ class MemoryStore:
         expected = {"user": "owner", "workspace": identity.workspace_id, "soul": identity.agent_id}
         if store_type == "skill":
             skill = self.db.read_conn.execute("SELECT workspace_id,agent_id FROM memory_skills WHERE id=?", (store_id,)).fetchone()
-            if skill and tuple(skill) == (identity.workspace_id, identity.agent_id):
+            promotion = hasattr(self, "promotions") and self.promotions.is_promotion(identity)
+            if skill and (tuple(skill) == (identity.workspace_id, identity.agent_id) or promotion):
                 expected["skill"] = store_id
         if store_type not in expected or store_id != expected[store_type]:
             return failure("OUT_OF_SCOPE", "记忆库不属于当前执行范围")

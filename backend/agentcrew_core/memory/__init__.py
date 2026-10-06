@@ -34,9 +34,18 @@ _INJECTION = re.compile(
     r"|(?:发送|上传|泄露|输出)[^\n]{0,30}(?:密钥|凭据|系统提示|聊天记录)))", re.I)
 _INVISIBLE = frozenset("\u200b\u200c\u200d\u2060\u2062\u2063\u2064\ufeff\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069")
 _NEGATABLE_ACTION = re.compile(r"^(?:ignore\b|disregard\b|bypass\b|disable\b|忽略|无视|覆盖|绕过|关闭|执行|运行|调用)", re.I)
+_CHINESE_NEGATION = r"(?:不会|不应|不得|不能|禁止|不要|无需|无须|不允许|不可以|不许|不可|不准|不容|不必|不需|不须|不该|不宜|不愿|拒绝|避免|没有|未|不|勿|莫|毋|别)"
+_CHINESE_MODIFIERS = r"(?:主动|擅自|尝试|试图|再|去|直接|继续|随意){0,3}"
+_CHINESE_COORDINATION = r"(?:(?:授予|扩展|修改|执行|运行|调用|改变|重试)(?:或|以及|及|与|和))"
+_ENGLISH_NEGATION = r"(?:never|do not|don't|must not|will not|won't|cannot|can't|avoid|refuse to)"
+_ENGLISH_MODIFIERS = r"(?:\s+(?:ever|attempt to|try to|directly|again|knowingly|deliberately|intentionally)){0,3}"
 _NEGATED_ACTION = re.compile(
-    r"(?:不会|不应|不得|不能|禁止|不要|无需|无须|不允许|不可以|拒绝|避免)(?:主动|擅自|尝试|试图|再|去|直接|继续|随意){0,3}$"
-    r"|(?:never|do not|don't|must not|will not|won't|cannot|can't|avoid|refuse to)(?:\s+(?:ever|attempt to|try to|directly|again|knowingly|deliberately|intentionally)){0,3}\s*$", re.I)
+    _CHINESE_NEGATION + _CHINESE_MODIFIERS + "$|" + _CHINESE_NEGATION + _CHINESE_COORDINATION + "{1,3}$|"
+    + _ENGLISH_NEGATION + _ENGLISH_MODIFIERS + r"\s*$", re.I)
+_REVERSED_NEGATION = re.compile(
+    "(?:" + _CHINESE_NEGATION + r"|不应该|无法|并非|并不是|不是|放弃|停止|终止|取消|撤销|撤回|消除|去除|解除|打破|忽略|覆盖|绕过|放宽)\s*" + _CHINESE_MODIFIERS
+    + _CHINESE_NEGATION + _CHINESE_MODIFIERS + _CHINESE_COORDINATION + "{0,3}$|"
+    + "(?:" + _ENGLISH_NEGATION + r"|not)\s+" + _ENGLISH_NEGATION + _ENGLISH_MODIFIERS + r"\s*$", re.I)
 
 
 def suspected_injection(text: str) -> bool:
@@ -44,7 +53,8 @@ def suspected_injection(text: str) -> bool:
         return True
     normalized = unicodedata.normalize("NFKC", text)
     for match in _INJECTION.finditer(normalized):
-        if _NEGATABLE_ACTION.match(match.group(1)) and _NEGATED_ACTION.search(normalized[max(0, match.start() - 60):match.start()]):
+        prefix = normalized[max(0, match.start() - 60):match.start()]
+        if _NEGATABLE_ACTION.match(match.group(1)) and _NEGATED_ACTION.search(prefix) and not _REVERSED_NEGATION.search(prefix):
             continue
         return True
     return False

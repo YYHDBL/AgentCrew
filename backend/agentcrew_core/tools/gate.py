@@ -72,6 +72,8 @@ def rule_matches(tool_name: str, call_input: dict[str, Any], pattern: str,
         return pattern == "*" or pattern == call_input.get("task_run_id")
     if tool_name == "session_search":
         return pattern == "*" or pattern == call_input.get("query")
+    if tool_name in {"skill_view", "skill_patch"}:
+        return pattern in {"*", tool_name, call_input.get("name")}
     return False
 
 

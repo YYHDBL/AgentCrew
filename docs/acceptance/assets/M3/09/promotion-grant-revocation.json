@@ -1,0 +1,47 @@
+{
+  "revoked_grant": {
+    "id": "c65d002677fd5dc7b830d5b6a5af4208",
+    "resource_type": "skill",
+    "resource_id": "c38f4720edb95425aea014b02ab85c84",
+    "grantee_type": "agent",
+    "grantee_id": "xiaowen",
+    "granted_by_user_id": "owner",
+    "created_at": "2026-10-06T14:58:18.941190+00:00",
+    "revoked_at": null,
+    "revision": 1,
+    "change_id": "5e2408d4ccb04a18af1dbff906d11e44",
+    "workspace_id": "office"
+  },
+  "review": {
+    "job_id": "394b7e223dc540b89e675ead1d82df5b",
+    "kind": "trace_audit",
+    "status": "cancelled",
+    "source_task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "attempt_no": 1,
+    "trigger_global_seq": 7577,
+    "model": "deepseek-v4.1-flash",
+    "config_version": "5",
+    "reason": "AUTHORIZATION_REVOKED：当前作业授权已经变化",
+    "report_id": null,
+    "skill_id": null,
+    "usage": null,
+    "scope": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "owner_id": "owner"
+    },
+    "id": "394b7e223dc540b89e675ead1d82df5b",
+    "task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "version_id": null,
+    "targets": [
+      {
+        "job_id": "394b7e223dc540b89e675ead1d82df5b",
+        "task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+        "attempt_no": 1,
+        "source_global_seq": 7577,
+        "result": null
+      }
+    ],
+    "report_ids": []
+  }
+}

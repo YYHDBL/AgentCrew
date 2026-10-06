@@ -1,0 +1,27 @@
+{
+  "job": {
+    "job_id": "ded76199a3414ec5a2685efd9934501a",
+    "kind": "promote_skill",
+    "status": "interrupted",
+    "source_task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "attempt_no": 1,
+    "trigger_global_seq": 7577,
+    "model": "deepseek-v4.1-flash",
+    "config_version": "5",
+    "reason": "进程终止期间辅助作业未完成",
+    "report_id": "48b93dd328f548ae89bd10f9e6b42dc7",
+    "skill_id": null,
+    "version_id": null,
+    "usage": null,
+    "scope": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "owner_id": "owner"
+    },
+    "id": "ded76199a3414ec5a2685efd9934501a",
+    "task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "granted": false
+  },
+  "signal": "SIGKILL",
+  "published_versions": 0
+}

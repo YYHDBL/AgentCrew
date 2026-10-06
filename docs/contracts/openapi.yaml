@@ -3113,6 +3113,7 @@ paths:
               required: [client_request_id]
               properties:
                 client_request_id: { type: string, minLength: 1, maxLength: 128 }
+                instruction: { type: [string, "null"], minLength: 1, maxLength: 4000, description: 真人针对实际材料明确提出的分析要求，绑定持久审查请求 }
       responses:
         <<: *memory_errors
         "202": { $ref: "#/components/responses/TraceJobEnvelope" }

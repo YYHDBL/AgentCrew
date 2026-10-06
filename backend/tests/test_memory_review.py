@@ -49,6 +49,21 @@ def test_persistent_thresholds_duplicate_events_and_completed_delivery(services)
     asyncio.run(check())
 
 
+def test_delayed_foreground_event_only_cancels_jobs_already_registered(services):
+    store, sessions, jobs = services
+    async def check():
+        conversation, task_id, completed = await task(store, sessions)
+        old_queue = store.db.read_conn.execute("SELECT global_seq FROM run_events WHERE task_run_id=? AND type='run.queued'", (task_id,)).fetchone()[0]
+        job_id = await jobs.review.enqueue("memory_review", "delayed-foreground", completed.global_seq, task_id)
+        await jobs._cancel("cancelled", "已经完成的前台事件延迟到达", through_global_seq=old_queue)
+        assert jobs.get(job_id)["status"] == "queued"
+        new = await sessions.send_instruction(conversation, "新前台指令需要取得执行优先级", "fresh-foreground")
+        cutoff = store.db.read_conn.execute("SELECT global_seq FROM run_events WHERE task_run_id=? AND type='run.queued'", (new["task_run_id"],)).fetchone()[0]
+        await jobs._cancel("cancelled", "新前台已经接收", through_global_seq=cutoff)
+        assert jobs.get(job_id)["status"] == "cancelled"
+    asyncio.run(check())
+
+
 def test_tool_iterations_count_responses_and_queue_send_once(services):
     store, sessions, jobs = services
     async def check():

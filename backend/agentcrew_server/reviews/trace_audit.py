@@ -12,7 +12,7 @@ from agentcrew_core.events.run_projection import project_run_state
 from agentcrew_core.governance import RequestIdentity
 from agentcrew_core.loop import LoopDeps, LoopGates, run_task, user_text_message
 from agentcrew_core.memory.budget import ContextBudgetError
-from agentcrew_core.reviews import ReviewResult, TRACE_REVIEW_SYSTEM, validate_reference
+from agentcrew_core.reviews import ReviewResult, ReviewAssessment, TargetReport, TRACE_REVIEW_SYSTEM, validate_reference
 from agentcrew_core.tools import build_default_registry, ToolRegistry, ToolInvocation, ToolScheduler
 from ..governance.resources import GovernanceError, canonical, now
 from ..db.projections import _row_to_event
@@ -116,7 +116,7 @@ class TraceAudit:
         if created:
             self.jobs._ready.set()
 
-    async def enqueue(self, actor, task_id, client_request_id):
+    async def enqueue(self, actor, task_id, client_request_id, instruction=None):
         conn = self.db.read_conn
         source = self.target(conn, task_id)
         self.runtime.identities.conversation(actor, source["conversation_id"])
@@ -129,6 +129,11 @@ class TraceAudit:
                 self.runtime.identities.conversation(actor, source["conversation_id"], connection)
                 job_id, publications = self.enqueue_in_tx(connection, [source], "manual:" + actor.effective_user_id + ":" + task_id + ":" + client_request_id,
                     source["source_global_seq"], config, 90)
+                original = connection.execute("SELECT instruction FROM trace_review_requests WHERE job_id=?", (job_id,)).fetchone()
+                if not publications and (original[0] if original else None) != instruction:
+                    raise GovernanceError("IDEMPOTENCY_CONFLICT", "审查请求已经绑定不同分析要求")
+                if instruction is not None and publications:
+                    connection.execute("INSERT INTO trace_review_requests VALUES(?,?)", (job_id, instruction))
             for events, audit in publications:
                 self.jobs._publish(connection, events, audit)
             return job_id
@@ -160,8 +165,12 @@ class TraceAudit:
             items = [{**event, "payload": {key: value for key, value in event["payload"].items() if key != "tool_declarations"}} for event in data["items"]]
             materials.append({"task_run_id": target["task_run_id"], "attempt_no": target["attempt_no"], "source_global_seq": target["source_global_seq"],
                 "task": data["task"], "summaries": data["summaries"], "events": items, "earlier_events_before_seq": after,
+                "automation_events": data["automation_events"], "automation_facts": data["automation_facts"],
                 "missing_earlier_summary": after > 0 and not data["summaries"], "has_more": data["has_more"], "next_after_seq": data["next_after_seq"]})
-        return [user_text_message(canonical({"targets": materials, "review_instruction": "依据实际事件分析失败和流程。如存在可复用机理，请提出有依据的技能建议；不能确认的部分使用null。"}))]
+        requested = self.db.read_conn.execute("SELECT instruction FROM trace_review_requests WHERE job_id=?", (job["id"],)).fetchone()
+        allowed = [dict(row) for row in self.db.read_conn.execute("SELECT s.id,s.name,s.description,s.current_version_id FROM skills s JOIN grants g ON g.resource_type='skill' AND g.resource_id=s.id WHERE s.workspace_id=? AND s.status='active' AND g.grantee_type='agent' AND g.grantee_id=? AND g.revoked_at IS NULL ORDER BY s.name", (job["workspace_id"], job["agent_id"]))]
+        return [user_text_message(canonical({"targets": materials, "existing_skill_index": allowed,
+            "review_instruction": requested[0] if requested else "依据实际事件分析失败和流程。如存在可复用机理，请提出有依据的技能建议；不能确认的部分使用null。"}))]
 
     async def run(self, job_id):
         result_text = None
@@ -171,7 +180,7 @@ class TraceAudit:
             await self.jobs._status(job_id, "running")
             job = self.jobs.get(job_id)
             registry, context = self.registry(), self.context(job)
-            system = TRACE_REVIEW_SYSTEM + "\n严格遵循此JSON schema，不增加字段；anomalies和improvement_suggestions必须是字符串数组：\n" + canonical(ReviewResult.model_json_schema())
+            system = TRACE_REVIEW_SYSTEM + "\n严格遵循此JSON schema，不增加字段；anomalies和improvement_suggestions必须是字符串数组：\n" + canonical(ReviewAssessment.model_json_schema())
             async def sink(kind, payload):
                 await self.events.channel.execute(lambda conn: self.jobs._call_tx(conn, job_id, kind, payload))
             context.emit = sink
@@ -190,9 +199,10 @@ class TraceAudit:
             provider = ConfiguredProvider({"aux": slot}, client=self.jobs._http, session_id=job["conversation_id"])
             provider.budget_sink = sink
             formatting = {"response_format": {"type": "json_object"}, "temperature": 0} if slot.provider == "openai-compatible" else {}
-            targets = [row[0] for row in self.db.read_conn.execute("SELECT task_run_id FROM trace_targets WHERE job_id=? ORDER BY source_global_seq", (job_id,))]
+            targets = [dict(row) for row in self.db.read_conn.execute("SELECT task_run_id,attempt_no FROM trace_targets WHERE job_id=? ORDER BY source_global_seq", (job_id,))]
             reports, skipped, actual_results = [], [], []
-            for task_id in targets:
+            for target in targets:
+                task_id = target["task_run_id"]
                 messages = await asyncio.to_thread(self.material, job, task_id)
                 async def budget():
                     self.jobs.check_identity(job_id)
@@ -210,10 +220,9 @@ class TraceAudit:
                 result_text = canonical(actual_results)
                 if result.status != "completed":
                     raise ValueError("真实审查未完成：" + str(result.reason))
-                outcome = ReviewResult.model_validate_json(actual_results[-1]["actual_result"])
-                if any(report.task_run_id != task_id for report in outcome.reports):
-                    raise ValueError("单个目标审查引用了其他任务")
-                reports.extend(outcome.reports)
+                outcome = ReviewAssessment.model_validate_json(actual_results[-1]["actual_result"])
+                if not outcome.nothing_to_report:
+                    reports.append(TargetReport(task_run_id=task_id, attempt_no=target["attempt_no"], report=outcome.report_body()))
                 if outcome.nothing_to_report:
                     skipped.append({"task_run_id": task_id, "reason": outcome.reason})
             outcome = ReviewResult(nothing_to_report=not reports, reason=canonical(skipped) if skipped else None, reports=reports)

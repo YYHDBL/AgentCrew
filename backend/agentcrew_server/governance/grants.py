@@ -226,6 +226,9 @@ class Grants:
         return False
 
     def check_skill_change(self, conn, identity, skill_id):
+        if hasattr(self, "promotions") and self.promotions.is_promotion(identity):
+            self.promotions.authorize(identity, skill_id, conn)
+            return
         if identity.actor_type == "user":
             self.identities.require(self.identities.memory_actor(identity), "manage", identity.workspace_id, conn)
             return
@@ -240,9 +243,17 @@ class Grants:
         row = self.db.read_conn.execute("SELECT j.task_run_id,j.workspace_id,j.agent_id,g.effective_user_id,g.credential_owner_id FROM memory_jobs j JOIN job_governance g ON g.job_id=j.id WHERE j.id=?", (job_id,)).fetchone()
         if row is None:
             return False
+        kind = self.db.read_conn.execute("SELECT kind FROM memory_jobs WHERE id=?", (job_id,)).fetchone()[0]
+        payload = event.payload
+        if kind in {"trace_audit", "promote_skill"}:
+            if event.type == T.GOVERNANCE_GRANT_CHANGED and payload.get("revoked_at") and payload.get("revocation_changed", True):
+                if payload.get("grantee_type") == "agent" and payload.get("grantee_id") == row[2]:
+                    return True
+            if event.type in {T.GOVERNANCE_RESOURCE_CHANGED, T.GOVERNANCE_SKILL_VERSION_PUBLISHED} and payload.get("resource_type") == "skill":
+                if payload.get("scope", {}).get("workspace_id") == row[1] and (payload.get("status") != "active" or payload.get("configuration_changed")):
+                    return True
         if row[0]:
             return self.affects(event, row[0])
-        payload = event.payload
         if event.type == T.GOVERNANCE_GRANT_CHANGED:
             if not payload.get("revoked_at") or not payload.get("revocation_changed", True):
                 return False

@@ -1,0 +1,41 @@
+{
+  "rule": {
+    "id": "84d1a791ea4258b78f04afedcc0c79bc",
+    "agent_id": "xiaowen",
+    "tool_name": "skill_patch",
+    "pattern": "真实预授权核查-155fae8d",
+    "effect": "deny",
+    "created_by_user_id": "owner",
+    "created_at": "2026-10-06T14:59:12.630390+00:00",
+    "revoked_at": null,
+    "revision": 1,
+    "change_id": "665dd20246304c16b28886fe5cd24cf1"
+  },
+  "job": {
+    "job_id": "057df10bca394c5e99e1c3d83f04859f",
+    "kind": "promote_skill",
+    "status": "failed",
+    "source_task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "attempt_no": 1,
+    "trigger_global_seq": 7577,
+    "model": "deepseek-v4.1-flash",
+    "config_version": "5",
+    "reason": "GovernanceError: 当前员工规则禁止技能固化",
+    "report_id": "af3bfc8770f14394a70979aa077ac80b",
+    "skill_id": null,
+    "version_id": null,
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0
+    },
+    "scope": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "owner_id": "owner"
+    },
+    "id": "057df10bca394c5e99e1c3d83f04859f",
+    "task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "granted": false
+  },
+  "actual_model_calls": 0
+}

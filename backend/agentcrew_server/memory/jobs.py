@@ -99,7 +99,7 @@ class MemoryJobs:
                 await self.trace.consume(event.global_seq)
             if event.type in {RunEventType.RUN_QUEUED, RunEventType.RUN_RESUMED, RunEventType.QUEUE_ITEM_ENQUEUED}:
                 async with self._gate:
-                    await self._cancel("cancelled", "前台任务已经接收，辅助作业已取消")
+                    await self._cancel("cancelled", "前台任务已经接收，辅助作业已取消", through_global_seq=event.global_seq)
             if event.type in {RunEventType.RUN_COMPLETED, RunEventType.RUN_FAILED,
                               RunEventType.RUN_CANCELLED, RunEventType.RUN_INTERRUPTED,
                               RunEventType.QUEUE_PAUSED, RunEventType.QUEUE_ITEM_CANCELLED,
@@ -172,6 +172,8 @@ class MemoryJobs:
                 await self.curator.run(job_id)
             elif self.get(job_id)["kind"] == "trace_audit":
                 await self.trace.run(job_id)
+            elif self.get(job_id)["kind"] == "promote_skill":
+                await self.promoter.run(job_id)
             else:
                 await self.review.run(job_id)
 
@@ -314,8 +316,10 @@ class MemoryJobs:
                    "model": job["model"], "config_version": job["config_version"], "usage": json.loads(job["usage"]), "error": job["error"]}
         if job["kind"] == "trace_audit":
             payload = self.trace.event_payload(conn, job_id)
+        elif job["kind"] == "promote_skill":
+            payload = self.promoter.event_payload(conn, job_id)
         event = self.events.append_in_tx(conn, task_run_id=None, conversation_id=job["conversation_id"],
-                                        type=RunEventType.REVIEW_JOB_STATUS if job["kind"] == "trace_audit" else RunEventType.MEMORY_JOB_STATUS, payload=payload)
+                                        type=RunEventType.REVIEW_JOB_STATUS if job["kind"] in {"trace_audit", "promote_skill"} else RunEventType.MEMORY_JOB_STATUS, payload=payload)
         audit_seq = append_audit(conn, ts=event.ts, actor_type="system", actor_id=job_id, action=event.type.value,
                                 resource_type="memory_job", resource_id=job_id, detail=canonical(payload))
         return [event], audit_seq
@@ -346,9 +350,12 @@ class MemoryJobs:
             self._publish(conn, [*expired, *events], audit_seq, previous_audit_seq=previous_audit_seq)
         await self.events.channel.execute(tx)
 
-    async def _cancel(self, status, reason):
-        self._reason = reason
-        if self._current is not None and not self._current.done():
+    def _registered_before(self, job_id, watermark):
+        return watermark is None or self.db.read_conn.execute("SELECT 1 FROM run_events WHERE global_seq<=? AND type IN ('memory.job_status','review.job_status') AND json_extract(payload,'$.job_id')=? LIMIT 1", (watermark, job_id)).fetchone() is not None
+
+    async def _cancel(self, status, reason, *, through_global_seq=None):
+        if self._current is not None and not self._current.done() and self._registered_before(self._current.get_name().removeprefix("memory-job:"), through_global_seq):
+            self._reason = reason
             self._cancel_scope.cancel()
             done, pending = await asyncio.wait({self._current}, timeout=2)
             if pending:
@@ -361,6 +368,8 @@ class MemoryJobs:
             return
         queued = await asyncio.to_thread(lambda: self.db.read_conn.execute("SELECT id FROM memory_jobs WHERE status='queued'").fetchall())
         for row in queued:
+            if not self._registered_before(row[0], through_global_seq):
+                continue
             await self._status(row[0], status, reason)
             self._slots.pop(row[0], None)
 
@@ -371,6 +380,8 @@ class MemoryJobs:
             yield
 
     async def recover(self):
+        if hasattr(self, "promoter"):
+            await self.promoter.recover()
         counted = self.db.read_conn.execute("SELECT global_seq FROM run_events WHERE global_seq>"
             "(SELECT start_global_seq FROM memory_review_state WHERE id=1) ORDER BY global_seq").fetchall()
         for row in counted:

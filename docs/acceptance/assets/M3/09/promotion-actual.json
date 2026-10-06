@@ -1,0 +1,96 @@
+{
+  "report": {
+    "id": "76777e92e9e04561b2690dff58830c72",
+    "job_id": "ffaf5b16b2ae41cfab3a075160b45970",
+    "task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "attempt_no": 1,
+    "source_global_seq": 7577,
+    "model": "deepseek-v4.1-flash",
+    "created_at": "2026-10-06T14:58:12.865506+00:00",
+    "report": "{\"anomalies\": [\"run.failed 的 reason 前缀为 cron_tool_failure，但实际为授权拒绝（PRE_AUTH_EXCEEDED），失败分类标签与真实原因不完全一致，可能影响后续按类聚合统计。\"], \"improvement_suggestions\": [\"在计划创建/入队前对指令要求的写入路径与 pre_authorized selected 范围做前置比对，命中为空或未覆盖时提前提示，避免必然失败的无人值守执行。\", \"对 PRE_AUTH_EXCEEDED 类拒绝保持现有口径：结束为失败并持久通知，不重试、不绕过、不调用 ask_user、不改变暂停队列。\", \"报告时明确区分「权限拒绝」与「计划尚待批准」，不得由拒绝本身推断批准状态。\"], \"root_cause\": \"计划预授权范围与员工 allow 未同时覆盖指令要求的写入路径，写入在授权校验阶段被 PRE_AUTH_EXCEEDED 拒绝；该拒绝属预期内的权限边界，执行方按指令保留真实拒绝结果并如实报告，未绕过或重试。\", \"root_cause_event\": {\"attempt_no\": 1, \"global_seq\": 7567, \"seq\": 10, \"task_run_id\": \"2eb940fbf0b84c55b76198a4df273e14\"}, \"skill_proposal\": {\"description\": \"预授权未覆盖写入路径时停止并如实报告\", \"existing_skill_id\": null, \"mechanism\": \"员工 allow 与计划预授权必须同时匹配才放行写入；当预授权 selected 为空或未覆盖目标路径时，授权校验在 tool.prepared 之后返回 allowed=false 与 permission.denied:PRE_AUTH_EXCEEDED，工具调用失败且无副作用落盘。执行方据此保留原始拒绝、如实报告并结束，避免绕过权限边界或产生未授权写入。\", \"name\": \"真实预授权核查-af2a3464\", \"outline\": \"适用条件：计划任务（cron）在入队前已获批准，但预授权 selected 为空或未覆盖指令要求的写入路径，写入必然触发 PRE_AUTH_EXCEEDED。核查清单：1) 读取 automation_facts，确认 approved_before_task_queued、pre_authorized_selection_empty、decision、selected；2) 将指令目标路径与 selected 比对；3) 判定是否必然 PRE_AUTH_EXCEEDED。处置：选择集为空或路径未覆盖即停止，不发起写入；不重试、不绕过（禁用 bash/替代路径/其他工具）；不扩大范围；如实报告失败与原因并结束；不等待真人、不调用 ask_user、不改变暂停队列。边界：PRE_AUTH_EXCEEDED 不能单独证明计划尚待批准；权限拒绝须结束为失败并持久通知。\"}, \"summary\": \"目标任务 2eb940fbf0b84c55b76198a4df273e14（cron 作业 b6379d83c2eb5bfb8b83836d448c1436，attempt 1）按指令只调用 write_file 写入 m3-denied-...txt，在 tool.prepared 后于 governance.authorization_checked(seq10, global_seq7567) 被拒：allowed=false，reason=permission.denied:PRE_AUTH_EXCEEDED（员工allow与计划预授权必须同时匹配），tool.failed(seq11, global_seq7568) 保留原始拒绝，随后模型如实报告未落盘、未绕过、未重试，run.failed(seq18, global_seq7577) 以 cron_tool_failure 结束。全程无重试、无 ask_user、无等待真人、无越权写入，token 与延迟正常（两次调用 5076/5368 prompt tokens，3027/3408ms），无产物落盘。\", \"verdict\": \"good\"}"
+  },
+  "job": {
+    "job_id": "6699854e44d4421babba7588157c289f",
+    "kind": "promote_skill",
+    "status": "completed",
+    "source_task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "attempt_no": 1,
+    "trigger_global_seq": 7577,
+    "model": "deepseek-v4.1-flash",
+    "config_version": "5",
+    "reason": null,
+    "report_id": "76777e92e9e04561b2690dff58830c72",
+    "skill_id": "c38f4720edb95425aea014b02ab85c84",
+    "version_id": "afad08f468535250a8ac8501c0d4406e",
+    "usage": {
+      "complete": true,
+      "input_tokens": 4913,
+      "output_tokens": 685
+    },
+    "scope": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "owner_id": "owner"
+    },
+    "id": "6699854e44d4421babba7588157c289f",
+    "task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "granted": false
+  },
+  "version": {
+    "id": "afad08f468535250a8ac8501c0d4406e",
+    "skill_id": "c38f4720edb95425aea014b02ab85c84",
+    "version_no": 1,
+    "change_id": "6699854e44d4421babba7588157c289f-publish",
+    "ledger_id": 21,
+    "content": "# 真实预授权核查-af2a3464\n\n## 适用条件\n\n计划任务（cron）在入队前已获批准，但计划预授权 `selected` 为空或未覆盖指令要求的写入路径。此时写入必然在授权校验阶段触发 `PRE_AUTH_EXCEEDED`，属预期内的权限边界，不是可绕过的执行障碍。\n\n## 核查清单\n\n1. 读取 `automation_facts`，确认以下字段：\n   - `approved_before_task_queued`：为 `true` 表示执行前已经批准；\n   - `pre_authorized_selection_empty`：为 `true` 表示预授权选择为空；\n   - `decision` 与 `selected`：确认实际批准范围。\n2. 将指令要求的目标路径与 `selected` 逐项比对。\n3. 判定是否必然触发 `PRE_AUTH_EXCEEDED`：选择集为空，或目标路径未被 `selected` 覆盖。\n\n## 处置\n\n- 选择集为空或路径未覆盖即停止，不发起写入。\n- 不重试、不绕过：禁用 `bash`、替代路径或其他工具规避授权校验。\n- 不扩大范围，不请求额外权限。\n- 如实报告失败与原因并结束。\n- 不等待真人、不调用 `ask_user`、不改变暂停队列。\n- 权限拒绝必须结束为失败并持久通知；后续授权只能由真人通过独立管理操作完成，不属于无人值守执行步骤。\n\n## 边界\n\n- `PRE_AUTH_EXCEEDED` 不能单独证明计划尚待批准；已批准且 `selected` 为空应明确区分于「尚待批准」。\n- 不得由拒绝本身推断批准状态。\n- 不得将权限拒绝描述为可以绕过的执行步骤。\n\n\n## 机制说明\n\n员工 allow 与计划预授权必须同时匹配才放行写入。当预授权 selected 为空或未覆盖目标路径时，授权校验在 tool.prepared 之后返回 allowed=false 与 permission.denied:PRE_AUTH_EXCEEDED，工具调用失败且无副作用落盘。执行方据此保留原始拒绝、如实报告并结束，避免绕过权限边界或产生未授权写入。\n\n适用边界：仅适用于计划任务（cron）在入队前已获批准、但预授权 selected 为空或未覆盖指令要求写入路径的场景。判定依据为 automation_facts 中的 approved_before_task_queued、pre_authorized_selection_empty、decision 与 selected，以及指令目标路径与 selected 的比对结果。PRE_AUTH_EXCEEDED 不能单独证明计划尚待批准；已批准且 selected 为空须与「尚待批准」明确区分。权限拒绝必须结束为失败并持久通知，禁止等待真人、调用 ask_user 或改变暂停队列；后续授权只能由真人通过独立管理操作完成，不属于无人值守执行步骤。\n",
+    "metadata": {
+      "description": "预授权未覆盖写入路径时停止并如实报告",
+      "entries": [
+        {
+          "approved_at": null,
+          "approved_by": null,
+          "basis": "{\"attempt_no\":1,\"confirmed_at\":\"2026-10-06T14:58:12.908531+00:00\",\"report_id\":\"76777e92e9e04561b2690dff58830c72\",\"source_global_seq\":7577,\"task_run_id\":\"2eb940fbf0b84c55b76198a4df273e14\"}",
+          "created_at": "2026-10-06T14:58:18.826895+00:00",
+          "entry_hash": "9a8ec62dac4977de2ebf19cc528afafb2bc9d532f6976ae19433989ead8ca79b",
+          "entry_id": "f03f7e10d1d340d5bbce6c3d263bc65b",
+          "hits": 0,
+          "last_hit_at": null,
+          "needs_review": false,
+          "source": {
+            "actor_id": "xiaowen",
+            "actor_type": "agent",
+            "conversation_id": "3ea22349d4c140a18a7c96663ec48f96",
+            "job_id": "6699854e44d4421babba7588157c289f",
+            "task_run_id": "2eb940fbf0b84c55b76198a4df273e14"
+          },
+          "state": "active",
+          "text": "# 真实预授权核查-af2a3464\n\n## 适用条件\n\n计划任务（cron）在入队前已获批准，但计划预授权 `selected` 为空或未覆盖指令要求的写入路径。此时写入必然在授权校验阶段触发 `PRE_AUTH_EXCEEDED`，属预期内的权限边界，不是可绕过的执行障碍。\n\n## 核查清单\n\n1. 读取 `automation_facts`，确认以下字段：\n   - `approved_before_task_queued`：为 `true` 表示执行前已经批准；\n   - `pre_authorized_selection_empty`：为 `true` 表示预授权选择为空；\n   - `decision` 与 `selected`：确认实际批准范围。\n2. 将指令要求的目标路径与 `selected` 逐项比对。\n3. 判定是否必然触发 `PRE_AUTH_EXCEEDED`：选择集为空，或目标路径未被 `selected` 覆盖。\n\n## 处置\n\n- 选择集为空或路径未覆盖即停止，不发起写入。\n- 不重试、不绕过：禁用 `bash`、替代路径或其他工具规避授权校验。\n- 不扩大范围，不请求额外权限。\n- 如实报告失败与原因并结束。\n- 不等待真人、不调用 `ask_user`、不改变暂停队列。\n- 权限拒绝必须结束为失败并持久通知；后续授权只能由真人通过独立管理操作完成，不属于无人值守执行步骤。\n\n## 边界\n\n- `PRE_AUTH_EXCEEDED` 不能单独证明计划尚待批准；已批准且 `selected` 为空应明确区分于「尚待批准」。\n- 不得由拒绝本身推断批准状态。\n- 不得将权限拒绝描述为可以绕过的执行步骤。\n\n\n## 机制说明\n\n员工 allow 与计划预授权必须同时匹配才放行写入。当预授权 selected 为空或未覆盖目标路径时，授权校验在 tool.prepared 之后返回 allowed=false 与 permission.denied:PRE_AUTH_EXCEEDED，工具调用失败且无副作用落盘。执行方据此保留原始拒绝、如实报告并结束，避免绕过权限边界或产生未授权写入。\n\n适用边界：仅适用于计划任务（cron）在入队前已获批准、但预授权 selected 为空或未覆盖指令要求写入路径的场景。判定依据为 automation_facts 中的 approved_before_task_queued、pre_authorized_selection_empty、decision 与 selected，以及指令目标路径与 selected 的比对结果。PRE_AUTH_EXCEEDED 不能单独证明计划尚待批准；已批准且 selected 为空须与「尚待批准」明确区分。权限拒绝必须结束为失败并持久通知，禁止等待真人、调用 ask_user 或改变暂停队列；后续授权只能由真人通过独立管理操作完成，不属于无人值守执行步骤。\n"
+        }
+      ],
+      "files": {},
+      "name": "真实预授权核查-af2a3464",
+      "revision": 1
+    },
+    "files": [],
+    "sha256": "817ec412a3ed5c1b7e08345038cd17b2dc020b498e48ba478a5b1bc0af25dc1c",
+    "created_by": "xiaowen",
+    "created_at": "2026-10-06T14:58:18.826895+00:00"
+  },
+  "resource": {
+    "id": "c38f4720edb95425aea014b02ab85c84",
+    "workspace_id": "office",
+    "name": "真实预授权核查-af2a3464",
+    "description": "预授权未覆盖写入路径时停止并如实报告",
+    "current_version_id": "afad08f468535250a8ac8501c0d4406e",
+    "source": "agent",
+    "status": "active",
+    "revision": 2,
+    "created_at": "2026-10-06T14:58:18.826895+00:00",
+    "updated_at": "2026-10-06T14:58:18.826895+00:00"
+  },
+  "file": {
+    "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/skills/c38f4720edb95425aea014b02ab85c84/SKILL.md",
+    "sha256": "817ec412a3ed5c1b7e08345038cd17b2dc020b498e48ba478a5b1bc0af25dc1c",
+    "mtime_ns": 1791298698863961350
+  }
+}

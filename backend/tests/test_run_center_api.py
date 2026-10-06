@@ -17,6 +17,7 @@ import pytest
 import httpx
 
 from test_governance_identity import request, demo
+from test_governance_identity import request as governance_request
 from agentcrew_server.secrets import redact, register_secret
 
 
@@ -25,7 +26,7 @@ def server(tmp_path_factory, request):
     configured_directory = os.environ.get("AGENTCREW_RUN_CENTER_DATA_DIR")
     root = Path(configured_directory).resolve() if configured_directory else tmp_path_factory.mktemp("run-center-http")
     if configured_directory:
-        assert root.is_relative_to(Path(__file__).resolve().parents[2] / "data")
+        assert root.is_relative_to(Path(__file__).resolve().parents[2] / "data" / "m3-intermediate")
         assert (root / "config.json").is_file()
     else:
         shutil.copy2(os.environ["AGENTCREW_TEST_CONFIG_SOURCE"], root / "config.json")
@@ -63,6 +64,26 @@ def server(tmp_path_factory, request):
         record["requests"].append({"signal": "SIGKILL/restart", "previous_pid": previous_pid, "current_pid": child.pid, "port": new_port})
     record["kill_and_restart"] = kill_and_restart
     try:
+        if configured_directory:
+            plans = governance_request(record, "GET", "/api/cron/jobs?limit=200")
+            assert plans.status_code == 200, plans.text
+            assert plans.json()["data"]["next_after"] is None
+            disabled = []
+            for plan in plans.json()["data"]["items"]:
+                if not plan["state"]["enabled"]:
+                    continue
+                changed = governance_request(record, "PATCH", f'/api/cron/jobs/{plan["id"]}', body={"change_id": uuid.uuid4().hex,
+                    "expected_revision": plan["revision"], "enabled": False})
+                assert changed.status_code == 200, changed.text
+                disabled.append(plan["id"])
+            active = governance_request(record, "GET", "/api/task-runs?limit=200").json()["data"]["items"]
+            cancelled = []
+            for task in active:
+                if task["cron_job_id"] in disabled and task["status"] in {"queued", "running", "waiting_user"}:
+                    stopped = governance_request(record, "POST", f'/api/task-runs/{task["id"]}/cancel')
+                    assert stopped.status_code == 202, stopped.text
+                    cancelled.append(task["id"])
+            (root / "cron-acceptance-setup.json").write_text(json.dumps({"disabled_prior_job_ids": disabled, "cancelled_active_task_ids": cancelled}, ensure_ascii=False, indent=2))
         yield record
     finally:
         client.close()

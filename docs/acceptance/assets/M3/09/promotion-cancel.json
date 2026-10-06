@@ -1,0 +1,26 @@
+{
+  "job": {
+    "job_id": "2010debb55954ed484a14ff744014bf9",
+    "kind": "promote_skill",
+    "status": "cancelled",
+    "source_task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "attempt_no": 1,
+    "trigger_global_seq": 7577,
+    "model": "deepseek-v4.1-flash",
+    "config_version": "5",
+    "reason": "真人取消轨迹审查",
+    "report_id": "ba11407ec7ad4e0fbc3f675b0e1856fe",
+    "skill_id": null,
+    "version_id": null,
+    "usage": null,
+    "scope": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "owner_id": "owner"
+    },
+    "id": "2010debb55954ed484a14ff744014bf9",
+    "task_run_id": "2eb940fbf0b84c55b76198a4df273e14",
+    "granted": false
+  },
+  "elapsed_seconds": 0.015674958005547523
+}
