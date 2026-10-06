@@ -970,7 +970,7 @@ components:
         id: { type: string }
         job_id: { type: string }
         task_run_id: { type: string }
-        attempt_no: { type: integer, minimum: 1 }
+        attempt_no: { type: [integer, "null"], minimum: 1, description: 尚未开始实际尝试时保留null }
         source_global_seq: { type: integer, minimum: 1 }
         model: { type: string }
         created_at: { type: string, format: date-time }
@@ -1008,7 +1008,7 @@ components:
         kind: { type: string, enum: [trace_audit, promote_skill] }
         status: { type: string, enum: [queued, running, completed, skipped, cancelled, interrupted, failed] }
         task_run_id: { type: string }
-        attempt_no: { type: integer, minimum: 1 }
+        attempt_no: { type: [integer, "null"], minimum: 1, description: 尚未开始实际尝试时保留null }
         trigger_global_seq: { type: integer, minimum: 1 }
         model: { type: [string, "null"] }
         config_version: { type: string }

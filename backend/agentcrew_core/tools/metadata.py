@@ -92,3 +92,5 @@ class WorkContext:
     source_global_seq: int = 0
     readable_artifacts: dict[str, str | None] = field(default_factory=dict)
     schedule_proposal: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
+    trace_reader: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
+    search_owner_only: bool = False

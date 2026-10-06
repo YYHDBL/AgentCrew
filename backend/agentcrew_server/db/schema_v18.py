@@ -1,0 +1,33 @@
+"""M3-08：共用辅助队列的审查类型、触发水位及模型报告。"""
+
+V18_STATEMENTS = (
+    """CREATE TABLE memory_jobs_new (
+        id TEXT PRIMARY KEY,kind TEXT NOT NULL CHECK(kind IN ('summary','memory_review','skill_review','curate','trace_audit','promote_skill')),
+        trigger_key TEXT NOT NULL,trigger_global_seq INTEGER REFERENCES run_events(global_seq),
+        conversation_id TEXT REFERENCES conversations(id),task_run_id TEXT REFERENCES task_runs(id),
+        workspace_id TEXT NOT NULL,agent_id TEXT NOT NULL,model TEXT,config_version TEXT NOT NULL,config_snapshot TEXT NOT NULL,
+        status TEXT NOT NULL CHECK(status IN ('queued','running','waiting_approval','completed','skipped','cancelled','interrupted','failed')),
+        usage TEXT NOT NULL DEFAULT '{"input_tokens":0,"output_tokens":0}',error TEXT,report TEXT,created_at TEXT NOT NULL,finished_at TEXT,
+        priority INTEGER NOT NULL DEFAULT 0,
+        CHECK(kind='curate' OR (trigger_global_seq IS NOT NULL AND conversation_id IS NOT NULL AND task_run_id IS NOT NULL)),
+        UNIQUE(kind,trigger_key))""",
+    """INSERT INTO memory_jobs_new SELECT id,kind,trigger_key,trigger_global_seq,conversation_id,task_run_id,workspace_id,agent_id,
+        model,config_version,config_snapshot,status,usage,error,report,created_at,finished_at,0 FROM memory_jobs""",
+    "DROP TABLE memory_jobs",
+    "ALTER TABLE memory_jobs_new RENAME TO memory_jobs",
+    "CREATE INDEX memory_jobs_ready ON memory_jobs(status,priority DESC,created_at,id)",
+    "CREATE TABLE trace_review_state(id INTEGER PRIMARY KEY CHECK(id=1),start_global_seq INTEGER NOT NULL)",
+    "INSERT INTO trace_review_state VALUES(1,(SELECT coalesce(max(global_seq),0) FROM run_events))",
+    """CREATE TABLE trace_counted_events(global_seq INTEGER PRIMARY KEY REFERENCES run_events(global_seq),
+        task_run_id TEXT NOT NULL REFERENCES task_runs(id),bucket TEXT NOT NULL,kind TEXT NOT NULL CHECK(kind IN ('completed','failed')))""",
+    """CREATE TABLE trace_trigger_state(bucket TEXT PRIMARY KEY,completed_count INTEGER NOT NULL DEFAULT 0,
+        completed_watermark INTEGER NOT NULL DEFAULT 0)""",
+    """CREATE TABLE trace_targets(job_id TEXT NOT NULL REFERENCES memory_jobs(id),task_run_id TEXT NOT NULL REFERENCES task_runs(id),
+        attempt_no INTEGER,source_global_seq INTEGER NOT NULL REFERENCES run_events(global_seq),result TEXT,
+        PRIMARY KEY(job_id,task_run_id))""",
+    """CREATE TABLE trace_reports(id TEXT PRIMARY KEY,job_id TEXT NOT NULL REFERENCES memory_jobs(id),
+        task_run_id TEXT NOT NULL REFERENCES task_runs(id),attempt_no INTEGER,source_global_seq INTEGER NOT NULL REFERENCES run_events(global_seq),
+        model TEXT NOT NULL,created_at TEXT NOT NULL,report TEXT NOT NULL CHECK(json_valid(report)),UNIQUE(job_id,task_run_id))""",
+    "CREATE INDEX trace_reports_task ON trace_reports(task_run_id,created_at DESC,id DESC)",
+    "CREATE TRIGGER trace_report_immutable BEFORE UPDATE ON trace_reports BEGIN SELECT RAISE(ABORT,'IMMUTABLE_TRACE_REPORT'); END",
+)

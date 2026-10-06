@@ -1,0 +1,38 @@
+{
+  "job_id": "3f227b3f9e964cf486477fd125c39e50",
+  "task_run_id": "967556173d7542c19b804fb6a57564f9",
+  "trigger_key": "manual:owner:967556173d7542c19b804fb6a57564f9:985040c1f8944cb1b4f26d6ed49d301e",
+  "after": {
+    "job_id": "3f227b3f9e964cf486477fd125c39e50",
+    "kind": "trace_audit",
+    "status": "interrupted",
+    "source_task_run_id": "967556173d7542c19b804fb6a57564f9",
+    "attempt_no": 1,
+    "trigger_global_seq": 6353,
+    "model": "deepseek-v4.1-flash",
+    "config_version": "5",
+    "reason": "进程终止期间辅助作业未完成",
+    "report_id": null,
+    "skill_id": null,
+    "usage": null,
+    "scope": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "owner_id": "owner"
+    },
+    "id": "3f227b3f9e964cf486477fd125c39e50",
+    "task_run_id": "967556173d7542c19b804fb6a57564f9",
+    "version_id": null,
+    "targets": [
+      {
+        "job_id": "3f227b3f9e964cf486477fd125c39e50",
+        "task_run_id": "967556173d7542c19b804fb6a57564f9",
+        "attempt_no": 1,
+        "source_global_seq": 6353,
+        "result": null
+      }
+    ],
+    "report_ids": []
+  },
+  "signal": "SIGKILL"
+}

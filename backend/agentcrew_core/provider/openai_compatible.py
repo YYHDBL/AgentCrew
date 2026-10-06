@@ -76,6 +76,8 @@ class OpenAICompatibleProvider:
         tools: list[dict[str, Any]] | None = None, *,
         thinking: dict[str, Any] | None = None,
         max_tokens: int | None = None, system: str | None = None,
+        response_format: dict[str, Any] | None = None,
+        temperature: float | None = None,
     ) -> AsyncIterator[StreamEvent]:
         cfg = self._slots[slot]
         headers = {"User-Agent": "agentcrew/0.1.0"}
@@ -91,6 +93,10 @@ class OpenAICompatibleProvider:
         }
         if tools:
             request["tools"] = chat_tools(tools)
+        if response_format is not None:
+            request["response_format"] = response_format
+        if temperature is not None:
+            request["temperature"] = temperature
         if thinking is not None:
             request["extra_body"] = {"thinking": thinking}
         started: set[int] = set()

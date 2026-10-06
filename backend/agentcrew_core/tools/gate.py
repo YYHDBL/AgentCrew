@@ -68,6 +68,10 @@ def rule_matches(tool_name: str, call_input: dict[str, Any], pattern: str,
         return pattern == tool_name
     if tool_name == "schedule_task":
         return pattern == tool_name
+    if tool_name == "trace_read":
+        return pattern == "*" or pattern == call_input.get("task_run_id")
+    if tool_name == "session_search":
+        return pattern == "*" or pattern == call_input.get("query")
     return False
 
 

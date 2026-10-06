@@ -49,3 +49,24 @@ def project_run_state(events):
         if changed:
             state["updated_at"] = event.ts
     return state
+
+
+def project_attempts(events):
+    attempts = {}
+    current = 0
+    for event in events:
+        if event.type in {T.RUN_STARTED, T.RUN_RESUMED}:
+            payload = event.payload
+            current = payload["attempt_no"]
+            attempts[current] = {"id": payload.get("attempt_id") or "att-" + event.id, "task_run_id": event.task_run_id, "attempt_no": current,
+                "kind": "initial" if event.type == T.RUN_STARTED else "resume", "status": "running", "outcome": None,
+                "resume_reason": payload.get("resume_reason"), "context_fingerprint": payload.get("context_fingerprint"),
+                "started_at": event.ts, "ended_at": None}
+        elif event.type in {T.RUN_COMPLETED, T.RUN_FAILED, T.RUN_CANCELLED, T.RUN_INTERRUPTED}:
+            number = event.attempt_no if event.attempt_no is not None else current
+            if number in attempts:
+                status = {T.RUN_COMPLETED: "completed", T.RUN_FAILED: "failed", T.RUN_CANCELLED: "cancelled", T.RUN_INTERRUPTED: "interrupted"}[event.type]
+                attempts[number].update(status=status, ended_at=event.ts)
+                if event.type != T.RUN_INTERRUPTED:
+                    attempts[number]["outcome"] = "failed:" + event.payload.get("reason", "unknown") if event.type == T.RUN_FAILED else "cancelled" if event.type == T.RUN_CANCELLED else event.payload.get("outcome", status)
+    return list(attempts.values())

@@ -1,0 +1,89 @@
+{
+  "source_watermark": 6238,
+  "agent_id": "xiaowen",
+  "preparation_task_ids": [
+    "3be101619b3f4fec8f9f9c22694c385a",
+    "75a57702c85a499eb7f6cfc5af46a2b3",
+    "0813ace1c1f74b2a819fb2e8768946e7"
+  ],
+  "actual_counter_before": [
+    60,
+    60
+  ],
+  "task_ids": [
+    "6b62da638ed7429ba352db670dc2b582",
+    "99dd02f0eb8c4bf89a5c6b8e9617661c",
+    "55b6d9967ba145beaa8b0dce11d9c259",
+    "2d1ab13ec5dc4580a65e749fcb9f7518",
+    "4e2bc07a986d433a82793117ebbea44b"
+  ],
+  "job": {
+    "job_id": "99bec3dc2ac0486d960db78b8455e540",
+    "kind": "trace_audit",
+    "status": "completed",
+    "source_task_run_id": "4e2bc07a986d433a82793117ebbea44b",
+    "attempt_no": 1,
+    "trigger_global_seq": 6310,
+    "model": "deepseek-v4.1-flash",
+    "config_version": "5",
+    "reason": "[{\"reason\":\"任务99dd02f0eb8c4bf89a5c6b8e9617661c为单次尝试的简单确认任务：指令要求仅用一句中文确认材料已接收且禁止调用工具。事件序列完整（run.queued→run.started→step.started→governance.authorization_checked→llm.request_started→context.budget_checked→llm.request_done→step.completed→run.completed），授权通过、无重试、无错误、无审批。输入token 9400（system 9381+history 19）远低于1000000上下文窗口，输出18 token，延迟2552ms，均属正常。模型输出'已收到本次真实批量审查材料，将按流程逐项核验处理。'为一句中文且未调用任何工具，完全符合指令。无失败、无异常、无可泛化流程缺陷，故无需报告。\",\"task_run_id\":\"99dd02f0eb8c4bf89a5c6b8e9617661c\"}]",
+    "report_id": "bb14be1873c44df9bd73ef44b5fd0f69",
+    "skill_id": null,
+    "usage": {
+      "complete": true,
+      "input_tokens": 46382,
+      "output_tokens": 1737
+    },
+    "scope": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "owner_id": "owner"
+    },
+    "id": "99bec3dc2ac0486d960db78b8455e540",
+    "task_run_id": "4e2bc07a986d433a82793117ebbea44b",
+    "version_id": null,
+    "targets": [
+      {
+        "job_id": "99bec3dc2ac0486d960db78b8455e540",
+        "task_run_id": "2d1ab13ec5dc4580a65e749fcb9f7518",
+        "attempt_no": 1,
+        "source_global_seq": 6295,
+        "result": "reported"
+      },
+      {
+        "job_id": "99bec3dc2ac0486d960db78b8455e540",
+        "task_run_id": "4e2bc07a986d433a82793117ebbea44b",
+        "attempt_no": 1,
+        "source_global_seq": 6310,
+        "result": "reported"
+      },
+      {
+        "job_id": "99bec3dc2ac0486d960db78b8455e540",
+        "task_run_id": "55b6d9967ba145beaa8b0dce11d9c259",
+        "attempt_no": 1,
+        "source_global_seq": 6280,
+        "result": "reported"
+      },
+      {
+        "job_id": "99bec3dc2ac0486d960db78b8455e540",
+        "task_run_id": "6b62da638ed7429ba352db670dc2b582",
+        "attempt_no": 1,
+        "source_global_seq": 6252,
+        "result": "reported"
+      },
+      {
+        "job_id": "99bec3dc2ac0486d960db78b8455e540",
+        "task_run_id": "99dd02f0eb8c4bf89a5c6b8e9617661c",
+        "attempt_no": 1,
+        "source_global_seq": 6265,
+        "result": "skipped：[{\"reason\":\"任务99dd02f0eb8c4bf89a5c6b8e9617661c为单次尝试的简单确认任务：指令要求仅用一句中文确认材料已接收且禁止调用工具。事件序列完整（run.queued→run.started→step.started→governance.authorization_checked→llm.request_started→context.budget_checked→llm.request_done→step.completed→run.completed），授权通过、无重试、无错误、无审批。输入token 9400（system 9381+history 19）远低于1000000上下文窗口，输出18 token，延迟2552ms，均属正常。模型输出'已收到本次真实批量审查材料，将按流程逐项核验处理。'为一句中文且未调用任何工具，完全符合指令。无失败、无异常、无可泛化流程缺陷，故无需报告。\",\"task_run_id\":\"99dd02f0eb8c4bf89a5c6b8e9617661c\"}]"
+      }
+    ],
+    "report_ids": [
+      "7f16cacedfb541b3b2df49314523d4bd",
+      "f6daa4453c554bc58f3657eb95a524f1",
+      "cdb7a50f92344153a634d79b2fcdffce",
+      "bb14be1873c44df9bd73ef44b5fd0f69"
+    ]
+  }
+}

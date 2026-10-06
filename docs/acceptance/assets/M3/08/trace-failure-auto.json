@@ -1,0 +1,77 @@
+{
+  "plan_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+  "occurrence": {
+    "id": "88a854990fc44431974adbbfb2ba30a5",
+    "job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+    "revision": 1,
+    "trigger": "manual",
+    "scheduled_at": null,
+    "triggered_at": 1791292831745,
+    "actor_id": "owner",
+    "client_request_id": "37594d1f4904474ca9efb0b12d26c5d4",
+    "status": "fired",
+    "note": null,
+    "retry_count": 0,
+    "retry_at": null,
+    "task_run_id": "967556173d7542c19b804fb6a57564f9",
+    "missed_count": 0,
+    "missed_through": null,
+    "created_at": "2026-10-06T13:20:31.745846+00:00",
+    "updated_at": "2026-10-06T13:20:31.746358+00:00",
+    "attempts": [
+      {
+        "retry_no": 0,
+        "task_run_id": "967556173d7542c19b804fb6a57564f9",
+        "attempt_no": 1,
+        "status": "queued",
+        "started_at": null,
+        "finished_at": null
+      }
+    ]
+  },
+  "job": {
+    "job_id": "270b83eff0144b09ab15f2f8c52911ff",
+    "kind": "trace_audit",
+    "status": "completed",
+    "source_task_run_id": "967556173d7542c19b804fb6a57564f9",
+    "attempt_no": 1,
+    "trigger_global_seq": 6353,
+    "model": "deepseek-v4.1-flash",
+    "config_version": "5",
+    "reason": null,
+    "report_id": "c09669f728ad47f9876ac074ed79d485",
+    "skill_id": null,
+    "usage": {
+      "complete": true,
+      "input_tokens": 28523,
+      "output_tokens": 600
+    },
+    "scope": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "owner_id": "owner"
+    },
+    "id": "270b83eff0144b09ab15f2f8c52911ff",
+    "task_run_id": "967556173d7542c19b804fb6a57564f9",
+    "version_id": null,
+    "targets": [
+      {
+        "job_id": "270b83eff0144b09ab15f2f8c52911ff",
+        "task_run_id": "967556173d7542c19b804fb6a57564f9",
+        "attempt_no": 1,
+        "source_global_seq": 6353,
+        "result": "reported"
+      }
+    ],
+    "report_ids": [
+      "c09669f728ad47f9876ac074ed79d485"
+    ]
+  },
+  "registered": {
+    "id": "270b83eff0144b09ab15f2f8c52911ff",
+    "priority": 100,
+    "trigger_global_seq": 6353,
+    "task_run_id": "967556173d7542c19b804fb6a57564f9"
+  },
+  "file_exists": false
+}

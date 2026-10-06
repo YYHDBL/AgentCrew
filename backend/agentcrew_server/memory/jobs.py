@@ -22,7 +22,7 @@ from ..secrets import redact
 from .store import canonical
 
 _log = logging.getLogger("agentcrew.memory.jobs")
-_TERMINAL = {"completed", "cancelled", "interrupted", "failed"}
+_TERMINAL = {"completed", "skipped", "cancelled", "interrupted", "failed"}
 
 
 def now():
@@ -62,9 +62,9 @@ class MemoryJobs:
         row = cursor.fetchone()
         return dict(zip((column[0] for column in cursor.description), row)) if row else None
 
-    def _idle(self):
+    def _idle(self, readonly_review=False):
         return self.db.read_conn.execute(
-            "SELECT 1 FROM task_runs WHERE status IN ('queued','running','waiting_user','waiting_verification') LIMIT 1"
+            "SELECT 1 FROM task_runs WHERE status IN ('queued','running','waiting_user') OR (?=0 AND status='waiting_verification') LIMIT 1", (int(readonly_review),)
         ).fetchone() is None and self.db.read_conn.execute(
             "SELECT 1 FROM conversations c,json_each(c.pending_queue) q "
             "WHERE c.status='active' AND c.queue_paused=0 AND json_extract(q.value,'$.state')='queued' LIMIT 1"
@@ -95,6 +95,8 @@ class MemoryJobs:
                     await self.enqueue(source[0])
                     await self.review.consume(source[0])
             await self.review.consume(event.global_seq)
+            if hasattr(self, "trace"):
+                await self.trace.consume(event.global_seq)
             if event.type in {RunEventType.RUN_QUEUED, RunEventType.RUN_RESUMED, RunEventType.QUEUE_ITEM_ENQUEUED}:
                 async with self._gate:
                     await self._cancel("cancelled", "前台任务已经接收，辅助作业已取消")
@@ -145,11 +147,11 @@ class MemoryJobs:
             self._ready.clear()
             while not self._closed:
                 async with self._gate:
-                    if not await asyncio.to_thread(self._idle):
-                        break
                     row = await asyncio.to_thread(lambda: self.db.read_conn.execute(
-                        "SELECT id FROM memory_jobs WHERE status='queued' ORDER BY created_at,id LIMIT 1").fetchone())
+                        "SELECT id,kind FROM memory_jobs WHERE status='queued' ORDER BY priority DESC,created_at,id LIMIT 1").fetchone())
                     if row is None:
+                        break
+                    if not await asyncio.to_thread(self._idle, row[1] == "trace_audit"):
                         break
                     self._cancel_scope = CancelScope()
                     self._current = asyncio.create_task(self._run(row[0], self._cancel_scope), name=f"memory-job:{row[0]}")
@@ -168,6 +170,8 @@ class MemoryJobs:
                 await self._run_summary(job_id)
             elif self.get(job_id)["kind"] == "curate":
                 await self.curator.run(job_id)
+            elif self.get(job_id)["kind"] == "trace_audit":
+                await self.trace.run(job_id)
             else:
                 await self.review.run(job_id)
 
@@ -248,16 +252,27 @@ class MemoryJobs:
                         from agentcrew_core.tools import ToolInvocation
                         from ..governance.resources import GovernanceError
                         invocation = ToolInvocation(payload["call_id"], call["tool_name"], call["input"])
-                        verdict = self.rules.gate(job["agent_id"], invocation, self.review.context(job), conn)
+                        context = self.trace.context(job) if job["kind"] == "trace_audit" else self.review.context(job)
+                        verdict = self.rules.gate(job["agent_id"], invocation, context, conn)
                         if verdict.action == "deny":
                             raise GovernanceError("OUT_OF_SCOPE", verdict.reason, 403)
             ordinal = conn.execute("SELECT COALESCE(MAX(ordinal),0)+1 FROM memory_job_calls WHERE job_id=?", (job_id,)).fetchone()[0]
             conn.execute("INSERT INTO memory_job_calls VALUES(?,?,?,?,?)", (job_id, ordinal, str(event_type), redact(canonical(payload)), now()))
+            if event_type == RunEventType.LLM_REQUEST_STARTED:
+                usage = json.loads(self._job(conn, job_id)["usage"])
+                usage["complete"] = False
+                conn.execute("UPDATE memory_jobs SET usage=? WHERE id=?", (canonical(usage), job_id))
             if event_type == RunEventType.LLM_REQUEST_DONE:
                 job = self._job(conn, job_id)
                 usage = json.loads(job["usage"])
-                usage["input_tokens"] += payload["prompt_tokens"]
-                usage["output_tokens"] += payload["completion_tokens"]
+                if payload["prompt_tokens"] is None or payload["completion_tokens"] is None:
+                    usage["complete"] = False
+                    usage["input_tokens"] = usage["output_tokens"] = None
+                elif usage["input_tokens"] is not None and usage["output_tokens"] is not None:
+                    usage["input_tokens"] += payload["prompt_tokens"]
+                    usage["output_tokens"] += payload["completion_tokens"]
+                incomplete = conn.execute("SELECT 1 FROM memory_job_calls s WHERE s.job_id=? AND s.type='llm.request_started' AND NOT EXISTS(SELECT 1 FROM memory_job_calls d WHERE d.job_id=s.job_id AND d.type='llm.request_done' AND json_extract(d.payload,'$.llm_call_id')=json_extract(s.payload,'$.llm_call_id') AND json_type(d.payload,'$.prompt_tokens')='integer' AND json_type(d.payload,'$.completion_tokens')='integer') LIMIT 1", (job_id,)).fetchone()
+                usage["complete"] = incomplete is None
                 conn.execute("UPDATE memory_jobs SET usage=? WHERE id=?", (canonical(usage), job_id))
 
     async def complete(self, job_id, text):
@@ -297,8 +312,10 @@ class MemoryJobs:
         payload = {"job_id": job_id, "kind": job["kind"], "status": job["status"], "scope": self._scope(job),
                    "trigger_global_seq": job["trigger_global_seq"] or 0, "source_task_run_id": job["task_run_id"],
                    "model": job["model"], "config_version": job["config_version"], "usage": json.loads(job["usage"]), "error": job["error"]}
+        if job["kind"] == "trace_audit":
+            payload = self.trace.event_payload(conn, job_id)
         event = self.events.append_in_tx(conn, task_run_id=None, conversation_id=job["conversation_id"],
-                                        type=RunEventType.MEMORY_JOB_STATUS, payload=payload)
+                                        type=RunEventType.REVIEW_JOB_STATUS if job["kind"] == "trace_audit" else RunEventType.MEMORY_JOB_STATUS, payload=payload)
         audit_seq = append_audit(conn, ts=event.ts, actor_type="system", actor_id=job_id, action=event.type.value,
                                 resource_type="memory_job", resource_id=job_id, detail=canonical(payload))
         return [event], audit_seq
@@ -358,6 +375,8 @@ class MemoryJobs:
             "(SELECT start_global_seq FROM memory_review_state WHERE id=1) ORDER BY global_seq").fetchall()
         for row in counted:
             await self.review.consume(row[0])
+            if hasattr(self, "trace"):
+                await self.trace.consume(row[0])
         unfinished = self.db.read_conn.execute("SELECT id FROM memory_jobs WHERE status IN ('queued','running','waiting_approval') ORDER BY created_at,id").fetchall()
         for row in unfinished:
             await self._status(row[0], "interrupted", "进程终止期间辅助作业未完成")

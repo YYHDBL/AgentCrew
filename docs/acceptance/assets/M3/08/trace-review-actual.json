@@ -1,0 +1,86 @@
+{
+  "task_run_id": "9a17e18c43f24a0d9744b27b0b063302",
+  "job": {
+    "job_id": "af9b04e31e5741bc9d392031fe4c211d",
+    "kind": "trace_audit",
+    "status": "completed",
+    "source_task_run_id": "9a17e18c43f24a0d9744b27b0b063302",
+    "attempt_no": 1,
+    "trigger_global_seq": 4545,
+    "model": "deepseek-v4.1-flash",
+    "config_version": "5",
+    "reason": null,
+    "report_id": "1142e2ad840c4f29bc9adebdbf4d4ae6",
+    "skill_id": null,
+    "usage": {
+      "complete": true,
+      "input_tokens": 28306,
+      "output_tokens": 619
+    },
+    "scope": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "owner_id": "owner"
+    },
+    "id": "af9b04e31e5741bc9d392031fe4c211d",
+    "task_run_id": "9a17e18c43f24a0d9744b27b0b063302",
+    "version_id": null,
+    "targets": [
+      {
+        "job_id": "af9b04e31e5741bc9d392031fe4c211d",
+        "task_run_id": "9a17e18c43f24a0d9744b27b0b063302",
+        "attempt_no": 1,
+        "source_global_seq": 4545,
+        "result": "reported"
+      }
+    ],
+    "report_ids": [
+      "1142e2ad840c4f29bc9adebdbf4d4ae6"
+    ]
+  },
+  "report": {
+    "id": "1142e2ad840c4f29bc9adebdbf4d4ae6",
+    "job_id": "af9b04e31e5741bc9d392031fe4c211d",
+    "task_run_id": "9a17e18c43f24a0d9744b27b0b063302",
+    "attempt_no": 1,
+    "source_global_seq": 4545,
+    "model": "deepseek-v4.1-flash",
+    "created_at": "2026-10-06T13:19:42.267963+00:00",
+    "report": {
+      "anomalies": [
+        "治理层出现两次 authorization_checked：seq4/global_seq4525 allowed=true（工具清单级），而 seq10/global_seq4535 对具体 write_file 调用 allowed=false，说明工具清单放行与具体调用预授权校验不一致。",
+        "任务指令要求写入后 read_file 核查，但因写入被拒，read_file 未执行，核查步骤缺失（属预期内的连带结果）。"
+      ],
+      "improvement_suggestions": [
+        "在计划（cron job）触发前校验计划预授权与员工 allow 是否同时匹配，避免任务启动后必然失败。",
+        "对 PRE_AUTH_EXCEEDED 类拒绝，在任务结果中明确提示需真人批准对应计划，并给出计划标识以便审批。",
+        "当写入因授权被拒时，可考虑在指令层允许一次只读核查或直接终止，避免产生无意义的后续步骤。"
+      ],
+      "root_cause": "计划预授权（PRE_AUTH）与员工 allow 未同时匹配，导致 write_file 在治理层被拒（PRE_AUTH_EXCEEDED），任务无法完成写入与核查。",
+      "root_cause_event": {
+        "attempt_no": 1,
+        "global_seq": 4535,
+        "seq": 10,
+        "task_run_id": "9a17e18c43f24a0d9744b27b0b063302"
+      },
+      "skill_proposal": null,
+      "summary": "定时任务要求仅用 write_file 写入 actual.txt 再用 read_file 核查。模型正确只发起一次 write_file（seq7/global_seq4532），但该调用在治理层被拒：governance.authorization_checked allowed=false，reason=permission.denied:PRE_AUTH_EXCEEDED：员工allow与计划预授权必须同时匹配（seq10/global_seq4535），tool.failed（seq11/global_seq4536）。模型随后未重试、未改用 bash/mkdir，如实报告失败并说明计划预授权未生效，run 以 cron_tool_failure 结束（seq18/global_seq4545）。失败根因是计划预授权与员工 allow 未同时匹配，属授权/审批配置问题，非模型行为错误。",
+      "verdict": "failed_analyzed"
+    }
+  },
+  "calls": [
+    {
+      "call_id": "call_00_4s4kyfhgy66n2wstue0nurj8",
+      "input": {
+        "limit": 100,
+        "task_run_id": "9a17e18c43f24a0d9744b27b0b063302"
+      },
+      "input_hash": "3906ae5ebd2ccf536fe73512f3c345ef73ddfed59ba6cf5a026b7aa49743f350",
+      "read_only_verdict": true,
+      "risk_level": "low",
+      "side_effect_class": "verifiable",
+      "tool_name": "trace_read",
+      "verdict_reason": ""
+    }
+  ]
+}

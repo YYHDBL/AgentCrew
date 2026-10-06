@@ -1,0 +1,3933 @@
+{
+  "job_ids": [
+    "dd42b488a5ac51179dbe6ecdfe2e9419"
+  ],
+  "queries": [
+    {
+      "sql": "SELECT * FROM cron_jobs WHERE id=?",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+          "workspace_id": "office",
+          "agent_id": "xiaowen",
+          "owner_id": "owner",
+          "credential_owner_id": "owner",
+          "name": "真实失败高优先审查",
+          "revision": 2,
+          "schedule": {
+            "every_ms": 86400000,
+            "kind": "every",
+            "tz": "UTC"
+          },
+          "target": {
+            "conversation_id": null,
+            "execution_mode": "new_conversation",
+            "instruction": "必须只实际调用一次read_file读取 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed。保留真实NOT_FOUND错误，禁止其他工具或创建文件，随后汇报实际结果。"
+          },
+          "metadata": {
+            "agent_id": "xiaowen",
+            "agent_revision": 31,
+            "agent_spec_snapshot": {
+              "connector_ids": [
+                "office-http",
+                "b9af77009fdd53aa990332d05ec90ec0",
+                "388dfc1894a95687b867cc753ef125bb",
+                "c3686550fced5abfb98419f9dbffd7a5",
+                "b7fadb96bdfb50b9afdf131d549f8017",
+                "b8f465d1b2f15a80933681535b1ee5e6",
+                "1e0dfae8e83757dd908805dd8ceead9d",
+                "ae46b24f922556a1b63733e00116e700",
+                "37d24cec7007541381e562c5f8f8f9e3",
+                "b844f34239605c428b7ed3159b4daecf",
+                "685f5fd3c537533e95726a461af6e5b9",
+                "5a816c2cd15f5a518ed4bbc892ce644c",
+                "13d5dd4040cf5d0a8a52f952b1d4a2d6",
+                "57ca6bcbddce5b9a962cc7be354d2dea",
+                "05eb29f1d00e55b7abb95aac1a696a45",
+                "a59c68b60e265144832d4c2f2d55fbf1",
+                "7faa4f74d7245be5ad9007f21a9ba48a"
+              ],
+              "model_slot": "main",
+              "position": "更新后的真实岗位-e13925e395f640c688c871b64ad17891",
+              "skill_ids": [
+                "c7b7146c6ea65788b6d4161a4982f34b",
+                "7fb6db7a69e75931b85594e05ed43d2b"
+              ]
+            },
+            "created_by": "user",
+            "created_via_task_run_id": null,
+            "credential_owner_id": "owner",
+            "owner_id": "owner",
+            "pre_authorized": [],
+            "proposal_id": null,
+            "skill_versions": {
+              "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+              "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+            }
+          },
+          "enabled": 0,
+          "anchor_at": 1791292831732,
+          "next_run_at": 1791379231732,
+          "last_run_at": 1791292831765,
+          "last_status": "failed",
+          "run_count": 1,
+          "retry_count": 0,
+          "max_retries": 3,
+          "created_at": "2026-10-06T13:20:31.732973+00:00",
+          "updated_at": "2026-10-06T13:20:38.861106+00:00",
+          "deleted_at": null
+        }
+      ]
+    },
+    {
+      "sql": "SELECT * FROM cron_job_runs WHERE job_id=? ORDER BY triggered_at,id",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "id": "88a854990fc44431974adbbfb2ba30a5",
+          "job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+          "revision": 1,
+          "trigger": "manual",
+          "scheduled_at": null,
+          "triggered_at": 1791292831745,
+          "actor_id": "owner",
+          "client_request_id": "37594d1f4904474ca9efb0b12d26c5d4",
+          "status": "failed",
+          "note": "PLAN_DISABLED：计划已停用或修订已经改变",
+          "retry_count": 0,
+          "retry_at": null,
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "missed_count": 0,
+          "missed_through": null,
+          "created_at": "2026-10-06T13:20:31.745846+00:00",
+          "updated_at": "2026-10-06T13:20:38.861106+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT a.* FROM cron_run_attempts a JOIN cron_job_runs r ON r.id=a.occurrence_id WHERE r.job_id=? ORDER BY a.retry_no,a.attempt_no",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "occurrence_id": "88a854990fc44431974adbbfb2ba30a5",
+          "retry_no": 0,
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "attempt_no": 1,
+          "status": "failed",
+          "started_at": "2026-10-06T13:20:31.796823+00:00",
+          "finished_at": "2026-10-06T13:20:38.714806+00:00",
+          "error": "cron_tool_failure:NOT_FOUND：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT t.* FROM task_runs t WHERE t.cron_job_id=? ORDER BY t.created_at,t.id",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "id": "967556173d7542c19b804fb6a57564f9",
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "instruction": "必须只实际调用一次read_file读取 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed。保留真实NOT_FOUND错误，禁止其他工具或创建文件，随后汇报实际结果。",
+          "status": "failed",
+          "current_attempt_no": 1,
+          "version": 1,
+          "cron_job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+          "created_at": "2026-10-06T13:20:31.746358+00:00",
+          "updated_at": "2026-10-06T13:20:38.714806+00:00",
+          "finished_at": "2026-10-06T13:20:38.714806+00:00",
+          "client_request_id": null
+        }
+      ]
+    },
+    {
+      "sql": "SELECT a.* FROM run_attempts a JOIN task_runs t ON t.id=a.task_run_id WHERE t.cron_job_id=? ORDER BY a.started_at",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "id": "ba31b95bbb94478eaf1a23b5a265dfa1",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "attempt_no": 1,
+          "kind": "initial",
+          "status": "failed",
+          "outcome": "failed:cron_tool_failure:NOT_FOUND：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed",
+          "resume_reason": null,
+          "context_fingerprint": {
+            "agent_spec_sha256": "4e87a0ccc60563d2d45e5c795022399a9c53ae862563f5bf1904bb1ee3239945",
+            "authorization_sha256": "6a1167df6b60b3197423e8ae0a8dca131fc61f48c1c2a91fbbdfb78a31db10b0",
+            "memory_block_sha256": "e508304a37b809c2024dcdb549d84d860f7d7c1228b54e27d0fa3dee0e44663d",
+            "memory_snapshot_id": "1bd0187ebec34cd8aa751aa44a8ed044",
+            "memory_snapshot_sha256": "7395aff5cb315905c6410ebe4fd4e86661ad1fe282b7c1ae8ef8349bb3012cf7",
+            "model_config": {
+              "api_key_sha256": "a72258b07a769071",
+              "base_url": "https://opencode.ai/zen/go/v1",
+              "context_window": 1000000,
+              "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+              "max_tokens": 8192,
+              "model": "deepseek-v4.1-flash",
+              "prompt_format": "deepseek-v4.1",
+              "provider": "openai-compatible",
+              "tokenizer_repository": "deepseek-ai/DeepSeek-V4.1-Flash",
+              "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+              "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+            },
+            "model_slot": "main",
+            "skill_versions": {
+              "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+              "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+            },
+            "system_prompt_hash": "ccf0f17321222a1bc1425458a8bfecd5893afb01056eb1a19a5254675a0a9b0b",
+            "tools_schema_hash": "43611e92989d5cde48ed8b7a019a4e342fd7fa11741185b9196d4aff32e51d1f"
+          },
+          "started_at": "2026-10-06T13:20:31.796823+00:00",
+          "ended_at": "2026-10-06T13:20:38.714806+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT s.* FROM steps s JOIN task_runs t ON t.id=s.task_run_id WHERE t.cron_job_id=? ORDER BY s.task_run_id,s.ordinal",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "id": "e1f8de6133104ddd8c99fc54cdea4489",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "ordinal": 1,
+          "model_slot": "main",
+          "input_tokens": 9469,
+          "output_tokens": 139,
+          "latency_ms": 2921,
+          "status": "completed"
+        },
+        {
+          "id": "d6f4db342c8d41ceabf9f15fa4dce844",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "ordinal": 2,
+          "model_slot": "main",
+          "input_tokens": 9688,
+          "output_tokens": 268,
+          "latency_ms": 3903,
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT l.* FROM llm_calls l JOIN steps s ON s.id=l.step_id JOIN task_runs t ON t.id=s.task_run_id WHERE t.cron_job_id=? ORDER BY s.ordinal,l.id",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "id": "371fa7a2af124a5ba19fadb479b141c7",
+          "step_id": "e1f8de6133104ddd8c99fc54cdea4489",
+          "model": "deepseek-v4.1-flash",
+          "prompt_tokens": 9469,
+          "completion_tokens": 139,
+          "latency_ms": 2921,
+          "retry_no": 0,
+          "error": null
+        },
+        {
+          "id": "215ccdedba4f4547875a454780aa94c8",
+          "step_id": "d6f4db342c8d41ceabf9f15fa4dce844",
+          "model": "deepseek-v4.1-flash",
+          "prompt_tokens": 9688,
+          "completion_tokens": 268,
+          "latency_ms": 3903,
+          "retry_no": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "sql": "SELECT e.* FROM run_events e JOIN task_runs t ON t.id=e.task_run_id WHERE t.cron_job_id=? ORDER BY e.global_seq",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "global_seq": 6331,
+          "id": "003e45ae2cb1403bb18667f70437080a",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 1,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": null,
+          "type": "run.queued",
+          "payload": {
+            "cron_job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+            "instruction": "必须只实际调用一次read_file读取 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed。保留真实NOT_FOUND错误，禁止其他工具或创建文件，随后汇报实际结果。",
+            "occurrence_id": "88a854990fc44431974adbbfb2ba30a5",
+            "request_identity": {
+              "credential_owner_id": "owner",
+              "effective_user_id": "owner"
+            },
+            "trigger": "manual"
+          },
+          "created_at": "2026-10-06T13:20:31.746358+00:00"
+        },
+        {
+          "global_seq": 6334,
+          "id": "426fb150c21148ebb71ae22fc2116209",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 2,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "run.started",
+          "payload": {
+            "attempt_id": "ba31b95bbb94478eaf1a23b5a265dfa1",
+            "attempt_no": 1,
+            "context_fingerprint": {
+              "agent_spec_sha256": "4e87a0ccc60563d2d45e5c795022399a9c53ae862563f5bf1904bb1ee3239945",
+              "authorization_sha256": "6a1167df6b60b3197423e8ae0a8dca131fc61f48c1c2a91fbbdfb78a31db10b0",
+              "memory_block_sha256": "e508304a37b809c2024dcdb549d84d860f7d7c1228b54e27d0fa3dee0e44663d",
+              "memory_snapshot_id": "1bd0187ebec34cd8aa751aa44a8ed044",
+              "memory_snapshot_sha256": "7395aff5cb315905c6410ebe4fd4e86661ad1fe282b7c1ae8ef8349bb3012cf7",
+              "model_config": {
+                "api_key_sha256": "a72258b07a769071",
+                "base_url": "https://opencode.ai/zen/go/v1",
+                "context_window": 1000000,
+                "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+                "max_tokens": 8192,
+                "model": "deepseek-v4.1-flash",
+                "prompt_format": "deepseek-v4.1",
+                "provider": "openai-compatible",
+                "tokenizer_repository": "deepseek-ai/DeepSeek-V4.1-Flash",
+                "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+                "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+              },
+              "model_slot": "main",
+              "skill_versions": {
+                "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+                "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+              },
+              "system_prompt_hash": "ccf0f17321222a1bc1425458a8bfecd5893afb01056eb1a19a5254675a0a9b0b",
+              "tools_schema_hash": "43611e92989d5cde48ed8b7a019a4e342fd7fa11741185b9196d4aff32e51d1f"
+            },
+            "kind": "initial"
+          },
+          "created_at": "2026-10-06T13:20:31.796823+00:00"
+        },
+        {
+          "global_seq": 6335,
+          "id": "ac4fae3e054a487dacc2045b620c40ce",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 3,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "step.started",
+          "payload": {
+            "model_slot": "main",
+            "ordinal": 1,
+            "step_id": "e1f8de6133104ddd8c99fc54cdea4489"
+          },
+          "created_at": "2026-10-06T13:20:31.798059+00:00"
+        },
+        {
+          "global_seq": 6336,
+          "id": "8b0e31476c1e4660af0bc020d6d19582",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 4,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "governance.authorization_checked",
+          "payload": {
+            "actor_id": "owner",
+            "agent_id": "xiaowen",
+            "allowed": true,
+            "authorization_sha256": "6a1167df6b60b3197423e8ae0a8dca131fc61f48c1c2a91fbbdfb78a31db10b0",
+            "reason": "当前角色、资源及Grant已核查",
+            "scope": {
+              "agent_id": "xiaowen",
+              "org_id": "demo-org",
+              "owner_id": null,
+              "workspace_id": "office"
+            },
+            "tool_names": [
+              "read_file",
+              "write_file",
+              "bash",
+              "http_request",
+              "memory_write",
+              "session_search",
+              "skill_view",
+              "skill_patch",
+              "trace_read",
+              "schedule_task",
+              "ask_user",
+              "mcp_ae46b24f922556a1b63733e00116e700_dataset_material",
+              "mcp_ae46b24f922556a1b63733e00116e700_f51433f23412693a92f70ccf738",
+              "mcp_ae46b24f922556a1b63733e00116e700_environment",
+              "mcp_ae46b24f922556a1b63733e00116e700_network_target",
+              "mcp_ae46b24f922556a1b63733e00116e700_persist",
+              "mcp_ae46b24f922556a1b63733e00116e700_read_target",
+              "mcp_ae46b24f922556a1b63733e00116e700_readback",
+              "mcp_ae46b24f922556a1b63733e00116e700_write_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_dataset_material",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_f51433f23412693a92f70ccf738",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_environment",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_network_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_persist",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_read_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_readback",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_write_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_dataset_material",
+              "mcp_b844f34239605c428b7ed3159b4daecf_f51433f23412693a92f70ccf738",
+              "mcp_b844f34239605c428b7ed3159b4daecf_environment",
+              "mcp_b844f34239605c428b7ed3159b4daecf_network_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_persist",
+              "mcp_b844f34239605c428b7ed3159b4daecf_read_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_readback",
+              "mcp_b844f34239605c428b7ed3159b4daecf_write_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_dataset_material",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_f51433f23412693a92f70ccf738",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_environment",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_network_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_persist",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_read_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_readback",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_write_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_dataset_material",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_f51433f23412693a92f70ccf738",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_environment",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_network_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_persist",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_read_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_readback",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_write_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_dataset_material",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_f51433f23412693a92f70ccf738",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_environment",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_network_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_persist",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_read_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_readback",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_write_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_dataset_material",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_f51433f23412693a92f70ccf738",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_environment",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_network_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_persist",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_read_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_readback",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_write_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_dataset_material",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_f51433f23412693a92f70ccf738",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_environment",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_network_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_persist",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_read_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_readback",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_write_target"
+            ]
+          },
+          "created_at": "2026-10-06T13:20:31.801370+00:00"
+        },
+        {
+          "global_seq": 6337,
+          "id": "3828c6f57b244c4bbb8b398bb6d1efbd",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 5,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "llm.request_started",
+          "payload": {
+            "authorization_sha256": "6a1167df6b60b3197423e8ae0a8dca131fc61f48c1c2a91fbbdfb78a31db10b0",
+            "llm_call_id": "371fa7a2af124a5ba19fadb479b141c7",
+            "model": "deepseek-v4.1-flash",
+            "model_slot": "main",
+            "retry_no": 0,
+            "step_id": "e1f8de6133104ddd8c99fc54cdea4489",
+            "tool_declarations": [
+              {
+                "description": "读取文件内容（分页，每页默认 200 行）",
+                "input_schema": {
+                  "properties": {
+                    "limit": {
+                      "description": "读取行数（默认 200）",
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "description": "起始行号（1 起，默认 1）",
+                      "type": "integer"
+                    },
+                    "path": {
+                      "description": "要读取的文件路径",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "read_file"
+              },
+              {
+                "description": "把完整内容原子写入指定文件，自动创建合法范围内的父目录（覆盖式）",
+                "input_schema": {
+                  "properties": {
+                    "content": {
+                      "description": "完整写入内容",
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "目标文件路径",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "content"
+                  ],
+                  "type": "object"
+                },
+                "name": "write_file"
+              },
+              {
+                "description": "在受控沙盒中执行 shell 命令（写限任务范围、禁止联网、受保护路径与凭据不可读写；只读白名单命令免审批）",
+                "input_schema": {
+                  "properties": {
+                    "command": {
+                      "description": "要执行的 shell 命令",
+                      "type": "string"
+                    },
+                    "timeout_ms": {
+                      "description": "超时毫秒（默认 60000）",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "command"
+                  ],
+                  "type": "object"
+                },
+                "name": "bash"
+              },
+              {
+                "description": "发起 HTTP 请求（受 allowed_hosts 白名单约束）",
+                "input_schema": {
+                  "properties": {
+                    "body": {
+                      "description": "请求体",
+                      "type": "string"
+                    },
+                    "connector_id": {
+                      "enum": [
+                        "office-http",
+                        "b7fadb96bdfb50b9afdf131d549f8017",
+                        "b8f465d1b2f15a80933681535b1ee5e6",
+                        "1e0dfae8e83757dd908805dd8ceead9d",
+                        "5a816c2cd15f5a518ed4bbc892ce644c",
+                        "05eb29f1d00e55b7abb95aac1a696a45"
+                      ],
+                      "type": "string"
+                    },
+                    "headers": {
+                      "description": "附加请求头",
+                      "type": "object"
+                    },
+                    "method": {
+                      "description": "HTTP 方法（默认 GET）",
+                      "type": "string"
+                    },
+                    "url": {
+                      "description": "目标 URL",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "connector_id"
+                  ],
+                  "type": "object"
+                },
+                "name": "http_request"
+              },
+              {
+                "description": "读取或修改持久化三库。用户偏好进入 user，工作区事实进入 workspace，员工经验进入 soul。先 read 获取修订和条目哈希；写入提供 expected_revision 和真实依据 basis，可用 operations 一次整合多个条目。配额失败三次后本回合跳过保存。",
+                "input_schema": {
+                  "properties": {
+                    "action": {
+                      "enum": [
+                        "read",
+                        "add",
+                        "edit",
+                        "archive",
+                        "restore",
+                        "pin",
+                        "unpin",
+                        "batch"
+                      ],
+                      "type": "string"
+                    },
+                    "basis": {
+                      "type": "string"
+                    },
+                    "entry_hash": {
+                      "type": "string"
+                    },
+                    "expected_revision": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "operations": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "target": {
+                      "enum": [
+                        "user",
+                        "workspace",
+                        "soul"
+                      ],
+                      "type": "string"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "target",
+                    "action"
+                  ],
+                  "type": "object"
+                },
+                "name": "memory_write"
+              },
+              {
+                "description": "在当前工作区和员工允许的历史与记忆中查找中文或其他子串，返回可回查来源。支持短词、分页和显式归档查询；检索不调用模型。",
+                "input_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "after": {
+                      "type": "string"
+                    },
+                    "archived": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "limit": {
+                      "default": 20,
+                      "maximum": 200,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "query": {
+                      "maxLength": 200,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "name": "session_search"
+              },
+              {
+                "description": "按名称读取实时 Skill 正文与修订；不存在时返回创建目标状态。file 仅读取已登记支撑文件。正文读取记录使用；支撑文件读取不替代正文读取。",
+                "input_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "maxLength": 80,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "name": "skill_view"
+              },
+              {
+                "description": "创建或修改可泛化的流程和机理。先在本用户回合 skill_view 或 action=read 读取目标正文/不存在状态；写入提供读到的 expected_revision 和真实 basis。create 提供 description（最多60字符）及全文 text；edit 替换全文；patch 用唯一 old_text/new_text 替换。files 维护 references/templates/assets/scripts 内的支撑文件，null 删除。允许判断无须保存；用户明确要求保存流程时执行受控保存。",
+                "input_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "action": {
+                      "enum": [
+                        "read",
+                        "create",
+                        "patch",
+                        "edit"
+                      ],
+                      "type": "string"
+                    },
+                    "basis": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "description": {
+                      "maxLength": 60,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "expected_revision": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "file": {
+                      "type": "string"
+                    },
+                    "files": {
+                      "additionalProperties": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "type": "object"
+                    },
+                    "name": {
+                      "maxLength": 80,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "new_text": {
+                      "type": "string"
+                    },
+                    "old_text": {
+                      "type": "string"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "action"
+                  ],
+                  "type": "object"
+                },
+                "name": "skill_patch"
+              },
+              {
+                "description": "分页读取当前身份可见的真实任务、尝试、事件、调用与错误，携带事件引用和水位；后台审查仅允许读取作业绑定的目标任务。",
+                "input_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "after_seq": {
+                      "default": 0,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "default": 50,
+                      "maximum": 100,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "task_run_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "through_global_seq": {
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "task_run_id"
+                  ],
+                  "type": "object"
+                },
+                "name": "trace_read"
+              },
+              {
+                "description": "提出不可变定时计划，必须等待真人批准。员工与工作区绑定当前任务；existing绑定当前会话，new_conversation每次建立会话。pre_authorized只表示建议范围，真人从当前合法候选缩小选择；永久允许无法免除创建确认。",
+                "input_schema": {
+                  "$defs": {
+                    "AtSchedule": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "at_ms": {
+                          "maximum": 253402300799999,
+                          "minimum": 0,
+                          "title": "At Ms",
+                          "type": "integer"
+                        },
+                        "kind": {
+                          "const": "at",
+                          "title": "Kind",
+                          "type": "string"
+                        },
+                        "tz": {
+                          "maxLength": 128,
+                          "minLength": 1,
+                          "title": "Tz",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "tz",
+                        "kind",
+                        "at_ms"
+                      ],
+                      "title": "AtSchedule",
+                      "type": "object"
+                    },
+                    "CronSchedule": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "expr": {
+                          "maxLength": 200,
+                          "minLength": 1,
+                          "title": "Expr",
+                          "type": "string"
+                        },
+                        "kind": {
+                          "const": "cron",
+                          "title": "Kind",
+                          "type": "string"
+                        },
+                        "tz": {
+                          "maxLength": 128,
+                          "minLength": 1,
+                          "title": "Tz",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "tz",
+                        "kind",
+                        "expr"
+                      ],
+                      "title": "CronSchedule",
+                      "type": "object"
+                    },
+                    "EverySchedule": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "every_ms": {
+                          "maximum": 253402300799999,
+                          "minimum": 1000,
+                          "title": "Every Ms",
+                          "type": "integer"
+                        },
+                        "kind": {
+                          "const": "every",
+                          "title": "Kind",
+                          "type": "string"
+                        },
+                        "tz": {
+                          "maxLength": 128,
+                          "minLength": 1,
+                          "title": "Tz",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "tz",
+                        "kind",
+                        "every_ms"
+                      ],
+                      "title": "EverySchedule",
+                      "type": "object"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "properties": {
+                    "execution_mode": {
+                      "enum": [
+                        "existing",
+                        "new_conversation"
+                      ],
+                      "title": "Execution Mode",
+                      "type": "string"
+                    },
+                    "instruction": {
+                      "maxLength": 100000,
+                      "minLength": 1,
+                      "title": "Instruction",
+                      "type": "string"
+                    },
+                    "name": {
+                      "maxLength": 80,
+                      "minLength": 1,
+                      "title": "Name",
+                      "type": "string"
+                    },
+                    "pre_authorized": {
+                      "items": {
+                        "$ref": "#/$defs/Authorization"
+                      },
+                      "maxItems": 100,
+                      "title": "Pre Authorized",
+                      "type": "array"
+                    },
+                    "schedule": {
+                      "discriminator": {
+                        "mapping": {
+                          "at": "#/$defs/AtSchedule",
+                          "cron": "#/$defs/CronSchedule",
+                          "every": "#/$defs/EverySchedule"
+                        },
+                        "propertyName": "kind"
+                      },
+                      "oneOf": [
+                        {
+                          "$ref": "#/$defs/AtSchedule"
+                        },
+                        {
+                          "$ref": "#/$defs/EverySchedule"
+                        },
+                        {
+                          "$ref": "#/$defs/CronSchedule"
+                        }
+                      ],
+                      "title": "Schedule"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "schedule",
+                    "instruction",
+                    "execution_mode",
+                    "pre_authorized"
+                  ],
+                  "title": "ScheduleTaskInput",
+                  "type": "object"
+                },
+                "name": "schedule_task"
+              },
+              {
+                "description": "向用户提问并等待回答（用于澄清任务，答案会回到对话）",
+                "input_schema": {
+                  "properties": {
+                    "options": {
+                      "description": "可选的候选项",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "question": {
+                      "description": "要向用户提出的问题",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "question"
+                  ],
+                  "type": "object"
+                },
+                "name": "ask_user"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_write_target"
+              }
+            ],
+            "tool_names": [
+              "read_file",
+              "write_file",
+              "bash",
+              "http_request",
+              "memory_write",
+              "session_search",
+              "skill_view",
+              "skill_patch",
+              "trace_read",
+              "schedule_task",
+              "ask_user",
+              "mcp_ae46b24f922556a1b63733e00116e700_dataset_material",
+              "mcp_ae46b24f922556a1b63733e00116e700_f51433f23412693a92f70ccf738",
+              "mcp_ae46b24f922556a1b63733e00116e700_environment",
+              "mcp_ae46b24f922556a1b63733e00116e700_network_target",
+              "mcp_ae46b24f922556a1b63733e00116e700_persist",
+              "mcp_ae46b24f922556a1b63733e00116e700_read_target",
+              "mcp_ae46b24f922556a1b63733e00116e700_readback",
+              "mcp_ae46b24f922556a1b63733e00116e700_write_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_dataset_material",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_f51433f23412693a92f70ccf738",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_environment",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_network_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_persist",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_read_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_readback",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_write_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_dataset_material",
+              "mcp_b844f34239605c428b7ed3159b4daecf_f51433f23412693a92f70ccf738",
+              "mcp_b844f34239605c428b7ed3159b4daecf_environment",
+              "mcp_b844f34239605c428b7ed3159b4daecf_network_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_persist",
+              "mcp_b844f34239605c428b7ed3159b4daecf_read_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_readback",
+              "mcp_b844f34239605c428b7ed3159b4daecf_write_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_dataset_material",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_f51433f23412693a92f70ccf738",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_environment",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_network_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_persist",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_read_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_readback",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_write_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_dataset_material",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_f51433f23412693a92f70ccf738",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_environment",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_network_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_persist",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_read_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_readback",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_write_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_dataset_material",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_f51433f23412693a92f70ccf738",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_environment",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_network_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_persist",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_read_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_readback",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_write_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_dataset_material",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_f51433f23412693a92f70ccf738",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_environment",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_network_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_persist",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_read_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_readback",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_write_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_dataset_material",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_f51433f23412693a92f70ccf738",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_environment",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_network_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_persist",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_read_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_readback",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_write_target"
+            ]
+          },
+          "created_at": "2026-10-06T13:20:31.855248+00:00"
+        },
+        {
+          "global_seq": 6338,
+          "id": "881ea5e5389d42c3ba04036a86a3510d",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 6,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "context.budget_checked",
+          "payload": {
+            "context_window": 1000000,
+            "counting_method": "tokenizers/official-deepseek-v4.1",
+            "history_tokens": 93,
+            "model": "deepseek-v4.1-flash",
+            "output_reserved": 8192,
+            "scope": {
+              "agent_id": "xiaowen",
+              "owner_id": "owner",
+              "workspace_id": "office"
+            },
+            "system_tokens": 9380,
+            "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+            "tool_result_tokens": 0,
+            "total_input_tokens": 9473
+          },
+          "created_at": "2026-10-06T13:20:31.913462+00:00"
+        },
+        {
+          "global_seq": 6341,
+          "id": "f4b17cfe34f14198aff4b372414d9209",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 7,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "llm.request_done",
+          "payload": {
+            "completion_tokens": 139,
+            "latency_ms": 2921,
+            "llm_call_id": "371fa7a2af124a5ba19fadb479b141c7",
+            "prompt_tokens": 9469,
+            "step_id": "e1f8de6133104ddd8c99fc54cdea4489",
+            "stop_reason": "tool_use",
+            "text": "",
+            "tool_uses": [
+              {
+                "id": "call_00_c0hbl2njmf53f22mlfnzg5v5",
+                "input": {
+                  "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed"
+                },
+                "name": "read_file"
+              }
+            ],
+            "usage_received": true
+          },
+          "created_at": "2026-10-06T13:20:34.720529+00:00"
+        },
+        {
+          "global_seq": 6342,
+          "id": "dc64d35d1f69421ca5a9d945784e9bd5",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 8,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "step.completed",
+          "payload": {
+            "input_tokens": 9469,
+            "latency_ms": 2921,
+            "output_tokens": 139,
+            "step_id": "e1f8de6133104ddd8c99fc54cdea4489"
+          },
+          "created_at": "2026-10-06T13:20:34.722501+00:00"
+        },
+        {
+          "global_seq": 6343,
+          "id": "ae2dfec5691a45fdaa64d11e8bad479a",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 9,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "tool.prepared",
+          "payload": {
+            "call_id": "call_00_c0hbl2njmf53f22mlfnzg5v5",
+            "input": {
+              "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed"
+            },
+            "input_hash": "0142abc06516d5e9244baf57cd38231429e1c1a3bdb4825e0f865457f38b3481",
+            "read_only_verdict": true,
+            "risk_level": "low",
+            "side_effect_class": "verifiable",
+            "tool_name": "read_file",
+            "verdict_reason": ""
+          },
+          "created_at": "2026-10-06T13:20:34.743841+00:00"
+        },
+        {
+          "global_seq": 6344,
+          "id": "16e5def914bc4d9f85b8974e943fb942",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 10,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "governance.authorization_checked",
+          "payload": {
+            "actor_id": "owner",
+            "agent_id": "xiaowen",
+            "allowed": true,
+            "audit_seq": 1993,
+            "authorization_sha256": "6a1167df6b60b3197423e8ae0a8dca131fc61f48c1c2a91fbbdfb78a31db10b0",
+            "call_id": "call_00_c0hbl2njmf53f22mlfnzg5v5",
+            "reason": "只读工具",
+            "scope": {
+              "agent_id": "xiaowen",
+              "org_id": "demo-org",
+              "owner_id": null,
+              "workspace_id": "office"
+            }
+          },
+          "created_at": "2026-10-06T13:20:34.765762+00:00"
+        },
+        {
+          "global_seq": 6345,
+          "id": "8dad612c2c5842819f8e5830a00ef1e6",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 11,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "tool.dispatched",
+          "payload": {
+            "authorization_sha256": "6a1167df6b60b3197423e8ae0a8dca131fc61f48c1c2a91fbbdfb78a31db10b0",
+            "call_id": "call_00_c0hbl2njmf53f22mlfnzg5v5"
+          },
+          "created_at": "2026-10-06T13:20:34.767149+00:00"
+        },
+        {
+          "global_seq": 6346,
+          "id": "8ff8091cc79c48adbd35cd7cf749ce78",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 12,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "tool.failed",
+          "payload": {
+            "call_id": "call_00_c0hbl2njmf53f22mlfnzg5v5",
+            "error": "NOT_FOUND：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed",
+            "output": "",
+            "output_summary": ""
+          },
+          "created_at": "2026-10-06T13:20:34.796196+00:00"
+        },
+        {
+          "global_seq": 6347,
+          "id": "c2176205f4a14de0af663b4ee8dd83a0",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 13,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "step.started",
+          "payload": {
+            "model_slot": "main",
+            "ordinal": 2,
+            "step_id": "d6f4db342c8d41ceabf9f15fa4dce844"
+          },
+          "created_at": "2026-10-06T13:20:34.797203+00:00"
+        },
+        {
+          "global_seq": 6348,
+          "id": "2ddf8bf6e59345018240b6257168b1fc",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 14,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "governance.authorization_checked",
+          "payload": {
+            "actor_id": "owner",
+            "agent_id": "xiaowen",
+            "allowed": true,
+            "authorization_sha256": "6a1167df6b60b3197423e8ae0a8dca131fc61f48c1c2a91fbbdfb78a31db10b0",
+            "reason": "当前角色、资源及Grant已核查",
+            "scope": {
+              "agent_id": "xiaowen",
+              "org_id": "demo-org",
+              "owner_id": null,
+              "workspace_id": "office"
+            },
+            "tool_names": [
+              "read_file",
+              "write_file",
+              "bash",
+              "http_request",
+              "memory_write",
+              "session_search",
+              "skill_view",
+              "skill_patch",
+              "trace_read",
+              "schedule_task",
+              "ask_user",
+              "mcp_ae46b24f922556a1b63733e00116e700_dataset_material",
+              "mcp_ae46b24f922556a1b63733e00116e700_f51433f23412693a92f70ccf738",
+              "mcp_ae46b24f922556a1b63733e00116e700_environment",
+              "mcp_ae46b24f922556a1b63733e00116e700_network_target",
+              "mcp_ae46b24f922556a1b63733e00116e700_persist",
+              "mcp_ae46b24f922556a1b63733e00116e700_read_target",
+              "mcp_ae46b24f922556a1b63733e00116e700_readback",
+              "mcp_ae46b24f922556a1b63733e00116e700_write_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_dataset_material",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_f51433f23412693a92f70ccf738",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_environment",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_network_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_persist",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_read_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_readback",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_write_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_dataset_material",
+              "mcp_b844f34239605c428b7ed3159b4daecf_f51433f23412693a92f70ccf738",
+              "mcp_b844f34239605c428b7ed3159b4daecf_environment",
+              "mcp_b844f34239605c428b7ed3159b4daecf_network_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_persist",
+              "mcp_b844f34239605c428b7ed3159b4daecf_read_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_readback",
+              "mcp_b844f34239605c428b7ed3159b4daecf_write_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_dataset_material",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_f51433f23412693a92f70ccf738",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_environment",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_network_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_persist",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_read_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_readback",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_write_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_dataset_material",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_f51433f23412693a92f70ccf738",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_environment",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_network_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_persist",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_read_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_readback",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_write_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_dataset_material",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_f51433f23412693a92f70ccf738",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_environment",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_network_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_persist",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_read_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_readback",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_write_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_dataset_material",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_f51433f23412693a92f70ccf738",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_environment",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_network_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_persist",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_read_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_readback",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_write_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_dataset_material",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_f51433f23412693a92f70ccf738",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_environment",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_network_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_persist",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_read_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_readback",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_write_target"
+            ]
+          },
+          "created_at": "2026-10-06T13:20:34.800517+00:00"
+        },
+        {
+          "global_seq": 6349,
+          "id": "5d23a105340541da8b30e605d1ae03ee",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 15,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "llm.request_started",
+          "payload": {
+            "authorization_sha256": "6a1167df6b60b3197423e8ae0a8dca131fc61f48c1c2a91fbbdfb78a31db10b0",
+            "llm_call_id": "215ccdedba4f4547875a454780aa94c8",
+            "model": "deepseek-v4.1-flash",
+            "model_slot": "main",
+            "retry_no": 0,
+            "step_id": "d6f4db342c8d41ceabf9f15fa4dce844",
+            "tool_declarations": [
+              {
+                "description": "读取文件内容（分页，每页默认 200 行）",
+                "input_schema": {
+                  "properties": {
+                    "limit": {
+                      "description": "读取行数（默认 200）",
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "description": "起始行号（1 起，默认 1）",
+                      "type": "integer"
+                    },
+                    "path": {
+                      "description": "要读取的文件路径",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "type": "object"
+                },
+                "name": "read_file"
+              },
+              {
+                "description": "把完整内容原子写入指定文件，自动创建合法范围内的父目录（覆盖式）",
+                "input_schema": {
+                  "properties": {
+                    "content": {
+                      "description": "完整写入内容",
+                      "type": "string"
+                    },
+                    "path": {
+                      "description": "目标文件路径",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "content"
+                  ],
+                  "type": "object"
+                },
+                "name": "write_file"
+              },
+              {
+                "description": "在受控沙盒中执行 shell 命令（写限任务范围、禁止联网、受保护路径与凭据不可读写；只读白名单命令免审批）",
+                "input_schema": {
+                  "properties": {
+                    "command": {
+                      "description": "要执行的 shell 命令",
+                      "type": "string"
+                    },
+                    "timeout_ms": {
+                      "description": "超时毫秒（默认 60000）",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "command"
+                  ],
+                  "type": "object"
+                },
+                "name": "bash"
+              },
+              {
+                "description": "发起 HTTP 请求（受 allowed_hosts 白名单约束）",
+                "input_schema": {
+                  "properties": {
+                    "body": {
+                      "description": "请求体",
+                      "type": "string"
+                    },
+                    "connector_id": {
+                      "enum": [
+                        "office-http",
+                        "b7fadb96bdfb50b9afdf131d549f8017",
+                        "b8f465d1b2f15a80933681535b1ee5e6",
+                        "1e0dfae8e83757dd908805dd8ceead9d",
+                        "5a816c2cd15f5a518ed4bbc892ce644c",
+                        "05eb29f1d00e55b7abb95aac1a696a45"
+                      ],
+                      "type": "string"
+                    },
+                    "headers": {
+                      "description": "附加请求头",
+                      "type": "object"
+                    },
+                    "method": {
+                      "description": "HTTP 方法（默认 GET）",
+                      "type": "string"
+                    },
+                    "url": {
+                      "description": "目标 URL",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url",
+                    "connector_id"
+                  ],
+                  "type": "object"
+                },
+                "name": "http_request"
+              },
+              {
+                "description": "读取或修改持久化三库。用户偏好进入 user，工作区事实进入 workspace，员工经验进入 soul。先 read 获取修订和条目哈希；写入提供 expected_revision 和真实依据 basis，可用 operations 一次整合多个条目。配额失败三次后本回合跳过保存。",
+                "input_schema": {
+                  "properties": {
+                    "action": {
+                      "enum": [
+                        "read",
+                        "add",
+                        "edit",
+                        "archive",
+                        "restore",
+                        "pin",
+                        "unpin",
+                        "batch"
+                      ],
+                      "type": "string"
+                    },
+                    "basis": {
+                      "type": "string"
+                    },
+                    "entry_hash": {
+                      "type": "string"
+                    },
+                    "expected_revision": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "operations": {
+                      "items": {
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "target": {
+                      "enum": [
+                        "user",
+                        "workspace",
+                        "soul"
+                      ],
+                      "type": "string"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "target",
+                    "action"
+                  ],
+                  "type": "object"
+                },
+                "name": "memory_write"
+              },
+              {
+                "description": "在当前工作区和员工允许的历史与记忆中查找中文或其他子串，返回可回查来源。支持短词、分页和显式归档查询；检索不调用模型。",
+                "input_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "after": {
+                      "type": "string"
+                    },
+                    "archived": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "limit": {
+                      "default": 20,
+                      "maximum": 200,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "query": {
+                      "maxLength": 200,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "query"
+                  ],
+                  "type": "object"
+                },
+                "name": "session_search"
+              },
+              {
+                "description": "按名称读取实时 Skill 正文与修订；不存在时返回创建目标状态。file 仅读取已登记支撑文件。正文读取记录使用；支撑文件读取不替代正文读取。",
+                "input_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "file": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "maxLength": 80,
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "name": "skill_view"
+              },
+              {
+                "description": "创建或修改可泛化的流程和机理。先在本用户回合 skill_view 或 action=read 读取目标正文/不存在状态；写入提供读到的 expected_revision 和真实 basis。create 提供 description（最多60字符）及全文 text；edit 替换全文；patch 用唯一 old_text/new_text 替换。files 维护 references/templates/assets/scripts 内的支撑文件，null 删除。允许判断无须保存；用户明确要求保存流程时执行受控保存。",
+                "input_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "action": {
+                      "enum": [
+                        "read",
+                        "create",
+                        "patch",
+                        "edit"
+                      ],
+                      "type": "string"
+                    },
+                    "basis": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "description": {
+                      "maxLength": 60,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "expected_revision": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "file": {
+                      "type": "string"
+                    },
+                    "files": {
+                      "additionalProperties": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "type": "object"
+                    },
+                    "name": {
+                      "maxLength": 80,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "new_text": {
+                      "type": "string"
+                    },
+                    "old_text": {
+                      "type": "string"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "action"
+                  ],
+                  "type": "object"
+                },
+                "name": "skill_patch"
+              },
+              {
+                "description": "分页读取当前身份可见的真实任务、尝试、事件、调用与错误，携带事件引用和水位；后台审查仅允许读取作业绑定的目标任务。",
+                "input_schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "after_seq": {
+                      "default": 0,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "default": 50,
+                      "maximum": 100,
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "task_run_id": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "through_global_seq": {
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "task_run_id"
+                  ],
+                  "type": "object"
+                },
+                "name": "trace_read"
+              },
+              {
+                "description": "提出不可变定时计划，必须等待真人批准。员工与工作区绑定当前任务；existing绑定当前会话，new_conversation每次建立会话。pre_authorized只表示建议范围，真人从当前合法候选缩小选择；永久允许无法免除创建确认。",
+                "input_schema": {
+                  "$defs": {
+                    "AtSchedule": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "at_ms": {
+                          "maximum": 253402300799999,
+                          "minimum": 0,
+                          "title": "At Ms",
+                          "type": "integer"
+                        },
+                        "kind": {
+                          "const": "at",
+                          "title": "Kind",
+                          "type": "string"
+                        },
+                        "tz": {
+                          "maxLength": 128,
+                          "minLength": 1,
+                          "title": "Tz",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "tz",
+                        "kind",
+                        "at_ms"
+                      ],
+                      "title": "AtSchedule",
+                      "type": "object"
+                    },
+                    "CronSchedule": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "expr": {
+                          "maxLength": 200,
+                          "minLength": 1,
+                          "title": "Expr",
+                          "type": "string"
+                        },
+                        "kind": {
+                          "const": "cron",
+                          "title": "Kind",
+                          "type": "string"
+                        },
+                        "tz": {
+                          "maxLength": 128,
+                          "minLength": 1,
+                          "title": "Tz",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "tz",
+                        "kind",
+                        "expr"
+                      ],
+                      "title": "CronSchedule",
+                      "type": "object"
+                    },
+                    "EverySchedule": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "every_ms": {
+                          "maximum": 253402300799999,
+                          "minimum": 1000,
+                          "title": "Every Ms",
+                          "type": "integer"
+                        },
+                        "kind": {
+                          "const": "every",
+                          "title": "Kind",
+                          "type": "string"
+                        },
+                        "tz": {
+                          "maxLength": 128,
+                          "minLength": 1,
+                          "title": "Tz",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "tz",
+                        "kind",
+                        "every_ms"
+                      ],
+                      "title": "EverySchedule",
+                      "type": "object"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "properties": {
+                    "execution_mode": {
+                      "enum": [
+                        "existing",
+                        "new_conversation"
+                      ],
+                      "title": "Execution Mode",
+                      "type": "string"
+                    },
+                    "instruction": {
+                      "maxLength": 100000,
+                      "minLength": 1,
+                      "title": "Instruction",
+                      "type": "string"
+                    },
+                    "name": {
+                      "maxLength": 80,
+                      "minLength": 1,
+                      "title": "Name",
+                      "type": "string"
+                    },
+                    "pre_authorized": {
+                      "items": {
+                        "$ref": "#/$defs/Authorization"
+                      },
+                      "maxItems": 100,
+                      "title": "Pre Authorized",
+                      "type": "array"
+                    },
+                    "schedule": {
+                      "discriminator": {
+                        "mapping": {
+                          "at": "#/$defs/AtSchedule",
+                          "cron": "#/$defs/CronSchedule",
+                          "every": "#/$defs/EverySchedule"
+                        },
+                        "propertyName": "kind"
+                      },
+                      "oneOf": [
+                        {
+                          "$ref": "#/$defs/AtSchedule"
+                        },
+                        {
+                          "$ref": "#/$defs/EverySchedule"
+                        },
+                        {
+                          "$ref": "#/$defs/CronSchedule"
+                        }
+                      ],
+                      "title": "Schedule"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "schedule",
+                    "instruction",
+                    "execution_mode",
+                    "pre_authorized"
+                  ],
+                  "title": "ScheduleTaskInput",
+                  "type": "object"
+                },
+                "name": "schedule_task"
+              },
+              {
+                "description": "向用户提问并等待回答（用于澄清任务，答案会回到对话）",
+                "input_schema": {
+                  "properties": {
+                    "options": {
+                      "description": "可选的候选项",
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "question": {
+                      "description": "要向用户提出的问题",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "question"
+                  ],
+                  "type": "object"
+                },
+                "name": "ask_user"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_ae46b24f922556a1b63733e00116e700_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_37d24cec7007541381e562c5f8f8f9e3_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_b844f34239605c428b7ed3159b4daecf_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_685f5fd3c537533e95726a461af6e5b9_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_a59c68b60e265144832d4c2f2d55fbf1_write_target"
+              },
+              {
+                "description": "第三方MCP工具：读取配置的位置参数指向的实际数据文件。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "dataset_materialArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_dataset_material"
+              },
+              {
+                "description": "第三方MCP工具：",
+                "input_schema": {
+                  "properties": {},
+                  "title": "current_directoryArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_f51433f23412693a92f70ccf738"
+              },
+              {
+                "description": "第三方MCP工具：返回实际子进程环境名称和进程身份。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "environmentArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_environment"
+              },
+              {
+                "description": "第三方MCP工具：请求实际网络目标以核查stdio网络限制。",
+                "input_schema": {
+                  "properties": {
+                    "url": {
+                      "title": "Url",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "url"
+                  ],
+                  "title": "network_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_network_target"
+              },
+              {
+                "description": "第三方MCP工具：保存真实材料并返回实际SHA与操作数量。",
+                "input_schema": {
+                  "properties": {
+                    "value": {
+                      "title": "Value",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "title": "persistArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_persist"
+              },
+              {
+                "description": "第三方MCP工具：读取实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "title": "read_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_read_target"
+              },
+              {
+                "description": "第三方MCP工具：读取实际保存的材料。",
+                "input_schema": {
+                  "properties": {},
+                  "title": "readbackArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_readback"
+              },
+              {
+                "description": "第三方MCP工具：写入实际文件以核查操作系统保护范围。",
+                "input_schema": {
+                  "properties": {
+                    "path": {
+                      "title": "Path",
+                      "type": "string"
+                    },
+                    "text": {
+                      "title": "Text",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path",
+                    "text"
+                  ],
+                  "title": "write_targetArguments",
+                  "type": "object"
+                },
+                "name": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_write_target"
+              }
+            ],
+            "tool_names": [
+              "read_file",
+              "write_file",
+              "bash",
+              "http_request",
+              "memory_write",
+              "session_search",
+              "skill_view",
+              "skill_patch",
+              "trace_read",
+              "schedule_task",
+              "ask_user",
+              "mcp_ae46b24f922556a1b63733e00116e700_dataset_material",
+              "mcp_ae46b24f922556a1b63733e00116e700_f51433f23412693a92f70ccf738",
+              "mcp_ae46b24f922556a1b63733e00116e700_environment",
+              "mcp_ae46b24f922556a1b63733e00116e700_network_target",
+              "mcp_ae46b24f922556a1b63733e00116e700_persist",
+              "mcp_ae46b24f922556a1b63733e00116e700_read_target",
+              "mcp_ae46b24f922556a1b63733e00116e700_readback",
+              "mcp_ae46b24f922556a1b63733e00116e700_write_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_dataset_material",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_f51433f23412693a92f70ccf738",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_environment",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_network_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_persist",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_read_target",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_readback",
+              "mcp_37d24cec7007541381e562c5f8f8f9e3_write_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_dataset_material",
+              "mcp_b844f34239605c428b7ed3159b4daecf_f51433f23412693a92f70ccf738",
+              "mcp_b844f34239605c428b7ed3159b4daecf_environment",
+              "mcp_b844f34239605c428b7ed3159b4daecf_network_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_persist",
+              "mcp_b844f34239605c428b7ed3159b4daecf_read_target",
+              "mcp_b844f34239605c428b7ed3159b4daecf_readback",
+              "mcp_b844f34239605c428b7ed3159b4daecf_write_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_dataset_material",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_f51433f23412693a92f70ccf738",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_environment",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_network_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_persist",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_read_target",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_readback",
+              "mcp_685f5fd3c537533e95726a461af6e5b9_write_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_dataset_material",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_f51433f23412693a92f70ccf738",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_environment",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_network_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_persist",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_read_target",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_readback",
+              "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_write_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_dataset_material",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_f51433f23412693a92f70ccf738",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_environment",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_network_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_persist",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_read_target",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_readback",
+              "mcp_57ca6bcbddce5b9a962cc7be354d2dea_write_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_dataset_material",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_f51433f23412693a92f70ccf738",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_environment",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_network_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_persist",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_read_target",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_readback",
+              "mcp_a59c68b60e265144832d4c2f2d55fbf1_write_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_dataset_material",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_f51433f23412693a92f70ccf738",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_environment",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_network_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_persist",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_read_target",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_readback",
+              "mcp_7faa4f74d7245be5ad9007f21a9ba48a_write_target"
+            ]
+          },
+          "created_at": "2026-10-06T13:20:34.853515+00:00"
+        },
+        {
+          "global_seq": 6350,
+          "id": "bfd0e953787d4ba98d466d7ff8a1bfad",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 16,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "context.budget_checked",
+          "payload": {
+            "context_window": 1000000,
+            "counting_method": "tokenizers/official-deepseek-v4.1",
+            "history_tokens": 243,
+            "model": "deepseek-v4.1-flash",
+            "output_reserved": 8192,
+            "scope": {
+              "agent_id": "xiaowen",
+              "owner_id": "owner",
+              "workspace_id": "office"
+            },
+            "system_tokens": 9380,
+            "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+            "tool_result_tokens": 69,
+            "total_input_tokens": 9692
+          },
+          "created_at": "2026-10-06T13:20:34.910212+00:00"
+        },
+        {
+          "global_seq": 6351,
+          "id": "ec4c0e8b0ec84d3389c23427837b8f2b",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 17,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "llm.request_done",
+          "payload": {
+            "completion_tokens": 268,
+            "latency_ms": 3903,
+            "llm_call_id": "215ccdedba4f4547875a454780aa94c8",
+            "prompt_tokens": 9688,
+            "step_id": "d6f4db342c8d41ceabf9f15fa4dce844",
+            "stop_reason": "end_turn",
+            "text": "已按要求执行并汇报实际结果。\n\n**执行动作**：仅调用一次 `read_file`，目标路径\n`/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed`\n\n**实际返回（原样保留）**：\n```\n错误：NOT_FOUND：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed\n```\n\n**说明**：\n- 结果确认为真实的 `NOT_FOUND`，即该文件在指定路径下不存在，未被改写或替换为其他状态。\n- 本次未调用任何其他工具，未创建、修改或删除任何文件，也未做任何补偿性重试或路径猜测。\n- 任务在此终止：没有可交付的文件内容。若该文件应由上游步骤生成，建议核对生成环节与文件命名是否一致，再决定是否补做。",
+            "tool_uses": [],
+            "usage_received": true
+          },
+          "created_at": "2026-10-06T13:20:38.701699+00:00"
+        },
+        {
+          "global_seq": 6352,
+          "id": "3054973dcec74d52981ac44f72cf60fa",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 18,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "step.completed",
+          "payload": {
+            "input_tokens": 9688,
+            "latency_ms": 3903,
+            "output_tokens": 268,
+            "step_id": "d6f4db342c8d41ceabf9f15fa4dce844"
+          },
+          "created_at": "2026-10-06T13:20:38.704248+00:00"
+        },
+        {
+          "global_seq": 6353,
+          "id": "4936707e85854690b0c6aede6eb4f01a",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "seq": 19,
+          "conversation_id": "993438d354bc4d4ea21dc9797b3b9aef",
+          "agent_run_id": null,
+          "attempt_no": 1,
+          "type": "run.failed",
+          "payload": {
+            "reason": "cron_tool_failure:NOT_FOUND：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed"
+          },
+          "created_at": "2026-10-06T13:20:38.714806+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT c.* FROM tool_calls c JOIN task_runs t ON t.id=c.task_run_id WHERE t.cron_job_id=? ORDER BY c.prepared_at",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "id": "call_00_c0hbl2njmf53f22mlfnzg5v5",
+          "call_id": "call_00_c0hbl2njmf53f22mlfnzg5v5",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "step_id": null,
+          "tool_name": "read_file",
+          "side_effect_class": "verifiable",
+          "input_hash": "0142abc06516d5e9244baf57cd38231429e1c1a3bdb4825e0f865457f38b3481",
+          "status": "failed",
+          "risk_level": "low",
+          "input": {
+            "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed"
+          },
+          "output_summary": null,
+          "artifact_path": null,
+          "error": "NOT_FOUND：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed",
+          "prepared_at": "2026-10-06T13:20:34.743841+00:00",
+          "dispatched_at": "2026-10-06T13:20:34.767149+00:00",
+          "completed_at": "2026-10-06T13:20:34.796196+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT * FROM runtime_notifications WHERE job_id=? ORDER BY global_seq",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "id": "cron-88a854990fc44431974adbbfb2ba30a5-retry_wait-0",
+          "global_seq": 6354,
+          "owner_id": "owner",
+          "workspace_id": "office",
+          "agent_id": "xiaowen",
+          "job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "kind": "cron.retry_wait",
+          "severity": "error",
+          "message": "真实失败高优先审查：retry_wait，cron_tool_failure:NOT_FOUND：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed",
+          "read_at": null,
+          "presented_at": null,
+          "created_at": "2026-10-06T13:20:38.716988+00:00"
+        },
+        {
+          "id": "cron-88a854990fc44431974adbbfb2ba30a5-failed-0",
+          "global_seq": 6359,
+          "owner_id": "owner",
+          "workspace_id": "office",
+          "agent_id": "xiaowen",
+          "job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+          "task_run_id": "967556173d7542c19b804fb6a57564f9",
+          "kind": "cron.failed",
+          "severity": "error",
+          "message": "真实失败高优先审查：failed，PLAN_DISABLED：计划已停用或修订已经改变",
+          "read_at": null,
+          "presented_at": null,
+          "created_at": "2026-10-06T13:20:38.919405+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT * FROM audit_log WHERE resource_type='cron_job' AND resource_id=? ORDER BY seq",
+      "parameters": [
+        "dd42b488a5ac51179dbe6ecdfe2e9419"
+      ],
+      "rows": [
+        {
+          "seq": 1990,
+          "ts": "2026-10-06T13:20:31.734714+00:00",
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "cron.job_created",
+          "resource_type": "cron_job",
+          "resource_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+          "detail": {
+            "actor_id": "owner",
+            "change_id": "7e5e2457e49949e5a35b99c61948270d",
+            "credential_owner_id": "owner",
+            "deleted_at": null,
+            "enabled": true,
+            "job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+            "resource_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+            "resource_type": "cron_job",
+            "revision": 1,
+            "scope": {
+              "agent_id": "xiaowen",
+              "org_id": "demo-org",
+              "owner_id": "owner",
+              "workspace_id": "office"
+            }
+          },
+          "prev_hash": "82fb601444138a9d5daa04d62c384e4773a27345cd8f6eba7c0250e0430e608b",
+          "hash": "fc1e263de2015f15d0e6c3450dbd340110f21e40df44b7c8a33f53cb41a70589"
+        },
+        {
+          "seq": 1991,
+          "ts": "2026-10-06T13:20:31.745846+00:00",
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "cron.manual_requested",
+          "resource_type": "cron_job",
+          "resource_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+          "detail": {
+            "job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+            "notification_id": null,
+            "occurrence_id": "88a854990fc44431974adbbfb2ba30a5",
+            "reason": null,
+            "retry_no": 0,
+            "revision": 1,
+            "scheduled_at": null,
+            "scope": {
+              "agent_id": "xiaowen",
+              "org_id": "demo-org",
+              "owner_id": "owner",
+              "workspace_id": "office"
+            },
+            "source_task_run_id": "967556173d7542c19b804fb6a57564f9",
+            "status": "fired",
+            "trigger": "manual",
+            "triggered_at": 1791292831745
+          },
+          "prev_hash": "fc1e263de2015f15d0e6c3450dbd340110f21e40df44b7c8a33f53cb41a70589",
+          "hash": "f6f0ed728c6d518a81d8600a7763f520c635bdd51f2938eee0b59739f3fa4791"
+        },
+        {
+          "seq": 1995,
+          "ts": "2026-10-06T13:20:38.714806+00:00",
+          "actor_type": "system",
+          "actor_id": "cron",
+          "action": "cron.job_retry_wait",
+          "resource_type": "cron_job",
+          "resource_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+          "detail": {
+            "job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+            "notification_id": "cron-88a854990fc44431974adbbfb2ba30a5-retry_wait-0",
+            "occurrence_id": "88a854990fc44431974adbbfb2ba30a5",
+            "reason": "cron_tool_failure:NOT_FOUND：/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed",
+            "retry_at": 1791292868715,
+            "retry_no": 0,
+            "revision": 1,
+            "scheduled_at": null,
+            "scope": {
+              "agent_id": "xiaowen",
+              "org_id": "demo-org",
+              "owner_id": "owner",
+              "workspace_id": "office"
+            },
+            "source_task_run_id": "967556173d7542c19b804fb6a57564f9",
+            "status": "retry_wait",
+            "trigger": "manual",
+            "triggered_at": 1791292831745
+          },
+          "prev_hash": "af7d7a9bcf0f0e8786d50a6499cf821481b48cb1990a35769efadd955e0b2c16",
+          "hash": "a056708cf0994a3930a186d3881a4773af42a9bbcb87c4fe962564bee8706e4b"
+        },
+        {
+          "seq": 1998,
+          "ts": "2026-10-06T13:20:38.859597+00:00",
+          "actor_type": "user",
+          "actor_id": "owner",
+          "action": "cron.job_changed",
+          "resource_type": "cron_job",
+          "resource_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+          "detail": {
+            "actor_id": "owner",
+            "change_id": "5ca63ee414d74465ae1b966187a69a97",
+            "credential_owner_id": "owner",
+            "deleted_at": null,
+            "enabled": false,
+            "job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+            "resource_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+            "resource_type": "cron_job",
+            "revision": 2,
+            "scope": {
+              "agent_id": "xiaowen",
+              "org_id": "demo-org",
+              "owner_id": "owner",
+              "workspace_id": "office"
+            }
+          },
+          "prev_hash": "0c922aaff4bd7f4d715e2cbfb72774501db4187384c2737b1330e334f61a09ee",
+          "hash": "e8d355101bb1881d717dfb1dc0e3520c6dc69393599f93c14d402f8f2feca4b1"
+        },
+        {
+          "seq": 1999,
+          "ts": "2026-10-06T13:20:38.861106+00:00",
+          "actor_type": "system",
+          "actor_id": "cron",
+          "action": "cron.reconciled",
+          "resource_type": "cron_job",
+          "resource_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+          "detail": {
+            "job_id": "dd42b488a5ac51179dbe6ecdfe2e9419",
+            "notification_id": "cron-88a854990fc44431974adbbfb2ba30a5-failed-0",
+            "occurrence_id": "88a854990fc44431974adbbfb2ba30a5",
+            "reason": "PLAN_DISABLED：计划已停用或修订已经改变",
+            "retry_at": null,
+            "retry_no": 0,
+            "revision": 1,
+            "scheduled_at": null,
+            "scope": {
+              "agent_id": "xiaowen",
+              "org_id": "demo-org",
+              "owner_id": "owner",
+              "workspace_id": "office"
+            },
+            "source_task_run_id": "967556173d7542c19b804fb6a57564f9",
+            "status": "failed",
+            "trigger": "manual",
+            "triggered_at": 1791292831745
+          },
+          "prev_hash": "e8d355101bb1881d717dfb1dc0e3520c6dc69393599f93c14d402f8f2feca4b1",
+          "hash": "118e2b26f8605828333cf0a067b61d59ce7aa63a44526aac85e478103c2ec77b"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-trace-missing-de4d0edb74b043569bfd29e1404ff9ed",
+      "exists": false
+    }
+  ],
+  "event_watermark": 6421,
+  "audit_seq": 2031
+}

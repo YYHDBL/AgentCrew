@@ -19,14 +19,15 @@ class MemorySearch:
         self.db = store.db
 
     async def search(self, identity: MemoryIdentity, query: str, *, archived: bool = False,
-                     limit: int = 20, after: str | None = None, use_id: str | None = None) -> dict:
+                     limit: int = 20, after: str | None = None, use_id: str | None = None, same_requester=False) -> dict:
         if not isinstance(query, str) or not 1 <= len(query.strip()) <= 200:
             return failure("VALIDATION_ERROR", "查询必须包含 1 至 200 个字符")
         if type(limit) is not int or not 1 <= limit <= 200 or type(archived) is not bool:
             return failure("VALIDATION_ERROR", "分页上限必须为 1 至 200，归档参数必须为布尔值")
         query = query.strip()
         binding = sha256(canonical({"workspace_id": identity.workspace_id, "agent_id": identity.agent_id,
-            "actor_type": identity.actor_type, "actor_id": identity.actor_id, "query": query, "archived": archived}).encode())
+            "actor_type": identity.actor_type, "actor_id": identity.actor_id, "query": query, "archived": archived,
+            "same_requester": same_requester}).encode())
         cursor = _CURSOR.fullmatch(after) if isinstance(after, str) else None
         if after is not None and (cursor is None or cursor[1] != binding):
             return failure("VALIDATION_ERROR", "检索游标无效或与查询身份不一致")
@@ -37,12 +38,12 @@ class MemorySearch:
                 if lock.locked():
                     return failure("STORE_RECOVERING", "检索范围中的记忆库正在写入")
                 await locks.enter_async_context(lock)
-            result = await asyncio.to_thread(self._query, identity, query, archived, limit, cursor, binding, targets)
+            result = await asyncio.to_thread(self._query, identity, query, archived, limit, cursor, binding, targets, same_requester)
         if "error" not in result:
             await self.store.record_hits([r["id"] for r in result["items"] if r["kind"] == "memory"], use_id=use_id)
         return result
 
-    def _query(self, identity, query, archived, limit, cursor, binding, targets):
+    def _query(self, identity, query, archived, limit, cursor, binding, targets, same_requester=False):
         conn = self.db.read_conn
         conn.create_function("memory_context_safe", 1, lambda text: int(not suspected_injection(text)), deterministic=True)
         conn.execute("BEGIN")
@@ -68,6 +69,11 @@ class MemorySearch:
                 caller = self.store.identities.memory_actor(identity)
                 visible = [row[0] for row in conn.execute("SELECT id FROM conversations WHERE workspace_id=? AND agent_id=?", (identity.workspace_id, identity.agent_id))
                     if self.store.identities.visible_conversation(caller, row[0])]
+                if same_requester:
+                    owned = {row[0] for row in conn.execute("SELECT conversation_id FROM governance_conversations WHERE effective_user_id=? AND credential_owner_id=?", (caller.effective_user_id, caller.credential_owner_id))}
+                    visible = [conversation for conversation in visible if conversation in owned]
+                    allowed = [row[0] for row in conn.execute("SELECT e.entry_id FROM memory_entries e WHERE e.entry_id IN(SELECT value FROM json_each(?)) AND (json_extract(e.source,'$.task_run_id') IS NULL OR EXISTS(SELECT 1 FROM task_governance g WHERE g.task_run_id=json_extract(e.source,'$.task_run_id') AND g.effective_user_id=? AND g.credential_owner_id=?)) AND (json_extract(e.source,'$.job_id') IS NULL OR EXISTS(SELECT 1 FROM job_governance g WHERE g.job_id=json_extract(e.source,'$.job_id') AND g.effective_user_id=? AND g.credential_owner_id=?))",
+                        (canonical(allowed), caller.effective_user_id, caller.credential_owner_id, caller.effective_user_id, caller.credential_owner_id))]
                 conversation_filter = "AND c.id IN(SELECT value FROM json_each(?))"
             sql = f"""SELECT m.id,'message' AS kind,m.content AS text,m.created_at,
                 json_object('conversation_id',m.conversation_id,'task_run_id',m.task_run_id,
@@ -134,4 +140,4 @@ class MemorySearch:
             return failure("VALIDATION_ERROR", "检索不能指定任务范围以外的参数")
         identity = MemoryIdentity(row[0], row[1], "agent", row[1], row[2], context.task_run_id, job_id=context.job_id)
         return await self.search(identity, invocation.input.get("query"), archived=invocation.input.get("archived", False),
-            limit=invocation.input.get("limit", 20), after=invocation.input.get("after"), use_id=invocation.call_id)
+            limit=invocation.input.get("limit", 20), after=invocation.input.get("after"), use_id=invocation.call_id, same_requester=context.search_owner_only)

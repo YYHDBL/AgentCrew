@@ -49,6 +49,8 @@ class Rules:
             return pattern
         if tool_name == "schedule_task" and pattern == tool_name:
             return pattern
+        if tool_name in {"trace_read", "session_search"} and effect == "deny":
+            return pattern
         if tool_name.startswith("mcp_"):
             selected = conn.execute("SELECT c.id FROM connector_tools t JOIN connectors c ON c.id=t.connector_id AND c.revision=t.connector_revision JOIN grants g ON g.resource_type='connector' AND g.resource_id=c.id WHERE t.stable_name=? AND c.workspace_id=? AND c.status='active' AND g.grantee_type='agent' AND g.grantee_id=? AND g.revoked_at IS NULL", (tool_name, agent["workspace_id"], agent_id)).fetchone()
             if selected is None or pattern != tool_name:
