@@ -74,6 +74,7 @@ cron_job_runs(id PK, job_id FK, task_run_id FK, scheduled_at,
 - 对话里"每天早上 9 点把昨日报表发我" → 小文调 `schedule_task` 工具
 - 创建批准具有不可免除的人工确认语义，员工 allow 或 allow_always 不能代替授权人类批准
 - 审批卡片展示不可变计划提案与预授权范围选择器，用户只能缩小当前合法候选范围；最终配置绑定提案 input_hash、批准身份和修订号，重复提交不重复创建
+- 员工建议的预授权范围原样保存在提案内，候选由当前员工allow、Grant与目标scope计算；计划只保存真人选择且通过复查的范围
 - 任务列表页与员工档案页都能看到"谁建的定时任务"，owner/admin 可停用任何 job
 
 ## 2. 轨迹审计 Agent（hermes 式）

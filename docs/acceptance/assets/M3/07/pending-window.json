@@ -1,0 +1,172 @@
+{
+  "proposal": {
+    "id": "call_00_cr845426qjzloojhls320hw7",
+    "task_run_id": "375134441dcb4d77b7d69d794f5e1403",
+    "attempt_no": 1,
+    "call_id": "call_00_cr845426qjzloojhls320hw7",
+    "input_hash": "aeb533d34a847aad12b07df0a76b02da9c41dcb55bccc83fb7ebe560876e2da2",
+    "revision": 1,
+    "status": "pending",
+    "job_id": null,
+    "decided_by": null,
+    "decided_at": null,
+    "proposal": {
+      "agent_id": "xiaowen",
+      "change_id": "proposal-375134441dcb4d77b7d69d794f5e1403-aeb533d34a847aad",
+      "enabled": true,
+      "name": "员工真实计划-7e3f43a3c63649b6a7e38635ac34eb1d",
+      "pre_authorized": [
+        {
+          "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files",
+          "tool": "write_file"
+        }
+      ],
+      "schedule": {
+        "every_ms": 5000,
+        "kind": "every",
+        "tz": "UTC"
+      },
+      "target": {
+        "conversation_id": null,
+        "execution_mode": "new_conversation",
+        "instruction": "必须只调用write_file将 M3 human approved actual 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-approved-schedule-38fb2e9631d34bc58332c086b73a26f3/actual.txt，然后只调用read_file核查该文件。write_file会自动创建合法范围内的父目录。禁止调用bash、mkdir、其他工具或处理其他路径。"
+      },
+      "workspace_id": "office"
+    },
+    "candidates": [
+      {
+        "pattern": "127.0.0.1",
+        "tool": "http_request"
+      },
+      {
+        "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files",
+        "tool": "write_file"
+      },
+      {
+        "pattern": "sleep 30",
+        "tool": "bash"
+      },
+      {
+        "pattern": "mcp_ae46b24f922556a1b63733e00116e700_read_target",
+        "tool": "mcp_ae46b24f922556a1b63733e00116e700_read_target"
+      },
+      {
+        "pattern": "mcp_37d24cec7007541381e562c5f8f8f9e3_read_target",
+        "tool": "mcp_37d24cec7007541381e562c5f8f8f9e3_read_target"
+      },
+      {
+        "pattern": "mcp_b844f34239605c428b7ed3159b4daecf_read_target",
+        "tool": "mcp_b844f34239605c428b7ed3159b4daecf_read_target"
+      },
+      {
+        "pattern": "mcp_685f5fd3c537533e95726a461af6e5b9_read_target",
+        "tool": "mcp_685f5fd3c537533e95726a461af6e5b9_read_target"
+      },
+      {
+        "pattern": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_read_target",
+        "tool": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_read_target"
+      },
+      {
+        "pattern": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_read_target",
+        "tool": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_read_target"
+      },
+      {
+        "pattern": "mcp_a59c68b60e265144832d4c2f2d55fbf1_read_target",
+        "tool": "mcp_a59c68b60e265144832d4c2f2d55fbf1_read_target"
+      },
+      {
+        "pattern": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_read_target",
+        "tool": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_read_target"
+      }
+    ],
+    "selected": []
+  },
+  "task_before": [
+    "running",
+    "prepared"
+  ],
+  "proposal_after": {
+    "id": "call_00_cr845426qjzloojhls320hw7",
+    "task_run_id": "375134441dcb4d77b7d69d794f5e1403",
+    "attempt_no": 1,
+    "call_id": "call_00_cr845426qjzloojhls320hw7",
+    "input_hash": "aeb533d34a847aad12b07df0a76b02da9c41dcb55bccc83fb7ebe560876e2da2",
+    "revision": 2,
+    "status": "expired",
+    "job_id": null,
+    "decided_by": null,
+    "decided_at": "2026-10-06T03:21:49.223515+00:00",
+    "proposal": {
+      "agent_id": "xiaowen",
+      "change_id": "proposal-375134441dcb4d77b7d69d794f5e1403-aeb533d34a847aad",
+      "enabled": true,
+      "name": "员工真实计划-7e3f43a3c63649b6a7e38635ac34eb1d",
+      "pre_authorized": [
+        {
+          "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files",
+          "tool": "write_file"
+        }
+      ],
+      "schedule": {
+        "every_ms": 5000,
+        "kind": "every",
+        "tz": "UTC"
+      },
+      "target": {
+        "conversation_id": null,
+        "execution_mode": "new_conversation",
+        "instruction": "必须只调用write_file将 M3 human approved actual 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-approved-schedule-38fb2e9631d34bc58332c086b73a26f3/actual.txt，然后只调用read_file核查该文件。write_file会自动创建合法范围内的父目录。禁止调用bash、mkdir、其他工具或处理其他路径。"
+      },
+      "workspace_id": "office"
+    },
+    "candidates": [
+      {
+        "pattern": "127.0.0.1",
+        "tool": "http_request"
+      },
+      {
+        "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files",
+        "tool": "write_file"
+      },
+      {
+        "pattern": "sleep 30",
+        "tool": "bash"
+      },
+      {
+        "pattern": "mcp_ae46b24f922556a1b63733e00116e700_read_target",
+        "tool": "mcp_ae46b24f922556a1b63733e00116e700_read_target"
+      },
+      {
+        "pattern": "mcp_37d24cec7007541381e562c5f8f8f9e3_read_target",
+        "tool": "mcp_37d24cec7007541381e562c5f8f8f9e3_read_target"
+      },
+      {
+        "pattern": "mcp_b844f34239605c428b7ed3159b4daecf_read_target",
+        "tool": "mcp_b844f34239605c428b7ed3159b4daecf_read_target"
+      },
+      {
+        "pattern": "mcp_685f5fd3c537533e95726a461af6e5b9_read_target",
+        "tool": "mcp_685f5fd3c537533e95726a461af6e5b9_read_target"
+      },
+      {
+        "pattern": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_read_target",
+        "tool": "mcp_13d5dd4040cf5d0a8a52f952b1d4a2d6_read_target"
+      },
+      {
+        "pattern": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_read_target",
+        "tool": "mcp_57ca6bcbddce5b9a962cc7be354d2dea_read_target"
+      },
+      {
+        "pattern": "mcp_a59c68b60e265144832d4c2f2d55fbf1_read_target",
+        "tool": "mcp_a59c68b60e265144832d4c2f2d55fbf1_read_target"
+      },
+      {
+        "pattern": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_read_target",
+        "tool": "mcp_7faa4f74d7245be5ad9007f21a9ba48a_read_target"
+      }
+    ],
+    "selected": []
+  },
+  "signal": "SIGKILL",
+  "file_exists": false
+}

@@ -416,6 +416,8 @@ class RunManager:
                 ctx.memory_search = self._memory_search.run_tool
             if self._memory_skills is not None:
                 ctx.memory_skills = self._memory_skills.run_tool
+            if hasattr(self, "cron_proposals"):
+                ctx.schedule_proposal = self.cron_proposals.execute
 
             async def sink(event_type: str, payload: dict) -> None:
                 if event_type == "llm.request_started":

@@ -66,6 +66,8 @@ def rule_matches(tool_name: str, call_input: dict[str, Any], pattern: str,
         return ok
     if tool_name.startswith("mcp_"):
         return pattern == tool_name
+    if tool_name == "schedule_task":
+        return pattern == tool_name
     return False
 
 
@@ -86,6 +88,8 @@ def evaluate_gate(
     # deny规则检查完成后判断元数据。
     if meta.risk_level == "high" and meta.destructive:
         return GateResult("deny", "risk=high 且 destructive，硬拒")
+    if meta.requires_human_confirmation:
+        return GateResult("ask", "必须由真人确认本次不可变提案")
     if meta.name == "bash" and bash_readonly_verdict:
         return GateResult("allow", "白名单只读命令（动态判定）")
     if meta.read_only and not meta.needs_approval:

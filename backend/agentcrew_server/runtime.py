@@ -70,6 +70,7 @@ class RuntimeState:
     cron_scheduler: object | None = None
     cron_executor: object | None = None
     cron_recovery: object | None = None
+    cron_proposals: object | None = None
 
     async def stop_execution(self) -> None:
         cancellations = []

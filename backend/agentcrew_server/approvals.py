@@ -117,9 +117,15 @@ class ApprovalService:
         automation = self.automation.current_gate(ctx_info.task_run_id, meta, invocation.input, readonly_verdict, rules, cwd) if hasattr(self, "automation") else None
         if automation is not None:
             result = GateResult("deny", boundary) if boundary else automation
+        confirmed_replay = False
+        if meta.name == "schedule_task" and result.action == "ask":
+            prior = self.proposals.prior_decision(ctx_info, invocation.call_id, invocation.input)
+            if prior is not None:
+                result = GateResult(prior, "本次调用读取持久真人决定")
+                confirmed_replay = prior == "allow"
         if result.action == "allow":
             # governance §3：闸门放行（自动/规则命中）全部入审计链
-            action = ("permission.pre_authorized_pass" if automation is not None and result.reason.startswith("pre_authorized_pass") else "permission.rule_allowed" if result.matched_pattern
+            action = ("permission.confirmed_replay" if confirmed_replay else "permission.pre_authorized_pass" if automation is not None and result.reason.startswith("pre_authorized_pass") else "permission.rule_allowed" if result.matched_pattern
                       else "permission.auto_allowed")
             await self._audit("system", "gate", action, "tool_call",
                               invocation.call_id,
@@ -136,10 +142,11 @@ class ApprovalService:
                               {"tool": meta.name, "input_hash": ih,
                                "pattern": result.matched_pattern,
                                "agent_id": ctx_info.agent_id})
-            return result if automation is not None else "deny"
+            return result if automation is not None or meta.requires_human_confirmation else "deny"
         # ask：发卡（含四选项/input_hash/target/范围预览）→ 挂起。
         # 请求事件与请求审计同事务（governance §2.3"全部进审计链"）
         pattern = always_scope_pattern(meta.name, invocation.input, cwd)
+        proposal = self.proposals.prepare(ctx_info, invocation.input) if meta.name == "schedule_task" else None
 
         def _audit_requested(conn, event):
             append_audit(
@@ -149,6 +156,8 @@ class ApprovalService:
                 detail=_detail(tool=meta.name, input_hash=ih,
                                agent_id=ctx_info.agent_id, target=pattern),
             )
+            if proposal is not None:
+                self.proposals.register_in_tx(conn, ctx_info, invocation.call_id, proposal)
 
         await self._store.append(
             task_run_id=ctx_info.task_run_id,
@@ -159,10 +168,11 @@ class ApprovalService:
                 "tool_call_id": invocation.call_id,
                 "tool": meta.name,
                 "risk": meta.risk_level,
-                "options": list(DECISIONS),
+                "options": ["allow_once", "reject_once"] if proposal is not None else list(DECISIONS),
                 "input_hash": ih,
                 "target": approval_target(meta.name, invocation.input, cwd),
                 "always_scope_preview": pattern,
+                **({"proposal_id": invocation.call_id} if proposal is not None else {}),
             },
             extra_writes=_audit_requested,
         )
@@ -180,13 +190,15 @@ class ApprovalService:
 
     # ── 决定提交（API 入口）──────────────────────────────────────
     async def submit(self, call_id: str, decision: str,
-                     client_input_hash: str | None = None, request_identity=None) -> dict[str, Any]:
+                     client_input_hash: str | None = None, request_identity=None, proposal_decision=None) -> dict[str, Any]:
         if decision not in DECISIONS:
             raise ApprovalStale(f"非法决定：{decision}")
         requested = await asyncio.to_thread(self._find_request, call_id)
         if requested is None:
             raise ApprovalNotFound(call_id)
         task_run_id, conversation_id, payload = requested
+        if payload.get("tool") == "schedule_task" and proposal_decision is None:
+            raise ApprovalStale("计划创建必须使用绑定提案及范围的真人决定接口")
         if client_input_hash is not None \
                 and client_input_hash != payload.get("input_hash"):
             raise ApprovalStale("input_hash 与当前调用不一致（审批卡已过期）")
@@ -198,7 +210,7 @@ class ApprovalService:
             lambda conn: self._decide_tx(
                 conn, call_id=call_id, decision=decision,
                 task_run_id=task_run_id, conversation_id=conversation_id,
-                payload=payload, agent_id=agent_id, request_identity=request_identity))
+                payload=payload, agent_id=agent_id, request_identity=request_identity, proposal_decision=proposal_decision))
         if outcome["kind"] == "existing":
             first_decision, decided_at = outcome["first"]
             if decision == first_decision:
@@ -224,7 +236,7 @@ class ApprovalService:
 
     def _decide_tx(self, conn, *, call_id: str, decision: str,
                    task_run_id: str, conversation_id: str, payload: dict,
-                   agent_id: str, request_identity=None) -> dict[str, Any]:
+                   agent_id: str, request_identity=None, proposal_decision=None) -> dict[str, Any]:
         published = []
         with conn:
             conn.execute("BEGIN IMMEDIATE")
@@ -235,6 +247,9 @@ class ApprovalService:
                 if decision in ("allow_always", "reject_always"):
                     workspace_id = self.identities.resources.get("agent", agent_id, conn)["workspace_id"]
                     self.identities.require(request_identity, "manage", workspace_id, conn)
+            proposal_selected = None
+            if payload.get("tool") == "schedule_task":
+                proposal_selected = self.proposals.validate_decision(conn, call_id, decision, request_identity, proposal_decision)
             first = self._resolution_row(conn, call_id)
             if first is not None:
                 conn.execute("COMMIT")  # 只读事务（并发窗口内已有首次决定）
@@ -264,7 +279,8 @@ class ApprovalService:
                 attempt_no=pending.attempt_no,
                 type=RunEventType.PERMISSION_RESOLVED,
                 payload={"tool_call_id": call_id, "decision": decision, "actor_id": actor_id,
-                    "credential_owner_id": request_identity.credential_owner_id if request_identity else "owner"},
+                    "credential_owner_id": request_identity.credential_owner_id if request_identity else "owner",
+                    **({"proposal_id": call_id, "selected": proposal_selected} if proposal_decision is not None else {})},
             )
             published.append(event)
             audit_seq = append_audit(
@@ -275,6 +291,9 @@ class ApprovalService:
                                input_hash=payload.get("input_hash"),
                                agent_id=agent_id),
             )
+            if proposal_decision is not None:
+                published.extend(self.proposals.resolve_in_tx(conn, call_id, decision, request_identity, proposal_decision, proposal_selected))
+                audit_seq = conn.execute("SELECT max(seq) FROM audit_log").fetchone()[0]
             if decision in ("allow_always", "reject_always"):
                 effect = "allow" if decision == "allow_always" else "deny"
                 pattern = payload.get("always_scope_preview") or ""

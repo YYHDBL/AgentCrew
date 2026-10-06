@@ -17,7 +17,9 @@ for key in configuration.api_keys():
     register_secret(key)
 requests = json.loads(request_file.read_text())
 job_ids = sorted({item["response"]["data"]["id"] for item in requests if item.get("path") == "/api/cron/jobs"
-                  and item.get("method") == "POST" and item["status"] == 201})
+                  and item.get("method") == "POST" and item["status"] == 201} |
+    {item["response"]["data"]["job_id"] for item in requests if item.get("path", "").startswith("/api/cron/proposals/")
+        and item.get("method") == "POST" and item["status"] == 200 and item["response"]["data"]["job_id"] is not None})
 assert job_ids
 connection = sqlite3.connect(root / "agentcrew.db")
 connection.row_factory = sqlite3.Row

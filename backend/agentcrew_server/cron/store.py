@@ -77,15 +77,17 @@ class CronStore:
             raise GovernanceError("VALIDATION_ERROR", "new_conversation 不接受会话标识", 422)
         return roots
 
-    def preview(self, identity, request, conn=None):
+    def preview(self, identity, request, conn=None, *, manage=True):
         connection = conn if conn is not None else self.db.read_conn
-        self.identities.require(identity, "manage", request["workspace_id"], connection)
+        self.identities.require(identity, "manage" if manage else "use", request["workspace_id"], connection)
         agent = self.identities.agent(identity, request["agent_id"], request["workspace_id"], connection)
         roots = self.roots(identity, request["workspace_id"], request["agent_id"], request["target"], connection)
         candidates = []
         rows = connection.execute("SELECT tool_name,pattern FROM agent_permission_rules WHERE agent_id=? AND effect='allow' AND revoked_at IS NULL", (agent["id"],)).fetchall()
         for row in rows:
             tool, pattern = row
+            if tool == "schedule_task":
+                continue
             if tool in {"write_file", "read_file"}:
                 candidates.extend(path_candidates(tool, str(Path(pattern).resolve()), roots))
             elif tool == "http_request":
@@ -104,6 +106,7 @@ class CronStore:
             else:
                 normalized = self.rules.normalize(agent["id"], tool, pattern, "allow", connection)
                 candidates.append({"tool": tool, "pattern": normalized})
+        candidates = list({(candidate["tool"], candidate["pattern"]): candidate for candidate in candidates}.values())
         normalized_choices = []
         for choice in request["pre_authorized"]:
             pattern = self.rules.normalize(agent["id"], choice["tool"], choice["pattern"], "allow", connection)
@@ -128,23 +131,28 @@ class CronStore:
     async def create(self, identity, request):
         job_id = uuid.uuid5(uuid.NAMESPACE_URL, "agentcrew:cron:" + identity.effective_user_id + ":" + request["change_id"]).hex
         def operation(conn):
-            preview = self.preview(identity, request, conn)
-            agent = self.identities.agent(identity, request["agent_id"], request["workspace_id"], conn)
-            stamp, timestamp = now_ms(), now()
-            metadata = {"agent_id": agent["id"], "agent_spec_snapshot": agent["spec"],
-                "agent_revision": agent["revision"], "skill_versions": self.runtime.skill_versions.task_snapshot(conn, agent["id"], agent["spec"]),
-                "pre_authorized": preview["selected"], "created_by": "user", "owner_id": identity.effective_user_id,
-                "credential_owner_id": identity.credential_owner_id, "created_via_task_run_id": None, "proposal_id": None}
-            conn.execute("INSERT INTO cron_jobs(id,workspace_id,agent_id,owner_id,credential_owner_id,name,revision,schedule,target,metadata,enabled,anchor_at,next_run_at,created_at,updated_at) VALUES(?,?,?,?,?,?,1,?,?,?,?,?,?,?,?)",
-                (job_id, request["workspace_id"], agent["id"], identity.effective_user_id, identity.credential_owner_id,
-                 request["name"], canonical(request["schedule"]), canonical(request["target"]), canonical(metadata),
-                 int(request.get("enabled", True)), stamp, next_run_at(request["schedule"], stamp, stamp), timestamp, timestamp))
-            job = self.get(identity, job_id, conn)
-            self.references(conn, job)
+            job = self.create_in_tx(conn, identity, request)
             return job, self.scope(job, conn), {"job_id": job_id, "enabled": job["state"]["enabled"], "deleted_at": None}
         return await self.resources.mutate(change_id=request["change_id"], actor_id=identity.effective_user_id,
             credential_owner_id=identity.credential_owner_id, request=request, action="cron.job_created", kind="cron_job", resource_id=job_id,
             operation=operation, event_type=T.CRON_JOB_CHANGED, authorize=lambda conn: self.identities.require(identity, "manage", request["workspace_id"], conn))
+
+    def create_in_tx(self, conn, identity, request, *, source_task_id=None, proposal_id=None):
+        job_id = uuid.uuid5(uuid.NAMESPACE_URL, "agentcrew:cron:" + identity.effective_user_id + ":" + request["change_id"]).hex
+        preview = self.preview(identity, request, conn)
+        agent = self.identities.agent(identity, request["agent_id"], request["workspace_id"], conn)
+        stamp, timestamp = now_ms(), now()
+        metadata = {"agent_id": agent["id"], "agent_spec_snapshot": agent["spec"],
+            "agent_revision": agent["revision"], "skill_versions": self.runtime.skill_versions.task_snapshot(conn, agent["id"], agent["spec"]),
+            "pre_authorized": preview["selected"], "created_by": "agent" if proposal_id else "user", "owner_id": identity.effective_user_id,
+            "credential_owner_id": identity.credential_owner_id, "created_via_task_run_id": source_task_id, "proposal_id": proposal_id}
+        conn.execute("INSERT INTO cron_jobs(id,workspace_id,agent_id,owner_id,credential_owner_id,name,revision,schedule,target,metadata,enabled,anchor_at,next_run_at,created_at,updated_at) VALUES(?,?,?,?,?,?,1,?,?,?,?,?,?,?,?)",
+            (job_id, request["workspace_id"], agent["id"], identity.effective_user_id, identity.credential_owner_id,
+             request["name"], canonical(request["schedule"]), canonical(request["target"]), canonical(metadata),
+             int(request.get("enabled", True)), stamp, next_run_at(request["schedule"], stamp, stamp), timestamp, timestamp))
+        job = self.get(identity, job_id, conn)
+        self.references(conn, job)
+        return job
 
     async def edit(self, identity, job_id, request, delete=False):
         def operation(conn):

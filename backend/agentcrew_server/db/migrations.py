@@ -32,6 +32,7 @@ from .schema_v13 import V13_STATEMENTS
 from .schema_v14 import V14_STATEMENTS
 from .schema_v15 import V15_STATEMENTS
 from .schema_v16 import V16_STATEMENTS
+from .schema_v17 import V17_STATEMENTS
 
 _SNAPSHOT_KEEP = 3
 _BUSY_RETRIES = 3
@@ -62,6 +63,7 @@ MIGRATIONS: tuple[Migration, ...] = (
     Migration(version=14, name="M2 连接器启动资源绑定", statements=V14_STATEMENTS),
     Migration(version=15, name="M2 审计锚点登记", statements=V15_STATEMENTS),
     Migration(version=16, name="M3 计划发生与持久通知", statements=V16_STATEMENTS),
+    Migration(version=17, name="M3 不可变员工计划提案", statements=V17_STATEMENTS),
 )
 
 

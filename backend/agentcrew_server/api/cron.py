@@ -1,75 +1,16 @@
 """真实计划管理、授权预览及发生历史 API。"""
 
 import asyncio
-from typing import Annotated, Literal
+from typing import Literal
 
 from fastapi import Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, model_validator
 
-from agentcrew_core.cron.schedule import validate_schedule, MAX_TIMESTAMP_MS, ScheduleError
+from agentcrew_core.cron.schedule import ScheduleError
+from agentcrew_core.cron.models import Authorization, Target, Schedule, CreateBody
 from ..cron.store import CronStore
-
-
-class ScheduleBase(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    tz: str = Field(min_length=1, max_length=128)
-
-    @model_validator(mode="after")
-    def check_schedule(self):
-        validate_schedule(self.model_dump())
-        return self
-
-
-class AtSchedule(ScheduleBase):
-    kind: Literal["at"]
-    at_ms: StrictInt = Field(ge=0, le=MAX_TIMESTAMP_MS)
-
-
-class EverySchedule(ScheduleBase):
-    kind: Literal["every"]
-    every_ms: StrictInt = Field(ge=1000, le=MAX_TIMESTAMP_MS)
-
-
-class CronSchedule(ScheduleBase):
-    kind: Literal["cron"]
-    expr: str = Field(min_length=1, max_length=200)
-
-
-Schedule = Annotated[AtSchedule | EverySchedule | CronSchedule, Field(discriminator="kind")]
-
-
-class Authorization(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    tool: str = Field(min_length=1, max_length=128)
-    pattern: str = Field(min_length=1, max_length=32768)
-
-
-class Target(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    instruction: str = Field(min_length=1, max_length=100000)
-    execution_mode: Literal["existing", "new_conversation"]
-    conversation_id: str | None
-
-    @model_validator(mode="after")
-    def check_conversation(self):
-        if self.execution_mode == "existing" and not self.conversation_id:
-            raise ValueError("existing 必须指定会话标识")
-        if self.execution_mode == "new_conversation" and self.conversation_id is not None:
-            raise ValueError("new_conversation 不接受会话标识")
-        return self
-
-
-class CreateBody(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    change_id: str = Field(min_length=1, max_length=128, pattern=r"^[A-Za-z0-9_-]+$")
-    workspace_id: str = Field(min_length=1)
-    agent_id: str = Field(min_length=1)
-    name: str = Field(min_length=1, max_length=80)
-    schedule: Schedule
-    target: Target
-    pre_authorized: list[Authorization] = Field(max_length=100)
-    enabled: bool = True
+from ..approvals import ApprovalStale, ApprovalNotFound
 
 
 class PatchBody(BaseModel):
@@ -101,12 +42,28 @@ class RunBody(BaseModel):
     expected_revision: StrictInt = Field(ge=1)
 
 
+class ProposalDecision(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    decision: Literal["allow_once", "reject_once"]
+    input_hash: str = Field(min_length=1)
+    expected_revision: StrictInt = Field(ge=1)
+    selected: list[Authorization] = Field(max_length=100)
+
+
 def install_cron_routes(app, runtime):
     service = runtime.cron_store = CronStore(runtime)
 
     @app.exception_handler(ScheduleError)
     async def schedule_error(_: Request, error: ScheduleError):
         return JSONResponse({"error": {"code": "VALIDATION_ERROR", "message": str(error)}}, status_code=422)
+
+    @app.exception_handler(ApprovalStale)
+    async def stale_proposal(_: Request, error: ApprovalStale):
+        return JSONResponse({"error": {"code": "APPROVAL_STALE", "message": str(error)}}, status_code=409)
+
+    @app.exception_handler(ApprovalNotFound)
+    async def missing_approval(_: Request, error: ApprovalNotFound):
+        return JSONResponse({"error": {"code": "NOT_FOUND", "message": str(error)}}, status_code=404)
 
     @app.get("/api/cron/jobs")
     async def list_jobs(request: Request, workspace_id: str | None = None,
@@ -140,3 +97,11 @@ def install_cron_routes(app, runtime):
     @app.post("/api/cron/authorization-preview")
     async def authorization(body: CreateBody, request: Request):
         return await asyncio.to_thread(service.preview, request.state.identity, body.model_dump())
+
+    @app.get("/api/cron/proposals/{id}")
+    async def read_proposal(id: str, request: Request):
+        return await asyncio.to_thread(runtime.cron_proposals.get, request.state.identity, id)
+
+    @app.post("/api/cron/proposals/{id}")
+    async def decide_proposal(id: str, body: ProposalDecision, request: Request):
+        return await runtime.cron_proposals.decide(request.state.identity, id, body.model_dump())

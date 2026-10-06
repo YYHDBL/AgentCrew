@@ -24,6 +24,7 @@ class ToolMetadata:
     side_effect_class: SideEffectClass
     timeout_ms: int = 60_000
     max_output_bytes: int = 32 * 1024
+    requires_human_confirmation: bool = False
 
 
 @dataclass(frozen=True)
@@ -90,3 +91,4 @@ class WorkContext:
     output_store: Any = None
     source_global_seq: int = 0
     readable_artifacts: dict[str, str | None] = field(default_factory=dict)
+    schedule_proposal: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None

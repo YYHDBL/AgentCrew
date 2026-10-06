@@ -1,0 +1,1 @@
+openapi OK: 89 paths, 44 M2 operations, 28 M3 operations, envelope consistent

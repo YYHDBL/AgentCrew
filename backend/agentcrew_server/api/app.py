@@ -103,6 +103,8 @@ def create_app(runtime: RuntimeState) -> FastAPI:
             await runtime.write_channel.execute(lambda conn: snapshot_chain_head(conn, runtime.data_dir / "chain-head.txt"))
         if runtime.snapshots is not None and runtime.diagnostic is None:
             await runtime.snapshots.recover()
+        if runtime.cron_proposals is not None and runtime.diagnostic is None:
+            await runtime.cron_proposals.recover()
         if runtime.recovery is not None and runtime.diagnostic is None:
             # 启动对账（§7）：非终态任务收敛 interrupted、结清 dispatched
             # 调用——必须在 RunManager 派发协程之前完成
@@ -177,6 +179,11 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         from ..cron.recovery import CronRecovery
         runtime.cron_recovery = CronRecovery(runtime)
         runtime.recovery.cron_recovery = runtime.cron_recovery
+        from ..cron.proposals import CronProposals
+        runtime.cron_proposals = CronProposals(runtime)
+        runtime.approvals.proposals = runtime.cron_proposals
+        runtime.run_manager.cron_proposals = runtime.cron_proposals
+        runtime.event_store.task_observer = runtime.cron_proposals.observe_in_tx
     if runtime.recovery is not None:
         install_recovery_routes(app, runtime)
     app.add_middleware(EnvelopeMiddleware)

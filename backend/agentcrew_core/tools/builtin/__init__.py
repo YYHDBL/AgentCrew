@@ -24,6 +24,7 @@ from .memory_write import MEMORY_WRITE_SCHEMA, _memory_write
 from .session_search import SESSION_SEARCH_SCHEMA, _session_search
 from .skill_view import SKILL_VIEW_SCHEMA, _skill_view
 from .skill_patch import SKILL_PATCH_SCHEMA, _skill_patch
+from .schedule_task import SCHEDULE_TASK_SCHEMA, _schedule_task
 from .seatbelt import seatbelt_profile
 from .write_file import WRITE_FILE_SCHEMA, _write_file, _write_file_extras
 from .write_file import _open_dir_nofollow  # noqa: F401 —— 测试引用面
@@ -47,7 +48,7 @@ def build_default_registry():
         _read_file,
     ))
     registry.register(Tool(
-        _meta("write_file", "把完整内容原子写入指定文件（覆盖式）", WRITE_FILE_SCHEMA,
+        _meta("write_file", "把完整内容原子写入指定文件，自动创建合法范围内的父目录（覆盖式）", WRITE_FILE_SCHEMA,
               read_only=False, destructive=False, risk_level="medium",
               needs_approval=True, concurrent_safe=True,
               side_effect_class="verifiable"),
@@ -92,6 +93,11 @@ def build_default_registry():
         _meta("skill_patch", "创建或修改可泛化的流程和机理。先在本用户回合 skill_view 或 action=read 读取目标正文/不存在状态；写入提供读到的 expected_revision 和真实 basis。create 提供 description（最多60字符）及全文 text；edit 替换全文；patch 用唯一 old_text/new_text 替换。files 维护 references/templates/assets/scripts 内的支撑文件，null 删除。允许判断无须保存；用户明确要求保存流程时执行受控保存。",
               SKILL_PATCH_SCHEMA, read_only=False, destructive=False, risk_level="medium", needs_approval=False,
               concurrent_safe=False, side_effect_class="verifiable"), _skill_patch,
+    ))
+    registry.register(Tool(
+        _meta("schedule_task", "提出不可变定时计划，必须等待真人批准。员工与工作区绑定当前任务；existing绑定当前会话，new_conversation每次建立会话。pre_authorized只表示建议范围，真人从当前合法候选缩小选择；永久允许无法免除创建确认。",
+              SCHEDULE_TASK_SCHEMA, read_only=False, destructive=False, risk_level="medium", needs_approval=True,
+              concurrent_safe=False, side_effect_class="verifiable", requires_human_confirmation=True), _schedule_task,
     ))
     registry.register(Tool(
         _meta("ask_user", "向用户提问并等待回答（用于澄清任务，答案会回到对话）",
