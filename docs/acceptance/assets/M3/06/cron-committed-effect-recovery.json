@@ -1,0 +1,48 @@
+{
+  "job_id": "30f745255cbe54ff8a8624340cd019e6",
+  "occurrence_id": "4e0e9018b89c43d4937458faf4454be3",
+  "task_run_id": "abb1acbf704743b984b06c2f26dc9584",
+  "registered": {
+    "id": "abb1acbf704743b984b06c2f26dc9584",
+    "status": "running",
+    "occurrence_id": "4e0e9018b89c43d4937458faf4454be3"
+  },
+  "baseline": {
+    "sha256": "fdf426972944f3838b6c08c4e238582c3a59af4504137884ff6526b2bae6ec73",
+    "mtime_ns": 1791253919758112838
+  },
+  "after": {
+    "id": "4e0e9018b89c43d4937458faf4454be3",
+    "job_id": "30f745255cbe54ff8a8624340cd019e6",
+    "revision": 1,
+    "trigger": "scheduled",
+    "scheduled_at": 1791253908074,
+    "triggered_at": 1791253908076,
+    "actor_id": "owner",
+    "client_request_id": null,
+    "status": "interrupted",
+    "note": "backend_restart_reconciliation",
+    "retry_count": 0,
+    "retry_at": null,
+    "task_run_id": "abb1acbf704743b984b06c2f26dc9584",
+    "missed_count": 0,
+    "missed_through": null,
+    "created_at": "2026-10-06T02:31:48.077246+00:00",
+    "updated_at": "2026-10-06T02:32:00.812272+00:00",
+    "attempts": [
+      {
+        "retry_no": 0,
+        "task_run_id": "abb1acbf704743b984b06c2f26dc9584",
+        "attempt_no": 1,
+        "status": "interrupted",
+        "started_at": "2026-10-06T02:31:48.144490+00:00",
+        "finished_at": "2026-10-06T02:32:00.812272+00:00"
+      }
+    ]
+  },
+  "sql": "SELECT count(*) FROM tool_calls WHERE task_run_id=? AND tool_name='write_file' AND status='completed'",
+  "parameters": [
+    "abb1acbf704743b984b06c2f26dc9584"
+  ],
+  "completed_write_count": 1
+}

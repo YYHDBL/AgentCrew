@@ -69,6 +69,8 @@ def persistent_http(tmp_path):
                     connection.execute("INSERT INTO operations(identity_key,body,auth_sha256) VALUES(?,?,?)",
                         (key, body, hashlib.sha256(authentication.encode()).hexdigest()))
                 count = connection.execute("SELECT count(*) FROM operations").fetchone()[0]
+            if self.path == "/slow":
+                time.sleep(30)
             self.send_response(200)
             self.send_header("Content-Type", authentication)
             self.end_headers()

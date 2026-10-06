@@ -106,18 +106,17 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         if runtime.recovery is not None and runtime.diagnostic is None:
             # 启动对账（§7）：非终态任务收敛 interrupted、结清 dispatched
             # 调用——必须在 RunManager 派发协程之前完成
-            try:
-                summary = await runtime.recovery.reconcile()
-                if summary.get("tasks"):
-                    runtime.log.info("http.lifespan 启动对账：%s", summary)
-            except Exception:  # noqa: BLE001 —— 对账失败如实记录，不拦启动
-                runtime.log.exception("http.lifespan 启动对账失败")
+            summary = await runtime.recovery.reconcile()
+            if summary.get("tasks"):
+                runtime.log.info("http.lifespan 启动对账：%s", summary)
         if runtime.memory_jobs is not None and runtime.diagnostic is None:
             await runtime.memory_jobs.recover()
             await runtime.memory_jobs.start()
         if runtime.run_manager is not None and runtime.diagnostic is None:
             await runtime.run_manager.start()  # 总线订阅 + 派发协程（C8）
         if runtime.cron_scheduler is not None and runtime.diagnostic is None:
+            await runtime.cron_recovery.recover()
+            await runtime.cron_recovery.start()
             await runtime.cron_scheduler.start()
         yield
         await runtime.shutdown()
@@ -175,6 +174,9 @@ def create_app(runtime: RuntimeState) -> FastAPI:
         runtime.grants.automation = runtime.cron_executor
         runtime.run_manager.automation = runtime.cron_executor
         runtime.event_store.task_observer = runtime.cron_executor.observe_in_tx
+        from ..cron.recovery import CronRecovery
+        runtime.cron_recovery = CronRecovery(runtime)
+        runtime.recovery.cron_recovery = runtime.cron_recovery
     if runtime.recovery is not None:
         install_recovery_routes(app, runtime)
     app.add_middleware(EnvelopeMiddleware)

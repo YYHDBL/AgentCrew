@@ -65,7 +65,7 @@ class Connectors:
                 if not path.is_absolute() or not path.is_file() or path.suffix.lower() not in {".py", ".js", ".mjs", ".cjs"}:
                     raise GovernanceError("VALIDATION_ERROR", "启动依赖必须明确登记已存在的绝对代码文件", 422)
         for policy in config.get("tool_policies", {}).values():
-            if policy["read_only"] and (policy["destructive"] or policy["needs_approval"]):
+            if policy["read_only"] and policy["destructive"]:
                 raise GovernanceError("VALIDATION_ERROR", "连接器只读工具的风险声明冲突", 422)
         for endpoint in config.get("idempotent_endpoints", []):
             if not endpoint["path"].startswith("/") or not endpoint["guarantee"].strip():
@@ -103,18 +103,24 @@ class Connectors:
                 filename, str(target), hashlib.sha256(content).hexdigest(), now()))
 
     def startup_resources(self, connector, conn=None):
+        rows, reason = self.startup_resource_state(connector, conn)
+        if reason:
+            raise GovernanceError("REVISION_CONFLICT", reason)
+        return rows
+
+    def startup_resource_state(self, connector, conn=None):
         if connector["type"] != "mcp" or connector["config"]["transport"] != "stdio":
-            return []
+            return [], None
         connection = conn if conn is not None else self.db.read_conn
         rows = [dict(row) for row in connection.execute("SELECT * FROM connector_startup_files WHERE connector_id=? AND connector_revision=? ORDER BY source_path", (connector["id"], connector["revision"]))]
         expected = set([connector["config"]["command"], *connector["config"].get("startup_files", [])])
         if {row["source_path"] for row in rows} != expected:
-            raise GovernanceError("REVISION_CONFLICT", "启动资源缺少修订绑定，请提交配置新修订并校验")
+            return rows, "启动资源缺少修订绑定，请提交配置新修订并校验"
         for row in rows:
             source, target = Path(row["source_path"]), Path(row["canonical_path"])
             if source.resolve() != target or not target.is_file() or hashlib.sha256(target.read_bytes()).hexdigest() != row["sha256"]:
-                raise GovernanceError("REVISION_CONFLICT", "启动资源目标或内容已经变化，请提交配置新修订")
-        return rows
+                return rows, "启动资源目标或内容已经变化，请提交配置新修订"
+        return rows, None
 
     async def create(self, identity, request):
         workspace = request["workspace_id"]

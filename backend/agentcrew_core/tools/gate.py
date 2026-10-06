@@ -1,6 +1,6 @@
 """权限闸门判定纯函数（governance §2.3 三级闸门 / harness-design §5）。
 
-员工deny规则优先检查。元数据的破坏风险硬拒后，合法只读调用免审批；
+员工deny规则优先检查。元数据的破坏风险硬拒后，未要求审批的合法只读调用免审批；
 其余调用匹配员工allow规则，没有当前规则授权时由服务层等待人工审批。
 文件scope和protected以及角色、Grant由服务层在审批和派发前检查。
 
@@ -88,7 +88,7 @@ def evaluate_gate(
         return GateResult("deny", "risk=high 且 destructive，硬拒")
     if meta.name == "bash" and bash_readonly_verdict:
         return GateResult("allow", "白名单只读命令（动态判定）")
-    if meta.read_only:
+    if meta.read_only and not meta.needs_approval:
         return GateResult("allow", "只读工具")
     if not meta.needs_approval:
         return GateResult("allow", "元数据免审批")

@@ -1,0 +1,51 @@
+{
+  "job_id": "19f707471b1f5c6c87557dbe2d26de14",
+  "occurrence": {
+    "id": "c9e127a6d9024781975b152c4553ad01",
+    "job_id": "19f707471b1f5c6c87557dbe2d26de14",
+    "revision": 1,
+    "trigger": "manual",
+    "scheduled_at": null,
+    "triggered_at": 1791253559712,
+    "actor_id": "owner",
+    "client_request_id": "b560b64b748b4028933592824a351c73",
+    "status": "failed",
+    "note": "cron_tool_failure:EXIT_1；计划或当前授权不允许自动重试",
+    "retry_count": 0,
+    "retry_at": null,
+    "task_run_id": "7de2315fdc06473d850b72f3e3927ffb",
+    "missed_count": 0,
+    "missed_through": null,
+    "created_at": "2026-10-06T02:25:59.712810+00:00",
+    "updated_at": "2026-10-06T02:26:07.675512+00:00",
+    "attempts": [
+      {
+        "retry_no": 0,
+        "task_run_id": "7de2315fdc06473d850b72f3e3927ffb",
+        "attempt_no": 1,
+        "status": "failed",
+        "started_at": "2026-10-06T02:25:59.749999+00:00",
+        "finished_at": "2026-10-06T02:26:07.675512+00:00"
+      }
+    ]
+  },
+  "actual_failed_events": [
+    {
+      "call_id": "call_00_6rz7iumebjs0gv6to9zp46l1",
+      "details": {
+        "exit_code": 1,
+        "read_only_verdict": true,
+        "stderr": "cat: /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/backups/m3-protected-material-cc89b3c24fdc4ce9964306331dd8d11b.txt: Operation not permitted\n",
+        "verdict_reason": "白名单只读命令"
+      },
+      "error": "EXIT_1",
+      "output": "\n[stderr]\ncat: /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/backups/m3-protected-material-cc89b3c24fdc4ce9964306331dd8d11b.txt: Operation not permitted\n",
+      "output_summary": "\n[stderr]\ncat: /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/backups/m3-protected-material-cc89b3c24fdc4ce9964306331dd8d11b.txt: Operation not permitted\n"
+    }
+  ],
+  "file": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/backups/m3-protected-material-cc89b3c24fdc4ce9964306331dd8d11b.txt",
+  "before_and_after": {
+    "sha256": "a9141b8a6b343178587282b36a4a54773a83dacb12dfaa471c2f673a3d32dfc3",
+    "mtime_ns": 1791253559700809117
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "job_id": "33d535e8fe895c2e8b74d9990e35c245",
+  "before": {
+    "id": "82e62bbc998c48a286cf5b2cefac76b7",
+    "job_id": "33d535e8fe895c2e8b74d9990e35c245",
+    "revision": 1,
+    "trigger": "manual",
+    "scheduled_at": null,
+    "triggered_at": 1791254459362,
+    "actor_id": "owner",
+    "client_request_id": "6d0c803089c1456fafdd8c3b717dbc50",
+    "status": "retry_wait",
+    "note": "cron_tool_failure:MCP_TOOL_ERROR",
+    "retry_count": 0,
+    "retry_at": 1791254497347,
+    "task_run_id": "1b5af66329704f1e899658e40eb92f67",
+    "missed_count": 0,
+    "missed_through": null,
+    "created_at": "2026-10-06T02:40:59.362422+00:00",
+    "updated_at": "2026-10-06T02:41:07.346416+00:00",
+    "attempts": [
+      {
+        "retry_no": 0,
+        "task_run_id": "1b5af66329704f1e899658e40eb92f67",
+        "attempt_no": 1,
+        "status": "failed",
+        "started_at": "2026-10-06T02:40:59.400419+00:00",
+        "finished_at": "2026-10-06T02:41:07.346416+00:00"
+      }
+    ]
+  },
+  "after": {
+    "id": "82e62bbc998c48a286cf5b2cefac76b7",
+    "job_id": "33d535e8fe895c2e8b74d9990e35c245",
+    "revision": 1,
+    "trigger": "manual",
+    "scheduled_at": null,
+    "triggered_at": 1791254459362,
+    "actor_id": "owner",
+    "client_request_id": "6d0c803089c1456fafdd8c3b717dbc50",
+    "status": "failed",
+    "note": "PLAN_DISABLED：计划已停用或修订已经改变",
+    "retry_count": 0,
+    "retry_at": null,
+    "task_run_id": "1b5af66329704f1e899658e40eb92f67",
+    "missed_count": 0,
+    "missed_through": null,
+    "created_at": "2026-10-06T02:40:59.362422+00:00",
+    "updated_at": "2026-10-06T02:41:07.402732+00:00",
+    "attempts": [
+      {
+        "retry_no": 0,
+        "task_run_id": "1b5af66329704f1e899658e40eb92f67",
+        "attempt_no": 1,
+        "status": "failed",
+        "started_at": "2026-10-06T02:40:59.400419+00:00",
+        "finished_at": "2026-10-06T02:41:07.346416+00:00"
+      }
+    ]
+  },
+  "removed_rule_ids": [
+    "154f6200b31b59ce8931fa260429fb76"
+  ],
+  "queries": [
+    {
+      "sql": "SELECT count(*) FROM run_attempts WHERE task_run_id=?",
+      "parameters": [
+        "1b5af66329704f1e899658e40eb92f67"
+      ],
+      "count": 1
+    },
+    {
+      "sql": "SELECT count(*) FROM tool_calls WHERE task_run_id=?",
+      "parameters": [
+        "1b5af66329704f1e899658e40eb92f67"
+      ],
+      "count": 1
+    },
+    {
+      "sql": "SELECT count(*) FROM run_events WHERE task_run_id=? AND type='run.resumed'",
+      "parameters": [
+        "1b5af66329704f1e899658e40eb92f67"
+      ],
+      "count": 0
+    }
+  ]
+}

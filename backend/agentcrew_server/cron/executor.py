@@ -2,6 +2,7 @@
 
 import json
 import uuid
+import math
 
 from agentcrew_core.events import RunEventType as T
 from agentcrew_core.governance import RequestIdentity
@@ -11,6 +12,7 @@ from ..db.audit import append_audit
 from ..governance.resources import canonical, now
 from ..governance.resources import GovernanceError
 from .store import now_ms
+from datetime import datetime
 
 
 class CronExecutor:
@@ -39,6 +41,19 @@ class CronExecutor:
         row = self.task(task_id, conn)
         if row is not None and (not row["enabled"] or row["deleted_at"] or row["revision"] != row["occurrence_revision"]):
             raise GovernanceError("OUT_OF_SCOPE", "PLAN_DISABLED：计划已停用或修订已经改变", 403)
+
+    def attempt_error(self, task_id, attempt_no, conn=None):
+        connection = conn if conn is not None else self.db.read_conn
+        row = connection.execute("SELECT json_extract(payload,'$.error') FROM run_events WHERE task_run_id=? AND attempt_no=? AND type='tool.failed' ORDER BY seq DESC LIMIT 1", (task_id, attempt_no)).fetchone()
+        return row[0] if row else None
+
+    def retry_without_evidence(self, task_id, attempt_no):
+        row = self.db.read_conn.execute("SELECT resume_reason FROM run_attempts WHERE task_run_id=? AND attempt_no=?", (task_id, attempt_no)).fetchone()
+        if row is None or not (row[0] or "").startswith("automatic_cron_retry:"):
+            return None
+        prior = self.db.read_conn.execute("SELECT 1 FROM run_events WHERE task_run_id=? AND type='tool.failed' AND attempt_no<? LIMIT 1", (task_id, attempt_no)).fetchone()
+        current = self.db.read_conn.execute("SELECT 1 FROM run_events WHERE task_run_id=? AND type='tool.completed' AND attempt_no=? LIMIT 1", (task_id, attempt_no)).fetchone()
+        return "RETRY_NO_EXECUTION：原失败工具尚未通过实际执行重新核查" if prior and not current else None
 
     def prepare_in_tx(self, conn, job, occurrence_id):
         occurrence = self.store.occurrence(occurrence_id, conn)
@@ -78,6 +93,8 @@ class CronExecutor:
 
     def notify_in_tx(self, conn, occurrence, job, domain_event):
         notification_id = "cron-" + occurrence["id"] + "-" + occurrence["status"] + "-" + str(occurrence["retry_count"])
+        if conn.execute("SELECT 1 FROM runtime_notifications WHERE id=?", (notification_id,)).fetchone() is not None:
+            return None
         severity = "badge" if occurrence["status"] == "completed" else "warning" if occurrence["status"] in {"missed", "skipped"} else "error"
         conn.execute("INSERT INTO runtime_notifications(id,global_seq,owner_id,workspace_id,agent_id,job_id,task_run_id,kind,severity,message,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
             (notification_id, domain_event.global_seq, job["metadata"]["owner_id"], job["workspace_id"], job["metadata"]["agent_id"], job["id"],
@@ -87,7 +104,7 @@ class CronExecutor:
                 "source_task_run_id": occurrence["task_run_id"], "severity": severity, "scope": self.store.scope(job, conn)})
 
     def observe_in_tx(self, conn, event):
-        if event.task_run_id is None or event.type not in {T.RUN_STARTED, T.RUN_RESUMED, T.RUN_COMPLETED, T.RUN_FAILED, T.RUN_CANCELLED, T.RUN_INTERRUPTED, T.TOOL_VERIFICATION_SUBMITTED}:
+        if event.task_run_id is None or event.type not in {T.RUN_STARTED, T.RUN_RESUMED, T.RUN_COMPLETED, T.RUN_FAILED, T.RUN_CANCELLED, T.RUN_INTERRUPTED, T.TOOL_VERIFICATION_SUBMITTED, T.TOOL_PENDING_VERIFICATION}:
             return []
         bound = self.task(event.task_run_id, conn)
         if bound is None:
@@ -95,29 +112,44 @@ class CronExecutor:
         job = self.store.decode(bound)
         occurrence_id = bound["occurrence_id"]
         if event.type in {T.RUN_STARTED, T.RUN_RESUMED}:
+            if event.type == T.RUN_RESUMED:
+                automatic = event.payload.get("resume_reason") == "automatic_cron_retry:" + occurrence_id
+                retry_no = bound["occurrence_retry"] + int(automatic)
+                if retry_no > 3:
+                    raise RuntimeError("计划自动重试超过额外三次上限")
+                conn.execute("UPDATE cron_job_runs SET retry_count=?,status='fired',retry_at=NULL,updated_at=? WHERE id=?", (retry_no, event.ts, occurrence_id))
+                conn.execute("UPDATE cron_jobs SET retry_count=retry_count+?,last_status='fired',updated_at=? WHERE id=?", (int(automatic), event.ts, job["id"]))
+                conn.execute("INSERT INTO cron_run_attempts(occurrence_id,retry_no,task_run_id,attempt_no,status,started_at) VALUES(?,?,?,?,'running',?) ON CONFLICT(occurrence_id,retry_no,attempt_no) DO UPDATE SET status='running',started_at=excluded.started_at",
+                    (occurrence_id, retry_no, event.task_run_id, event.attempt_no, event.ts))
             conn.execute("UPDATE cron_run_attempts SET status='running',started_at=? WHERE occurrence_id=? AND attempt_no=?", (event.ts, occurrence_id, event.attempt_no))
             return []
         task = conn.execute("SELECT status FROM task_runs WHERE id=?", (event.task_run_id,)).fetchone()[0]
         status = "pending_verification" if task == "waiting_verification" else task
         if event.type == T.TOOL_VERIFICATION_SUBMITTED and task not in {"completed", "interrupted"}:
             return []
-        denied = conn.execute("SELECT payload FROM run_events WHERE task_run_id=? AND type='tool.failed' AND (json_extract(payload,'$.error') LIKE '%PERMISSION_DENIED%' OR json_extract(payload,'$.error') LIKE '%UNATTENDED_%' OR json_extract(payload,'$.error') LIKE '%PRE_AUTH_%') ORDER BY seq DESC LIMIT 1", (event.task_run_id,)).fetchone()
+        denied = conn.execute("SELECT payload FROM run_events WHERE task_run_id=? AND attempt_no=? AND type='tool.failed' AND (json_extract(payload,'$.error') LIKE '%PERMISSION_DENIED%' OR json_extract(payload,'$.error') LIKE '%UNATTENDED_%' OR json_extract(payload,'$.error') LIKE '%PRE_AUTH_%') ORDER BY seq DESC LIMIT 1", (event.task_run_id, event.attempt_no)).fetchone()
         note = event.payload.get("reason")
         if denied is not None and status not in {"pending_verification", "interrupted"}:
             status, note = "failed", json.loads(denied[0])["error"]
         prior = self.store.occurrence(occurrence_id, conn)
+        retry_at = None
+        if status == "failed" and self.runtime.cron_recovery is not None:
+            decision = self.runtime.cron_recovery.decision(conn, bound, note, math.ceil(datetime.fromisoformat(event.ts).timestamp() * 1000))
+            status, retry_at = decision["status"], decision["retry_at"]
+            if decision["reason"]:
+                note = (note + "；" if note else "") + decision["reason"]
         if prior["status"] == status:
             return []
-        conn.execute("UPDATE cron_job_runs SET status=?,note=?,updated_at=? WHERE id=?", (status, note, event.ts, occurrence_id))
-        conn.execute("UPDATE cron_run_attempts SET status=?,finished_at=?,error=? WHERE occurrence_id=? AND attempt_no=?", (status, event.ts, note, occurrence_id, event.attempt_no or 1))
+        conn.execute("UPDATE cron_job_runs SET status=?,note=?,retry_at=?,updated_at=? WHERE id=?", (status, note, retry_at, event.ts, occurrence_id))
+        conn.execute("UPDATE cron_run_attempts SET status=?,finished_at=?,error=? WHERE occurrence_id=? AND attempt_no=?", (task, event.ts, note, occurrence_id, event.attempt_no or 1))
         conn.execute("UPDATE cron_jobs SET last_status=?,updated_at=? WHERE id=?", (status, event.ts, job["id"]))
         occurrence = self.store.occurrence(occurrence_id, conn)
         payload = {"job_id": job["id"], "occurrence_id": occurrence_id, "revision": bound["occurrence_revision"], "trigger": occurrence["trigger"],
             "scheduled_at": occurrence["scheduled_at"], "triggered_at": occurrence["triggered_at"], "source_task_run_id": event.task_run_id,
-            "retry_no": occurrence["retry_count"], "status": status, "reason": note, "retry_at": None,
+            "retry_no": occurrence["retry_count"], "status": status, "reason": note, "retry_at": retry_at,
             "scope": self.store.scope(job, conn), "notification_id": "cron-" + occurrence_id + "-" + status + "-" + str(occurrence["retry_count"])}
         payload["audit_seq"] = append_audit(conn, ts=event.ts, actor_type="system", actor_id="cron", action="cron.job_" + status,
             resource_type="cron_job", resource_id=job["id"], detail=canonical(payload))
         domain = self.events.append_in_tx(conn, task_run_id=None, conversation_id=None, type=T.CRON_JOB_FAILED if status == "failed" else T.CRON_JOB_STATUS, payload=payload)
         notification = self.notify_in_tx(conn, occurrence, job, domain)
-        return [domain, notification]
+        return [domain, notification] if notification is not None else [domain]

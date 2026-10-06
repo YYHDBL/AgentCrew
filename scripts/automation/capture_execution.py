@@ -29,6 +29,8 @@ for job_id in job_ids:
         "SELECT a.* FROM cron_run_attempts a JOIN cron_job_runs r ON r.id=a.occurrence_id WHERE r.job_id=? ORDER BY a.retry_no,a.attempt_no",
         "SELECT t.* FROM task_runs t WHERE t.cron_job_id=? ORDER BY t.created_at,t.id",
         "SELECT a.* FROM run_attempts a JOIN task_runs t ON t.id=a.task_run_id WHERE t.cron_job_id=? ORDER BY a.started_at",
+        "SELECT s.* FROM steps s JOIN task_runs t ON t.id=s.task_run_id WHERE t.cron_job_id=? ORDER BY s.task_run_id,s.ordinal",
+        "SELECT l.* FROM llm_calls l JOIN steps s ON s.id=l.step_id JOIN task_runs t ON t.id=s.task_run_id WHERE t.cron_job_id=? ORDER BY s.ordinal,l.id",
         "SELECT e.* FROM run_events e JOIN task_runs t ON t.id=e.task_run_id WHERE t.cron_job_id=? ORDER BY e.global_seq",
         "SELECT c.* FROM tool_calls c JOIN task_runs t ON t.id=c.task_run_id WHERE t.cron_job_id=? ORDER BY c.prepared_at",
         "SELECT * FROM runtime_notifications WHERE job_id=? ORDER BY global_seq",

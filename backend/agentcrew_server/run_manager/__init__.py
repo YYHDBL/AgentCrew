@@ -40,6 +40,7 @@ from agentcrew_core.memory.budget import ContextBudgetError
 from agentcrew_core.loop import (
     LoopDeps,
     LoopGates,
+    LoopResult,
     context_fingerprint,
     env_block,
     run_task,
@@ -442,6 +443,10 @@ class RunManager:
                 messages = (replay.messages if task_checkpoint else
                     await asyncio.to_thread(self._history_messages, conversation_id) + replay.messages)
                 system = system + "\n\n" + ledger
+                if hasattr(self, "automation") and self.automation.task(task_run_id) is not None:
+                    reason = self._db.read_conn.execute("SELECT resume_reason FROM run_attempts WHERE task_run_id=? AND attempt_no=?", (task_run_id, attempt_no)).fetchone()[0]
+                    if (reason or "").startswith("automatic_cron_retry:"):
+                        messages.append(user_text_message("本次是同一计划发生的自动重试。原指令的失败部分尚未解决，请依据上述真实事件和副作用账本实际重新核查失败操作，再报告本次结果。保留已完成副作用，禁止从头重复整条指令。原指令：\n" + row["instruction"]))
             else:
                 attempt_id = uuid.uuid4().hex
                 await self._emit(task_run_id, conversation_id, "run.started", {
@@ -511,6 +516,12 @@ class RunManager:
                 before_request=before_request if self._checkpoints is not None or hasattr(self, "identities") else None,
             )
             result = await run_task(messages, deps)
+            if result.status == "completed" and hasattr(self, "automation") and self.automation.task(task_run_id) is not None:
+                failure = self.automation.attempt_error(task_run_id, attempt_no)
+                if failure is None:
+                    failure = self.automation.retry_without_evidence(task_run_id, attempt_no)
+                if failure is not None:
+                    result = LoopResult("failed", final_text=result.final_text, reason="cron_tool_failure:" + failure)
             if result.status == "completed":
                 terminal = "completed"
                 await self._finish(task_run_id, conversation_id,

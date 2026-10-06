@@ -1,0 +1,5119 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/conversations",
+    "effective_user": "owner",
+    "request": {
+      "workspace_id": "office",
+      "agent_id": "xiaowen",
+      "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+      "client_request_id": "c6cf71cbce75465fa673249c3733094f",
+      "folders": [
+        "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade"
+      ]
+    },
+    "status": 201,
+    "response": {
+      "data": {
+        "conversation": {
+          "id": "2367138e621d4235b0eb0731fa89a434",
+          "title": null,
+          "status": "active",
+          "agent_name": "xiaowen",
+          "agent_id": "xiaowen",
+          "workspace_id": "office",
+          "last_activity_at": "2026-10-06T02:29:44.864190+00:00",
+          "state_badge": "running"
+        },
+        "materials": [],
+        "folders": [
+          {
+            "error": null,
+            "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade"
+          }
+        ],
+        "scope": {
+          "workspace_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files",
+          "materials_dir": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/conversations/2367138e621d4235b0eb0731fa89a434/materials",
+          "folders": [
+            {
+              "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade",
+              "access": "read_write"
+            }
+          ]
+        },
+        "task_run_id": "9ec270afdaea4c2ab9990d9ee8847362"
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "queued",
+          "current_attempt_no": 0,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "call_id": "call_00_xx5gvbkkrxq1vikc0zp36m2z",
+          "tool": "write_file",
+          "target": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt",
+          "input_hash": "016361b79d6fbb0de8a4d1723357da97bec73793d75c443521c05898a694ae81",
+          "risk": "medium",
+          "always_scope_preview": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade",
+          "requested_at": "2026-10-06T02:29:49.372571+00:00",
+          "decision": null,
+          "stale": false,
+          "attempt_no": 1
+        }
+      ]
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/tool-approvals/call_00_xx5gvbkkrxq1vikc0zp36m2z",
+    "effective_user": "owner",
+    "request": {
+      "decision": "allow_once",
+      "input_hash": "016361b79d6fbb0de8a4d1723357da97bec73793d75c443521c05898a694ae81"
+    },
+    "status": 200,
+    "response": {
+      "data": {
+        "decision": "allow_once",
+        "decided_at": "2026-10-06T02:29:49.464855+00:00",
+        "idempotent_replay": false
+      }
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "running",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": null
+        }
+      ]
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/task-runs/9ec270afdaea4c2ab9990d9ee8847362/approvals?status=pending",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": []
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/conversations/2367138e621d4235b0eb0731fa89a434/task-runs",
+    "effective_user": "owner",
+    "request": null,
+    "status": 200,
+    "response": {
+      "data": [
+        {
+          "id": "9ec270afdaea4c2ab9990d9ee8847362",
+          "instruction": "调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-dbbea88286c84e8a81b91eb36a452ade/m3-run-query.txt，随后调用 read_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。",
+          "status": "completed",
+          "current_attempt_no": 1,
+          "cron_job_id": null,
+          "created_at": "2026-10-06T02:29:44.864581+00:00",
+          "finished_at": "2026-10-06T02:30:03.843313+00:00"
+        }
+      ]
+    }
+  }
+]

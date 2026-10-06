@@ -1,0 +1,62 @@
+{
+  "source_sql": "SELECT c.call_id,c.input,c.tool_name,t.id AS task_run_id,t.cron_job_id FROM tool_calls c JOIN task_runs t ON t.id=c.task_run_id WHERE c.status='pending_verification'",
+  "actual_verifications": [
+    {
+      "call_id": "call_00_usufswxigy31k1urqh7thafi",
+      "input": {
+        "body": "M3 recovery actual side effect",
+        "connector_id": "b7fadb96bdfb50b9afdf131d549f8017",
+        "method": "POST",
+        "url": "http://127.0.0.1:55944/slow"
+      },
+      "tool_name": "http_request",
+      "task_run_id": "7fb7bddfe17441ab942b4c7b423ab5d4",
+      "cron_job_id": "23cdf76ab0f551e48b6a3c35ec3468e9",
+      "groundtruth": {
+        "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/06-process/test_unknown_effect_and_human_0/upstream.sqlite",
+        "sql": "SELECT id,body,auth_sha256 FROM operations",
+        "rows": [
+          [
+            1,
+            "M3 recovery actual side effect",
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          ]
+        ],
+        "sha256": "ad7bb77ccccf078057c7d5337fd9d3c1e58540f9b84f24c16f352c514ee64fc7",
+        "mtime_ns": 1791212618439805879
+      },
+      "verdict": "confirmed_executed",
+      "verification": {
+        "data": {
+          "call_id": "call_00_usufswxigy31k1urqh7thafi",
+          "status": "completed",
+          "verdict": "confirmed_executed"
+        }
+      }
+    },
+    {
+      "call_id": "call_00_7kjb1y5jlbxou9v6e5mocz7a",
+      "input": {
+        "content": "M3 real directory error",
+        "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-real-write-directory-be83196d3a694624819f8e9690a14dd1"
+      },
+      "tool_name": "write_file",
+      "task_run_id": "c52ca830599c4ccc990a2935342d6abd",
+      "cron_job_id": "996402eda83259aebf17930471644dd0",
+      "groundtruth": {
+        "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-http0/workspaces/office/files/m3-real-write-directory-be83196d3a694624819f8e9690a14dd1",
+        "type": "directory",
+        "entries": [],
+        "mtime_ns": 1791213486000000000
+      },
+      "verdict": "confirmed_not_executed",
+      "verification": {
+        "data": {
+          "call_id": "call_00_7kjb1y5jlbxou9v6e5mocz7a",
+          "status": "not_executed",
+          "verdict": "confirmed_not_executed"
+        }
+      }
+    }
+  ]
+}

@@ -69,11 +69,14 @@ class RuntimeState:
     cron_store: object | None = None
     cron_scheduler: object | None = None
     cron_executor: object | None = None
+    cron_recovery: object | None = None
 
     async def stop_execution(self) -> None:
         cancellations = []
         if self.cron_scheduler is not None:
             cancellations.append(self.cron_scheduler.shutdown())
+        if self.cron_recovery is not None:
+            cancellations.append(self.cron_recovery.shutdown())
         if self.memory_jobs is not None:
             cancellations.append(self.memory_jobs.shutdown())
         if self.run_manager is not None:
@@ -89,6 +92,8 @@ class RuntimeState:
         self.log.info("shutdown.begin 优雅关闭（总预算 10s；停收新请求由 uvicorn 完成）")
         if self.cron_scheduler is not None:
             await self.cron_scheduler.shutdown()
+        if self.cron_recovery is not None:
+            await self.cron_recovery.shutdown()
         if self.memory_jobs is not None:
             await self.memory_jobs.shutdown()
         if self.run_manager is not None:

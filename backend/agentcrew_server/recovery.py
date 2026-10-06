@@ -387,7 +387,7 @@ class RecoveryService:
             return None
 
     async def resume(self, task_run_id: str,
-                     resume_reason: str | None, request_identity=None) -> dict:
+                     resume_reason: str | None, request_identity=None, automatic_occurrence_id=None) -> dict:
         assert self._run_manager is not None, "RunManager 未装配"
         # 首次读取仅用于定位会话（conversation_id 不变量，无校验语义）；
         # 行状态与全部前置校验在会话锁内**重读**（外审回稿 S2：锁外校验
@@ -406,7 +406,21 @@ class RecoveryService:
             conversation_id, status, attempt_no = row
             if request_identity is not None:
                 self.identities.conversation(request_identity, conversation_id)
-            if status not in ("interrupted", "waiting_verification"):
+            automated = None
+            if hasattr(self, "cron_recovery"):
+                automated = self.cron_recovery.executor.task(task_run_id)
+            automation_allowed = False
+            if automatic_occurrence_id is not None:
+                automation_allowed, reason = self.cron_recovery.permitted(self._db.read_conn, automatic_occurrence_id, automatic=True)
+                if automated is None or automated["occurrence_id"] != automatic_occurrence_id or not automation_allowed:
+                    raise SessionError(ErrorCode.INVALID_TRANSITION, reason or "自动重试的发生身份不匹配")
+            elif automated is not None and status == "failed":
+                occurrence = self.cron_recovery.store.occurrence(automated["occurrence_id"])
+                if occurrence["status"] == "interrupted":
+                    automation_allowed, reason = self.cron_recovery.permitted(self._db.read_conn, occurrence["id"], automatic=False)
+                    if not automation_allowed:
+                        raise SessionError(ErrorCode.INVALID_TRANSITION, reason)
+            if status not in ("interrupted", "waiting_verification") and not (status == "failed" and automation_allowed):
                 raise SessionError(
                     ErrorCode.INVALID_TRANSITION,
                     f"任务状态 {status} 不可恢复（仅 interrupted/"

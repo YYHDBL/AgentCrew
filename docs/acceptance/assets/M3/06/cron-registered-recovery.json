@@ -1,0 +1,95 @@
+{
+  "job_id": "534be1a8fc2d5853a1ec253ae8aa981b",
+  "task_run_id": "85face0d5b784841abfcce7b111dcecb",
+  "occurrence_id": "7ced117a99e34160b9413e691f32d5e6",
+  "before": {
+    "task": {
+      "id": "85face0d5b784841abfcce7b111dcecb",
+      "status": "queued",
+      "current_attempt_no": 0,
+      "occurrence_id": "7ced117a99e34160b9413e691f32d5e6"
+    },
+    "generation": {
+      "id": "77e5395eb7654c6e9ff33df007fdb632",
+      "status": "running"
+    }
+  },
+  "after": {
+    "id": "85face0d5b784841abfcce7b111dcecb",
+    "conversation_id": "212fdf2ea1674735b2597c54822b8989",
+    "instruction": "只用一句中文确认收到。",
+    "status": "interrupted",
+    "current_attempt_no": 0,
+    "version": 1,
+    "cron_job_id": "534be1a8fc2d5853a1ec253ae8aa981b",
+    "created_at": "2026-10-06T02:31:28.942349+00:00",
+    "updated_at": "2026-10-06T02:31:30.062791+00:00",
+    "finished_at": null,
+    "client_request_id": null,
+    "workspace_id": "office",
+    "agent_id": "1c2715325bac5c00994b23da38f8aca0",
+    "owner_id": "owner",
+    "agent_spec_snapshot": {
+      "connector_ids": [],
+      "model_slot": "main",
+      "position": "根据当前任务核查实际材料，保留原始记录，遵守权限与核验纪律。",
+      "skill_ids": []
+    },
+    "skill_versions": {},
+    "source": "cron",
+    "occurrence_id": "7ced117a99e34160b9413e691f32d5e6",
+    "error": null,
+    "at_global_seq": 3393
+  },
+  "history": [
+    {
+      "id": "1a6e73f45fc84df59a1dd827752b23af",
+      "job_id": "534be1a8fc2d5853a1ec253ae8aa981b",
+      "revision": 1,
+      "trigger": "scheduled",
+      "scheduled_at": 1791253892936,
+      "triggered_at": 1791253892937,
+      "actor_id": "owner",
+      "client_request_id": null,
+      "status": "skipped",
+      "note": "该计划存在未结束发生",
+      "retry_count": 0,
+      "retry_at": null,
+      "task_run_id": null,
+      "missed_count": 0,
+      "missed_through": null,
+      "created_at": "2026-10-06T02:31:33.042615+00:00",
+      "updated_at": "2026-10-06T02:31:33.042615+00:00",
+      "attempts": []
+    },
+    {
+      "id": "7ced117a99e34160b9413e691f32d5e6",
+      "job_id": "534be1a8fc2d5853a1ec253ae8aa981b",
+      "revision": 1,
+      "trigger": "scheduled",
+      "scheduled_at": 1791253888936,
+      "triggered_at": 1791253888938,
+      "actor_id": "owner",
+      "client_request_id": null,
+      "status": "interrupted",
+      "note": "backend_restart_reconciliation",
+      "retry_count": 0,
+      "retry_at": null,
+      "task_run_id": "85face0d5b784841abfcce7b111dcecb",
+      "missed_count": 0,
+      "missed_through": null,
+      "created_at": "2026-10-06T02:31:28.940144+00:00",
+      "updated_at": "2026-10-06T02:31:30.062791+00:00",
+      "attempts": [
+        {
+          "retry_no": 0,
+          "task_run_id": "85face0d5b784841abfcce7b111dcecb",
+          "attempt_no": 1,
+          "status": "interrupted",
+          "started_at": null,
+          "finished_at": "2026-10-06T02:31:30.062791+00:00"
+        }
+      ]
+    }
+  ]
+}

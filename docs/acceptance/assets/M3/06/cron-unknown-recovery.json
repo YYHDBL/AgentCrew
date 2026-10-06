@@ -1,0 +1,73 @@
+{
+  "job_id": "6b4f40d60e0d50dfb07a1ec8cc943c6e",
+  "occurrence_id": "a9c2419f13004ac28375c45e612f8a92",
+  "task_run_id": "6e2a33136b67459a866dfd8cf8009750",
+  "conversation_id": "f7d49d3d10104d8fa98d8344675ee2e9",
+  "pending": [
+    {
+      "call_id": "call_00_6vxux9nazew2hhc0uf9mx8g4",
+      "tool": "http_request",
+      "input": {
+        "body": "M3 recovery actual side effect",
+        "connector_id": "05eb29f1d00e55b7abb95aac1a696a45",
+        "method": "POST",
+        "url": "http://127.0.0.1:53881/slow"
+      },
+      "dispatched_at": "2026-10-06T02:31:15.879809+00:00",
+      "evidence": "http_request 申报副作用类 outcome_unknown：dispatched 后无终态记录，执行结果不明，待人工确认"
+    }
+  ],
+  "baseline": {
+    "sha256": "ad7bb77ccccf078057c7d5337fd9d3c1e58540f9b84f24c16f352c514ee64fc7",
+    "mtime_ns": 1791253875891957402
+  },
+  "upstream_sql": "SELECT id,body,auth_sha256 FROM operations",
+  "upstream_rows": [
+    [
+      1,
+      "M3 recovery actual side effect",
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    ]
+  ],
+  "final_occurrence": {
+    "id": "a9c2419f13004ac28375c45e612f8a92",
+    "job_id": "6b4f40d60e0d50dfb07a1ec8cc943c6e",
+    "revision": 1,
+    "trigger": "scheduled",
+    "scheduled_at": 1791253863621,
+    "triggered_at": 1791253863624,
+    "actor_id": "owner",
+    "client_request_id": null,
+    "status": "completed",
+    "note": null,
+    "retry_count": 0,
+    "retry_at": null,
+    "task_run_id": "6e2a33136b67459a866dfd8cf8009750",
+    "missed_count": 0,
+    "missed_through": null,
+    "created_at": "2026-10-06T02:31:03.625640+00:00",
+    "updated_at": "2026-10-06T02:31:24.347150+00:00",
+    "attempts": [
+      {
+        "retry_no": 0,
+        "task_run_id": "6e2a33136b67459a866dfd8cf8009750",
+        "attempt_no": 1,
+        "status": "interrupted",
+        "started_at": "2026-10-06T02:31:03.703169+00:00",
+        "finished_at": "2026-10-06T02:31:18.791810+00:00"
+      },
+      {
+        "retry_no": 0,
+        "task_run_id": "6e2a33136b67459a866dfd8cf8009750",
+        "attempt_no": 2,
+        "status": "completed",
+        "started_at": "2026-10-06T02:31:18.805508+00:00",
+        "finished_at": "2026-10-06T02:31:24.347150+00:00"
+      }
+    ]
+  },
+  "after": {
+    "sha256": "ad7bb77ccccf078057c7d5337fd9d3c1e58540f9b84f24c16f352c514ee64fc7",
+    "mtime_ns": 1791253875891957402
+  }
+}

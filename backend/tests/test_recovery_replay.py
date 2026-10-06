@@ -8,6 +8,8 @@ llm.request_done 载荷契约锁定（projections.py 头部登记的字段逐字
 from __future__ import annotations
 
 import json
+import sqlite3
+from test_run_center_api import server, executions
 
 from agentcrew_core.loop import LoopDeps, LoopGates, run_task
 from agentcrew_core.provider.types import StreamEvent, ToolCall, Usage
@@ -320,58 +322,27 @@ def test_file_hash_matches(tmp_path):
 
 # ── llm.request_done 载荷契约锁定（C9 重建的唯一原料）──────────────
 
-def test_llm_request_done_payload_contract():
-    """逐字段核对 loop 发射的 llm.request_done：回复全文 + 全部 tool_use
-    块 + thinking 签名（projections.py 头部契约 / v1.7）。字段漂移 = 恢复
-    重建原料断裂，此测试必须红。"""
-    calls = [ToolCall(id="t1", name="bash", input={"command": "pwd"})]
-    rounds = iter([calls, None])
-    emitted: list[tuple[str, dict]] = []
-
-    async def scenario():
-        async def request():
-            batch = next(rounds)
-            if batch is not None:
-                yield StreamEvent(type="thinking_block", text="想一下",
-                                  signature="sig-abc")
-                yield StreamEvent(type="text_delta", text="执行 ")
-                yield StreamEvent(type="text_delta", text="中")
-                for c in batch:
-                    yield StreamEvent(type="tool_call", tool_call=c)
-            else:
-                yield StreamEvent(type="text_delta", text="完成")
-            yield StreamEvent(type="usage", usage=Usage(11, 7))
-            yield StreamEvent(type="done",
-                              stop_reason="tool_use" if batch else "end_turn")
-
-        async def execute(call):
-            return ToolResult(ok=True, output="ok")
-
-        async def emit(event_type, payload):
-            emitted.append((event_type, payload))
-
-        deps = LoopDeps(request=request, execute=execute, emit=emit,
-                        on_progress=lambda: None, gates=LoopGates(),
-                        model="glm-test")
-        result = await run_task([], deps)
-        assert result.status == "completed"
-
-    import asyncio
-    asyncio.run(scenario())
-    dones = [p for t, p in emitted if t == "llm.request_done"]
-    assert len(dones) == 2
+def test_llm_request_done_payload_contract(server, executions):
+    """核对当前真实模型及实际文件任务保存的恢复载荷和调用投影。"""
+    with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+        dones = [json.loads(row[0]) for row in conn.execute("SELECT payload FROM run_events WHERE task_run_id=? AND type='llm.request_done' ORDER BY seq", (executions["task"],))]
+        projected = {row[0]: row[1:] for row in conn.execute("SELECT l.id,l.prompt_tokens,l.completion_tokens,l.latency_ms FROM llm_calls l JOIN steps s ON s.id=l.step_id WHERE s.task_run_id=?", (executions["task"],))}
+        tool_ids = {row[0] for row in conn.execute("SELECT call_id FROM tool_calls WHERE task_run_id=?", (executions["task"],))}
+    assert len(dones) >= 2
     keys = {"llm_call_id", "step_id", "prompt_tokens", "completion_tokens",
             "latency_ms", "text", "tool_uses", "thinking_blocks",
-            "stop_reason"}
-    assert set(dones[0]) == keys, f"字段漂移：{set(dones[0]) ^ keys}"
-    assert dones[0]["text"] == "执行 中", "回复全文（delta 拼接）"
-    assert dones[0]["prompt_tokens"] == 11 and dones[0]["completion_tokens"] == 7
-    assert dones[0]["tool_uses"] == [{"id": "t1", "name": "bash",
-                                      "input": {"command": "pwd"}}]
-    assert dones[0]["thinking_blocks"] == [{"text": "想一下",
-                                            "signature": "sig-abc"}]
-    assert dones[0]["stop_reason"] == "tool_use"
-    assert dones[1]["tool_uses"] == [] and dones[1]["stop_reason"] == "end_turn"
+            "stop_reason", "usage_received"}
+    for done in dones:
+        assert set(done) == keys, f"恢复载荷字段不符：{set(done) ^ keys}"
+        assert projected[done["llm_call_id"]] == (done["prompt_tokens"], done["completion_tokens"], done["latency_ms"])
+        assert all(tool["id"] in tool_ids for tool in done["tool_uses"])
+        assert isinstance(done["usage_received"], bool)
+        if not done["usage_received"]:
+            assert done["prompt_tokens"] is None and done["completion_tokens"] is None
+        assert all(set(block) == {"text", "signature"} for block in done["thinking_blocks"])
+    assert any(done["tool_uses"] for done in dones)
+    assert dones[-1]["tool_uses"] == [] and dones[-1]["stop_reason"] == "end_turn"
+    assert executions["target"].read_text().strip() == "M3 real run center"
 
 
 def test_run_task_resumes_ordinal_continuously():

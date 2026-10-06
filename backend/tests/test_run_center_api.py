@@ -5,6 +5,7 @@ import os
 import secrets
 import shutil
 import socket
+import signal
 import sqlite3
 import subprocess
 import sys
@@ -20,7 +21,7 @@ from agentcrew_server.secrets import redact, register_secret
 
 
 @pytest.fixture(scope="module")
-def server(tmp_path_factory):
+def server(tmp_path_factory, request):
     configured_directory = os.environ.get("AGENTCREW_RUN_CENTER_DATA_DIR")
     root = Path(configured_directory).resolve() if configured_directory else tmp_path_factory.mktemp("run-center-http")
     if configured_directory:
@@ -41,6 +42,26 @@ def server(tmp_path_factory):
     client = httpx.Client(base_url=f"http://127.0.0.1:{json.loads(line.split(' ',1)[1])['port']}",
                          headers={"Authorization": f"Bearer {token}"}, timeout=60)
     record = {"root": root, "client": client, "url": str(client.base_url), "token": token, "requests": []}
+    def kill_and_restart():
+        nonlocal child, client, log
+        previous_pid = child.pid
+        child.send_signal(signal.SIGKILL)
+        assert child.wait(10) == -signal.SIGKILL
+        client.close()
+        log.close()
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0))
+            next_port = listener.getsockname()[1]
+        log = (root / ("run-center-restart-" + uuid.uuid4().hex + ".log")).open("w")
+        child = subprocess.Popen([sys.executable, "-m", "agentcrew_server", "--data-dir", str(root), "--port", str(next_port)],
+            env={**os.environ, "AGENTCREW_TOKEN": token}, stdout=subprocess.PIPE, stderr=log, text=True)
+        line = child.stdout.readline().strip()
+        assert line.startswith("AGENTCREW_READY ")
+        new_port = json.loads(line.split(" ", 1)[1])["port"]
+        client = httpx.Client(base_url=f"http://127.0.0.1:{new_port}", headers={"Authorization": f"Bearer {token}"}, timeout=60)
+        record.update(client=client, url=str(client.base_url))
+        record["requests"].append({"signal": "SIGKILL/restart", "previous_pid": previous_pid, "current_pid": child.pid, "port": new_port})
+    record["kill_and_restart"] = kill_and_restart
     try:
         yield record
     finally:
@@ -51,6 +72,7 @@ def server(tmp_path_factory):
         serialized = json.dumps(record["requests"], ensure_ascii=False, indent=2) + "\n"
         (root / "run-center-http-evidence.json").write_text(serialized)
         (tmp_path_factory.getbasetemp() / "http-evidence.json").write_text(serialized)
+        (tmp_path_factory.getbasetemp() / (request.node.path.stem + "-http-evidence.json")).write_text(serialized)
 
 
 @pytest.fixture(scope="module")
