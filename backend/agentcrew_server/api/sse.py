@@ -225,6 +225,7 @@ def install_sse_routes(app, runtime) -> None:
         limit: int | None = Query(None, ge=1, le=500),
         through_global_seq: int | None = Query(None, ge=0),
         attempt_no: int | None = Query(None, ge=1),
+        after_global_seq: int | None = Query(None, ge=0),
     ):
         if not await asyncio.to_thread(_task_run_exists, runtime.db, task_run_id):
             raise ApiError(ErrorCode.NOT_FOUND, f"任务不存在：{task_run_id}")
@@ -235,7 +236,7 @@ def install_sse_routes(app, runtime) -> None:
             effective_limit = limit if limit is not None else 500
             if runtime.identities is not None:
                 return await asyncio.to_thread(Runs(runtime).events, request.state.identity,
-                    task_run_id, effective_after, effective_limit, through_global_seq, attempt_no)
+                    task_run_id, effective_after, effective_limit, through_global_seq, attempt_no, after_global_seq)
             events = await asyncio.to_thread(
                 _task_events_page, runtime.db, task_run_id,
                 effective_after, effective_limit,

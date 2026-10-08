@@ -1,0 +1,5 @@
+
+> agentcrew-desktop@0.1.0 check:api
+> node tools/api-generator/generate.mjs --check
+
+已核验 HTTP 类型、事件联合类型与事件校验契约

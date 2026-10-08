@@ -1,8 +1,7 @@
-import Ajv from 'ajv'
+import validator from './generated/event-validator.js'
 import schema from './generated/events.schema.json'
 import type { EventFrame } from './generated/events'
 
-const validator = new Ajv({ strict: false, allErrors: true }).compile<EventFrame>(schema)
 const eventTypes = new Set<string>(schema.definitions.EventType.enum)
 
 export function parseEventFrame(text: string): EventFrame | null {

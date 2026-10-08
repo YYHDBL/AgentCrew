@@ -16,6 +16,7 @@ data/
 node_modules/
 dist/
 out/
+desktop/.artifacts/
 
 # Electron 打包
 release/

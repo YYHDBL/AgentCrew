@@ -158,7 +158,7 @@ class Runs:
         self.require_task(self.db.read_conn, identity, task_id)
         return result
 
-    def events(self, identity, task_id, after, limit, through=None, attempt=None):
+    def events(self, identity, task_id, after, limit, through=None, attempt=None, after_global=None):
         with self.snapshot(identity) as conn:
             self.require_task(conn, identity, task_id)
             head = self.head(conn)
@@ -167,8 +167,11 @@ class Runs:
                     raise GovernanceError("VALIDATION_ERROR", "事件水位超过当前已提交记录", 422)
                 head = through
             condition, values = "", [task_id, after, head]
+            if after_global is not None:
+                condition += " AND global_seq>?"
+                values.append(after_global)
             if attempt is not None:
-                condition = " AND attempt_no=?"
+                condition += " AND attempt_no=?"
                 values.append(attempt)
             values.append(limit + 1)
             rows = conn.execute("SELECT * FROM run_events WHERE task_run_id=? AND seq>? AND global_seq<=?"

@@ -7193,6 +7193,8 @@ export interface operations {
                 limit?: number;
                 /** @description 首次读取返回的快照水位；后续页面固定上界 */
                 through_global_seq?: number;
+                /** @description 只读取历史快照水位之后的真实尾部，与任务seq和固定上界共同约束 */
+                after_global_seq?: number;
                 attempt_no?: number;
             };
             header?: never;

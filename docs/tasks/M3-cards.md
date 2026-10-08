@@ -1,6 +1,6 @@
 # M3 · 监控回放与自动化实施任务卡
 
-> 日期：2026-10-08 ｜ 状态：M3-01 至 M3-10 已通过，其余卡片未开始 ｜ 实施起点：desktop-shell `dc29b7854f1d8977ac51ab3da23022c57a4e9f28`
+> 日期：2026-10-08 ｜ 状态：M3-01 至 M3-11 已通过，其余卡片未开始 ｜ 实施起点：desktop-shell `dc29b7854f1d8977ac51ab3da23022c57a4e9f28`
 > 设计依据：[定时任务与轨迹审计详设](../architecture/cron-and-audit.md)、[Harness 与 Session](../architecture/harness-session.md)、[M1 实施卡](./M1-cards.md)、[M2 实施卡](./M2-cards.md)、[桌面前端计划](../plans/2026-09-29-desktop-frontend.md)。
 
 ## 领取与交付约定
@@ -40,7 +40,7 @@ M3 功能实施依据[所有者开工授权](../acceptance/M3-start-authorizatio
 | M3-08 | 轨迹读取与后台审计 Agent | M3-02、M3-06 | 后端 | 已通过 |
 | M3-09 | 审计建议固化为技能 | M3-08 | 后端 | 已通过 |
 | M3-10 | 接口贯穿核对与前端类型生成 | M3-02 至 M3-09 | 后端、前端 | 已通过 |
-| M3-11 | Run Center 时间线与回放 | M3-10 | 前端 | 未开始 |
+| M3-11 | Run Center 时间线与回放 | M3-10 | 前端 | 已完成，真实验收通过 |
 | M3-12 | Agent Studio 与 Admin Center | M3-10、M3-11 | 前端 | 未开始 |
 | M3-13 | 自动化页面与创建审批 | M3-07、M3-10、M3-11、M3-12 | 前端 | 未开始 |
 | M3-14 | 通知、休眠、托盘与退出影响 | M3-06、M3-11、M3-13 | 前端、后端 | 未开始 |

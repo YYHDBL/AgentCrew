@@ -1,0 +1,6311 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-run-center-1791426327374",
+  "cases": [
+    "真实 SIGKILL 恢复、文件完成和第二次尝试时间线",
+    "工作台完成任务进入同一 TaskRun 记录",
+    "真实失败报告与原事件定位",
+    "实际工具参数、结果与调用标识明细",
+    "回放播放暂停单步与刷新，模型工具和写API没有增加",
+    "真实事件分页",
+    "宽窄窗口与键盘焦点",
+    "真实 member 身份被拒绝，事件、报告与保存任务标识清理"
+  ],
+  "screenshots": [
+    "run-center-wide.png",
+    "run-center-narrow.png"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/governance/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/memory/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "POST",
+      "path": "/api/memory/stores/soul/xiaowen"
+    },
+    {
+      "method": "POST",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/744364fdad394a059071121c81ecc849"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces/office"
+    },
+    {
+      "method": "POST",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "POST",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/resume"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "POST",
+      "path": "/api/questions/call_00_q2p4dmgsmf4cc0mtzno3pbfg/answer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/memory/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/governance/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "POST",
+      "path": "/api/questions/call_00_6mae21mvwu2xdr4w3oln0p6g/answer"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/questions"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/approvals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/scope"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/state"
+    },
+    {
+      "method": "GET",
+      "path": "/api/memory/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/pending-verifications"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/scope"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/pending-verifications"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cron/jobs"
+    },
+    {
+      "method": "POST",
+      "path": "/api/cron/jobs/c7a140aed5f45f958e5ea80494acac4e/run-now"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/state"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/pending-verifications"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/78950cb3b2774cef842955024f4c60ae/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/cron/jobs/c7a140aed5f45f958e5ea80494acac4e"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/calls/call_00_68lq6pfn0u1h76ob40x24bzi"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/state"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/pending-verifications"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/scope"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/governance/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations/0d573d25fe834dd089243e5a09aab0d7/pending-verifications"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/memory/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "POST",
+      "path": "/api/identity/demo"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/governance/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/memory/stream"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/runs/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/api/identity"
+    },
+    {
+      "method": "GET",
+      "path": "/api/diagnostics"
+    },
+    {
+      "method": "GET",
+      "path": "/api/workspaces"
+    },
+    {
+      "method": "GET",
+      "path": "/api/agents"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/attempts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/audit-report"
+    },
+    {
+      "method": "GET",
+      "path": "/api/task-runs/7ade4e8c4a674485bab97ffc430dea1c/events"
+    }
+  ],
+  "soul_source": {
+    "id": "56bfcd73783145228af917105d23f6c4",
+    "model": "deepseek-v4.1-flash",
+    "task_run_id": "819c4c5abd554dd7851caf81e837f43e",
+    "sha256": "6af7fd249aa3dc5a2b325e618501b1a0c95fcea36957d4eb0bc415e3c00f8b9b"
+  },
+  "actual_file_content": "M3-11 recovered actual file\n",
+  "recovery": {
+    "task_run_id": "78950cb3b2774cef842955024f4c60ae",
+    "killed_pid": 2776,
+    "old_port": 56971,
+    "new_port": 57133,
+    "attempts": [
+      {
+        "attempt_no": 1,
+        "kind": "initial",
+        "outcome": null,
+        "context_fingerprint": {
+          "agent_spec_sha256": "9b1a7c5c47f649d68397d6ddc154846c2c7c65bbee23767510115f6435c26952",
+          "authorization_sha256": "8cf7c69c16f8dd5927b358cd58a9ebd26cbe2e21ffb49b06e4ee3dc5793784d5",
+          "memory_block_sha256": "e508304a37b809c2024dcdb549d84d860f7d7c1228b54e27d0fa3dee0e44663d",
+          "memory_snapshot_id": "2a545987640b471bb93033f79ada4ef5",
+          "memory_snapshot_sha256": "0e60ff2bf003a72ad6365c24f4fe45301ac698f08b8d6baecd2a2edf2a104907",
+          "model_config": {
+            "api_key_sha256": "a72258b07a769071",
+            "base_url": "https://opencode.ai/zen/go/v1",
+            "context_window": 1000000,
+            "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+            "max_tokens": 8192,
+            "model": "deepseek-v4.1-flash",
+            "prompt_format": "deepseek-v4.1",
+            "provider": "openai-compatible",
+            "tokenizer_repository": "deepseek-ai/DeepSeek-V4.1-Flash",
+            "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+            "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+          },
+          "model_slot": "main",
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          },
+          "system_prompt_hash": "7bedf550bceb183fcc01fe8f1a59d0e9459f7f9c6d342b4736a87839b7d831c2",
+          "tools_schema_hash": "d5dfecb7125697c65c557a7add5da56b5f7e3db03708b8767a73ac766ffc9aa9"
+        },
+        "resume_reason": null,
+        "started_at": "2026-10-08T02:25:34.514314+00:00",
+        "ended_at": "2026-10-08T02:25:40.618070+00:00"
+      },
+      {
+        "attempt_no": 2,
+        "kind": "resume",
+        "outcome": "completed",
+        "context_fingerprint": {
+          "agent_spec_sha256": "9b1a7c5c47f649d68397d6ddc154846c2c7c65bbee23767510115f6435c26952",
+          "authorization_sha256": "8cf7c69c16f8dd5927b358cd58a9ebd26cbe2e21ffb49b06e4ee3dc5793784d5",
+          "memory_block_sha256": "e508304a37b809c2024dcdb549d84d860f7d7c1228b54e27d0fa3dee0e44663d",
+          "memory_snapshot_id": "2a545987640b471bb93033f79ada4ef5",
+          "memory_snapshot_sha256": "0e60ff2bf003a72ad6365c24f4fe45301ac698f08b8d6baecd2a2edf2a104907",
+          "model_config": {
+            "api_key_sha256": "a72258b07a769071",
+            "base_url": "https://opencode.ai/zen/go/v1",
+            "context_window": 1000000,
+            "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+            "max_tokens": 8192,
+            "model": "deepseek-v4.1-flash",
+            "prompt_format": "deepseek-v4.1",
+            "provider": "openai-compatible",
+            "tokenizer_repository": "deepseek-ai/DeepSeek-V4.1-Flash",
+            "tokenizer_revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+            "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+          },
+          "model_slot": "main",
+          "skill_versions": {
+            "7fb6db7a69e75931b85594e05ed43d2b": "314222aa9401532b96ae08867bc734a5",
+            "c7b7146c6ea65788b6d4161a4982f34b": "ce7f36c35b735d43a30a8a4b0b4c0f3b"
+          },
+          "system_prompt_hash": "822868ef515d719bf010013fcf572aef31e4a9798a6933bc22cedaa836cc2c42",
+          "tools_schema_hash": "d5dfecb7125697c65c557a7add5da56b5f7e3db03708b8767a73ac766ffc9aa9"
+        },
+        "resume_reason": "user_requested",
+        "started_at": "2026-10-08T02:25:40.903667+00:00",
+        "ended_at": "2026-10-08T02:25:59.570145+00:00"
+      }
+    ]
+  },
+  "cron_job_id": "c7a140aed5f45f958e5ea80494acac4e",
+  "occurrence_id": "4285b81331aa4cc9884da7eb30dc7c4d",
+  "task_run_id": "7ade4e8c4a674485bab97ffc430dea1c",
+  "report_id": "13d1dc88a5dc4d8fb6f26269ef1edfe6",
+  "review_job_id": "329843e578454f0092c6926ce07dcaf1",
+  "file_replay": {
+    "path": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-run-center-1791426327374/data/workspaces/office/files/m3-11/recovered.txt",
+    "before": {
+      "sha256": "477e12836d2094642a77a4cef43fd3601e4bce592516d057950534d49a67e1b0",
+      "mtimeMs": 1791426349788.9197
+    },
+    "after": {
+      "sha256": "477e12836d2094642a77a4cef43fd3601e4bce592516d057950534d49a67e1b0",
+      "mtimeMs": 1791426349788.9197
+    }
+  },
+  "permission_error": "当前身份不能访问其他成员的会话",
+  "event_watermark": 158,
+  "audit_sequence": 54,
+  "replay_counts": {
+    "before": {
+      "models": 10,
+      "tools": 10
+    },
+    "after": {
+      "models": 10,
+      "tools": 10
+    }
+  },
+  "models": {
+    "main": {
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash"
+    },
+    "aux": {
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash"
+    }
+  }
+}
