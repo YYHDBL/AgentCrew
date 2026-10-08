@@ -179,6 +179,10 @@ class Identities:
 
     def authorize_request(self, request, identity):
         path, method, params = request.url.path, request.method, request.path_params
+        if path.startswith("/api/cron/jobs") and method != "GET":
+            self.require(identity, "manage")
+        if path == "/api/runtime/exit-impact":
+            self.require(identity, "owner")
         if path in {"/api/health", "/api/identity", "/api/diagnostics", "/api/identity/demo"}:
             return
         if path.startswith("/api/diagnostics/") or path == "/api/audit/verify" or path.startswith("/api/settings"):

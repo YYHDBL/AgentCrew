@@ -3,6 +3,8 @@
 > 维护者：后端 Agent ｜ 权威定义在各详设；新增机制**先加事件类型再实现**（纪律）。
 > **SSE 语义（v1.1）**：载荷 = `{global_seq, task_run_id?, seq?, type, payload, ts}`；游标（from/after_seq）**排他**；控制帧：`event:resync`（溢出终止，data 含最后连续 global_seq）、`event:shutdown`（优雅关闭，客户端存游标）、`event:ping` 心跳；FSM 快照带 `at_global_seq` 配对续播。
 
+展示事件的机器可读契约为[events.schema.json](events.schema.json)，登记全部正式事件类型以及工具、计划、提案、审查和报告载荷。TypeScript联合类型由json-schema-to-typescript生成；订阅使用Ajv校验已知事件，未知事件忽略。`npm run check:api`在内存中重新生成并比较既有文件，不修改检查对象。新增事件同步更新schema与后端枚举，真实事件验收核对所有已保存展示帧。
+
 ## M0 帧与 payload schema
 
 以下字段定义对应 C8 运行时。`?` 表示字段可以省略；允许 JSON `null` 的字段明确写出 `null`，省略与 `null` 分别处理。`integer` 为整数，`object` 为 JSON 对象，`T[]` 为数组。未知附加字段允许保留，已列字段的名称和类型保持兼容。事件由执行层发射，投影表消费同一载荷。

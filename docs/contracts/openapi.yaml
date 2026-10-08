@@ -1017,6 +1017,19 @@ components:
         skill_id: { type: [string, "null"] }
         version_id: { type: [string, "null"] }
         usage: { type: [object, "null"], additionalProperties: true, description: 缺失usage保留null }
+        granted: { type: boolean, description: 固化技能当前是否具有员工Grant }
+        report_ids: { type: array, items: { type: string } }
+        targets:
+          type: array
+          items:
+            type: object
+            required: [job_id, task_run_id, attempt_no, source_global_seq, result]
+            properties:
+              job_id: { type: string }
+              task_run_id: { type: string }
+              attempt_no: { type: [integer, "null"] }
+              source_global_seq: { type: integer }
+              result: { type: [string, "null"] }
     PromoteSkillRequest:
       type: object
       additionalProperties: false
@@ -3117,6 +3130,33 @@ paths:
       responses:
         <<: *memory_errors
         "202": { $ref: "#/components/responses/TraceJobEnvelope" }
+  /api/reviews/jobs:
+    get:
+      operationId: listTraceJobs
+      tags: [reviews]
+      x-domain-card: M3-08
+      x-implementation-card: M3-10
+      parameters:
+        - { $ref: "#/components/parameters/GovernanceWorkspace" }
+        - { $ref: "#/components/parameters/GovernanceLimit" }
+        - { $ref: "#/components/parameters/GovernanceAfter" }
+        - { name: agent_id, in: query, schema: { type: string } }
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 当前身份可见的实际审查和技能固化作业
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    required: [items, next_after]
+                    properties:
+                      items: { type: array, items: { $ref: "#/components/schemas/TraceJob" } }
+                      next_after: { type: [string, "null"] }
   /api/reviews/jobs/{id}:
     parameters: *governance_id_parameters
     get:

@@ -1,0 +1,11 @@
+{
+  "name": "agentcrew-api-generator",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "openapi-typescript": "7.13.0",
+    "json-schema-to-typescript": "16.0.0",
+    "typescript": "5.9.3",
+    "yaml": "2.9.1"
+  }
+}

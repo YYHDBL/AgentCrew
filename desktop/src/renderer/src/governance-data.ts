@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
-import { api, connection, type Frame } from './session'
+import { api, connection } from './session'
+import { parseEventFrame } from './api/events'
+import type { Identity, AgentSpec } from './api/types'
+export type { Identity, AgentSpec } from './api/types'
 
-export interface Identity { credential_owner_id: string; effective_user_id: string; name: string; role: 'owner' | 'admin' | 'member'; org_id: string; demo: boolean; workspace_ids: string[]; organization_status: string }
-export interface AgentSpec { position: string; model_slot: 'main' | 'aux'; skill_ids: string[]; connector_ids: string[] }
 export interface Resource { id: string; name: string; status: string; revision: number; workspace_id?: string; data_dir?: string; spec?: AgentSpec; description?: string; source?: string; current_version_id?: string; type?: string; config?: Record<string, unknown>; credential_configured?: boolean; created_at: string }
 export interface Grant { id: string; resource_type: string; resource_id: string; grantee_type: string; grantee_id: string; revision: number; revoked_at: string | null; created_at: string; granted_by_user_id: string; workspace_id: string }
 export interface Rule { id: string; agent_id: string; tool_name: string; pattern: string; effect: string; revision: number; revoked_at: string | null; created_by_user_id: string }
@@ -56,7 +57,8 @@ export function useGovernanceEvents(enabled: boolean): { revision: number; statu
           onmessage(message) {
             if (lifetime.signal.aborted || !message.data || message.event === 'ping') return
             if (message.event === 'shutdown' || message.event === 'resync') { cursor = 0; subscription?.abort(); setRevision((value) => value + 1); return }
-            const event = JSON.parse(message.data) as Frame
+            const event = parseEventFrame(message.data)
+            if (event === null) return
             if (!Number.isSafeInteger(event.global_seq)) throw new Error('治理事件水位无效')
             if (event.global_seq <= cursor) return
             cursor = event.global_seq

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
+import { parseEventFrame } from './api/events'
+import type { EventFrame } from './api/generated/events'
 
 export interface Conversation { id: string; title: string | null; state_badge: string; last_activity_at: string; agent_name: string; agent_id?: string; workspace_id?: string }
 export interface Snapshot {
@@ -8,10 +10,7 @@ export interface Snapshot {
   can_send: boolean; can_queue: boolean; can_cancel: boolean; can_continue_queue: boolean
   current_task_run_id: string | null
 }
-export interface Frame {
-  global_seq: number; type: string; task_run_id?: string; ts: string
-  payload: Record<string, unknown>
-}
+export type Frame = EventFrame
 export interface Scope { workspace_dir: string; materials_dir: string; folders: { path: string; access: string }[] }
 
 let identityGeneration = 0
@@ -79,7 +78,8 @@ export function useMemoryEvents(workspace: string, agent: string, enabled: boole
             if (lifetime.signal.aborted || !message.data || message.event === 'ping') return
             if (message.event === 'resync') { reset = true; subscription.abort(); return }
             if (message.event === 'shutdown') { subscription.abort(); return }
-            const frame = JSON.parse(message.data) as Frame
+            const frame = parseEventFrame(message.data)
+            if (frame === null) return
             if (!Number.isSafeInteger(frame.global_seq) || typeof frame.type !== 'string') throw new Error('记忆事件信封无效')
             if (frame.global_seq <= cursor) return
             cursor = frame.global_seq
@@ -157,7 +157,8 @@ export function useSession(id: string | null, revision = 0): {
             sessionStorage.setItem(`cursor:${id}`, String(cursor))
             subscription.abort(); return
           }
-          const event = JSON.parse(message.data) as Frame
+          const event = parseEventFrame(message.data)
+          if (event === null) return
           if (!Number.isSafeInteger(event.global_seq) || typeof event.type !== 'string') throw new Error('事件信封无效')
           receive(event, subscription)
         },

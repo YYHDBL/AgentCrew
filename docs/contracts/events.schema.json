@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EventFrame",
+  "description": "已提交、已鉴权及已脱敏的展示事件；任务seq与global_seq分别保留。",
+  "type": "object",
+  "required": ["global_seq", "type", "payload", "ts"],
+  "properties": {
+    "global_seq": {"type": "integer", "minimum": 1},
+    "type": {"$ref": "#/definitions/EventType"},
+    "payload": {"type": "object"},
+    "ts": {"type": "string", "minLength": 1},
+    "task_run_id": {"type": "string"},
+    "seq": {"type": "integer", "minimum": 1},
+    "attempt_no": {"type": ["integer", "null"], "minimum": 1},
+    "conversation_id": {"type": "string"}
+  },
+  "additionalProperties": true,
+  "oneOf": [
+    {"properties": {"type": {"enum": ["run.queued", "run.started", "run.completed", "run.failed", "run.cancelled", "run.interrupted", "run.resumed", "step.started", "step.completed", "llm.request_started", "llm.request_done", "llm.request_failed", "permission.requested", "permission.resolved", "question.requested", "question.answered", "queue.paused", "queue.resumed", "queue.item_enqueued", "queue.item_cancelled", "artifact.created", "artifact.ready", "artifact.failed", "artifact.missing_detected", "materials.imported", "conversation.updated", "context.compacted", "context.budget_checked", "memory.updated", "memory.archived", "memory.snapshot_created", "skill.patched", "memory.job_status", "memory.summary_created", "memory.approval_requested", "memory.approval_resolved", "memory.curated", "governance.resource_changed", "governance.identity_changed", "governance.role_changed", "governance.grant_changed", "governance.rule_changed", "governance.skill_version_published", "governance.authorization_checked", "governance.audit_verified", "governance.backup_created", "governance.backup_restored", "governance.access_denied", "notification.created", "notification.updated", "runtime.power_changed"]}}},
+    {"properties": {"type": {"enum": ["tool.prepared"]}, "payload": {"$ref": "#/definitions/PreparedTool"}}},
+    {"properties": {"type": {"enum": ["tool.dispatched", "tool.completed", "tool.failed", "tool.skipped_idempotent", "tool.pending_verification", "tool.verification_submitted", "tool.result_externalized"]}, "payload": {"$ref": "#/definitions/ToolResult"}}},
+    {"properties": {"type": {"enum": ["cron.job_changed"]}, "payload": {"$ref": "#/definitions/CronChange"}}},
+    {"properties": {"type": {"enum": ["cron.job_fired", "cron.job_missed", "cron.job_skipped", "cron.job_failed", "cron.job_status"]}, "payload": {"$ref": "#/definitions/CronOccurrence"}}},
+    {"properties": {"type": {"enum": ["cron.proposal_requested", "cron.proposal_resolved"]}, "payload": {"$ref": "#/definitions/CronProposal"}}},
+    {"properties": {"type": {"enum": ["review.job_status"]}, "payload": {"$ref": "#/definitions/ReviewJob"}}},
+    {"properties": {"type": {"enum": ["audit.reported"]}, "payload": {"$ref": "#/definitions/AuditReport"}}}
+  ],
+  "definitions": {
+    "EventType": {
+      "type": "string",
+      "enum": ["run.queued", "run.started", "run.completed", "run.failed", "run.cancelled", "run.interrupted", "run.resumed", "step.started", "step.completed", "llm.request_started", "llm.request_done", "llm.request_failed", "tool.prepared", "tool.dispatched", "tool.completed", "tool.failed", "tool.skipped_idempotent", "tool.pending_verification", "permission.requested", "permission.resolved", "question.requested", "question.answered", "queue.paused", "queue.resumed", "queue.item_enqueued", "queue.item_cancelled", "tool.verification_submitted", "artifact.created", "artifact.ready", "artifact.failed", "artifact.missing_detected", "materials.imported", "conversation.updated", "context.compacted", "context.budget_checked", "tool.result_externalized", "memory.updated", "memory.archived", "memory.snapshot_created", "skill.patched", "memory.job_status", "memory.summary_created", "memory.approval_requested", "memory.approval_resolved", "memory.curated", "governance.resource_changed", "governance.identity_changed", "governance.role_changed", "governance.grant_changed", "governance.rule_changed", "governance.skill_version_published", "governance.authorization_checked", "governance.audit_verified", "governance.backup_created", "governance.backup_restored", "governance.access_denied", "cron.job_changed", "cron.job_fired", "cron.job_missed", "cron.job_skipped", "cron.job_failed", "cron.job_status", "cron.proposal_requested", "cron.proposal_resolved", "review.job_status", "audit.reported", "notification.created", "notification.updated", "runtime.power_changed"]
+    },
+    "Scope": {
+      "type": "object",
+      "required": ["workspace_id", "agent_id", "owner_id"],
+      "properties": {"org_id": {"type": "string"}, "workspace_id": {"type": ["string", "null"]}, "agent_id": {"type": ["string", "null"]}, "owner_id": {"type": ["string", "null"]}},
+      "additionalProperties": true
+    },
+    "PreparedTool": {
+      "type": "object", "required": ["call_id", "tool_name", "input_hash", "input"],
+      "properties": {"call_id": {"type": "string"}, "tool_name": {"type": "string"}, "input_hash": {"type": "string"}, "input": {"type": "object"}, "side_effect_class": {"type": "string"}, "risk_level": {"type": "string"}, "read_only_verdict": {"type": "boolean"}, "step_id": {"type": "string"}},
+      "additionalProperties": true
+    },
+    "ToolResult": {
+      "type": "object", "required": ["call_id"],
+      "properties": {"call_id": {"type": "string"}, "output": {"type": "string"}, "output_summary": {"type": "string"}, "error": {"type": "string"}, "details": {"type": "object"}, "artifact_path": {"type": "string"}, "note": {"type": ["string", "null"]}, "verdict": {"type": "string"}},
+      "additionalProperties": true
+    },
+    "CronChange": {
+      "type": "object", "required": ["job_id", "revision", "change_id", "enabled", "deleted_at", "scope", "audit_seq"],
+      "properties": {"job_id": {"type": "string"}, "revision": {"type": "integer"}, "change_id": {"type": "string"}, "enabled": {"type": "boolean"}, "deleted_at": {"type": ["string", "null"]}, "scope": {"$ref": "#/definitions/Scope"}, "audit_seq": {"type": "integer"}},
+      "additionalProperties": true
+    },
+    "CronOccurrence": {
+      "type": "object", "required": ["job_id", "occurrence_id", "revision", "trigger", "scheduled_at", "triggered_at", "source_task_run_id", "retry_no", "status", "reason", "scope", "notification_id", "audit_seq"],
+      "properties": {"job_id": {"type": "string"}, "occurrence_id": {"type": "string"}, "revision": {"type": "integer"}, "trigger": {"enum": ["scheduled", "manual"]}, "scheduled_at": {"type": ["integer", "null"]}, "triggered_at": {"type": "integer"}, "source_task_run_id": {"type": ["string", "null"]}, "retry_no": {"type": "integer"}, "status": {"type": "string"}, "reason": {"type": ["string", "null"]}, "scope": {"$ref": "#/definitions/Scope"}, "notification_id": {"type": ["string", "null"]}, "audit_seq": {"type": "integer"}, "retry_at": {"type": ["integer", "null"]}, "missed_count": {"type": "integer"}, "missed_through": {"type": ["integer", "null"]}},
+      "additionalProperties": true
+    },
+    "CronProposal": {
+      "type": "object", "required": ["proposal_id", "call_id", "input_hash", "revision", "scope"],
+      "properties": {"proposal_id": {"type": "string"}, "call_id": {"type": "string"}, "input_hash": {"type": "string"}, "revision": {"type": "integer"}, "source_task_run_id": {"type": "string"}, "scope": {"$ref": "#/definitions/Scope"}, "decision": {"enum": ["allow_once", "reject_once", "expired"]}, "selected": {"type": "array", "items": {"type": "object"}}, "actor_id": {"type": "string"}, "job_id": {"type": ["string", "null"]}, "audit_seq": {"type": "integer"}},
+      "additionalProperties": true
+    },
+    "ReviewJob": {
+      "type": "object", "required": ["job_id", "kind", "status", "source_task_run_id", "attempt_no", "trigger_global_seq", "model", "config_version", "reason", "report_id", "skill_id", "usage", "scope"],
+      "properties": {"job_id": {"type": "string"}, "kind": {"enum": ["trace_audit", "promote_skill"]}, "status": {"enum": ["queued", "running", "completed", "skipped", "cancelled", "interrupted", "failed"]}, "source_task_run_id": {"type": "string"}, "attempt_no": {"type": ["integer", "null"]}, "trigger_global_seq": {"type": "integer"}, "model": {"type": ["string", "null"]}, "config_version": {"type": "string"}, "reason": {"type": ["string", "null"]}, "report_id": {"type": ["string", "null"]}, "skill_id": {"type": ["string", "null"]}, "version_id": {"type": ["string", "null"]}, "usage": {"type": ["object", "null"]}, "scope": {"$ref": "#/definitions/Scope"}},
+      "additionalProperties": true
+    },
+    "EventReference": {
+      "type": "object", "required": ["task_run_id", "attempt_no", "seq", "global_seq"],
+      "properties": {"task_run_id": {"type": "string"}, "attempt_no": {"type": ["integer", "null"]}, "seq": {"type": "integer", "minimum": 1}, "global_seq": {"type": "integer", "minimum": 1}},
+      "additionalProperties": false
+    },
+    "AuditReport": {
+      "type": "object", "required": ["report_id", "job_id", "source_task_run_id", "attempt_no", "source_global_seq", "model", "root_cause_event", "scope"],
+      "properties": {"report_id": {"type": "string"}, "job_id": {"type": "string"}, "source_task_run_id": {"type": "string"}, "attempt_no": {"type": ["integer", "null"]}, "source_global_seq": {"type": "integer"}, "model": {"type": "string"}, "root_cause_event": {"anyOf": [{"type": "null"}, {"$ref": "#/definitions/EventReference"}]}, "scope": {"$ref": "#/definitions/Scope"}},
+      "additionalProperties": true
+    }
+  }
+}

@@ -215,6 +215,6 @@ def test_sigkill_interrupts_actual_review_without_duplicate_trigger(server):
     assert after["status"] == "interrupted" and after["usage"] is None
     with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
         assert conn.execute("SELECT count(*) FROM memory_jobs WHERE kind='trace_audit' AND trigger_key=?", (trigger,)).fetchone()[0] == 1
-    assert request(server, "POST", f"/api/reviews/jobs/{job_id}/cancel").status_code == 202
+    assert request(server, "POST", f"/api/reviews/jobs/{job_id}/cancel").status_code == 200
     (server["root"] / "trace-sigkill-actual.json").write_text(json.dumps({"job_id": job_id, "task_run_id": source,
         "trigger_key": trigger, "after": after, "signal": "SIGKILL"}, ensure_ascii=False, indent=2))

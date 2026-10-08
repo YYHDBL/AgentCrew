@@ -62,7 +62,7 @@ def install_review_routes(app, runtime):
         visible = [view(actor, row[0]) for row in rows if row[2] == actor.effective_user_id and runtime.identities.visible_conversation(actor, row[1])]
         return memory_page(visible, {"actor": actor.effective_user_id, "workspace": workspace_id, "agent": agent_id}, limit, after, key="id")
 
-    @app.post("/api/reviews/jobs/{job_id}/cancel", status_code=202)
+    @app.post("/api/reviews/jobs/{job_id}/cancel")
     async def cancel_job(job_id: str, request: Request):
         view(request.state.identity, job_id)
         await runtime.memory_jobs.review.cancel(job_id, reason="真人取消轨迹审查")

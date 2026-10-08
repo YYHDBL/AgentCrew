@@ -1,0 +1,61 @@
+{
+  "event_watermark": 8568,
+  "audit_seq": 3086,
+  "event_count": 8568,
+  "audit_verification": {
+    "ok": true,
+    "internal": {
+      "ok": true,
+      "checked_rows": 3086,
+      "broken_at": null,
+      "reason": null
+    },
+    "anchor": {
+      "ok": true,
+      "status": "verified",
+      "seq": 3086,
+      "hash": "a66088f0fdd3392f43e3e14209f6671e285b023085b35a1ce6591846f1d1ba97"
+    },
+    "reason": null,
+    "broken_at": null
+  },
+  "models": {
+    "main": {
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash",
+      "base_url": "https://opencode.ai/zen/go/v1"
+    },
+    "aux": {
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash",
+      "base_url": "https://opencode.ai/zen/go/v1"
+    }
+  },
+  "files": [
+    {
+      "path": "docs/contracts/openapi.yaml",
+      "sha256": "aa77b5a18c0c6ed34508c921cb4de37ee1d689604cc7703127d649bc77a2e1b9",
+      "mtime_ns": 1791422108628112890
+    },
+    {
+      "path": "docs/contracts/events.schema.json",
+      "sha256": "b9cebc369118f54e6273021981e02c8bd87dbeaf0cc12db8ed5d39b129c1612f",
+      "mtime_ns": 1791422067033461706
+    },
+    {
+      "path": "desktop/src/renderer/src/api/generated/http.ts",
+      "sha256": "012f215fdced6e4e6e3164a6de31c1e08f9f81c360ca2c9ed5416f18fcce20e5",
+      "mtime_ns": 1791422110614675029
+    },
+    {
+      "path": "desktop/src/renderer/src/api/generated/events.ts",
+      "sha256": "11e79fffa254bd112f7151e8d4470aa05abe3ebbd6a940f0d39b902d8ac5cad1",
+      "mtime_ns": 1791422110624803192
+    },
+    {
+      "path": "desktop/src/renderer/src/api/generated/events.schema.json",
+      "sha256": "b9cebc369118f54e6273021981e02c8bd87dbeaf0cc12db8ed5d39b129c1612f",
+      "mtime_ns": 1791422110625905108
+    }
+  ]
+}

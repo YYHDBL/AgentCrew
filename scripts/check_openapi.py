@@ -55,6 +55,6 @@ for path, ops in paths.items():
             assert "success" not in desc.lower() or "data" in desc.lower(), f"{path} {code} 信封描述可疑"
 
 assert m2_operations == 44, f"M2 操作数量不完整：{m2_operations}"
-assert m3_operations == 28, f"M3 操作数量不完整：{m3_operations}"
+assert m3_operations == 29, f"M3 操作数量不完整：{m3_operations}"
 print(f"openapi OK: {len(paths)} paths, {m2_operations} M2 operations, {m3_operations} M3 operations, envelope consistent")
 sys.exit(0)
