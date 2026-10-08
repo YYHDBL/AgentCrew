@@ -1,20 +1,50 @@
 {
   "identity": "owner",
-  "exported_at": "2026-10-08T07:45:19.270Z",
+  "exported_at": "2026-10-08T09:49:20.480Z",
   "rows": [
     {
       "action": "governance.backup_created",
       "actor_id": "owner",
       "actor_type": "user",
       "detail": {
-        "independent_library_tamper": "75358474-4474-4a91-a0cb-3a3faa61e50a"
+        "independent_library_tamper": "b34db379-e834-42e0-944f-bbf935e4c4bf"
       },
-      "hash": "4521f6fef918f54d70f993632e1487712278fe52bfa990ff78b1fe15b691b383",
-      "prev_hash": "8d0610482a3ff5f0a951c831db730aaf379d423f227dd6f7cfa342be48c6a6bf",
-      "resource_id": "59a7f9f361c3d395983d5d4e0784047ed823f2b28357ca1ef29b05c51964ad00",
+      "hash": "0731cafde7f4b6c896ec998fffa892e310230cdbce9b9e02b9598a05ee56e6ae",
+      "prev_hash": "93abd74a90d0bd0f55b70dd8e4bd42c422d799452ca2f57c362c07b27a903090",
+      "resource_id": "1d4d50d5b4bc2008cb470f04e55065adb62a8ca275663e6b483df4054a8eedbf",
       "resource_type": "diagnostic_backup",
-      "seq": 44,
-      "ts": "2026-10-08T07:45:19.068063+00:00"
+      "seq": 49,
+      "ts": "2026-10-08T09:49:20.292770+00:00"
+    },
+    {
+      "action": "governance.grant_created",
+      "actor_id": "owner",
+      "actor_type": "user",
+      "detail": {
+        "actor_id": "owner",
+        "capability_id": "xiaowen",
+        "capability_type": "agent",
+        "change_id": "6b692eb3-36c2-447f-a1fd-23aec2ce1fbd",
+        "credential_owner_id": "owner",
+        "grantee_id": "lilei",
+        "grantee_type": "user",
+        "resource_id": "7320d33bb47e561f8cd4248e4dbed03d",
+        "resource_type": "grant",
+        "revision": 1,
+        "revoked_at": null,
+        "scope": {
+          "agent_id": "xiaowen",
+          "org_id": "demo-org",
+          "owner_id": null,
+          "workspace_id": "office"
+        }
+      },
+      "hash": "93abd74a90d0bd0f55b70dd8e4bd42c422d799452ca2f57c362c07b27a903090",
+      "prev_hash": "99d13ba08412cbe090f7cdd190be2ed3a7c2537c63d30478aca885c95006833d",
+      "resource_id": "7320d33bb47e561f8cd4248e4dbed03d",
+      "resource_type": "grant",
+      "seq": 48,
+      "ts": "2026-10-08T09:49:20.042008+00:00"
     },
     {
       "action": "governance.access_denied",
@@ -22,7 +52,94 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "lilei",
-        "change_id": "74396676d882455d9a2638c9efaa2263",
+        "change_id": "b991de55e3804b49ab64fa6015ca8fcd",
+        "code": "OUT_OF_SCOPE",
+        "credential_owner_id": "owner",
+        "method": "GET",
+        "reason": "当前成员没有员工使用授权",
+        "resource_id": "/api/agents/xiaowen/permission-rules",
+        "resource_type": "api_request",
+        "revision": 1,
+        "scope": {
+          "agent_id": null,
+          "org_id": "demo-org",
+          "owner_id": "lilei",
+          "workspace_id": null
+        }
+      },
+      "hash": "99d13ba08412cbe090f7cdd190be2ed3a7c2537c63d30478aca885c95006833d",
+      "prev_hash": "fd762ffc222721f193cede1dfab113399223182b3b23a97713bfad490dc67f3a",
+      "resource_id": "/api/agents/xiaowen/permission-rules",
+      "resource_type": "api_request",
+      "seq": 47,
+      "ts": "2026-10-08T09:49:19.943633+00:00"
+    },
+    {
+      "action": "governance.access_denied",
+      "actor_id": "lilei",
+      "actor_type": "user",
+      "detail": {
+        "actor_id": "lilei",
+        "change_id": "ecddfba0a0b743128504a02d01c1a9b5",
+        "code": "OUT_OF_SCOPE",
+        "credential_owner_id": "owner",
+        "method": "GET",
+        "reason": "当前成员没有员工使用授权",
+        "resource_id": "/api/memory/jobs",
+        "resource_type": "api_request",
+        "revision": 1,
+        "scope": {
+          "agent_id": null,
+          "org_id": "demo-org",
+          "owner_id": "lilei",
+          "workspace_id": null
+        }
+      },
+      "hash": "fd762ffc222721f193cede1dfab113399223182b3b23a97713bfad490dc67f3a",
+      "prev_hash": "12e15a62284dc32694ee7d11242d007512c65241762406df9f2bd5eef8bc5f74",
+      "resource_id": "/api/memory/jobs",
+      "resource_type": "api_request",
+      "seq": 46,
+      "ts": "2026-10-08T09:49:19.917011+00:00"
+    },
+    {
+      "action": "governance.grant_revoked",
+      "actor_id": "owner",
+      "actor_type": "user",
+      "detail": {
+        "actor_id": "owner",
+        "capability_id": "xiaowen",
+        "capability_type": "agent",
+        "change_id": "ae05ba6a-a282-4513-9202-74e16ad51398",
+        "credential_owner_id": "owner",
+        "grantee_id": "lilei",
+        "grantee_type": "user",
+        "resource_id": "a6a4643dc78058ecbb370d403723dd93",
+        "resource_type": "grant",
+        "revision": 2,
+        "revocation_changed": true,
+        "revoked_at": "2026-10-08T09:49:19.827944+00:00",
+        "scope": {
+          "agent_id": "xiaowen",
+          "org_id": "demo-org",
+          "owner_id": null,
+          "workspace_id": "office"
+        }
+      },
+      "hash": "12e15a62284dc32694ee7d11242d007512c65241762406df9f2bd5eef8bc5f74",
+      "prev_hash": "e52307af481337d1bb9291e828f82afcf5ec593127c2199969d39980814a259d",
+      "resource_id": "a6a4643dc78058ecbb370d403723dd93",
+      "resource_type": "grant",
+      "seq": 45,
+      "ts": "2026-10-08T09:49:19.828071+00:00"
+    },
+    {
+      "action": "governance.access_denied",
+      "actor_id": "lilei",
+      "actor_type": "user",
+      "detail": {
+        "actor_id": "lilei",
+        "change_id": "5e11a58fed014c508d713c0dc46436e8",
         "code": "OUT_OF_SCOPE",
         "credential_owner_id": "owner",
         "method": "POST",
@@ -37,12 +154,12 @@
           "workspace_id": null
         }
       },
-      "hash": "8d0610482a3ff5f0a951c831db730aaf379d423f227dd6f7cfa342be48c6a6bf",
-      "prev_hash": "1f4f43c4463185a27fef14b0a86486ecd97f7ef91a83cf2cf81c17a8f27a81c0",
+      "hash": "e52307af481337d1bb9291e828f82afcf5ec593127c2199969d39980814a259d",
+      "prev_hash": "f7230e623652700eefa1426f15af10565b60bc9fc1e1a5e0d3c143fef03e0fc0",
       "resource_id": "/api/agents",
       "resource_type": "api_request",
-      "seq": 43,
-      "ts": "2026-10-08T07:45:18.802949+00:00"
+      "seq": 44,
+      "ts": "2026-10-08T09:49:19.741132+00:00"
     },
     {
       "action": "governance.identity_changed",
@@ -50,7 +167,7 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "change_id": "37758d44-9a0c-4fc5-bf9f-63a39fb6ad6c",
+        "change_id": "4d11fa34-31e9-4baa-940b-fbb7cc3bae50",
         "credential_owner_id": "owner",
         "effective_user_id": "lilei",
         "resource_id": "lilei",
@@ -63,12 +180,12 @@
           "workspace_id": null
         }
       },
-      "hash": "1f4f43c4463185a27fef14b0a86486ecd97f7ef91a83cf2cf81c17a8f27a81c0",
-      "prev_hash": "8b1eb0bd7d8bb1d5e6b57e66cb2174a326fbad4c1e3a07a4bd09ecf7b8506c44",
+      "hash": "f7230e623652700eefa1426f15af10565b60bc9fc1e1a5e0d3c143fef03e0fc0",
+      "prev_hash": "14a00961aadaab0db229edc1b64d454ec3d29e7a3b96a2f8126c9f919c7e75f5",
       "resource_id": "lilei",
       "resource_type": "identity",
-      "seq": 42,
-      "ts": "2026-10-08T07:45:18.686880+00:00"
+      "seq": 43,
+      "ts": "2026-10-08T09:49:19.620107+00:00"
     },
     {
       "action": "cron.job_created",
@@ -76,27 +193,27 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "change_id": "c4a5f2f9-d821-4601-9f1a-9c7f3cf89c59",
+        "change_id": "9206cfec-3518-4f3e-9374-1d919b74f2a3",
         "credential_owner_id": "owner",
         "deleted_at": null,
         "enabled": true,
-        "job_id": "d838412069eb55d295f2f7d2558b2379",
-        "resource_id": "d838412069eb55d295f2f7d2558b2379",
+        "job_id": "832fd3790b435cbfae18fad3aff1172a",
+        "resource_id": "832fd3790b435cbfae18fad3aff1172a",
         "resource_type": "cron_job",
         "revision": 1,
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "org_id": "demo-org",
           "owner_id": "owner",
           "workspace_id": "office"
         }
       },
-      "hash": "8b1eb0bd7d8bb1d5e6b57e66cb2174a326fbad4c1e3a07a4bd09ecf7b8506c44",
-      "prev_hash": "69b423dc956db395c07713439787594de40df2fff2f144a1118dde9f2815efb5",
-      "resource_id": "d838412069eb55d295f2f7d2558b2379",
+      "hash": "14a00961aadaab0db229edc1b64d454ec3d29e7a3b96a2f8126c9f919c7e75f5",
+      "prev_hash": "1ab59ff3d853858164e12664f1c095474cee5be237165f874d9b2c440ac3add9",
+      "resource_id": "832fd3790b435cbfae18fad3aff1172a",
       "resource_type": "cron_job",
-      "seq": 41,
-      "ts": "2026-10-08T07:45:18.518463+00:00"
+      "seq": 42,
+      "ts": "2026-10-08T09:49:19.449232+00:00"
     },
     {
       "action": "governance.connector_validated",
@@ -104,9 +221,9 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "change_id": "http-validation-b9e2810d654241879aa2902a99e6230c",
+        "change_id": "http-validation-be614787f54a444d964641dd54ebfcd2",
         "credential_owner_id": "owner",
-        "resource_id": "64410cef4f6d533ea7f70d6a22486ada",
+        "resource_id": "bd20c26ae77b5d0eb95b06b74e8453ac",
         "resource_type": "connector",
         "revision": 1,
         "scope": {
@@ -117,12 +234,12 @@
         },
         "status": "active"
       },
-      "hash": "69b423dc956db395c07713439787594de40df2fff2f144a1118dde9f2815efb5",
-      "prev_hash": "2c4f494e5355567efef2c0894cb052898080d3432979e5f28227f41f9143778f",
-      "resource_id": "64410cef4f6d533ea7f70d6a22486ada",
+      "hash": "1ab59ff3d853858164e12664f1c095474cee5be237165f874d9b2c440ac3add9",
+      "prev_hash": "c05b51a1c73cc8827c9b56d341f99bb38bb99e8721dac6447622e33353751681",
+      "resource_id": "bd20c26ae77b5d0eb95b06b74e8453ac",
       "resource_type": "connector",
-      "seq": 40,
-      "ts": "2026-10-08T07:45:17.475713+00:00"
+      "seq": 41,
+      "ts": "2026-10-08T09:49:19.098168+00:00"
     },
     {
       "action": "governance.connector_created",
@@ -130,9 +247,9 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "change_id": "5ea5be3e-c5b5-49c5-af13-aabdb8217571",
+        "change_id": "b4ebc891-40dc-4f0b-9cf1-d8bd612e9b65",
         "credential_owner_id": "owner",
-        "resource_id": "64410cef4f6d533ea7f70d6a22486ada",
+        "resource_id": "bd20c26ae77b5d0eb95b06b74e8453ac",
         "resource_type": "connector",
         "revision": 1,
         "scope": {
@@ -143,12 +260,12 @@
         },
         "status": "active"
       },
-      "hash": "2c4f494e5355567efef2c0894cb052898080d3432979e5f28227f41f9143778f",
-      "prev_hash": "b0abd76cac6887251f116bdf6756b14c264a5c6c4f0b7b3d531fcd3532033698",
-      "resource_id": "64410cef4f6d533ea7f70d6a22486ada",
+      "hash": "c05b51a1c73cc8827c9b56d341f99bb38bb99e8721dac6447622e33353751681",
+      "prev_hash": "91da861295a922265d55b1951c9e002fa88ba107469173a32f3acddf40f7f0e6",
+      "resource_id": "bd20c26ae77b5d0eb95b06b74e8453ac",
       "resource_type": "connector",
-      "seq": 39,
-      "ts": "2026-10-08T07:45:17.204006+00:00"
+      "seq": 40,
+      "ts": "2026-10-08T09:49:18.820227+00:00"
     },
     {
       "action": "governance.rule_revoked",
@@ -156,60 +273,60 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
-        "change_id": "848740ad-d9b8-4909-bf02-d0e6ed8a71ec",
+        "agent_id": "73aee61635195443827d97984d3dba72",
+        "change_id": "5e8dd948-336c-4708-a139-639428980de0",
         "credential_owner_id": "owner",
         "effect": "allow",
-        "resource_id": "27b88bf6dbe651fdaf865fdd170a57c0",
+        "resource_id": "f5499c7980f9566b9ecbcd68f429558c",
         "resource_type": "permission_rule",
         "revision": 2,
         "revocation_changed": true,
-        "revoked_at": "2026-10-08T07:45:15.975703+00:00",
+        "revoked_at": "2026-10-08T09:49:17.623271+00:00",
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "org_id": "demo-org",
           "owner_id": null,
           "workspace_id": "office"
         },
         "tool_name": "read_file"
       },
-      "hash": "b0abd76cac6887251f116bdf6756b14c264a5c6c4f0b7b3d531fcd3532033698",
-      "prev_hash": "11969f0024392c9ca8bdcd0fea952350b3f8e53323220be5db6ef345aafd2ef2",
-      "resource_id": "27b88bf6dbe651fdaf865fdd170a57c0",
+      "hash": "91da861295a922265d55b1951c9e002fa88ba107469173a32f3acddf40f7f0e6",
+      "prev_hash": "286ef5d07b743b79903f3182c3617e90d5193824305c9770bf0b54a6f0fc8a74",
+      "resource_id": "f5499c7980f9566b9ecbcd68f429558c",
       "resource_type": "permission_rule",
-      "seq": 38,
-      "ts": "2026-10-08T07:45:15.976221+00:00"
+      "seq": 39,
+      "ts": "2026-10-08T09:49:17.623419+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "18a08a58dcf44764bd3eaea3a13c946f",
+      "actor_id": "e0356428448f41228285322ea14dc81e",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "18a08a58dcf44764bd3eaea3a13c946f",
+        "job_id": "e0356428448f41228285322ea14dc81e",
         "kind": "summary",
         "model": "deepseek-v4.1-flash",
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
-        "source_task_run_id": "e12be32a91424a109f5f607d6bb295d0",
+        "source_task_run_id": "2d723bf0af944d519b0f6a6c531d57d6",
         "status": "completed",
         "trigger_global_seq": 44,
         "usage": {
           "complete": true,
-          "input_tokens": 144,
-          "output_tokens": 20
+          "input_tokens": 140,
+          "output_tokens": 23
         }
       },
-      "hash": "11969f0024392c9ca8bdcd0fea952350b3f8e53323220be5db6ef345aafd2ef2",
-      "prev_hash": "276b1d1dd86cec110abbe610805e33aba5e2ca39e86367c6d125c2fb2512cc9d",
-      "resource_id": "18a08a58dcf44764bd3eaea3a13c946f",
+      "hash": "286ef5d07b743b79903f3182c3617e90d5193824305c9770bf0b54a6f0fc8a74",
+      "prev_hash": "178d7ed423176eca7e6a9694c67b54ca2d020749958863d68f221f445d6f80cb",
+      "resource_id": "e0356428448f41228285322ea14dc81e",
       "resource_type": "memory_job",
-      "seq": 37,
-      "ts": "2026-10-08T07:45:15.686909+00:00"
+      "seq": 38,
+      "ts": "2026-10-08T09:49:17.070508+00:00"
     },
     {
       "action": "governance.rule_created",
@@ -217,28 +334,28 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
-        "change_id": "64ce7c8b-5d49-46d5-895d-82fcf29c600e",
+        "agent_id": "73aee61635195443827d97984d3dba72",
+        "change_id": "24f1622c-23ce-4404-827b-24d6b16f1b67",
         "credential_owner_id": "owner",
         "effect": "allow",
-        "resource_id": "27b88bf6dbe651fdaf865fdd170a57c0",
+        "resource_id": "f5499c7980f9566b9ecbcd68f429558c",
         "resource_type": "permission_rule",
         "revision": 1,
         "revoked_at": null,
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "org_id": "demo-org",
           "owner_id": null,
           "workspace_id": "office"
         },
         "tool_name": "read_file"
       },
-      "hash": "276b1d1dd86cec110abbe610805e33aba5e2ca39e86367c6d125c2fb2512cc9d",
-      "prev_hash": "b0470b30011ffd871d6c91f905d5a153cbba3e702c3d2ea8015698a7fbd95bbc",
-      "resource_id": "27b88bf6dbe651fdaf865fdd170a57c0",
+      "hash": "178d7ed423176eca7e6a9694c67b54ca2d020749958863d68f221f445d6f80cb",
+      "prev_hash": "42fcb72062355790d328050716e43db4e357df4270931b59d1df018a1e846f5a",
+      "resource_id": "f5499c7980f9566b9ecbcd68f429558c",
       "resource_type": "permission_rule",
-      "seq": 36,
-      "ts": "2026-10-08T07:45:15.056571+00:00"
+      "seq": 37,
+      "ts": "2026-10-08T09:49:16.730805+00:00"
     },
     {
       "action": "governance.grant_revoked",
@@ -246,17 +363,17 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "capability_id": "37835991d01c55669fb90c58966d7159",
+        "capability_id": "791daa60eb245f8d9a53a5aa6595748f",
         "capability_type": "skill",
-        "change_id": "ff3115c1-ea5b-4078-8a81-aa0773d91e76",
+        "change_id": "6fabcdf3-c084-494c-a3be-0d485d36d211",
         "credential_owner_id": "owner",
-        "grantee_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+        "grantee_id": "73aee61635195443827d97984d3dba72",
         "grantee_type": "agent",
-        "resource_id": "7b4c0895ac5653de92ab7b38dacbbe38",
+        "resource_id": "9728926cd1485a2f8c4c5c73fad0e57a",
         "resource_type": "grant",
         "revision": 2,
         "revocation_changed": true,
-        "revoked_at": "2026-10-08T07:45:14.676932+00:00",
+        "revoked_at": "2026-10-08T09:49:16.390459+00:00",
         "scope": {
           "agent_id": null,
           "org_id": "demo-org",
@@ -264,12 +381,12 @@
           "workspace_id": "office"
         }
       },
-      "hash": "b0470b30011ffd871d6c91f905d5a153cbba3e702c3d2ea8015698a7fbd95bbc",
-      "prev_hash": "9939b5530783fac61960f6d3d75fd87d6118f67b0ed7ddb8e0d4579c0f1998bf",
-      "resource_id": "7b4c0895ac5653de92ab7b38dacbbe38",
+      "hash": "42fcb72062355790d328050716e43db4e357df4270931b59d1df018a1e846f5a",
+      "prev_hash": "82c6cd4a0fcc2462d98cb270ac632b8fc8f1cee7e9daf26c8c30c52072e1a376",
+      "resource_id": "9728926cd1485a2f8c4c5c73fad0e57a",
       "resource_type": "grant",
-      "seq": 35,
-      "ts": "2026-10-08T07:45:14.677093+00:00"
+      "seq": 36,
+      "ts": "2026-10-08T09:49:16.391112+00:00"
     },
     {
       "action": "governance.grant_created",
@@ -277,13 +394,13 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "capability_id": "37835991d01c55669fb90c58966d7159",
+        "capability_id": "791daa60eb245f8d9a53a5aa6595748f",
         "capability_type": "skill",
-        "change_id": "08afc613-6f27-4e63-b41f-ac03f41d9ea9",
+        "change_id": "f594ad84-a3c5-4a2e-85e1-3970864bb9ea",
         "credential_owner_id": "owner",
-        "grantee_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+        "grantee_id": "73aee61635195443827d97984d3dba72",
         "grantee_type": "agent",
-        "resource_id": "7b4c0895ac5653de92ab7b38dacbbe38",
+        "resource_id": "9728926cd1485a2f8c4c5c73fad0e57a",
         "resource_type": "grant",
         "revision": 1,
         "revoked_at": null,
@@ -294,12 +411,12 @@
           "workspace_id": "office"
         }
       },
-      "hash": "9939b5530783fac61960f6d3d75fd87d6118f67b0ed7ddb8e0d4579c0f1998bf",
-      "prev_hash": "75a8d10de24375ff4093d62dfaa488b9a125eada265862e7733ec5653dfa42c3",
-      "resource_id": "7b4c0895ac5653de92ab7b38dacbbe38",
+      "hash": "82c6cd4a0fcc2462d98cb270ac632b8fc8f1cee7e9daf26c8c30c52072e1a376",
+      "prev_hash": "d5c1765b6638a3c9d700050a725f70ed369074a826328780ebf981f5cdd29e26",
+      "resource_id": "9728926cd1485a2f8c4c5c73fad0e57a",
       "resource_type": "grant",
-      "seq": 34,
-      "ts": "2026-10-08T07:45:14.593501+00:00"
+      "seq": 35,
+      "ts": "2026-10-08T09:49:16.297244+00:00"
     },
     {
       "action": "governance.skill_version_published",
@@ -307,10 +424,10 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "change_id": "c53314a8-1ab0-49dd-a063-ff15f24656a7",
+        "change_id": "b1dfc35e-dec7-477e-927d-4de9537fdf8c",
         "credential_owner_id": "owner",
-        "ledger_id": 9,
-        "resource_id": "37835991d01c55669fb90c58966d7159",
+        "ledger_id": 10,
+        "resource_id": "791daa60eb245f8d9a53a5aa6595748f",
         "resource_type": "skill",
         "revision": 3,
         "scope": {
@@ -321,15 +438,15 @@
         },
         "sha256": "4cd81f0f527f0da4b0406b30919404e8d93254a5189ec1480ed10a83b115abef",
         "status": "active",
-        "version_id": "b2cea19d64e15d1d9f4feea2af3e6afc",
+        "version_id": "36f9bb7b299057d2b66a90bb5a095339",
         "version_no": 2
       },
-      "hash": "75a8d10de24375ff4093d62dfaa488b9a125eada265862e7733ec5653dfa42c3",
-      "prev_hash": "7b7497f9c8eb1312b5036038a0a0ad06b2c31daef04627c01482dfadefa99059",
-      "resource_id": "37835991d01c55669fb90c58966d7159",
+      "hash": "d5c1765b6638a3c9d700050a725f70ed369074a826328780ebf981f5cdd29e26",
+      "prev_hash": "18007f6736c926611f3cc43c05b99987280d84a9dbfc3b183d4817b73cfc8d43",
+      "resource_id": "791daa60eb245f8d9a53a5aa6595748f",
       "resource_type": "skill",
-      "seq": 33,
-      "ts": "2026-10-08T07:45:14.105984+00:00"
+      "seq": 34,
+      "ts": "2026-10-08T09:49:15.817192+00:00"
     },
     {
       "action": "skill.patched",
@@ -337,37 +454,37 @@
       "actor_type": "user",
       "detail": {
         "action": "update",
-        "change_id": "c53314a8-1ab0-49dd-a063-ff15f24656a7",
+        "change_id": "b1dfc35e-dec7-477e-927d-4de9537fdf8c",
         "credential_owner_id": "owner",
         "description": "核查资料来源并保留实际证据",
         "entry_hash": "8ef2491144294d908ade302eb9189deba94c1a13c4f17735dfdb73656ec20d1b",
-        "entry_id": "721cbaa664344b63b647bae096d54321",
+        "entry_id": "9412b00ceff04923ba3ff2b7d096d122",
         "files": [],
         "job_id": null,
-        "ledger_id": 9,
-        "name": "真实档案技能-fbc36304",
+        "ledger_id": 10,
+        "name": "真实档案技能-15972e16",
         "revision": 2,
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
         "source": {
           "actor_id": "owner",
           "actor_type": "user",
-          "manual_edit_id": "c53314a8-1ab0-49dd-a063-ff15f24656a7"
+          "manual_edit_id": "b1dfc35e-dec7-477e-927d-4de9537fdf8c"
         },
         "source_task_run_id": null,
-        "store_id": "37835991d01c55669fb90c58966d7159",
+        "store_id": "791daa60eb245f8d9a53a5aa6595748f",
         "store_type": "skill",
         "summary": "# 资料来源核查\n\n核对原始路径、SHA与事件水位，说明实际核查结论。"
       },
-      "hash": "7b7497f9c8eb1312b5036038a0a0ad06b2c31daef04627c01482dfadefa99059",
-      "prev_hash": "79b951bd327d19f74c9925b50ea662bea8619aebc424d869a2490f7b6cad101d",
-      "resource_id": "skill:37835991d01c55669fb90c58966d7159",
+      "hash": "18007f6736c926611f3cc43c05b99987280d84a9dbfc3b183d4817b73cfc8d43",
+      "prev_hash": "5135e9db39084f304f95a515aa787b61246e1afe54fd0cfc087d18a141151965",
+      "resource_id": "skill:791daa60eb245f8d9a53a5aa6595748f",
       "resource_type": "memory_store",
-      "seq": 32,
-      "ts": "2026-10-08T07:45:14.105984+00:00"
+      "seq": 33,
+      "ts": "2026-10-08T09:49:15.817192+00:00"
     },
     {
       "action": "governance.skill_version_published",
@@ -375,10 +492,10 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "change_id": "232b15ab-6ff4-43e0-8b67-d20d9cc90e8f",
+        "change_id": "e69ce85b-93e9-4495-9061-b425cb5c4e7e",
         "credential_owner_id": "owner",
-        "ledger_id": 8,
-        "resource_id": "37835991d01c55669fb90c58966d7159",
+        "ledger_id": 9,
+        "resource_id": "791daa60eb245f8d9a53a5aa6595748f",
         "resource_type": "skill",
         "revision": 2,
         "scope": {
@@ -389,15 +506,15 @@
         },
         "sha256": "fa7b83cc7deba9e2bad1d5344927d955a609fb5a076593e119e64929ca38f1b1",
         "status": "active",
-        "version_id": "6f8e8d8b5561513ca9b4e9251eaf78c9",
+        "version_id": "a5a0a0179d44549cab741b0e79a98aed",
         "version_no": 1
       },
-      "hash": "79b951bd327d19f74c9925b50ea662bea8619aebc424d869a2490f7b6cad101d",
-      "prev_hash": "d69449338056c5999354d023b74c7ca3e6aef79db713e4bffc5f4a0050200aba",
-      "resource_id": "37835991d01c55669fb90c58966d7159",
+      "hash": "5135e9db39084f304f95a515aa787b61246e1afe54fd0cfc087d18a141151965",
+      "prev_hash": "4b8cf4c1fb6157e088882fd557b673983e07f9f6e1f79c53f2be0499b5a91a95",
+      "resource_id": "791daa60eb245f8d9a53a5aa6595748f",
       "resource_type": "skill",
-      "seq": 31,
-      "ts": "2026-10-08T07:45:13.406759+00:00"
+      "seq": 32,
+      "ts": "2026-10-08T09:49:15.008116+00:00"
     },
     {
       "action": "skill.patched",
@@ -405,37 +522,37 @@
       "actor_type": "user",
       "detail": {
         "action": "create",
-        "change_id": "232b15ab-6ff4-43e0-8b67-d20d9cc90e8f",
+        "change_id": "e69ce85b-93e9-4495-9061-b425cb5c4e7e",
         "credential_owner_id": "owner",
         "description": "核查资料来源并保留实际证据",
         "entry_hash": "8ef2491144294d908ade302eb9189deba94c1a13c4f17735dfdb73656ec20d1b",
-        "entry_id": "721cbaa664344b63b647bae096d54321",
+        "entry_id": "9412b00ceff04923ba3ff2b7d096d122",
         "files": [],
         "job_id": null,
-        "ledger_id": 8,
-        "name": "真实档案技能-fbc36304",
+        "ledger_id": 9,
+        "name": "真实档案技能-15972e16",
         "revision": 1,
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
         "source": {
           "actor_id": "owner",
           "actor_type": "user",
-          "manual_edit_id": "232b15ab-6ff4-43e0-8b67-d20d9cc90e8f"
+          "manual_edit_id": "e69ce85b-93e9-4495-9061-b425cb5c4e7e"
         },
         "source_task_run_id": null,
-        "store_id": "37835991d01c55669fb90c58966d7159",
+        "store_id": "791daa60eb245f8d9a53a5aa6595748f",
         "store_type": "skill",
         "summary": "# 资料来源核查\n\n读取原始资料，记录路径、SHA、真实事件及核查结果。"
       },
-      "hash": "d69449338056c5999354d023b74c7ca3e6aef79db713e4bffc5f4a0050200aba",
-      "prev_hash": "8208ea463d5baf0490a28994416c2b1e34b8b4d90ae9d180b22447ade70537e3",
-      "resource_id": "skill:37835991d01c55669fb90c58966d7159",
+      "hash": "4b8cf4c1fb6157e088882fd557b673983e07f9f6e1f79c53f2be0499b5a91a95",
+      "prev_hash": "102798a19f264e391f405b6ff3f59c558f318e9fc7e197cc4330daa702662c97",
+      "resource_id": "skill:791daa60eb245f8d9a53a5aa6595748f",
       "resource_type": "memory_store",
-      "seq": 30,
-      "ts": "2026-10-08T07:45:13.406759+00:00"
+      "seq": 31,
+      "ts": "2026-10-08T09:49:15.008116+00:00"
     },
     {
       "action": "memory.updated",
@@ -443,34 +560,69 @@
       "actor_type": "user",
       "detail": {
         "action": "create",
-        "change_id": "592c83ef-761b-4782-b447-185b43898877",
+        "change_id": "4f6ed096-27c5-49e9-afd4-cf9ed734f550",
+        "credential_owner_id": "owner",
+        "entry_hash": "ae7ca39a14fb9954739233916f0c09f98c76bc22f13928840a4b7caab3a169b8",
+        "entry_id": "6cd687d6bc3a432ebb6ea54a9e49a2b6",
+        "job_id": null,
+        "ledger_id": 8,
+        "revision": 1,
+        "scope": {
+          "agent_id": "xiaowen",
+          "owner_id": "owner",
+          "workspace_id": "office"
+        },
+        "source": {
+          "actor_id": "owner",
+          "actor_type": "user",
+          "manual_edit_id": "4f6ed096-27c5-49e9-afd4-cf9ed734f550"
+        },
+        "source_task_run_id": null,
+        "store_id": "xiaowen",
+        "store_type": "soul",
+        "summary": "工作区办公材料核查基线：核对原始材料与实际事件来源。"
+      },
+      "hash": "102798a19f264e391f405b6ff3f59c558f318e9fc7e197cc4330daa702662c97",
+      "prev_hash": "2c7fd91936917273c92c6b4a51e16dd9ba8635a8e70f5d096c06d964a3984661",
+      "resource_id": "soul:xiaowen",
+      "resource_type": "memory_store",
+      "seq": 30,
+      "ts": "2026-10-08T09:49:14.829781+00:00"
+    },
+    {
+      "action": "memory.updated",
+      "actor_id": "owner",
+      "actor_type": "user",
+      "detail": {
+        "action": "create",
+        "change_id": "b3c32d45-40a2-477b-9e3f-438f8a56715f",
         "credential_owner_id": "owner",
         "entry_hash": "53ab97e2353cf49319f2d47e3401c43722a7a08f7f06a14e711524d12c9a383b",
-        "entry_id": "b020a53bc88c469f987ebc1716b52884",
+        "entry_id": "365c6ed3329e4cf59d99aea29af82466",
         "job_id": null,
         "ledger_id": 7,
         "revision": 2,
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
         "source": {
           "actor_id": "owner",
           "actor_type": "user",
-          "manual_edit_id": "592c83ef-761b-4782-b447-185b43898877"
+          "manual_edit_id": "b3c32d45-40a2-477b-9e3f-438f8a56715f"
         },
         "source_task_run_id": null,
-        "store_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+        "store_id": "73aee61635195443827d97984d3dba72",
         "store_type": "soul",
         "summary": "当前员工核查来源时保留实际事件依据。"
       },
-      "hash": "8208ea463d5baf0490a28994416c2b1e34b8b4d90ae9d180b22447ade70537e3",
-      "prev_hash": "025897e05c5e3922148f49764112adf137219ba8d1fb5af025d0314a781f6a92",
-      "resource_id": "soul:7cbdab61c4e85b569e45d710cdf01ca5",
+      "hash": "2c7fd91936917273c92c6b4a51e16dd9ba8635a8e70f5d096c06d964a3984661",
+      "prev_hash": "ce2a3e9e4a489099a91f7d9901874cf9b16d5f30aef2875a85c741b9462d28aa",
+      "resource_id": "soul:73aee61635195443827d97984d3dba72",
       "resource_type": "memory_store",
       "seq": 29,
-      "ts": "2026-10-08T07:45:12.433544+00:00"
+      "ts": "2026-10-08T09:49:14.636273+00:00"
     },
     {
       "action": "memory.updated",
@@ -478,34 +630,34 @@
       "actor_type": "user",
       "detail": {
         "action": "create",
-        "change_id": "9c92ebe0-13a7-4c23-8dcf-ad1678a6945b",
+        "change_id": "f9928d9e-5ef0-4c29-955c-b499f9bfdfca",
         "credential_owner_id": "owner",
         "entry_hash": "561aa01938663afe28ed502b00a9982bb4cea7d3ab49996e433e3bded6d48b35",
-        "entry_id": "3635e2c2fb114e079b758d9fd111b480",
+        "entry_id": "7a9451f8e8f84c7a94d90ced79564c93",
         "job_id": null,
         "ledger_id": 6,
         "revision": 1,
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
         "source": {
           "actor_id": "owner",
           "actor_type": "user",
-          "manual_edit_id": "9c92ebe0-13a7-4c23-8dcf-ad1678a6945b"
+          "manual_edit_id": "f9928d9e-5ef0-4c29-955c-b499f9bfdfca"
         },
         "source_task_run_id": null,
         "store_id": "office",
         "store_type": "workspace",
         "summary": "真实员工档案材料保存在当前工作区。"
       },
-      "hash": "025897e05c5e3922148f49764112adf137219ba8d1fb5af025d0314a781f6a92",
-      "prev_hash": "b8196eadac017d01e282899eb4c0b23d03ef245aae3c8e13f35148887f6d9308",
+      "hash": "ce2a3e9e4a489099a91f7d9901874cf9b16d5f30aef2875a85c741b9462d28aa",
+      "prev_hash": "e7946d6144bb6aece4465acf13c3f5439f7fec87c5b205a045086a6a90a24991",
       "resource_id": "workspace:office",
       "resource_type": "memory_store",
       "seq": 28,
-      "ts": "2026-10-08T07:45:12.335359+00:00"
+      "ts": "2026-10-08T09:49:14.510642+00:00"
     },
     {
       "action": "memory.updated",
@@ -513,51 +665,51 @@
       "actor_type": "user",
       "detail": {
         "action": "create",
-        "change_id": "72995f1a-ba03-4a56-93f2-a4f5c31b1c8b",
+        "change_id": "b7c0761b-3dac-4336-9f14-06805d193b62",
         "credential_owner_id": "owner",
         "entry_hash": "ad3027aaa8de016820bc823a24800639505339fe094b623f164fb421942189e7",
-        "entry_id": "0b5a68a408114c4cb457166697e31cc0",
+        "entry_id": "10b697f7aa4a4736b6dfca11b07c8fa6",
         "job_id": null,
         "ledger_id": 5,
         "revision": 1,
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
         "source": {
           "actor_id": "owner",
           "actor_type": "user",
-          "manual_edit_id": "72995f1a-ba03-4a56-93f2-a4f5c31b1c8b"
+          "manual_edit_id": "b7c0761b-3dac-4336-9f14-06805d193b62"
         },
         "source_task_run_id": null,
         "store_id": "owner",
         "store_type": "user",
         "summary": "真实员工档案核验偏好：依据原始材料说明来源。"
       },
-      "hash": "b8196eadac017d01e282899eb4c0b23d03ef245aae3c8e13f35148887f6d9308",
-      "prev_hash": "7a00dab93eff8d546dcc0c72de3ff9a5dd56e1016e163e8b1f031345dae6fc96",
+      "hash": "e7946d6144bb6aece4465acf13c3f5439f7fec87c5b205a045086a6a90a24991",
+      "prev_hash": "e5e98fbbdfd5cba03d5824340e922538fbacb9983061db83a711242798531ef2",
       "resource_id": "user:owner",
       "resource_type": "memory_store",
       "seq": 27,
-      "ts": "2026-10-08T07:45:12.239620+00:00"
+      "ts": "2026-10-08T09:49:14.400743+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "18a08a58dcf44764bd3eaea3a13c946f",
+      "actor_id": "e0356428448f41228285322ea14dc81e",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "18a08a58dcf44764bd3eaea3a13c946f",
+        "job_id": "e0356428448f41228285322ea14dc81e",
         "kind": "summary",
         "model": "deepseek-v4.1-flash",
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
-        "source_task_run_id": "e12be32a91424a109f5f607d6bb295d0",
+        "source_task_run_id": "2d723bf0af944d519b0f6a6c531d57d6",
         "status": "running",
         "trigger_global_seq": 44,
         "usage": {
@@ -565,29 +717,29 @@
           "output_tokens": 0
         }
       },
-      "hash": "7a00dab93eff8d546dcc0c72de3ff9a5dd56e1016e163e8b1f031345dae6fc96",
-      "prev_hash": "7182542cb3c1519fb7d5c8a38cab2b1f1e6102104fa13e1b302ea5a947139bc8",
-      "resource_id": "18a08a58dcf44764bd3eaea3a13c946f",
+      "hash": "e5e98fbbdfd5cba03d5824340e922538fbacb9983061db83a711242798531ef2",
+      "prev_hash": "f1c9f0c72cc37f1fe265850569ecf363b5d08e62060b29d5ca83a1c90e65fefd",
+      "resource_id": "e0356428448f41228285322ea14dc81e",
       "resource_type": "memory_job",
       "seq": 26,
-      "ts": "2026-10-08T07:45:12.035592+00:00"
+      "ts": "2026-10-08T09:49:14.219543+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "18a08a58dcf44764bd3eaea3a13c946f",
+      "actor_id": "e0356428448f41228285322ea14dc81e",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "18a08a58dcf44764bd3eaea3a13c946f",
+        "job_id": "e0356428448f41228285322ea14dc81e",
         "kind": "summary",
         "model": "deepseek-v4.1-flash",
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
-        "source_task_run_id": "e12be32a91424a109f5f607d6bb295d0",
+        "source_task_run_id": "2d723bf0af944d519b0f6a6c531d57d6",
         "status": "queued",
         "trigger_global_seq": 44,
         "usage": {
@@ -595,29 +747,29 @@
           "output_tokens": 0
         }
       },
-      "hash": "7182542cb3c1519fb7d5c8a38cab2b1f1e6102104fa13e1b302ea5a947139bc8",
-      "prev_hash": "e77a9a9374c666ef7a0cdbef354d1f08a04ae391f105e129d6d46bbfab4148aa",
-      "resource_id": "18a08a58dcf44764bd3eaea3a13c946f",
+      "hash": "f1c9f0c72cc37f1fe265850569ecf363b5d08e62060b29d5ca83a1c90e65fefd",
+      "prev_hash": "adf2794a2ee82a5c949fe550303777e29dff942337fa5f3145ff8d31c7262067",
+      "resource_id": "e0356428448f41228285322ea14dc81e",
       "resource_type": "memory_job",
       "seq": 25,
-      "ts": "2026-10-08T07:45:12.031719+00:00"
+      "ts": "2026-10-08T09:49:14.216903+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "34da6f8a8a0e426daeed8b79956b8665",
+      "actor_id": "f1c74699bab74609b337b6af92eadc26",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": "前台指令到达，辅助作业已取消",
-        "job_id": "34da6f8a8a0e426daeed8b79956b8665",
+        "job_id": "f1c74699bab74609b337b6af92eadc26",
         "kind": "summary",
         "model": "deepseek-v4.1-flash",
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
-        "source_task_run_id": "b19e47a4c8324555b7922a5db0d6a971",
+        "source_task_run_id": "f193c99ae6074c16b99205db3bf44046",
         "status": "cancelled",
         "trigger_global_seq": 30,
         "usage": {
@@ -626,12 +778,12 @@
           "output_tokens": 0
         }
       },
-      "hash": "e77a9a9374c666ef7a0cdbef354d1f08a04ae391f105e129d6d46bbfab4148aa",
-      "prev_hash": "5914eccef42388851796e42d876985ccd214acb7b9a5ae9b96078af121b192d2",
-      "resource_id": "34da6f8a8a0e426daeed8b79956b8665",
+      "hash": "adf2794a2ee82a5c949fe550303777e29dff942337fa5f3145ff8d31c7262067",
+      "prev_hash": "a44613be06a2cfcc2b41357db9f0e6042a53af06fa9bee7e47a0fbb82c220457",
+      "resource_id": "f1c74699bab74609b337b6af92eadc26",
       "resource_type": "memory_job",
       "seq": 24,
-      "ts": "2026-10-08T07:45:07.038620+00:00"
+      "ts": "2026-10-08T09:49:10.381948+00:00"
     },
     {
       "action": "governance.agent_changed",
@@ -639,42 +791,42 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "change_id": "6e2af89c-d195-4c99-b2a7-d3944670396e",
+        "change_id": "cb9ae5d1-e67c-478e-b084-56318ac288c5",
         "credential_owner_id": "owner",
-        "resource_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+        "resource_id": "73aee61635195443827d97984d3dba72",
         "resource_type": "agent",
         "revision": 2,
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "org_id": "demo-org",
           "owner_id": null,
           "workspace_id": "office"
         },
         "status": "active"
       },
-      "hash": "5914eccef42388851796e42d876985ccd214acb7b9a5ae9b96078af121b192d2",
-      "prev_hash": "fc932545e33878b8691155275eef2eb57c7658b5012e7830293fc3ee97443f5a",
-      "resource_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+      "hash": "a44613be06a2cfcc2b41357db9f0e6042a53af06fa9bee7e47a0fbb82c220457",
+      "prev_hash": "4a991ad124725096a7d3cc1c6b337a2ae984adac0c6502105d4920dedebc2f17",
+      "resource_id": "73aee61635195443827d97984d3dba72",
       "resource_type": "agent",
       "seq": 23,
-      "ts": "2026-10-08T07:45:07.033539+00:00"
+      "ts": "2026-10-08T09:49:10.376184+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "34da6f8a8a0e426daeed8b79956b8665",
+      "actor_id": "f1c74699bab74609b337b6af92eadc26",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "34da6f8a8a0e426daeed8b79956b8665",
+        "job_id": "f1c74699bab74609b337b6af92eadc26",
         "kind": "summary",
         "model": "deepseek-v4.1-flash",
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
-        "source_task_run_id": "b19e47a4c8324555b7922a5db0d6a971",
+        "source_task_run_id": "f193c99ae6074c16b99205db3bf44046",
         "status": "running",
         "trigger_global_seq": 30,
         "usage": {
@@ -682,29 +834,29 @@
           "output_tokens": 0
         }
       },
-      "hash": "fc932545e33878b8691155275eef2eb57c7658b5012e7830293fc3ee97443f5a",
-      "prev_hash": "d4bae5631e6784e9948736f838ecbe3589e41ee1ff0700cfe9daa5e826f0fb1d",
-      "resource_id": "34da6f8a8a0e426daeed8b79956b8665",
+      "hash": "4a991ad124725096a7d3cc1c6b337a2ae984adac0c6502105d4920dedebc2f17",
+      "prev_hash": "57b40b9ee5ddfbdb912b9297093eebbf4cead48ee4d9ce5d858d6aac7612ac9f",
+      "resource_id": "f1c74699bab74609b337b6af92eadc26",
       "resource_type": "memory_job",
       "seq": 22,
-      "ts": "2026-10-08T07:45:06.029853+00:00"
+      "ts": "2026-10-08T09:49:09.461325+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "34da6f8a8a0e426daeed8b79956b8665",
+      "actor_id": "f1c74699bab74609b337b6af92eadc26",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "34da6f8a8a0e426daeed8b79956b8665",
+        "job_id": "f1c74699bab74609b337b6af92eadc26",
         "kind": "summary",
         "model": "deepseek-v4.1-flash",
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
-        "source_task_run_id": "b19e47a4c8324555b7922a5db0d6a971",
+        "source_task_run_id": "f193c99ae6074c16b99205db3bf44046",
         "status": "queued",
         "trigger_global_seq": 30,
         "usage": {
@@ -712,12 +864,12 @@
           "output_tokens": 0
         }
       },
-      "hash": "d4bae5631e6784e9948736f838ecbe3589e41ee1ff0700cfe9daa5e826f0fb1d",
-      "prev_hash": "871317a6ececa540ebbb55674a315caad61f9e3bad3e574918891f00164984b1",
-      "resource_id": "34da6f8a8a0e426daeed8b79956b8665",
+      "hash": "57b40b9ee5ddfbdb912b9297093eebbf4cead48ee4d9ce5d858d6aac7612ac9f",
+      "prev_hash": "283ee7a146d6663b3cd3cb5da10b6ed9959357420a9b36b7a5c9be4c5742b023",
+      "resource_id": "f1c74699bab74609b337b6af92eadc26",
       "resource_type": "memory_job",
       "seq": 21,
-      "ts": "2026-10-08T07:45:06.026434+00:00"
+      "ts": "2026-10-08T09:49:09.456964+00:00"
     },
     {
       "action": "memory.updated",
@@ -725,34 +877,34 @@
       "actor_type": "user",
       "detail": {
         "action": "create",
-        "change_id": "2727c4d3-9f95-4c13-b2d4-29455bcaa6bb",
+        "change_id": "1941f2d3-0664-4d62-977f-7b974a6e4931",
         "credential_owner_id": "owner",
         "entry_hash": "1a9973aec94bb45137f47f8fb2c914cab1c32a65047277804e925566cd18b40b",
-        "entry_id": "89802c6990f84dc5807faa15d0fbe5a2",
+        "entry_id": "1c0ec4c41cd54352affc6dc4acc3aab7",
         "job_id": null,
         "ledger_id": 4,
         "revision": 1,
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "owner_id": "owner",
           "workspace_id": "office"
         },
         "source": {
           "actor_id": "owner",
           "actor_type": "user",
-          "manual_edit_id": "2727c4d3-9f95-4c13-b2d4-29455bcaa6bb"
+          "manual_edit_id": "1941f2d3-0664-4d62-977f-7b974a6e4931"
         },
         "source_task_run_id": null,
-        "store_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+        "store_id": "73aee61635195443827d97984d3dba72",
         "store_type": "soul",
         "summary": "我是一名办公助理，主要负责日常办公事务协调、文档整理与信息流转支持，并依托办公系统接口完成各项基础操作。我清楚自己的职责边界在于辅助与执行，不擅自替他人作出决策或承诺。我的任务理解是，所有交办事项都应先确认目标、范围、时限和交付标准，再判断需要哪些信息与步骤。我会把每项工作拆解为可核验的小环节，避免遗漏关键节点。面对模糊指令时，我会先整理疑问并寻求澄清，而不是凭猜测推进。\n\n我理解办公助理的核心价"
       },
-      "hash": "871317a6ececa540ebbb55674a315caad61f9e3bad3e574918891f00164984b1",
-      "prev_hash": "86527a63dc0840cbdc32aea0610b32061d4d38e473901c0a2d1a1fed7d0ae5db",
-      "resource_id": "soul:7cbdab61c4e85b569e45d710cdf01ca5",
+      "hash": "283ee7a146d6663b3cd3cb5da10b6ed9959357420a9b36b7a5c9be4c5742b023",
+      "prev_hash": "22cc646443be6acf45ccdde17eac3f231ed9e02187023dffe8584becf645e3eb",
+      "resource_id": "soul:73aee61635195443827d97984d3dba72",
       "resource_type": "memory_store",
       "seq": 20,
-      "ts": "2026-10-08T07:44:42.730047+00:00"
+      "ts": "2026-10-08T09:49:02.102732+00:00"
     },
     {
       "action": "governance.agent_created",
@@ -760,34 +912,34 @@
       "actor_type": "user",
       "detail": {
         "actor_id": "owner",
-        "change_id": "50de0ccd-69be-4602-9572-4097078b6e04",
+        "change_id": "4c3c2ac5-901b-4e31-a601-8db737c04335",
         "credential_owner_id": "owner",
-        "resource_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+        "resource_id": "73aee61635195443827d97984d3dba72",
         "resource_type": "agent",
         "revision": 1,
         "scope": {
-          "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+          "agent_id": "73aee61635195443827d97984d3dba72",
           "org_id": "demo-org",
           "owner_id": null,
           "workspace_id": "office"
         },
         "status": "active"
       },
-      "hash": "86527a63dc0840cbdc32aea0610b32061d4d38e473901c0a2d1a1fed7d0ae5db",
-      "prev_hash": "bf8f45c93dee4cc44c02e246cefd2b022888ea5dfd44a73caca47a50a0aa24de",
-      "resource_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+      "hash": "22cc646443be6acf45ccdde17eac3f231ed9e02187023dffe8584becf645e3eb",
+      "prev_hash": "d311d8b35f54e54a5b121c3ef6280dc527eb34f8ca1db192807c29bbcb0786ce",
+      "resource_id": "73aee61635195443827d97984d3dba72",
       "resource_type": "agent",
       "seq": 19,
-      "ts": "2026-10-08T07:44:42.655725+00:00"
+      "ts": "2026-10-08T09:49:02.011564+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+      "actor_id": "6f3ee73a5008493fa66b91bc8a017823",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+        "job_id": "6f3ee73a5008493fa66b91bc8a017823",
         "kind": "curate",
         "model": null,
         "scope": {
@@ -803,32 +955,32 @@
           "output_tokens": 0
         }
       },
-      "hash": "bf8f45c93dee4cc44c02e246cefd2b022888ea5dfd44a73caca47a50a0aa24de",
-      "prev_hash": "56de5a6bab8a69839ad16840965eba29779ffbc307fdf378bb157e7a27913415",
-      "resource_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+      "hash": "d311d8b35f54e54a5b121c3ef6280dc527eb34f8ca1db192807c29bbcb0786ce",
+      "prev_hash": "3723ab1676453efc59b92e41661f2997e52ac109f48b4dfabe26ae7bfcd7a4b4",
+      "resource_id": "6f3ee73a5008493fa66b91bc8a017823",
       "resource_type": "memory_job",
       "seq": 18,
-      "ts": "2026-10-08T07:44:16.468673+00:00"
+      "ts": "2026-10-08T09:48:59.711338+00:00"
     },
     {
       "action": "memory.curated",
-      "actor_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+      "actor_id": "6f3ee73a5008493fa66b91bc8a017823",
       "actor_type": "curator",
       "detail": {
-        "job_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
-        "last_curate_at": "2026-10-08T07:44:16.468142+00:00",
+        "job_id": "6f3ee73a5008493fa66b91bc8a017823",
+        "last_curate_at": "2026-10-08T09:48:59.711024+00:00",
         "report": {
           "archived": [],
           "changes": [],
           "checked": 2,
           "exempt": [
             {
-              "entry_id": "56a88d28903a4cb3a53b0203dd4e0233",
+              "entry_id": "4a0de99b602e4eb8a722e86f61e6e94e",
               "reason": "active_skill_reference",
               "references": [
                 {
                   "active": 1,
-                  "created_at": "2026-10-08T07:44:02.873845+00:00",
+                  "created_at": "2026-10-08T09:48:59.687938+00:00",
                   "resource_id": "xiaowen",
                   "resource_type": "agent",
                   "skill_id": "7fb6db7a69e75931b85594e05ed43d2b"
@@ -838,12 +990,12 @@
               "store_type": "skill"
             },
             {
-              "entry_id": "1f285a83308b4d67871fbe93bb5e2047",
+              "entry_id": "7f4c8efc40fe48b3b0ac55d94f61fd6f",
               "reason": "active_skill_reference",
               "references": [
                 {
                   "active": 1,
-                  "created_at": "2026-10-08T07:44:02.833769+00:00",
+                  "created_at": "2026-10-08T09:48:59.682557+00:00",
                   "resource_id": "xiaowen",
                   "resource_type": "agent",
                   "skill_id": "c7b7146c6ea65788b6d4161a4982f34b"
@@ -861,21 +1013,21 @@
           "workspace_id": "office"
         }
       },
-      "hash": "56de5a6bab8a69839ad16840965eba29779ffbc307fdf378bb157e7a27913415",
-      "prev_hash": "bfb8973467c4cfc1e6077037a5867031aada3fb98dc5d32532dad2d3b46ada19",
-      "resource_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+      "hash": "3723ab1676453efc59b92e41661f2997e52ac109f48b4dfabe26ae7bfcd7a4b4",
+      "prev_hash": "761439b22be7efc91f0bd4cf770dec75f8717a77110cf398962706a47c32505e",
+      "resource_id": "6f3ee73a5008493fa66b91bc8a017823",
       "resource_type": "memory_job",
       "seq": 17,
-      "ts": "2026-10-08T07:44:16.468303+00:00"
+      "ts": "2026-10-08T09:48:59.711127+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+      "actor_id": "6f3ee73a5008493fa66b91bc8a017823",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+        "job_id": "6f3ee73a5008493fa66b91bc8a017823",
         "kind": "curate",
         "model": null,
         "scope": {
@@ -891,21 +1043,21 @@
           "output_tokens": 0
         }
       },
-      "hash": "bfb8973467c4cfc1e6077037a5867031aada3fb98dc5d32532dad2d3b46ada19",
-      "prev_hash": "086ff38cb65daf79926bc3cf5c9cb15c41f415e8b4ca60033924d01cf9a4d131",
-      "resource_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+      "hash": "761439b22be7efc91f0bd4cf770dec75f8717a77110cf398962706a47c32505e",
+      "prev_hash": "1790f41e1bdb75914a178ef54abb8aa15fb27c057c75a8d78596ede15b8f25d2",
+      "resource_id": "6f3ee73a5008493fa66b91bc8a017823",
       "resource_type": "memory_job",
       "seq": 16,
-      "ts": "2026-10-08T07:44:16.460926+00:00"
+      "ts": "2026-10-08T09:48:59.707418+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "48d0fb4399644d19bec50c9f4e9c454b",
+      "actor_id": "bd5ec0a4248740f5bc494d057da979ad",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "48d0fb4399644d19bec50c9f4e9c454b",
+        "job_id": "bd5ec0a4248740f5bc494d057da979ad",
         "kind": "curate",
         "model": null,
         "scope": {
@@ -921,32 +1073,32 @@
           "output_tokens": 0
         }
       },
-      "hash": "086ff38cb65daf79926bc3cf5c9cb15c41f415e8b4ca60033924d01cf9a4d131",
-      "prev_hash": "2fa24120f5ac8922fbc14b78eedb53745bb998733d74ac248579a7fa7ed36d16",
-      "resource_id": "48d0fb4399644d19bec50c9f4e9c454b",
+      "hash": "1790f41e1bdb75914a178ef54abb8aa15fb27c057c75a8d78596ede15b8f25d2",
+      "prev_hash": "4b2746302e2648822514eb778b952dabbe704cc6fb952a6b9783994591823bcc",
+      "resource_id": "bd5ec0a4248740f5bc494d057da979ad",
       "resource_type": "memory_job",
       "seq": 15,
-      "ts": "2026-10-08T07:44:16.458041+00:00"
+      "ts": "2026-10-08T09:48:59.706278+00:00"
     },
     {
       "action": "memory.curated",
-      "actor_id": "48d0fb4399644d19bec50c9f4e9c454b",
+      "actor_id": "bd5ec0a4248740f5bc494d057da979ad",
       "actor_type": "curator",
       "detail": {
-        "job_id": "48d0fb4399644d19bec50c9f4e9c454b",
-        "last_curate_at": "2026-10-08T07:44:16.457489+00:00",
+        "job_id": "bd5ec0a4248740f5bc494d057da979ad",
+        "last_curate_at": "2026-10-08T09:48:59.706002+00:00",
         "report": {
           "archived": [],
           "changes": [],
           "checked": 1,
           "exempt": [
             {
-              "entry_id": "ab3d384818e64ecfa263a6ba331698a1",
+              "entry_id": "5f9b87bcac11415dbbe6b68a794317fe",
               "reason": "active_skill_reference",
               "references": [
                 {
                   "active": 1,
-                  "created_at": "2026-10-08T07:44:04.069236+00:00",
+                  "created_at": "2026-10-08T09:48:59.693392+00:00",
                   "resource_id": "xiaogang",
                   "resource_type": "agent",
                   "skill_id": "d902cc4eb75d5b9790c0278523e87aa0"
@@ -964,21 +1116,21 @@
           "workspace_id": "analytics"
         }
       },
-      "hash": "2fa24120f5ac8922fbc14b78eedb53745bb998733d74ac248579a7fa7ed36d16",
-      "prev_hash": "892b948c43b8952883e859e9b75680a4ebfa2fa4906278652a5507f8bb22d1ae",
-      "resource_id": "48d0fb4399644d19bec50c9f4e9c454b",
+      "hash": "4b2746302e2648822514eb778b952dabbe704cc6fb952a6b9783994591823bcc",
+      "prev_hash": "2b3b70ce1de485f62ac88837a1968b81cc159bfab4ba1e848f0d47db347174b8",
+      "resource_id": "bd5ec0a4248740f5bc494d057da979ad",
       "resource_type": "memory_job",
       "seq": 14,
-      "ts": "2026-10-08T07:44:16.457614+00:00"
+      "ts": "2026-10-08T09:48:59.706087+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "48d0fb4399644d19bec50c9f4e9c454b",
+      "actor_id": "bd5ec0a4248740f5bc494d057da979ad",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "48d0fb4399644d19bec50c9f4e9c454b",
+        "job_id": "bd5ec0a4248740f5bc494d057da979ad",
         "kind": "curate",
         "model": null,
         "scope": {
@@ -994,21 +1146,21 @@
           "output_tokens": 0
         }
       },
-      "hash": "892b948c43b8952883e859e9b75680a4ebfa2fa4906278652a5507f8bb22d1ae",
-      "prev_hash": "8d16ef042d5b55afaa9589c1d4e48dff5e131bd96672c42c91ba02dd05cb3eca",
-      "resource_id": "48d0fb4399644d19bec50c9f4e9c454b",
+      "hash": "2b3b70ce1de485f62ac88837a1968b81cc159bfab4ba1e848f0d47db347174b8",
+      "prev_hash": "52ce8a57093f4e6adf9cda1f3658c7463e85737208f9552121f3313a71e07395",
+      "resource_id": "bd5ec0a4248740f5bc494d057da979ad",
       "resource_type": "memory_job",
       "seq": 13,
-      "ts": "2026-10-08T07:44:16.448619+00:00"
+      "ts": "2026-10-08T09:48:59.703224+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+      "actor_id": "6f3ee73a5008493fa66b91bc8a017823",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+        "job_id": "6f3ee73a5008493fa66b91bc8a017823",
         "kind": "curate",
         "model": null,
         "scope": {
@@ -1024,21 +1176,21 @@
           "output_tokens": 0
         }
       },
-      "hash": "8d16ef042d5b55afaa9589c1d4e48dff5e131bd96672c42c91ba02dd05cb3eca",
-      "prev_hash": "66f559d4e58010b17ac27d33a12d84085236076afa007b7c0704021048a9a8ea",
-      "resource_id": "af9fbec8e7934b809bf3ca3723e7c6b3",
+      "hash": "52ce8a57093f4e6adf9cda1f3658c7463e85737208f9552121f3313a71e07395",
+      "prev_hash": "31b0fb2a6e866d643667662a1bf053a673fd1fe1ac8317d5edfd951eb8979637",
+      "resource_id": "6f3ee73a5008493fa66b91bc8a017823",
       "resource_type": "memory_job",
       "seq": 12,
-      "ts": "2026-10-08T07:44:16.443313+00:00"
+      "ts": "2026-10-08T09:48:59.701897+00:00"
     },
     {
       "action": "memory.job_status",
-      "actor_id": "48d0fb4399644d19bec50c9f4e9c454b",
+      "actor_id": "bd5ec0a4248740f5bc494d057da979ad",
       "actor_type": "system",
       "detail": {
         "config_version": "1",
         "error": null,
-        "job_id": "48d0fb4399644d19bec50c9f4e9c454b",
+        "job_id": "bd5ec0a4248740f5bc494d057da979ad",
         "kind": "curate",
         "model": null,
         "scope": {
@@ -1054,12 +1206,12 @@
           "output_tokens": 0
         }
       },
-      "hash": "66f559d4e58010b17ac27d33a12d84085236076afa007b7c0704021048a9a8ea",
-      "prev_hash": "06c674a6bd7867df0dbf186a36c5c6d8ef69d6feae7206d93b7e5ab63061417c",
-      "resource_id": "48d0fb4399644d19bec50c9f4e9c454b",
+      "hash": "31b0fb2a6e866d643667662a1bf053a673fd1fe1ac8317d5edfd951eb8979637",
+      "prev_hash": "950e7e89188065e9ace45eec3ab074178a3f32fc1b6b745df88a7f7f2cc33123",
+      "resource_id": "bd5ec0a4248740f5bc494d057da979ad",
       "resource_type": "memory_job",
       "seq": 11,
-      "ts": "2026-10-08T07:44:16.440697+00:00"
+      "ts": "2026-10-08T09:48:59.701007+00:00"
     },
     {
       "action": "governance.skill_history_registered",
@@ -1080,12 +1232,12 @@
         },
         "status": "active"
       },
-      "hash": "06c674a6bd7867df0dbf186a36c5c6d8ef69d6feae7206d93b7e5ab63061417c",
-      "prev_hash": "0bb50fc307673c5b69ee16f2f8ed18e99bfefcd30ffb316a0ca0fe18d360b56c",
+      "hash": "950e7e89188065e9ace45eec3ab074178a3f32fc1b6b745df88a7f7f2cc33123",
+      "prev_hash": "8f4783b3472b98cc76262b5c2c52c371f390e520b1ed97eb5afa50aafec9222d",
       "resource_id": "skill-history",
       "resource_type": "identity",
       "seq": 10,
-      "ts": "2026-10-08T07:44:04.073231+00:00"
+      "ts": "2026-10-08T09:48:59.696571+00:00"
     },
     {
       "action": "governance.task_identities_registered",
@@ -1106,12 +1258,12 @@
         },
         "status": "active"
       },
-      "hash": "0bb50fc307673c5b69ee16f2f8ed18e99bfefcd30ffb316a0ca0fe18d360b56c",
-      "prev_hash": "25aa8ebb20943576ef65cb46a601c0540de6fa53a4ca11eafd693e535d9e68f4",
+      "hash": "8f4783b3472b98cc76262b5c2c52c371f390e520b1ed97eb5afa50aafec9222d",
+      "prev_hash": "1569380012daaa5ddfae1236ef5fc1a0cbf7070b996f03281e1c3beb14138048",
       "resource_id": "legacy-task-identities",
       "resource_type": "identity",
       "seq": 9,
-      "ts": "2026-10-08T07:44:04.072081+00:00"
+      "ts": "2026-10-08T09:48:59.695622+00:00"
     },
     {
       "action": "governance.seed_completed",
@@ -1125,12 +1277,12 @@
           "workspace_id": null
         }
       },
-      "hash": "25aa8ebb20943576ef65cb46a601c0540de6fa53a4ca11eafd693e535d9e68f4",
-      "prev_hash": "2c08e70679df6440f64b9bef8cfc366b904d94fd8b0834debc4c14e2165b9ec5",
+      "hash": "1569380012daaa5ddfae1236ef5fc1a0cbf7070b996f03281e1c3beb14138048",
+      "prev_hash": "5b8b5afc4ed73c924a8982d16e0b9d1ba655573c2ef7ab7986fa3aa3e43d417d",
       "resource_id": "demo-org",
       "resource_type": "organization",
       "seq": 8,
-      "ts": "2026-10-08T07:44:04.070165+00:00"
+      "ts": "2026-10-08T09:48:59.694114+00:00"
     },
     {
       "action": "governance.skill_seeded",
@@ -1153,12 +1305,12 @@
         },
         "status": "active"
       },
-      "hash": "2c08e70679df6440f64b9bef8cfc366b904d94fd8b0834debc4c14e2165b9ec5",
-      "prev_hash": "73f4a3d884b7ad557ea9512292544e0b1da1bb7ccb08802ce4dc8c6a3f028701",
+      "hash": "5b8b5afc4ed73c924a8982d16e0b9d1ba655573c2ef7ab7986fa3aa3e43d417d",
+      "prev_hash": "aa8c4591b6949642705f1222458e2fd27e731b939c985dd9c893c8373380027d",
       "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
       "resource_type": "skill",
       "seq": 7,
-      "ts": "2026-10-08T07:44:04.069432+00:00"
+      "ts": "2026-10-08T09:48:59.693517+00:00"
     },
     {
       "action": "skill.patched",
@@ -1170,7 +1322,7 @@
         "credential_owner_id": "owner",
         "description": "通过已授权数据库查询分析数据",
         "entry_hash": "c9f11508907b8b1fed32ce3c99d7b1d75edd80292346a310176e75aed50b1df2",
-        "entry_id": "ab3d384818e64ecfa263a6ba331698a1",
+        "entry_id": "5f9b87bcac11415dbbe6b68a794317fe",
         "files": [],
         "job_id": null,
         "ledger_id": 3,
@@ -1191,12 +1343,12 @@
         "store_type": "skill",
         "summary": "# SQL查询\n确认数据库范围与查询目标，使用参数化SQL读取真实数据并核验结果。"
       },
-      "hash": "73f4a3d884b7ad557ea9512292544e0b1da1bb7ccb08802ce4dc8c6a3f028701",
-      "prev_hash": "9f4f9e914a7aa9612cf1f26e14ab7d33b48d493a807dba9a1c2eccaf42a96c53",
+      "hash": "aa8c4591b6949642705f1222458e2fd27e731b939c985dd9c893c8373380027d",
+      "prev_hash": "efa0d43a1da91a2508c711b23097a51dd3c1fa4f3622854ddaf3eb4ac4f9b04d",
       "resource_id": "skill:d902cc4eb75d5b9790c0278523e87aa0",
       "resource_type": "memory_store",
       "seq": 6,
-      "ts": "2026-10-08T07:44:02.876535+00:00"
+      "ts": "2026-10-08T09:48:59.689705+00:00"
     },
     {
       "action": "governance.skill_seeded",
@@ -1219,12 +1371,12 @@
         },
         "status": "active"
       },
-      "hash": "9f4f9e914a7aa9612cf1f26e14ab7d33b48d493a807dba9a1c2eccaf42a96c53",
-      "prev_hash": "c85a193f612db65257430a59d33f3683ecec412089198ca181a9541a44f4a26b",
+      "hash": "efa0d43a1da91a2508c711b23097a51dd3c1fa4f3622854ddaf3eb4ac4f9b04d",
+      "prev_hash": "4381130c51d82d8f87dcbc81cca585c6671388bee8d5701f27dc6da1a8523489",
       "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
       "resource_type": "skill",
       "seq": 5,
-      "ts": "2026-10-08T07:44:02.874107+00:00"
+      "ts": "2026-10-08T09:48:59.688072+00:00"
     },
     {
       "action": "skill.patched",
@@ -1236,7 +1388,7 @@
         "credential_owner_id": "owner",
         "description": "核查来源并组织文档内容",
         "entry_hash": "b432f048a72d0cda8b600746e31882afaba0a3b0eb165a80b847f874e6a5b9f0",
-        "entry_id": "56a88d28903a4cb3a53b0203dd4e0233",
+        "entry_id": "4a0de99b602e4eb8a722e86f61e6e94e",
         "files": [],
         "job_id": null,
         "ledger_id": 2,
@@ -1257,12 +1409,12 @@
         "store_type": "skill",
         "summary": "# 文档模板\n核对材料来源，按标题、正文和依据组织内容，保存后检查完整正文。"
       },
-      "hash": "c85a193f612db65257430a59d33f3683ecec412089198ca181a9541a44f4a26b",
-      "prev_hash": "f8bc29973a94f619e54b1f9e6c8e30e9a6b968583b8a171ab6bd3282e9f32fe3",
+      "hash": "4381130c51d82d8f87dcbc81cca585c6671388bee8d5701f27dc6da1a8523489",
+      "prev_hash": "093dd5f19f924d41d097d450bd438eddf9482704f5a4f760723b172b28bc91ee",
       "resource_id": "skill:7fb6db7a69e75931b85594e05ed43d2b",
       "resource_type": "memory_store",
       "seq": 4,
-      "ts": "2026-10-08T07:44:02.839340+00:00"
+      "ts": "2026-10-08T09:48:59.684251+00:00"
     },
     {
       "action": "governance.skill_seeded",
@@ -1285,12 +1437,12 @@
         },
         "status": "active"
       },
-      "hash": "f8bc29973a94f619e54b1f9e6c8e30e9a6b968583b8a171ab6bd3282e9f32fe3",
-      "prev_hash": "02854b6111c59b63c8a7f103f2bff14b5dda194e8622ea18f7a7222ff7b144fb",
+      "hash": "093dd5f19f924d41d097d450bd438eddf9482704f5a4f760723b172b28bc91ee",
+      "prev_hash": "82977e7b098b7958404dac59bc6b5af29918e86048e2a5d2ad3629fd3f9d7eae",
       "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
       "resource_type": "skill",
       "seq": 3,
-      "ts": "2026-10-08T07:44:02.834087+00:00"
+      "ts": "2026-10-08T09:48:59.682685+00:00"
     },
     {
       "action": "skill.patched",
@@ -1302,7 +1454,7 @@
         "credential_owner_id": "owner",
         "description": "核对表头并处理表格材料",
         "entry_hash": "da41fe9c3a67006268e7027b6b8c5192fb4e1fe586f070155774f8f4eb2ffe3c",
-        "entry_id": "1f285a83308b4d67871fbe93bb5e2047",
+        "entry_id": "7f4c8efc40fe48b3b0ac55d94f61fd6f",
         "files": [],
         "job_id": null,
         "ledger_id": 1,
@@ -1323,12 +1475,12 @@
         "store_type": "skill",
         "summary": "# Excel处理\n核对原始文件、表头和数据类型，确认处理目标后保存并核验输出。"
       },
-      "hash": "02854b6111c59b63c8a7f103f2bff14b5dda194e8622ea18f7a7222ff7b144fb",
-      "prev_hash": "a1c82b3799ae52963970e2032ab82143a3505b9660235d76584c3b39f0720836",
+      "hash": "82977e7b098b7958404dac59bc6b5af29918e86048e2a5d2ad3629fd3f9d7eae",
+      "prev_hash": "a70c8f5b2dfb650aaa8eae1b828b58556eab5a2913fe23d32bad9b9dd5b4bbb5",
       "resource_id": "skill:c7b7146c6ea65788b6d4161a4982f34b",
       "resource_type": "memory_store",
       "seq": 2,
-      "ts": "2026-10-08T07:43:46.503463+00:00"
+      "ts": "2026-10-08T09:48:59.672772+00:00"
     },
     {
       "action": "governance.seed",
@@ -1346,12 +1498,12 @@
           "workspace_id": null
         }
       },
-      "hash": "a1c82b3799ae52963970e2032ab82143a3505b9660235d76584c3b39f0720836",
+      "hash": "a70c8f5b2dfb650aaa8eae1b828b58556eab5a2913fe23d32bad9b9dd5b4bbb5",
       "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
       "resource_id": "demo-org",
       "resource_type": "organization",
       "seq": 1,
-      "ts": "2026-10-08T07:43:46.498434+00:00"
+      "ts": "2026-10-08T09:48:59.667908+00:00"
     }
   ]
 }

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { _electron as electron } from 'playwright-core'
-import { cp, mkdir, readFile, writeFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { cp, mkdir, readFile, symlink, writeFile } from 'node:fs/promises'
+import { basename, resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
 import { createServer } from 'node:http'
@@ -27,8 +27,8 @@ page.setDefaultTimeout(60000)
 const errors = []
 page.on('pageerror', (error) => errors.push(error.message))
 const result = { directory, cases: [], screenshots: [], requests: [] }
-const request = async (method, path, body, owner = false) => {
-  const actual = await page.evaluate(async ({ method, path, body, owner }) => {
+const request = async (method, path, body, owner = false, target = page) => {
+  const pending = target.evaluate(async ({ method, path, body, owner }) => {
     const port = await window.agentcrew.getBackendPort()
     const token = await window.agentcrew.getToken()
     const identity = owner ? null : sessionStorage.getItem('agentcrew-identity')
@@ -37,9 +37,12 @@ const request = async (method, path, body, owner = false) => {
       body: body === undefined ? undefined : JSON.stringify(body) })
     return { status: response.status, response: await response.json() }
   }, { method, path, body, owner })
-  result.requests.push({ method, path, request: body, ...actual })
+  pending.catch(() => { /* 渲染进程迟到的结果不再参与判定 */ })
+  const actual = await Promise.race([pending, new Promise((resolve) => setTimeout(() => resolve({ status: 0, response: {} }), 10000))])
+  if (actual.status) result.requests.push({ method, path, request: body, ...actual })
   return { status: actual.status, value: actual.response.data }
 }
+const checkpoint = (label) => console.log(`[checkpoint] ${new Date().toISOString().slice(11, 19)} ${label}`)
 const wait = async (read, accepts) => {
   const deadline = Date.now() + 240000
   while (Date.now() < deadline) {
@@ -112,6 +115,20 @@ try {
   }
   result.cases.push('员工档案接入真实三库与记忆账本')
 
+  const soulPanel = page.getByRole('tabpanel', { name: '员工 soul' })
+  await soulPanel.getByLabel('查询内容').fill('当前员工核查来源时保留实际事件依据')
+  await soulPanel.getByRole('button', { name: '搜索历史', exact: true }).click()
+  await soulPanel.locator('.memory-search details').first().waitFor()
+  await page.getByLabel('档案员工').selectOption('xiaowen')
+  await wait(() => page.locator('.memory-search details').count(), (count) => count === 0)
+  await page.getByRole('button', { name: '新建条目', exact: true }).click()
+  await page.getByLabel('记忆正文', { exact: true }).fill('工作区办公材料核查基线：核对原始材料与实际事件来源。')
+  await page.getByLabel('保存依据', { exact: true }).fill('所有者为成员撤权核查准备的真实基线条目')
+  await page.getByRole('button', { name: '保存记忆', exact: true }).click()
+  await page.getByRole('tabpanel', { name: '员工 soul' }).getByText('记忆已保存', { exact: true }).waitFor()
+  await page.getByLabel('档案员工').selectOption(employee.id)
+  result.cases.push('档案范围切换后旧员工检索正文与缓存清理')
+
   await page.getByRole('tab', { name: '员工配置', exact: true }).click()
   await page.getByRole('tab', { name: '技能与版本', exact: true }).click()
   await page.getByRole('button', { name: '创建技能', exact: true }).click()
@@ -140,6 +157,7 @@ try {
   result.cases.push('刷新后档案范围、员工列表与技能版本状态一致')
 
   await page.getByRole('button', { name: '管理中心', exact: true }).click()
+  await page.getByRole('tabpanel', { name: '组织与工作区', exact: true }).waitFor()
   await page.getByLabel('治理工作区').selectOption('office')
   await page.getByLabel('治理员工').selectOption(employee.id)
   await page.getByRole('tab', { name: 'Grant授权', exact: true }).click()
@@ -190,6 +208,19 @@ try {
   await page.getByText('当前member角色仅能查看已授权资源', { exact: false }).first().waitFor()
   assert.equal(await page.getByRole('button', { name: '创建员工', exact: true }).isEnabled(), false)
   assert.equal((await request('POST', '/agents', { change_id: randomUUID(), expected_revision: 0, workspace_id: 'default', name: '权限拒绝核查', spec: employee.spec })).status, 403)
+  await wait(() => page.getByLabel('档案员工').inputValue(), (value) => value === 'xiaowen')
+  await page.getByRole('tab', { name: '员工 soul', exact: true }).click()
+  const memberSoulPanel = page.getByRole('tabpanel', { name: '员工 soul' })
+  await memberSoulPanel.getByLabel('查询内容').fill('工作区办公材料核查基线')
+  await memberSoulPanel.getByRole('button', { name: '搜索历史', exact: true }).click()
+  await memberSoulPanel.locator('.memory-search details').first().waitFor()
+  const memberGrant = (await request('GET', '/grants?workspace_id=office&grantee_id=lilei', undefined, true)).value.items.find((row) => row.resource_type === 'agent' && row.resource_id === 'xiaowen' && !row.revoked_at)
+  assert.ok(memberGrant)
+  assert.equal((await request('DELETE', `/grants/${memberGrant.id}`, { change_id: randomUUID(), expected_revision: memberGrant.revision }, true)).status, 200)
+  await wait(() => page.getByText('请先选择档案员工', { exact: false }).count(), (count) => count > 0)
+  assert.equal(await page.locator('.memory-search details').count(), 0)
+  result.cases.push('真实撤权后档案自动切换并清理旧员工检索正文')
+  await request('POST', '/grants', { change_id: randomUUID(), resource_type: 'agent', resource_id: 'xiaowen', grantee_type: 'user', grantee_id: 'lilei' }, true)
   result.cases.push('member管理操作禁用与真实403')
   await page.getByLabel('演示身份').selectOption('owner')
   await wait(() => page.getByLabel('演示身份').inputValue(), (value) => value === 'owner')
@@ -220,11 +251,14 @@ try {
   await page.getByRole('button', { name: '恢复此备份', exact: true }).first().click()
   await page.getByRole('button', { name: '确认操作', exact: true }).click()
   await page.getByRole('button', { name: '重启并完整验证', exact: true }).click()
+  checkpoint('restart-clicked')
   await wait(async () => {
     try { return (await request('GET', '/diagnostics')).value?.mode } catch { return null }
   }, (value) => value === 'normal')
+  checkpoint('diagnostics-normal')
   await page.getByText('内部链：通过', { exact: true }).waitFor()
   await page.getByText('锚点：通过', { exact: true }).waitFor()
+  checkpoint('two-level-verified')
   await screenshot('restored')
   result.cases.push('独立验收库篡改后的只读诊断、导出、受控恢复与完整验证')
 
@@ -244,6 +278,57 @@ try {
   assert.equal(await createButton.evaluate((element) => document.activeElement === element), true)
   await page.setViewportSize({ width: 1440, height: 900 })
   result.cases.push('宽窄窗口与键盘打开、取消及焦点返回有效')
+
+  const promotionDirectory = resolve('.artifacts', `m3-management-promotion-${Date.now()}`)
+  checkpoint('promotion-copy-begin')
+  await mkdir(`${promotionDirectory}/data`, { recursive: true })
+  const preparedRoot = resolve('../data/m3-intermediate/02-api-acceptance/identity-http0')
+  await cp(preparedRoot, `${promotionDirectory}/data`, { recursive: true,
+    filter: (p) => !['instance.lock', 'requests.jsonl', 'streams.jsonl', 'main-streams.jsonl', 'service.log', 'run-center-stderr.log'].includes(basename(p)) })
+  // 预备库的工作区 data_dir 为绝对路径；在副本中改写到新位置，保持服务管理范围与记忆路径真实有效
+  const relocation = new DatabaseSync(`${promotionDirectory}/data/agentcrew.db`)
+  relocation.prepare('UPDATE workspaces SET data_dir=REPLACE(data_dir, ?, ?)').run(preparedRoot, `${promotionDirectory}/data`)
+  relocation.close()
+  await app.close()
+  checkpoint('first-app-closed')
+  const promotionApp = await electron.launch({ args: ['.', `--user-data-dir=${promotionDirectory}`],
+    executablePath: resolve('node_modules/electron/dist/Electron.app/Contents/MacOS/Electron') })
+  checkpoint('promotion-app-launched')
+  try {
+    const promotionPage = await promotionApp.firstWindow()
+    promotionPage.setDefaultTimeout(60000)
+    promotionPage.on('pageerror', (error) => errors.push(error.message))
+    await promotionPage.getByText('任务服务已连接', { exact: true }).waitFor()
+    await promotionPage.getByRole('button', { name: '数字员工管理', exact: true }).click()
+    await promotionPage.getByRole('heading', { name: '数字员工管理', exact: true }).waitFor()
+    await promotionPage.getByLabel('档案工作区').selectOption('office')
+    await wait(() => promotionPage.getByLabel('档案员工').inputValue(), (value) => value === 'xiaowen')
+    await promotionPage.getByRole('tab', { name: '技能与版本', exact: true }).click()
+    const promoted = (await request('GET', '/skills?workspace_id=office&limit=200', undefined, true, promotionPage)).value.items.find((row) => row.source === 'agent' && row.status === 'active')
+    assert.ok(promoted, '预备库中没有可用的真实固化技能')
+    const promotionVersions = (await request('GET', `/skills/${promoted.id}/versions?limit=50`, undefined, true, promotionPage)).value.items
+    assert.ok(promotionVersions.length >= 1)
+    const promotionRow = promotionPage.locator('.governance-table tbody tr').filter({ hasText: promoted.name }).first()
+    await promotionRow.getByRole('button', { name: '查看版本', exact: true }).click()
+    try {
+      await promotionPage.getByText('版本来源（提案、报告与任务追溯）').waitFor()
+    } catch (error) {
+      throw new Error(`版本来源未按预期展示：${(await promotionPage.locator('.ant-modal').textContent()).slice(0, 400)}`, { cause: error })
+    }
+    await promotionPage.getByText('版本来源（提案、报告与任务追溯）').click()
+    const sourceText = await promotionPage.locator('.ant-modal').textContent()
+    assert.ok(sourceText.includes('task_run_id'), `版本来源缺少任务追溯：${sourceText.slice(0, 400)}`)
+    await promotionPage.getByRole('button', { name: '查看来源任务与报告', exact: true }).click()
+    await promotionPage.getByRole('heading', { name: '运行中心', exact: true }).waitFor()
+    await wait(() => promotionPage.getByRole('textbox', { name: '任务标识', exact: true }).inputValue(), (value) => value.length > 0)
+    await promotionPage.screenshot({ path: `${promotionDirectory}/promotion-source.png` })
+    result.screenshots.push(`${promotionDirectory}/promotion-source.png`)
+    result.promotion_skill = { id: promoted.id, name: promoted.name, versions: promotionVersions.map((row) => row.version_no) }
+    result.cases.push('真实固化技能展示账本提案来源并进入来源任务与报告')
+  } finally {
+    await promotionApp.close()
+  }
+  checkpoint('promotion-done')
   assert.deepEqual(errors, [])
   db.close()
   const restoredDb = new DatabaseSync(`${directory}/data/agentcrew.db`, { readOnly: true })
@@ -254,7 +339,7 @@ try {
   await writeFile(`${directory}/result.json`, JSON.stringify(result, null, 2))
   console.log(JSON.stringify({ directory, cases: result.cases.length }))
 } finally {
-  await app.close()
+  try { await app.close() } catch { /* 固化核查前第一实例已经关闭 */ }
   await new Promise((done) => service.close(done))
   upstream.close()
   try { db.close() } catch { /* 恢复验证后已经关闭 */ }

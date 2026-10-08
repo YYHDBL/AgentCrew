@@ -10,6 +10,7 @@ const stamp = (value: string): string => new Date(value).toLocaleString('zh-CN')
 const defaults: AgentSpec = { position: '', model_slot: 'main', skill_ids: [], connector_ids: [] }
 type Editor = { kind: 'workspace' | 'agent' | 'skill' | 'connector'; resource: Resource | null; name: string; description: string; position: string; slot: 'main' | 'aux'; skillIds: string[]; connectorIds: string[]; text: string; config: string; credential: string; clearCredential: boolean; connectorType: 'http' | 'mcp' }
 type Confirmation = { title: string; description: string; execute: () => Promise<void> }
+interface LedgerRow { id: number; change_id: string; action: string; source: Record<string, unknown>; created_at: string }
 
 function Field({ label, children }: { label: string; children: JSX.Element }): JSX.Element {
   const id = useId()
@@ -61,7 +62,9 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
   const [cronJobs, setCronJobs] = useState<CronJob[]>([])
   const [cronHistory, setCronHistory] = useState<Record<string, CronOccurrence[]>>({})
   const [cronError, setCronError] = useState('')
-  const [tab, setTab] = useState(() => diagnostic.mode === 'diagnostic' ? 'audit' : 'employees')
+  const [versionLedger, setVersionLedger] = useState<LedgerRow[]>([])
+  const [versionSourceNote, setVersionSourceNote] = useState('')
+  const [tab, setTab] = useState(() => diagnostic.mode === 'diagnostic' ? 'audit' : view === 'admin' ? 'workspaces' : 'employees')
   const mutationIds = useRef(new Map<string, string>())
   const viewGeneration = useRef(0)
   const previousMode = useRef(diagnostic.mode)
@@ -73,6 +76,7 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
     setVersionSkill(null); setVersions([]); setSelectedVersion(null); setVersionText(''); setVersionBasis(''); setAudit([]); setAuditAfter(null)
     if (!restoredToNormal) setVerification(null)
     setCronJobs([]); setCronHistory({}); setCronError('')
+    setVersionLedger([]); setVersionSourceNote('')
     setEditor(null); setConfirmation(null); setError(''); setNote('')
     setBusy(false); setLoading(false)
     if (diagnostic.mode === 'diagnostic') setTab(studio ? 'employees' : 'audit')
@@ -183,7 +187,11 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
     setVersionSkill(resource)
     const items = await allPages<Version>(`/skills/${resource.id}/versions`)
     if (generation !== viewGeneration.current) return
-    setVersions(items); setSelectedVersion(items[0] ?? null); setVersionText(items[0]?.content ?? ''); setVersionBasis('')
+    setVersions(items); setSelectedVersion(items[0] ?? null); setVersionText(items[0]?.content ?? ''); setVersionBasis(''); setVersionLedger([]); setVersionSourceNote('')
+    try {
+      const rows = await allPages<LedgerRow>(`/memory/ledger?workspace_id=${encodeURIComponent(workspace)}&agent_id=${encodeURIComponent(agent)}&store_type=skill&store_id=${resource.id}`)
+      if (generation === viewGeneration.current) setVersionLedger(rows)
+    } catch (reason) { if (generation === viewGeneration.current) setVersionSourceNote(reason instanceof Error ? reason.message : String(reason)) }
   }
   const publishVersion = async (restore = false): Promise<void> => {
     if (!versionSkill || !selectedVersion || !versions[0]) return
@@ -374,9 +382,14 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
     </Modal>
     <Modal title={confirmation?.title ?? ''} open={Boolean(confirmation)} okText="确认操作" cancelText="取消操作" confirmLoading={busy} onCancel={() => { if (!busy) setConfirmation(null) }} onOk={() => { if (confirmation) void operate(confirmation.execute, '操作已保存') }}><p>{confirmation?.description}</p>{error && <p role="alert">{error}</p>}</Modal>
     <Modal title="不可变技能版本" open={Boolean(versionSkill)} width={760} footer={null} onCancel={() => { if (!busy) setVersionSkill(null) }}>
-      <p>技能：{versionSkill?.name}；历史正文保持完整，恢复旧正文产生新版本。</p>
+      <p>技能：{versionSkill?.name}；历史正文保持完整，恢复旧正文产生新版本。{versionSkill?.source === 'agent' ? '该技能由真人确认的模型固化建议发布。' : ''}</p>
       <Field label="技能历史版本"><select value={selectedVersion?.id ?? ''} disabled={busy || !versions.length} onChange={(e) => { const selected = versions.find((item) => item.id === e.target.value)!; setSelectedVersion(selected); setVersionText(selected.content) }}>{versions.map((item) => <option key={item.id} value={item.id}>版本{item.version_no} · {stamp(item.created_at)} · {item.created_by}</option>)}</select></Field>
       <p>账本：{selectedVersion?.ledger_id} · SHA：{selectedVersion?.sha256}</p>
+      {(() => { const source = versionLedger.find((row) => row.id === selectedVersion?.ledger_id) ?? null
+        const runId = typeof source?.source.task_run_id === 'string' ? source.source.task_run_id : null
+        return source
+          ? <details><summary>版本来源（提案、报告与任务追溯）</summary><pre className="governance-code">{JSON.stringify(source, null, 2)}</pre>{runId && onRun && <Button disabled={busy} onClick={() => onRun!(runId!)}>查看来源任务与报告</Button>}</details>
+          : <p>{versionSourceNote ? `版本来源账本暂不可读：${versionSourceNote}` : '该版本没有可读的来源账本记录。'}</p> })()}
       <Field label="版本正文"><textarea value={versionText} readOnly={!canManage} disabled={busy || !selectedVersion} onChange={(e) => setVersionText(e.target.value)} /></Field>
       {selectedVersion?.files.map((file) => <details key={file.path}><summary>版本支撑文件：{file.path}</summary><pre>{file.content ?? '文件不存在'}</pre></details>)}
       <Field label="版本修改依据"><input value={versionBasis} disabled={!canManage || busy || !selectedVersion} onChange={(e) => setVersionBasis(e.target.value)} /></Field>

@@ -1,28 +1,28 @@
-node tests/m3-management.mjs（第8次运行，退出码0，11项检查）
-运行输出：{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-management-1791445424432","cases":11}
-EXIT=0
+node tests/m3-management.mjs（第16次运行，退出码0，14项检查）
+运行检查点：[checkpoint] 09:49:21 restart-clicked；[checkpoint] 09:49:23 diagnostics-normal；[checkpoint] 09:49:23 two-level-verified；[checkpoint] 09:49:23 promotion-copy-begin；[checkpoint] 09:49:26 first-app-closed；[checkpoint] 09:49:27 promotion-app-launched；[checkpoint] 09:49:37 promotion-done
 案例清单：
 - 通过员工配置创建真实员工与模型槽
 - 岗位及模型槽修改影响新任务，历史快照保持完整
 - 员工档案接入真实三库与记忆账本
+- 档案范围切换后旧员工检索正文与缓存清理
 - 统一技能服务发布不可变新版本
 - 刷新后档案范围、员工列表与技能版本状态一致
 - 真实Grant独立授予及撤销，权限规则回收
 - 员工档案定时任务来自真实服务端记录
 - 管理中心实际HTTP连接校验与员工档案
+- 真实撤权后档案自动切换并清理旧员工检索正文
 - member管理操作禁用与真实403
 - 独立验收库篡改后的只读诊断、导出、受控恢复与完整验证
 - 宽窄窗口与键盘打开、取消及焦点返回有效
-员工 7cbdab61c4e85b569e45d710cdf01ca5；旧任务 b19e47a4c8324555b7922a5db0d6a971（completed）；新任务 e12be32a91424a109f5f607d6bb295d0（completed）
-真实计划 d838412069eb55d295f2f7d2558b2379（next_run_at=1791452717723）；审计导出 44 行
-恢复后事件水位 70，审计序号 49，恢复库审计行数 49
-后端回归（AGENTCREW_TEST_CONFIG_SOURCE=data/config.json，固化套件另需 AGENTCREW_RUN_CENTER_DATA_DIR 指向 identity-httpcurrent）：
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-99 passed, 1 warning in 391.54s (0:06:31)
+- 真实固化技能展示账本提案来源并进入来源任务与报告
+员工 73aee61635195443827d97984d3dba72；旧任务 f193c99ae6074c16b99205db3bf44046（completed）；新任务 2d723bf0af944d519b0f6a6c531d57d6（completed）
+真实计划 832fd3790b435cbfae18fad3aff1172a（next_run_at=1791460159338）；审计导出 49 行
+真实固化技能 548e0150f82f508a8329a8ef2aeed176（计划预授权前置校验，版本 1），来源账本含 task_run_id 并跳转来源任务
+恢复后事件水位 75，审计序号 54，恢复库审计行数 54
+桌面回归：m1-memory {"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-memory-1791453019644","operations":11,"all_checks_passed":true}
 EXIT=0
-m1-memory 回归：{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-memory-1791446535256","operations":11,"all_checks_passed":true}
+m2-governance {"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791453835209","cases":20}
+EXIT=0（为版本弹窗关闭增加忙等，消除既有竞态）
+m3-run-center {"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-run-center-1791453972062","cases":8,"task_run_id":"7c8f465132cc400ca370082cfc82e704"}
 EXIT=0
-m2-governance 回归：{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791447005253","cases":20}
-EXIT=0
-m3-run-center 回归：{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-run-center-1791447174312","cases":8,"task_run_id":"fd3923bad8be4d01b5584923f4426940"}
-EXIT=0
+后端回归99项通过见 12-backend-final（身份/Grant/规则/技能版本/审计/诊断/恢复/固化；固化套件需 AGENTCREW_RUN_CENTER_DATA_DIR 指向 identity-httpcurrent 预备库）

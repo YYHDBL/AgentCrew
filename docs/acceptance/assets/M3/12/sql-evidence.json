@@ -1,343 +1,802 @@
 {
-  "employee": {
-    "id": "7cbdab61c4e85b569e45d710cdf01ca5",
-    "name": "真实档案员工-992979b9",
-    "status": "active",
-    "revision": 3,
-    "spec": "{\"connector_ids\":[],\"model_slot\":\"aux\",\"position\":\"逐项核查实际资料来源，保存真实校验依据。\",\"skill_ids\":[\"37835991d01c55669fb90c58966d7159\"]}"
-  },
-  "tasks": [
+  "generated_at": "2026-10-08T10:11:24.719Z",
+  "data_dir": "desktop/.artifacts/m3-management-1791452937463/data（恢复后的验收库）",
+  "queries": [
     {
-      "id": "b19e47a4c8324555b7922a5db0d6a971",
-      "status": "completed",
-      "cron_job_id": null
+      "sql": "SELECT id,workspace_id,name,status,revision,spec,created_by_user_id,created_at FROM agents ORDER BY created_at",
+      "rows": [
+        {
+          "id": "default",
+          "workspace_id": "default",
+          "name": "默认员工",
+          "status": "active",
+          "revision": 1,
+          "spec": "{\"connector_ids\":[],\"model_slot\":\"main\",\"position\":\"通用助理\",\"skill_ids\":[]}",
+          "created_by_user_id": "owner",
+          "created_at": "2026-10-08T09:48:59.668310+00:00"
+        },
+        {
+          "id": "xiaowen",
+          "workspace_id": "office",
+          "name": "小文",
+          "status": "active",
+          "revision": 1,
+          "spec": "{\"connector_ids\":[\"office-http\"],\"model_slot\":\"main\",\"position\":\"办公助理\",\"skill_ids\":[\"c7b7146c6ea65788b6d4161a4982f34b\",\"7fb6db7a69e75931b85594e05ed43d2b\"]}",
+          "created_by_user_id": "owner",
+          "created_at": "2026-10-08T09:48:59.668817+00:00"
+        },
+        {
+          "id": "xiaogang",
+          "workspace_id": "analytics",
+          "name": "小刚",
+          "status": "active",
+          "revision": 1,
+          "spec": "{\"connector_ids\":[],\"model_slot\":\"main\",\"position\":\"数据分析\",\"skill_ids\":[\"d902cc4eb75d5b9790c0278523e87aa0\"]}",
+          "created_by_user_id": "owner",
+          "created_at": "2026-10-08T09:48:59.668862+00:00"
+        },
+        {
+          "id": "73aee61635195443827d97984d3dba72",
+          "workspace_id": "office",
+          "name": "真实档案员工-cfac6a6f",
+          "status": "active",
+          "revision": 3,
+          "spec": "{\"connector_ids\":[],\"model_slot\":\"aux\",\"position\":\"逐项核查实际资料来源，保存真实校验依据。\",\"skill_ids\":[\"791daa60eb245f8d9a53a5aa6595748f\"]}",
+          "created_by_user_id": "owner",
+          "created_at": "2026-10-08T09:49:02.010777+00:00"
+        }
+      ]
     },
     {
-      "id": "e12be32a91424a109f5f607d6bb295d0",
-      "status": "completed",
-      "cron_job_id": null
+      "sql": "SELECT id,status,cron_job_id,client_request_id,created_at,finished_at FROM task_runs WHERE id IN ('f193c99ae6074c16b99205db3bf44046','2d723bf0af944d519b0f6a6c531d57d6')",
+      "rows": [
+        {
+          "id": "2d723bf0af944d519b0f6a6c531d57d6",
+          "status": "completed",
+          "cron_job_id": null,
+          "client_request_id": "29833444-4f44-458f-89a0-45162e4b8d0d",
+          "created_at": "2026-10-08T09:49:10.394689+00:00",
+          "finished_at": "2026-10-08T09:49:14.214860+00:00"
+        },
+        {
+          "id": "f193c99ae6074c16b99205db3bf44046",
+          "status": "completed",
+          "cron_job_id": null,
+          "client_request_id": "f3bc163e-1499-480d-bd41-19ec48852c1b",
+          "created_at": "2026-10-08T09:49:02.114819+00:00",
+          "finished_at": "2026-10-08T09:49:09.452951+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT task_run_id,attempt_no,outcome FROM run_attempts WHERE task_run_id IN ('f193c99ae6074c16b99205db3bf44046','2d723bf0af944d519b0f6a6c531d57d6') ORDER BY task_run_id,attempt_no",
+      "rows": [
+        {
+          "task_run_id": "2d723bf0af944d519b0f6a6c531d57d6",
+          "attempt_no": 1,
+          "outcome": "completed"
+        },
+        {
+          "task_run_id": "f193c99ae6074c16b99205db3bf44046",
+          "attempt_no": 1,
+          "outcome": "completed"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,workspace_id,name,description,current_version_id,source,status,revision FROM skills ORDER BY created_at",
+      "rows": [
+        {
+          "id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "workspace_id": "office",
+          "name": "Excel处理",
+          "description": "核对表头并处理表格材料",
+          "current_version_id": "ce7f36c35b735d43a30a8a4b0b4c0f3b",
+          "source": "system",
+          "status": "active",
+          "revision": 2
+        },
+        {
+          "id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "workspace_id": "office",
+          "name": "文档模板",
+          "description": "核查来源并组织文档内容",
+          "current_version_id": "314222aa9401532b96ae08867bc734a5",
+          "source": "system",
+          "status": "active",
+          "revision": 2
+        },
+        {
+          "id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "workspace_id": "analytics",
+          "name": "SQL查询",
+          "description": "通过已授权数据库查询分析数据",
+          "current_version_id": "034dca1b604b5175add74b0739fa825f",
+          "source": "system",
+          "status": "active",
+          "revision": 2
+        },
+        {
+          "id": "791daa60eb245f8d9a53a5aa6595748f",
+          "workspace_id": "office",
+          "name": "真实档案技能-15972e16",
+          "description": "核查资料来源并保留实际证据",
+          "current_version_id": "36f9bb7b299057d2b66a90bb5a095339",
+          "source": "user",
+          "status": "active",
+          "revision": 3
+        }
+      ]
+    },
+    {
+      "sql": "SELECT skill_id,version_no,id,change_id,ledger_id,sha256,created_by,created_at FROM skill_versions ORDER BY skill_id,version_no",
+      "rows": [
+        {
+          "skill_id": "791daa60eb245f8d9a53a5aa6595748f",
+          "version_no": 1,
+          "id": "a5a0a0179d44549cab741b0e79a98aed",
+          "change_id": "e69ce85b-93e9-4495-9061-b425cb5c4e7e",
+          "ledger_id": 9,
+          "sha256": "fa7b83cc7deba9e2bad1d5344927d955a609fb5a076593e119e64929ca38f1b1",
+          "created_by": "owner",
+          "created_at": "2026-10-08T09:49:15.008116+00:00"
+        },
+        {
+          "skill_id": "791daa60eb245f8d9a53a5aa6595748f",
+          "version_no": 2,
+          "id": "36f9bb7b299057d2b66a90bb5a095339",
+          "change_id": "b1dfc35e-dec7-477e-927d-4de9537fdf8c",
+          "ledger_id": 10,
+          "sha256": "4cd81f0f527f0da4b0406b30919404e8d93254a5189ec1480ed10a83b115abef",
+          "created_by": "owner",
+          "created_at": "2026-10-08T09:49:15.817192+00:00"
+        },
+        {
+          "skill_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "version_no": 1,
+          "id": "314222aa9401532b96ae08867bc734a5",
+          "change_id": "seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408",
+          "ledger_id": 2,
+          "sha256": "f1be3db5994809a26dd8863850ce696054cf190b753548a255d60fe7682fe2a8",
+          "created_by": "owner",
+          "created_at": "2026-10-08T09:48:59.684251+00:00"
+        },
+        {
+          "skill_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "version_no": 1,
+          "id": "ce7f36c35b735d43a30a8a4b0b4c0f3b",
+          "change_id": "seed-skill-xiaowen-cda8b927ff2d5b45a9330b91ec1b1789",
+          "ledger_id": 1,
+          "sha256": "fda9dc70b4bf5891bd88e10ad8ec1a678b019b2fae76cd48be460f6f06673092",
+          "created_by": "owner",
+          "created_at": "2026-10-08T09:48:59.672772+00:00"
+        },
+        {
+          "skill_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "version_no": 1,
+          "id": "034dca1b604b5175add74b0739fa825f",
+          "change_id": "seed-skill-xiaogang-4c8a9eec37845f22816c4cb3c401b722",
+          "ledger_id": 3,
+          "sha256": "d76c6f43afc6edc86b8c05981ff81050430c537af2d978d7d279c840e6cf641c",
+          "created_by": "owner",
+          "created_at": "2026-10-08T09:48:59.689705+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,resource_type,resource_id,grantee_type,grantee_agent_id,grantee_user_id,granted_by_user_id,revoked_at,revision,created_at FROM grants ORDER BY created_at,id",
+      "rows": [
+        {
+          "id": "2155213f09e759f4a355350a73fd16ad",
+          "resource_type": "skill",
+          "resource_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "grantee_type": "agent",
+          "grantee_agent_id": "xiaowen",
+          "grantee_user_id": null,
+          "granted_by_user_id": "owner",
+          "revoked_at": null,
+          "revision": 1,
+          "created_at": "2026-10-08T09:48:59.682451+00:00"
+        },
+        {
+          "id": "57718b191d9a5f438c891943b1e36b68",
+          "resource_type": "skill",
+          "resource_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "grantee_type": "agent",
+          "grantee_agent_id": "xiaowen",
+          "grantee_user_id": null,
+          "granted_by_user_id": "owner",
+          "revoked_at": null,
+          "revision": 1,
+          "created_at": "2026-10-08T09:48:59.687824+00:00"
+        },
+        {
+          "id": "97a2879415f6516baf16d3064d5e298c",
+          "resource_type": "skill",
+          "resource_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "grantee_type": "agent",
+          "grantee_agent_id": "xiaogang",
+          "grantee_user_id": null,
+          "granted_by_user_id": "owner",
+          "revoked_at": null,
+          "revision": 1,
+          "created_at": "2026-10-08T09:48:59.693285+00:00"
+        },
+        {
+          "id": "2a574a78c1915000a23996806e66b2cd",
+          "resource_type": "connector",
+          "resource_id": "office-http",
+          "grantee_type": "agent",
+          "grantee_agent_id": "xiaowen",
+          "grantee_user_id": null,
+          "granted_by_user_id": "owner",
+          "revoked_at": null,
+          "revision": 1,
+          "created_at": "2026-10-08T09:48:59.694201+00:00"
+        },
+        {
+          "id": "a6a4643dc78058ecbb370d403723dd93",
+          "resource_type": "agent",
+          "resource_id": "xiaowen",
+          "grantee_type": "user",
+          "grantee_agent_id": null,
+          "grantee_user_id": "lilei",
+          "granted_by_user_id": "owner",
+          "revoked_at": "2026-10-08T09:49:19.827944+00:00",
+          "revision": 2,
+          "created_at": "2026-10-08T09:48:59.694311+00:00"
+        },
+        {
+          "id": "fe6d085015035c559a5974c5259a674d",
+          "resource_type": "agent",
+          "resource_id": "xiaogang",
+          "grantee_type": "user",
+          "grantee_agent_id": null,
+          "grantee_user_id": "lilei",
+          "granted_by_user_id": "owner",
+          "revoked_at": null,
+          "revision": 1,
+          "created_at": "2026-10-08T09:48:59.694331+00:00"
+        },
+        {
+          "id": "9728926cd1485a2f8c4c5c73fad0e57a",
+          "resource_type": "skill",
+          "resource_id": "791daa60eb245f8d9a53a5aa6595748f",
+          "grantee_type": "agent",
+          "grantee_agent_id": "73aee61635195443827d97984d3dba72",
+          "grantee_user_id": null,
+          "granted_by_user_id": "owner",
+          "revoked_at": "2026-10-08T09:49:16.390459+00:00",
+          "revision": 2,
+          "created_at": "2026-10-08T09:49:16.296824+00:00"
+        },
+        {
+          "id": "7320d33bb47e561f8cd4248e4dbed03d",
+          "resource_type": "agent",
+          "resource_id": "xiaowen",
+          "grantee_type": "user",
+          "grantee_agent_id": null,
+          "grantee_user_id": "lilei",
+          "granted_by_user_id": "owner",
+          "revoked_at": null,
+          "revision": 1,
+          "created_at": "2026-10-08T09:49:20.041624+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,agent_id,tool_name,pattern,effect,revoked_at,created_by_user_id,created_at FROM agent_permission_rules ORDER BY created_at,id",
+      "rows": [
+        {
+          "id": "seed-office-write",
+          "agent_id": "xiaowen",
+          "tool_name": "write_file",
+          "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-management-1791452937463/data/workspaces/office/files",
+          "effect": "allow",
+          "revoked_at": null,
+          "created_by_user_id": "owner",
+          "created_at": "2026-10-08T09:48:59.694114+00:00"
+        },
+        {
+          "id": "f5499c7980f9566b9ecbcd68f429558c",
+          "agent_id": "73aee61635195443827d97984d3dba72",
+          "tool_name": "read_file",
+          "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-management-1791452937463/materials",
+          "effect": "allow",
+          "revoked_at": "2026-10-08T09:49:17.623271+00:00",
+          "created_by_user_id": "owner",
+          "created_at": "2026-10-08T09:49:16.730576+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,name,workspace_id,type,config,status,credential,revision FROM connectors ORDER BY created_at",
+      "rows": [
+        {
+          "id": "office-http",
+          "name": "HTTP",
+          "workspace_id": "office",
+          "type": "http",
+          "config": "{\"allow_loopback\":false,\"allowed_hosts\":[\"example.com\"],\"allowed_ports\":[443],\"url\":\"https://example.com\"}",
+          "status": "active",
+          "credential": null,
+          "revision": 1
+        },
+        {
+          "id": "bd20c26ae77b5d0eb95b06b74e8453ac",
+          "name": "实际HTTP档案校验",
+          "workspace_id": "office",
+          "type": "http",
+          "config": "{\"allow_loopback\":true,\"allowed_hosts\":[\"127.0.0.1\"],\"allowed_ports\":[50910],\"args\":[],\"credential_header\":\"Authorization\",\"idempotent_endpoints\":[],\"startup_files\":[],\"tool_policies\":{},\"url\":\"http://127.0.0.1:50910/\"}",
+          "status": "active",
+          "credential": null,
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT max(seq) AS max_seq, count(*) AS total FROM audit_log",
+      "rows": [
+        {
+          "max_seq": 54,
+          "total": 54
+        }
+      ]
+    },
+    {
+      "sql": "SELECT action,count(*) AS n FROM audit_log GROUP BY action ORDER BY n DESC,action",
+      "rows": [
+        {
+          "action": "memory.job_status",
+          "n": 15
+        },
+        {
+          "action": "memory.updated",
+          "n": 5
+        },
+        {
+          "action": "skill.patched",
+          "n": 5
+        },
+        {
+          "action": "governance.access_denied",
+          "n": 3
+        },
+        {
+          "action": "governance.skill_seeded",
+          "n": 3
+        },
+        {
+          "action": "governance.grant_created",
+          "n": 2
+        },
+        {
+          "action": "governance.grant_revoked",
+          "n": 2
+        },
+        {
+          "action": "governance.skill_history_registered",
+          "n": 2
+        },
+        {
+          "action": "governance.skill_version_published",
+          "n": 2
+        },
+        {
+          "action": "memory.curated",
+          "n": 2
+        },
+        {
+          "action": "cron.job_created",
+          "n": 1
+        },
+        {
+          "action": "governance.agent_changed",
+          "n": 1
+        },
+        {
+          "action": "governance.agent_created",
+          "n": 1
+        },
+        {
+          "action": "governance.audit_verified",
+          "n": 1
+        },
+        {
+          "action": "governance.backup_restored",
+          "n": 1
+        },
+        {
+          "action": "governance.connector_created",
+          "n": 1
+        },
+        {
+          "action": "governance.connector_validated",
+          "n": 1
+        },
+        {
+          "action": "governance.identity_changed",
+          "n": 1
+        },
+        {
+          "action": "governance.rule_created",
+          "n": 1
+        },
+        {
+          "action": "governance.rule_revoked",
+          "n": 1
+        },
+        {
+          "action": "governance.seed",
+          "n": 1
+        },
+        {
+          "action": "governance.seed_completed",
+          "n": 1
+        },
+        {
+          "action": "governance.task_identities_registered",
+          "n": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT max(global_seq) AS max_seq, count(*) AS total FROM run_events",
+      "rows": [
+        {
+          "max_seq": 75,
+          "total": 75
+        }
+      ]
+    },
+    {
+      "sql": "SELECT type,count(*) AS n FROM run_events GROUP BY type ORDER BY n DESC,type",
+      "rows": [
+        {
+          "type": "memory.job_status",
+          "n": 15
+        },
+        {
+          "type": "governance.resource_changed",
+          "n": 12
+        },
+        {
+          "type": "memory.updated",
+          "n": 5
+        },
+        {
+          "type": "skill.patched",
+          "n": 5
+        },
+        {
+          "type": "governance.grant_changed",
+          "n": 4
+        },
+        {
+          "type": "governance.access_denied",
+          "n": 3
+        },
+        {
+          "type": "context.budget_checked",
+          "n": 2
+        },
+        {
+          "type": "governance.authorization_checked",
+          "n": 2
+        },
+        {
+          "type": "governance.rule_changed",
+          "n": 2
+        },
+        {
+          "type": "governance.skill_version_published",
+          "n": 2
+        },
+        {
+          "type": "llm.request_done",
+          "n": 2
+        },
+        {
+          "type": "llm.request_started",
+          "n": 2
+        },
+        {
+          "type": "memory.curated",
+          "n": 2
+        },
+        {
+          "type": "memory.snapshot_created",
+          "n": 2
+        },
+        {
+          "type": "run.completed",
+          "n": 2
+        },
+        {
+          "type": "run.queued",
+          "n": 2
+        },
+        {
+          "type": "run.started",
+          "n": 2
+        },
+        {
+          "type": "step.completed",
+          "n": 2
+        },
+        {
+          "type": "step.started",
+          "n": 2
+        },
+        {
+          "type": "cron.job_changed",
+          "n": 1
+        },
+        {
+          "type": "governance.audit_verified",
+          "n": 1
+        },
+        {
+          "type": "governance.backup_restored",
+          "n": 1
+        },
+        {
+          "type": "governance.identity_changed",
+          "n": 1
+        },
+        {
+          "type": "memory.summary_created",
+          "n": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT DISTINCT json_extract(payload,'$.model') AS model FROM run_events WHERE type='llm.request_started'",
+      "rows": [
+        {
+          "model": "deepseek-v4.1-flash"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT model,count(*) AS calls FROM llm_calls GROUP BY model",
+      "rows": [
+        {
+          "model": "deepseek-v4.1-flash",
+          "calls": 2
+        }
+      ]
+    },
+    {
+      "sql": "SELECT count(*) AS tool_calls FROM tool_calls",
+      "rows": [
+        {
+          "tool_calls": 0
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,name,enabled,next_run_at,revision,metadata,created_at FROM cron_jobs",
+      "rows": [
+        {
+          "id": "832fd3790b435cbfae18fad3aff1172a",
+          "name": "员工档案真实计划核查",
+          "enabled": 1,
+          "next_run_at": 1791460159338,
+          "revision": 1,
+          "metadata": "{\"agent_id\":\"73aee61635195443827d97984d3dba72\",\"agent_revision\":3,\"agent_spec_snapshot\":{\"connector_ids\":[],\"model_slot\":\"aux\",\"position\":\"逐项核查实际资料来源，保存真实校验依据。\",\"skill_ids\":[\"791daa60eb245f8d9a53a5aa6595748f\"]},\"created_by\":\"user\",\"created_via_task_run_id\":null,\"credential_owner_id\":\"owner\",\"owner_id\":\"owner\",\"pre_authorized\":[],\"proposal_id\":null,\"skill_versions\":{}}",
+          "created_at": "2026-10-08T09:49:19.447913+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT count(*) AS occurrences FROM cron_job_runs",
+      "rows": [
+        {
+          "occurrences": 0
+        }
+      ]
+    },
+    {
+      "sql": "SELECT store_type,store_id,revision FROM memory_stores ORDER BY store_type,store_id",
+      "rows": [
+        {
+          "store_type": "skill",
+          "store_id": "791daa60eb245f8d9a53a5aa6595748f",
+          "revision": 2
+        },
+        {
+          "store_type": "skill",
+          "store_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "revision": 1
+        },
+        {
+          "store_type": "skill",
+          "store_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "revision": 1
+        },
+        {
+          "store_type": "skill",
+          "store_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "revision": 1
+        },
+        {
+          "store_type": "soul",
+          "store_id": "73aee61635195443827d97984d3dba72",
+          "revision": 2
+        },
+        {
+          "store_type": "soul",
+          "store_id": "xiaowen",
+          "revision": 1
+        },
+        {
+          "store_type": "user",
+          "store_id": "owner",
+          "revision": 1
+        },
+        {
+          "store_type": "workspace",
+          "store_id": "office",
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT store_type,count(*) AS entries FROM memory_entries GROUP BY store_type",
+      "rows": [
+        {
+          "store_type": "skill",
+          "entries": 4
+        },
+        {
+          "store_type": "soul",
+          "entries": 3
+        },
+        {
+          "store_type": "user",
+          "entries": 1
+        },
+        {
+          "store_type": "workspace",
+          "entries": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT id,store_type,store_id,action,source,created_at FROM memory_ledger ORDER BY id",
+      "rows": [
+        {
+          "id": 1,
+          "store_type": "skill",
+          "store_id": "c7b7146c6ea65788b6d4161a4982f34b",
+          "action": "create",
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"seed-skill-xiaowen-cda8b927ff2d5b45a9330b91ec1b1789\"}",
+          "created_at": "2026-10-08T09:48:59.672772+00:00"
+        },
+        {
+          "id": 2,
+          "store_type": "skill",
+          "store_id": "7fb6db7a69e75931b85594e05ed43d2b",
+          "action": "create",
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"seed-skill-xiaowen-ca2db0c5aad55f4ea5842ebeb6cca408\"}",
+          "created_at": "2026-10-08T09:48:59.684251+00:00"
+        },
+        {
+          "id": 3,
+          "store_type": "skill",
+          "store_id": "d902cc4eb75d5b9790c0278523e87aa0",
+          "action": "create",
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"seed-skill-xiaogang-4c8a9eec37845f22816c4cb3c401b722\"}",
+          "created_at": "2026-10-08T09:48:59.689705+00:00"
+        },
+        {
+          "id": 4,
+          "store_type": "soul",
+          "store_id": "73aee61635195443827d97984d3dba72",
+          "action": "create",
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"1941f2d3-0664-4d62-977f-7b974a6e4931\"}",
+          "created_at": "2026-10-08T09:49:02.102732+00:00"
+        },
+        {
+          "id": 5,
+          "store_type": "user",
+          "store_id": "owner",
+          "action": "create",
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"b7c0761b-3dac-4336-9f14-06805d193b62\"}",
+          "created_at": "2026-10-08T09:49:14.400743+00:00"
+        },
+        {
+          "id": 6,
+          "store_type": "workspace",
+          "store_id": "office",
+          "action": "create",
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"f9928d9e-5ef0-4c29-955c-b499f9bfdfca\"}",
+          "created_at": "2026-10-08T09:49:14.510642+00:00"
+        },
+        {
+          "id": 7,
+          "store_type": "soul",
+          "store_id": "73aee61635195443827d97984d3dba72",
+          "action": "create",
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"b3c32d45-40a2-477b-9e3f-438f8a56715f\"}",
+          "created_at": "2026-10-08T09:49:14.636273+00:00"
+        },
+        {
+          "id": 8,
+          "store_type": "soul",
+          "store_id": "xiaowen",
+          "action": "create",
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"4f6ed096-27c5-49e9-afd4-cf9ed734f550\"}",
+          "created_at": "2026-10-08T09:49:14.829781+00:00"
+        },
+        {
+          "id": 9,
+          "store_type": "skill",
+          "store_id": "791daa60eb245f8d9a53a5aa6595748f",
+          "action": "create",
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"e69ce85b-93e9-4495-9061-b425cb5c4e7e\"}",
+          "created_at": "2026-10-08T09:49:15.008116+00:00"
+        },
+        {
+          "id": 10,
+          "store_type": "skill",
+          "store_id": "791daa60eb245f8d9a53a5aa6595748f",
+          "action": "update",
+          "source": "{\"actor_id\":\"owner\",\"actor_type\":\"user\",\"manual_edit_id\":\"b1dfc35e-dec7-477e-927d-4de9537fdf8c\"}",
+          "created_at": "2026-10-08T09:49:15.817192+00:00"
+        }
+      ]
+    },
+    {
+      "sql": "SELECT kind,status,count(*) AS n FROM memory_jobs GROUP BY kind,status ORDER BY kind,status",
+      "rows": [
+        {
+          "kind": "curate",
+          "status": "completed",
+          "n": 2
+        },
+        {
+          "kind": "curate",
+          "status": "failed",
+          "n": 1
+        },
+        {
+          "kind": "summary",
+          "status": "cancelled",
+          "n": 1
+        },
+        {
+          "kind": "summary",
+          "status": "completed",
+          "n": 1
+        }
+      ]
+    },
+    {
+      "sql": "SELECT substr(error,1,160) AS error FROM memory_jobs WHERE status IN ('failed','cancelled') ORDER BY created_at",
+      "rows": [
+        {
+          "error": "前台指令到达，辅助作业已取消"
+        },
+        {
+          "error": "ValueError: 治理读取失败：OUT_OF_SCOPE"
+        }
+      ]
     }
   ],
-  "attempts": [
-    {
-      "task_run_id": "b19e47a4c8324555b7922a5db0d6a971",
-      "attempt_no": 1,
-      "outcome": "completed"
-    },
-    {
-      "task_run_id": "e12be32a91424a109f5f607d6bb295d0",
-      "attempt_no": 1,
-      "outcome": "completed"
-    }
-  ],
-  "skill_versions": [
-    {
-      "skill_id": "37835991d01c55669fb90c58966d7159",
-      "version_no": 1,
-      "created_by": "owner",
-      "ledger_id": 8,
-      "sha": "fa7b83cc7deba9e2"
-    },
-    {
-      "skill_id": "37835991d01c55669fb90c58966d7159",
-      "version_no": 2,
-      "created_by": "owner",
-      "ledger_id": 9,
-      "sha": "4cd81f0f527f0da4"
-    },
-    {
-      "skill_id": "7fb6db7a69e75931b85594e05ed43d2b",
-      "version_no": 1,
-      "created_by": "owner",
-      "ledger_id": 2,
-      "sha": "f1be3db5994809a2"
-    },
-    {
-      "skill_id": "c7b7146c6ea65788b6d4161a4982f34b",
-      "version_no": 1,
-      "created_by": "owner",
-      "ledger_id": 1,
-      "sha": "fda9dc70b4bf5891"
-    },
-    {
-      "skill_id": "d902cc4eb75d5b9790c0278523e87aa0",
-      "version_no": 1,
-      "created_by": "owner",
-      "ledger_id": 3,
-      "sha": "d76c6f43afc6edc8"
-    }
-  ],
-  "grants": [
-    {
-      "resource_type": "skill",
-      "resource": "c7b7146c",
-      "grantee_type": "agent",
-      "grantee": "xiaowen",
-      "revoked": 0
-    },
-    {
-      "resource_type": "skill",
-      "resource": "7fb6db7a",
-      "grantee_type": "agent",
-      "grantee": "xiaowen",
-      "revoked": 0
-    },
-    {
-      "resource_type": "skill",
-      "resource": "d902cc4e",
-      "grantee_type": "agent",
-      "grantee": "xiaogang",
-      "revoked": 0
-    },
-    {
-      "resource_type": "connector",
-      "resource": "office-h",
-      "grantee_type": "agent",
-      "grantee": "xiaowen",
-      "revoked": 0
-    },
-    {
-      "resource_type": "agent",
-      "resource": "xiaowen",
-      "grantee_type": "user",
-      "grantee": "lilei",
-      "revoked": 0
-    },
-    {
-      "resource_type": "agent",
-      "resource": "xiaogang",
-      "grantee_type": "user",
-      "grantee": "lilei",
-      "revoked": 0
-    },
-    {
-      "resource_type": "skill",
-      "resource": "37835991",
-      "grantee_type": "agent",
-      "grantee": "7cbdab61",
-      "revoked": 1
-    }
-  ],
-  "rules": [
-    {
-      "agent_id": "xiaowen",
-      "tool_name": "write_file",
-      "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-management-1791445424432/data/workspaces/office/files",
-      "effect": "allow",
-      "revoked": 0
-    },
-    {
-      "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
-      "tool_name": "read_file",
-      "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-management-1791445424432/materials",
-      "effect": "allow",
-      "revoked": 1
-    }
-  ],
-  "audit_summary": {
-    "max_seq": 49,
-    "total": 49
-  },
-  "audit_actions": [
-    {
-      "action": "memory.job_status",
-      "n": 15
-    },
-    {
-      "action": "skill.patched",
-      "n": 5
-    },
-    {
-      "action": "memory.updated",
-      "n": 4
-    },
-    {
-      "action": "governance.skill_seeded",
-      "n": 3
-    },
-    {
-      "action": "memory.curated",
-      "n": 2
-    },
-    {
-      "action": "governance.skill_version_published",
-      "n": 2
-    },
-    {
-      "action": "governance.skill_history_registered",
-      "n": 2
-    },
-    {
-      "action": "governance.task_identities_registered",
-      "n": 1
-    },
-    {
-      "action": "governance.seed_completed",
-      "n": 1
-    },
-    {
-      "action": "governance.seed",
-      "n": 1
-    },
-    {
-      "action": "governance.rule_revoked",
-      "n": 1
-    },
-    {
-      "action": "governance.rule_created",
-      "n": 1
-    },
-    {
-      "action": "governance.identity_changed",
-      "n": 1
-    },
-    {
-      "action": "governance.grant_revoked",
-      "n": 1
-    }
-  ],
-  "event_watermark": {
-    "n": 70
-  },
-  "event_types": [
-    {
-      "type": "memory.job_status",
-      "n": 15
-    },
-    {
-      "type": "governance.resource_changed",
-      "n": 12
-    },
-    {
-      "type": "skill.patched",
-      "n": 5
-    },
-    {
-      "type": "memory.updated",
-      "n": 4
-    },
-    {
-      "type": "step.started",
-      "n": 2
-    },
-    {
-      "type": "step.completed",
-      "n": 2
-    },
-    {
-      "type": "run.started",
-      "n": 2
-    },
-    {
-      "type": "run.queued",
-      "n": 2
-    },
-    {
-      "type": "run.completed",
-      "n": 2
-    },
-    {
-      "type": "memory.snapshot_created",
-      "n": 2
-    },
-    {
-      "type": "memory.curated",
-      "n": 2
-    },
-    {
-      "type": "llm.request_started",
-      "n": 2
-    },
-    {
-      "type": "llm.request_done",
-      "n": 2
-    },
-    {
-      "type": "governance.skill_version_published",
-      "n": 2
-    }
-  ],
-  "models": [
-    {
-      "model": "deepseek-v4.1-flash"
-    }
-  ],
-  "llm_models": [
-    {
-      "model": "deepseek-v4.1-flash"
-    }
-  ],
-  "cron_jobs": [
-    {
-      "id": "d838412069eb55d295f2f7d2558b2379",
-      "name": "员工档案真实计划核查",
-      "enabled": 1,
-      "next_run_at": 1791452717723,
-      "agent": "7cbdab61c4e85b569e45d710cdf01ca5",
-      "created_by": "user"
-    }
-  ],
-  "cron_occurrences": {
-    "n": 0
-  },
-  "memory_ledger": {
-    "n": 9
-  },
-  "memory_entries": [
-    {
-      "store_type": "skill",
-      "n": 4
-    },
-    {
-      "store_type": "soul",
-      "n": 2
-    },
-    {
-      "store_type": "user",
-      "n": 1
-    },
-    {
-      "store_type": "workspace",
-      "n": 1
-    }
-  ],
-  "memory_jobs": [
-    {
-      "kind": "curate",
-      "status": "completed",
-      "n": 2
-    },
-    {
-      "kind": "curate",
-      "status": "failed",
-      "n": 1
-    },
-    {
-      "kind": "summary",
-      "status": "cancelled",
-      "n": 1
-    },
-    {
-      "kind": "summary",
-      "status": "completed",
-      "n": 1
-    }
-  ],
-  "llm_calls": {
-    "n": 2
-  },
-  "tool_calls": {
-    "n": 0
-  },
-  "chain_head_file": "49 99753a697ea3a79f497f6eb8334b2f6276fcf2ab5a25a315abccf2bddd234f76",
   "files": [
     {
       "path": "data/agentcrew.db",
-      "sha256": "de017a315b885028002023ca5903ac2aa8b494c630e2bae8a169c79483d6973f"
+      "sha256": "ba2b11040bc811d86b30dd485411ecba4f5194b505dcbbb6f2adedaffbc8c23f",
+      "mtime_ms": 1791452966250,
+      "size": 1306624
     },
     {
       "path": "data/chain-head.txt",
-      "sha256": "b698a3d74498fca75feb20b7dfe01ee6f7973e60b5d8cf8985060d6dfb603de6"
+      "sha256": "5e9fc06c0fe50655845fae01674ce0a5318631ff9d13467e55465797c9157b83",
+      "mtime_ms": 1791452966248,
+      "size": 68
     }
   ]
 }

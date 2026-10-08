@@ -104,6 +104,7 @@ try {
   await page.getByLabel('版本修改依据').fill('所有者确认恢复历史正文并生成新版本')
   await page.getByRole('button', { name: '恢复旧正文为新版本', exact: true }).click()
   await waitFor(() => page.getByLabel('技能历史版本').locator('option').count(), (value) => value === 3)
+  await waitFor(() => page.getByRole('button', { name: '刷新治理', exact: true }).isEnabled(), (value) => value === true)
   await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click()
   result.cases.push({ name: 'Skill版本发布、不可变历史与恢复旧正文产生新版本', passed: true })
   await page.getByRole('tab', { name: '连接器', exact: true }).click()
