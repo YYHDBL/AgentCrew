@@ -1,0 +1,28 @@
+node tests/m3-management.mjs（第8次运行，退出码0，11项检查）
+运行输出：{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-management-1791445424432","cases":11}
+EXIT=0
+案例清单：
+- 通过员工配置创建真实员工与模型槽
+- 岗位及模型槽修改影响新任务，历史快照保持完整
+- 员工档案接入真实三库与记忆账本
+- 统一技能服务发布不可变新版本
+- 刷新后档案范围、员工列表与技能版本状态一致
+- 真实Grant独立授予及撤销，权限规则回收
+- 员工档案定时任务来自真实服务端记录
+- 管理中心实际HTTP连接校验与员工档案
+- member管理操作禁用与真实403
+- 独立验收库篡改后的只读诊断、导出、受控恢复与完整验证
+- 宽窄窗口与键盘打开、取消及焦点返回有效
+员工 7cbdab61c4e85b569e45d710cdf01ca5；旧任务 b19e47a4c8324555b7922a5db0d6a971（completed）；新任务 e12be32a91424a109f5f607d6bb295d0（completed）
+真实计划 d838412069eb55d295f2f7d2558b2379（next_run_at=1791452717723）；审计导出 44 行
+恢复后事件水位 70，审计序号 49，恢复库审计行数 49
+后端回归（AGENTCREW_TEST_CONFIG_SOURCE=data/config.json，固化套件另需 AGENTCREW_RUN_CENTER_DATA_DIR 指向 identity-httpcurrent）：
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+99 passed, 1 warning in 391.54s (0:06:31)
+EXIT=0
+m1-memory 回归：{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-memory-1791446535256","operations":11,"all_checks_passed":true}
+EXIT=0
+m2-governance 回归：{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m2-governance-1791447005253","cases":20}
+EXIT=0
+m3-run-center 回归：{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-run-center-1791447174312","cases":8,"task_run_id":"fd3923bad8be4d01b5584923f4426940"}
+EXIT=0

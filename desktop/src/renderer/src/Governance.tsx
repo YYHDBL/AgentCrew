@@ -1,7 +1,9 @@
 import { cloneElement, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { Button, Modal, Tabs } from 'antd'
-import { api } from './session'
+import { api, type Frame } from './session'
 import { allPages, type Identity, type Resource, type AgentSpec, type Grant, type Rule, type Membership, type Version, type AuditRow, type AuditVerification, type Backup, type Diagnostic, type Page } from './governance-data'
+import { Memory, memoryNames, type MemoryKind } from './Memory'
+import type { CronJob, CronOccurrence } from './api/types'
 
 const stateName = (status: string): string => ({ active: '有效', disabled: '已禁用', archived: '已归档' })[status] ?? status
 const stamp = (value: string): string => new Date(value).toLocaleString('zh-CN')
@@ -14,9 +16,16 @@ function Field({ label, children }: { label: string; children: JSX.Element }): J
   return <div className="governance-field"><label htmlFor={id}>{label}</label>{cloneElement(children, { id })}</div>
 }
 
-export function Governance({ identity, workspace, agent, revision, diagnostic, changed, onDiagnostic, selectScope }: {
+export interface GovernanceProps {
   identity: Identity; workspace: string; agent: string; revision: number; diagnostic: Diagnostic; changed: () => void; onDiagnostic: (value: Diagnostic) => void; selectScope: (workspace: string, agent: string) => void
-}): JSX.Element {
+  view?: 'governance' | 'studio' | 'admin'; embedded?: boolean; onRun?: (taskId: string) => void; events?: Frame[]; connectionStatus?: string
+}
+
+export function Governance({ identity, workspace, agent, revision, diagnostic, changed, onDiagnostic, selectScope, view = 'governance', embedded = false, onRun, events = [], connectionStatus = '' }: GovernanceProps): JSX.Element {
+  const Root = embedded ? 'section' : 'main'
+  const Heading = embedded ? 'h2' : 'h1'
+  const studio = view === 'studio'
+  const scopeLabel = studio ? { workspace: '档案工作区', agent: '档案员工' } : { workspace: '治理工作区', agent: '治理员工' }
   const [resources, setResources] = useState<{ workspaces: Resource[]; agents: Resource[]; skills: Resource[]; connectors: Resource[] }>({ workspaces: [], agents: [], skills: [], connectors: [] })
   const [grants, setGrants] = useState<Grant[]>([])
   const [rules, setRules] = useState<Rule[]>([])
@@ -49,15 +58,25 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
   const [backups, setBackups] = useState<Backup[]>([])
   const [backupKind, setBackupKind] = useState('directory')
   const [restorePending, setRestorePending] = useState(false)
+  const [cronJobs, setCronJobs] = useState<CronJob[]>([])
+  const [cronHistory, setCronHistory] = useState<Record<string, CronOccurrence[]>>({})
+  const [cronError, setCronError] = useState('')
   const [tab, setTab] = useState(() => diagnostic.mode === 'diagnostic' ? 'audit' : 'employees')
   const mutationIds = useRef(new Map<string, string>())
   const viewGeneration = useRef(0)
+  const previousMode = useRef(diagnostic.mode)
   useLayoutEffect(() => {
+    const restoredToNormal = previousMode.current === 'diagnostic' && diagnostic.mode === 'normal'
+    previousMode.current = diagnostic.mode
     viewGeneration.current += 1
     setResources({ workspaces: [], agents: [], skills: [], connectors: [] }); setGrants([]); setRules([]); setMembers([])
-    setVersionSkill(null); setVersions([]); setSelectedVersion(null); setVersionText(''); setVersionBasis(''); setAudit([]); setAuditAfter(null); setVerification(null)
+    setVersionSkill(null); setVersions([]); setSelectedVersion(null); setVersionText(''); setVersionBasis(''); setAudit([]); setAuditAfter(null)
+    if (!restoredToNormal) setVerification(null)
+    setCronJobs([]); setCronHistory({}); setCronError('')
     setEditor(null); setConfirmation(null); setError(''); setNote('')
-  }, [workspace, agent, identity.role, identity.organization_status, identity.workspace_ids.join('|')])
+    setBusy(false); setLoading(false)
+    if (diagnostic.mode === 'diagnostic') setTab(studio ? 'employees' : 'audit')
+  }, [workspace, agent, identity.effective_user_id, identity.role, identity.organization_status, identity.workspace_ids.join('|'), diagnostic.mode, studio])
   const canManage = identity.role !== 'member' && identity.organization_status === 'active' && diagnostic.mode === 'normal'
   const canOwn = identity.role === 'owner'
   const blockReason = diagnostic.mode === 'diagnostic' ? '只读诊断期间，业务操作已禁用。' : identity.organization_status !== 'active' ? '组织已经禁用。业务操作停止，owner可以在组织管理中重新启用。' : identity.role === 'member' ? '当前member角色仅能查看已授权资源，管理操作由owner或admin执行。' : ''
@@ -69,14 +88,20 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
   const mutate = async (path: string, body: Record<string, unknown>, method = 'POST'): Promise<unknown> => api(path, { ...body, change_id: identifier(path + method, body) }, undefined, method)
 
   const load = async (signal?: AbortSignal): Promise<void> => {
+    const generation = viewGeneration.current
     setLoading(true)
     try {
       if (diagnostic.mode === 'diagnostic') {
-        if (canOwn) setBackups(await api<Backup[]>('/diagnostics/backups', undefined, signal))
+        if (canOwn) {
+          const records = await api<Backup[]>('/diagnostics/backups', undefined, signal)
+          if (!signal?.aborted && generation === viewGeneration.current) setBackups(records)
+        }
         return
       }
       if (identity.organization_status !== 'active') {
-        setOrganization(await api<Resource>('/organization', undefined, signal))
+        const org = await api<Resource>('/organization', undefined, signal)
+        if (signal?.aborted || generation !== viewGeneration.current) return
+        setOrganization(org)
         setResources({ workspaces: [], agents: [], skills: [], connectors: [] }); setGrants([]); setRules([]); setMembers([])
         return
       }
@@ -87,12 +112,15 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
       let connectors: Resource[] = []
       if (identity.role !== 'member' && workspace) connectors = await allPages<Resource>(`/connectors?workspace_id=${encodeURIComponent(workspace)}`, signal)
       const ruleRows = agent ? await allPages<Rule>(`/agents/${agent}/permission-rules?revoked=true`, signal) : []
-      if (signal?.aborted) return
+      if (signal?.aborted || generation !== viewGeneration.current) return
       setResources({ workspaces, agents, skills, connectors }); setGrants(grantRows); setMembers(membershipRows); setOrganization(org); setRules(ruleRows)
       if (versionSkill && !skills.some((item) => item.id === versionSkill.id)) { viewGeneration.current += 1; setVersionSkill(null); setVersions([]); setSelectedVersion(null); setVersionText(''); setVersionBasis('') }
       setOrganizationName((value) => value || org.name)
-      if (canOwn) setBackups(await api<Backup[]>('/diagnostics/backups', undefined, signal))
-    } finally { if (!signal?.aborted) setLoading(false) }
+      if (canOwn) {
+        const records = await api<Backup[]>('/diagnostics/backups', undefined, signal)
+        if (!signal?.aborted && generation === viewGeneration.current) setBackups(records)
+      }
+    } finally { if (!signal?.aborted && generation === viewGeneration.current) setLoading(false) }
   }
   useEffect(() => {
     const controller = new AbortController()
@@ -100,11 +128,31 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
     return () => controller.abort()
   }, [identity.effective_user_id, identity.organization_status, workspace, agent, revision, diagnostic.mode])
 
+  useEffect(() => {
+    if (!studio || tab !== 'profile' || diagnostic.mode !== 'normal' || identity.organization_status !== 'active' || !workspace) return
+    const generation = viewGeneration.current
+    const controller = new AbortController()
+    setCronError('')
+    void (async () => {
+      const jobs = await allPages<CronJob>(`/cron/jobs?workspace_id=${encodeURIComponent(workspace)}`, controller.signal)
+      const mine = jobs.filter((job) => job.metadata.agent_id === agent)
+      const history: Record<string, CronOccurrence[]> = {}
+      for (const job of mine) {
+        const page = await api<{ items: CronOccurrence[] }>(`/cron/jobs/${job.id}/runs?limit=5`, undefined, controller.signal)
+        history[job.id] = page.items
+      }
+      if (controller.signal.aborted || generation !== viewGeneration.current) return
+      setCronJobs(mine); setCronHistory(history)
+    })().catch((reason: Error) => { if (!controller.signal.aborted) setCronError(reason.message) })
+    return () => controller.abort()
+  }, [studio, tab, workspace, agent, revision, diagnostic.mode, identity.effective_user_id, identity.organization_status])
+
   const operate = async (operation: () => Promise<void>, message: string): Promise<void> => {
+    const generation = viewGeneration.current
     setBusy(true); setError(''); setNote('')
-    try { await operation(); setNote(message); setConfirmation(null); changed(); await load() }
-    catch (reason) { setError(reason instanceof Error ? reason.message : String(reason)) }
-    finally { setBusy(false) }
+    try { await operation(); if (generation !== viewGeneration.current) return; setNote(message); setConfirmation(null); changed(); await load() }
+    catch (reason) { if (generation === viewGeneration.current) setError(reason instanceof Error ? reason.message : String(reason)) }
+    finally { if (generation === viewGeneration.current) setBusy(false) }
   }
   const edit = (kind: Editor['kind'], resource: Resource | null): void => {
     const spec = resource?.spec ?? defaults
@@ -116,6 +164,7 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
   }
   const saveEditor = async (): Promise<void> => {
     if (!editor) return
+    const generation = viewGeneration.current
     const kind = editor.kind
     const base = { expected_revision: editor.resource?.revision ?? 0, name: editor.name }
     let body: Record<string, unknown> = base
@@ -123,7 +172,7 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
     if (kind === 'skill') body = { ...base, description: editor.description, ...(editor.resource ? {} : { workspace_id: workspace, agent_id: agent, text: editor.text, basis: '用户通过治理界面配置技能正文' }) }
     if (kind === 'connector') body = { ...base, config: JSON.parse(editor.config), ...(editor.resource ? {} : { workspace_id: workspace, type: editor.connectorType }), ...(editor.clearCredential ? { credential: null } : editor.credential ? { credential: editor.credential } : {}) }
     await mutate(`/${kind === 'workspace' ? 'workspaces' : kind === 'agent' ? 'agents' : kind === 'skill' ? 'skills' : 'connectors'}${editor.resource ? '/' + editor.resource.id : ''}`, body, editor.resource ? 'PATCH' : 'POST')
-    setEditor(null)
+    if (generation === viewGeneration.current) setEditor(null)
   }
   const statusChange = (kind: string, resource: Resource, status: string): void => {
     setConfirmation({ title: `${stateName(status)}${resource.name}`, description: `对象：${resource.name}，修订${resource.revision}。${status === 'active' ? '重新启用后，当前授权决定可用能力。' : '资源将停止可用，受影响执行取消并保留已发生效果核验；历史记录继续保留。'}`,
@@ -227,7 +276,7 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
       <p>锚点状态：{verification.anchor.status} · 序号：{verification.anchor.seq ?? '没有'}</p><small>{verification.anchor.hash}</small>
     </section>}
     {audit.length ? <table className="governance-table"><thead><tr><th>审计序号与时间</th><th>操作者与动作</th><th>资源与详情</th></tr></thead><tbody>
-      {audit.map((row) => <tr key={row.seq}><td>{row.seq}<small>{stamp(row.ts)}</small></td><td>{row.actor_type} · {row.actor_id}<small>{row.action}</small></td><td>{row.resource_type} · {row.resource_id}<details><summary>审计详情与哈希</summary><pre>{JSON.stringify(row.detail, null, 2)}</pre><small>{row.hash}</small></details></td></tr>)}
+      {audit.map((row) => <tr key={row.seq}><td>{row.seq}<small>{stamp(row.ts)}</small></td><td>{row.actor_type} · {row.actor_id}<small>{row.action}</small></td><td>{row.resource_type} · {row.resource_id}<details><summary>审计详情与哈希</summary><pre>{JSON.stringify(row.detail, null, 2)}</pre><small>{row.hash}</small></details>{onRun && typeof row.detail.task_run_id === 'string' && <Button onClick={() => onRun(row.detail.task_run_id as string)}>查看来源任务</Button>}</td></tr>)}
     </tbody></table> : empty}
     {auditAfter && <Button disabled={busy} onClick={() => void operate(() => queryAudit(true), '已读取下一页审计')}>读取下一页</Button>}
     <h2>受控备份与恢复</h2>
@@ -255,19 +304,72 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
     </tr>)}</tbody></table>
   }
 
+  const employeesPanel = <><div className="governance-heading"><h2>员工岗位与配置</h2><Button type="primary" disabled={!canManage || busy} onClick={() => edit('agent', null)}>创建员工</Button></div>{resources.agents.length ? dataRows('agents', resources.agents.filter((item) => item.workspace_id === workspace)) : empty}</>
+  const skillsPanel = <><div className="governance-heading"><h2>工作区技能</h2><Button disabled={!canManage || busy || !agent} onClick={() => edit('skill', null)}>创建技能</Button></div>{resources.skills.length ? dataRows('skills', resources.skills.filter((item) => item.workspace_id === workspace)) : empty}</>
+  const connectorsPanel = identity.role === 'member' ? <p>连接器配置由owner或admin管理。员工仅使用当前Grant允许的连接器。</p> : <><div className="governance-heading"><h2>HTTP与MCP连接器</h2><Button disabled={!canManage || busy} onClick={() => edit('connector', null)}>创建连接器</Button></div>{resources.connectors.length ? dataRows('connectors', resources.connectors) : empty}</>
+  const grantsPanel = <><h2>当前与历史授权</h2><div className="governance-form-inline"><Field label="授权资源类型"><select value={grantKind} disabled={!canManage} onChange={(e) => { setGrantKind(e.target.value); setGrantResource(''); setGrantee('') }}><option value="skill">Skill</option><option value="connector">连接器</option><option value="agent">员工使用</option></select></Field><Field label="授权资源"><select value={grantResource} onChange={(e) => setGrantResource(e.target.value)} disabled={!canManage}><option value="">请选择</option>{(grantKind === 'skill' ? resources.skills : grantKind === 'connector' ? resources.connectors : resources.agents).filter((item) => item.workspace_id === workspace && item.status === 'active').map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Field label="授权接收者"><select value={grantee} onChange={(e) => setGrantee(e.target.value)} disabled={!canManage}><option value="">请选择</option>{(grantKind === 'agent' ? members.map((item) => ({ id: item.user_id, name: item.name })) : resources.agents.filter((item) => item.workspace_id === workspace && item.status === 'active')).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Button disabled={!canManage || busy || !grantResource || !grantee} onClick={() => void operate(async () => { await mutate('/grants', { resource_type: grantKind, resource_id: grantResource, grantee_type: grantKind === 'agent' ? 'user' : 'agent', grantee_id: grantee }) }, '授权已保存')}>授予能力</Button></div>{grants.length ? <table className="governance-table"><thead><tr><th>资源与接收者</th><th>来源及状态</th><th>操作</th></tr></thead><tbody>{grants.map((grant) => <tr key={grant.id}><td>{grant.resource_type} · {grant.resource_id}<small>{grant.grantee_type} · {grant.grantee_id}</small></td><td>{grant.revoked_at ? '已撤销' : '有效'} · 修订{grant.revision}<small>授予者：{grant.granted_by_user_id} · {stamp(grant.created_at)}</small></td><td><Button danger disabled={!canManage || busy || Boolean(grant.revoked_at)} onClick={() => setConfirmation({ title: '撤销授权', description: `撤销${grant.id}后，当前执行立即复查；已发生效果保留核验。`, execute: async () => { await mutate(`/grants/${grant.id}`, { expected_revision: grant.revision }, 'DELETE') } })}>撤销授权</Button></td></tr>)}</tbody></table> : empty}</>
+  const rulesPanel = <><h2>当前员工权限规则</h2><p>bash按完整命令等值匹配，deny优先；人工审批继续受scope、protected、角色和Grant限制。</p><div className="governance-form-inline"><Field label="规则工具"><input value={ruleTool} onChange={(e) => setRuleTool(e.target.value)} disabled={!canManage} /></Field><Field label="规则匹配范围"><input value={rulePattern} onChange={(e) => setRulePattern(e.target.value)} disabled={!canManage} /></Field><Field label="规则决定"><select value={ruleEffect} onChange={(e) => setRuleEffect(e.target.value)} disabled={!canManage}><option value="allow">允许</option><option value="deny">拒绝</option></select></Field><Button disabled={!canManage || busy || !ruleTool || !rulePattern || !agent} onClick={() => void operate(async () => { await mutate(`/agents/${agent}/permission-rules`, { tool_name: ruleTool, pattern: rulePattern, effect: ruleEffect }) }, '规则已保存')}>保存规则</Button></div>{rules.length ? <table className="governance-table"><thead><tr><th>工具及匹配范围</th><th>决定与来源</th><th>操作</th></tr></thead><tbody>{rules.map((rule) => <tr key={rule.id}><td>{rule.tool_name}<small>{rule.pattern}</small></td><td>{rule.effect} · {rule.revoked_at ? '已回收' : '有效'} · 修订{rule.revision}<small>创建者：{rule.created_by_user_id}</small></td><td><Button danger disabled={!canManage || busy || Boolean(rule.revoked_at)} onClick={() => setConfirmation({ title: '回收权限规则', description: `回收${rule.tool_name}范围${rule.pattern}。后续调用重新判定当前规则。`, execute: async () => { await mutate(`/agents/${agent}/permission-rules/${rule.id}`, { expected_revision: rule.revision }, 'DELETE') } })}>回收规则</Button></td></tr>)}</tbody></table> : empty}</>
+  const profileAgent = resources.agents.find((item) => item.id === agent) ?? null
+  const profileGrants = grants.filter((grant) => grant.grantee_type === 'agent' && grant.grantee_id === agent)
+  const occurrenceRun = (occurrence: CronOccurrence): string | null => occurrence.task_run_id ?? occurrence.attempts.find((attempt) => attempt.task_run_id)?.task_run_id ?? null
+  const profilePanel = <>
+    <h2>员工档案</h2>
+    {!profileAgent ? empty : <>
+      <p>{profileAgent.name}（{profileAgent.id}） · {stateName(profileAgent.status)} · 修订{profileAgent.revision} · 模型槽{profileAgent.spec?.model_slot ?? 'main'}</p>
+      <p>岗位：{profileAgent.spec?.position || '尚未配置岗位'}</p>
+      <h3>技能引用与不可变版本</h3>
+      {(profileAgent.spec?.skill_ids ?? []).length ? <table className="governance-table"><thead><tr><th>技能</th><th>状态及当前版本</th></tr></thead><tbody>
+        {profileAgent.spec!.skill_ids.map((id) => { const skill = resources.skills.find((item) => item.id === id)
+          return <tr key={id}><td>{skill ? skill.name : '当前范围不可见'}<small>{id}</small></td><td>{skill ? <>{stateName(skill.status)} · 修订{skill.revision} · {skill.current_version_id ? `当前版本${skill.current_version_id}` : '尚无发布版本'}</> : '执行仍要求该员工当前有效Grant'}</td></tr> })}
+      </tbody></table> : <p className="governance-empty">当前没有技能引用。</p>}
+      <h3>连接器引用</h3>
+      {(profileAgent.spec?.connector_ids ?? []).length ? <table className="governance-table"><thead><tr><th>连接器</th><th>类型与凭据状态</th></tr></thead><tbody>
+        {profileAgent.spec!.connector_ids.map((id) => { const connector = resources.connectors.find((item) => item.id === id)
+          return <tr key={id}><td>{connector ? connector.name : '当前范围不可见'}<small>{id}</small></td><td>{connector ? <>{connector.type ?? 'http'} · {stateName(connector.status)} · 凭据{connector.credential_configured ? '已配置' : '未配置'}</> : '执行仍要求当前有效Grant'}</td></tr> })}
+      </tbody></table> : <p className="governance-empty">当前没有连接器引用。</p>}
+      <h3>当前授权清单</h3>
+      {profileGrants.length ? <table className="governance-table"><thead><tr><th>资源与状态</th><th>来源</th></tr></thead><tbody>
+        {profileGrants.map((grant) => <tr key={grant.id}><td>{grant.resource_type} · {grant.resource_id}<small>{grant.revoked_at ? '已撤销' : '有效'}</small></td><td>授予者{grant.granted_by_user_id} · {stamp(grant.created_at)}</td></tr>)}
+      </tbody></table> : <p className="governance-empty">当前没有授予该员工的资源能力，Grant须独立授予。</p>}
+      <h3>记忆三库</h3>
+      <p className="governance-actions">{(['user', 'workspace', 'soul'] as MemoryKind[]).map((kind) => <Button key={kind} disabled={busy} onClick={() => setTab(`store-${kind}`)}>{memoryNames[kind]}</Button>)}</p>
+      <h3>所属定时任务</h3>
+      {cronError && <p role="alert">{cronError}</p>}
+      {cronJobs.length ? <table className="governance-table"><thead><tr><th>计划与创建来源</th><th>状态及真实发生记录</th></tr></thead><tbody>
+        {cronJobs.map((job) => <tr key={job.id}><td>{job.name}<small>{job.id} · 创建来源{job.metadata.created_by}{job.metadata.created_via_task_run_id ? ` · 任务${job.metadata.created_via_task_run_id}` : ''}</small></td>
+          <td>{job.state.enabled ? '启用' : '停用'} · 下次{job.state.next_run_at ? new Date(job.state.next_run_at).toLocaleString('zh-CN') : '无'} · 最近{job.state.last_status ?? '尚未运行'}
+            {(cronHistory[job.id] ?? []).map((occurrence) => { const runId = occurrenceRun(occurrence)
+              return <p key={occurrence.id}>发生{occurrence.id} · {occurrence.status} · 计划时刻{occurrence.scheduled_at ? new Date(occurrence.scheduled_at).toLocaleString('zh-CN') : '手动'}{runId && onRun ? <> · <Button disabled={busy} onClick={() => onRun!(runId)}>查看运行记录</Button></> : null}</p> })}
+          </td></tr>)}
+      </tbody></table> : <p className="governance-empty">当前员工没有可见的定时任务。</p>}
+    </>}
+  </>
+  const memoryStoreTab = (kind: MemoryKind) => ({ key: `store-${kind}`, label: memoryNames[kind], disabled: diagnostic.mode === 'diagnostic',
+    children: agent ? <Memory kind={kind} workspace={workspace} agent={agent} events={events} connectionStatus={connectionStatus} identity={identity} embedded onRun={onRun} /> : <p className="governance-empty">请先选择档案员工。</p> })
+
   const tabs = [
-    { key: 'employees', label: '数字员工', disabled: diagnostic.mode === 'diagnostic', children: <><div className="governance-heading"><h2>员工岗位与配置</h2><Button type="primary" disabled={!canManage || busy} onClick={() => edit('agent', null)}>创建员工</Button></div>{resources.agents.length ? dataRows('agents', resources.agents.filter((item) => item.workspace_id === workspace)) : empty}</> },
+    { key: 'employees', label: studio ? '员工配置' : '数字员工', disabled: diagnostic.mode === 'diagnostic', children: employeesPanel },
     { key: 'workspaces', label: '组织与工作区', disabled: diagnostic.mode === 'diagnostic', children: organizationPanel },
-    { key: 'skills', label: '技能与版本', disabled: diagnostic.mode === 'diagnostic', children: <><div className="governance-heading"><h2>工作区技能</h2><Button disabled={!canManage || busy || !agent} onClick={() => edit('skill', null)}>创建技能</Button></div>{resources.skills.length ? dataRows('skills', resources.skills.filter((item) => item.workspace_id === workspace)) : empty}</> },
-    { key: 'connectors', label: '连接器', disabled: diagnostic.mode === 'diagnostic', children: identity.role === 'member' ? <p>连接器配置由owner或admin管理。员工仅使用当前Grant允许的连接器。</p> : <><div className="governance-heading"><h2>HTTP与MCP连接器</h2><Button disabled={!canManage || busy} onClick={() => edit('connector', null)}>创建连接器</Button></div>{resources.connectors.length ? dataRows('connectors', resources.connectors) : empty}</> },
-    { key: 'grants', label: 'Grant授权', disabled: diagnostic.mode === 'diagnostic', children: <><h2>当前与历史授权</h2><div className="governance-form-inline"><Field label="授权资源类型"><select value={grantKind} disabled={!canManage} onChange={(e) => { setGrantKind(e.target.value); setGrantResource(''); setGrantee('') }}><option value="skill">Skill</option><option value="connector">连接器</option><option value="agent">员工使用</option></select></Field><Field label="授权资源"><select value={grantResource} onChange={(e) => setGrantResource(e.target.value)} disabled={!canManage}><option value="">请选择</option>{(grantKind === 'skill' ? resources.skills : grantKind === 'connector' ? resources.connectors : resources.agents).filter((item) => item.workspace_id === workspace && item.status === 'active').map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Field label="授权接收者"><select value={grantee} onChange={(e) => setGrantee(e.target.value)} disabled={!canManage}><option value="">请选择</option>{(grantKind === 'agent' ? members.map((item) => ({ id: item.user_id, name: item.name })) : resources.agents.filter((item) => item.workspace_id === workspace && item.status === 'active')).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Button disabled={!canManage || busy || !grantResource || !grantee} onClick={() => void operate(async () => { await mutate('/grants', { resource_type: grantKind, resource_id: grantResource, grantee_type: grantKind === 'agent' ? 'user' : 'agent', grantee_id: grantee }) }, '授权已保存')}>授予能力</Button></div>{grants.length ? <table className="governance-table"><thead><tr><th>资源与接收者</th><th>来源及状态</th><th>操作</th></tr></thead><tbody>{grants.map((grant) => <tr key={grant.id}><td>{grant.resource_type} · {grant.resource_id}<small>{grant.grantee_type} · {grant.grantee_id}</small></td><td>{grant.revoked_at ? '已撤销' : '有效'} · 修订{grant.revision}<small>授予者：{grant.granted_by_user_id} · {stamp(grant.created_at)}</small></td><td><Button danger disabled={!canManage || busy || Boolean(grant.revoked_at)} onClick={() => setConfirmation({ title: '撤销授权', description: `撤销${grant.id}后，当前执行立即复查；已发生效果保留核验。`, execute: async () => { await mutate(`/grants/${grant.id}`, { expected_revision: grant.revision }, 'DELETE') } })}>撤销授权</Button></td></tr>)}</tbody></table> : empty}</> },
-    { key: 'rules', label: '员工规则', disabled: diagnostic.mode === 'diagnostic', children: <><h2>当前员工权限规则</h2><p>bash按完整命令等值匹配，deny优先；人工审批继续受scope、protected、角色和Grant限制。</p><div className="governance-form-inline"><Field label="规则工具"><input value={ruleTool} onChange={(e) => setRuleTool(e.target.value)} disabled={!canManage} /></Field><Field label="规则匹配范围"><input value={rulePattern} onChange={(e) => setRulePattern(e.target.value)} disabled={!canManage} /></Field><Field label="规则决定"><select value={ruleEffect} onChange={(e) => setRuleEffect(e.target.value)} disabled={!canManage}><option value="allow">允许</option><option value="deny">拒绝</option></select></Field><Button disabled={!canManage || busy || !ruleTool || !rulePattern || !agent} onClick={() => void operate(async () => { await mutate(`/agents/${agent}/permission-rules`, { tool_name: ruleTool, pattern: rulePattern, effect: ruleEffect }) }, '规则已保存')}>保存规则</Button></div>{rules.length ? <table className="governance-table"><thead><tr><th>工具及匹配范围</th><th>决定与来源</th><th>操作</th></tr></thead><tbody>{rules.map((rule) => <tr key={rule.id}><td>{rule.tool_name}<small>{rule.pattern}</small></td><td>{rule.effect} · {rule.revoked_at ? '已回收' : '有效'} · 修订{rule.revision}<small>创建者：{rule.created_by_user_id}</small></td><td><Button danger disabled={!canManage || busy || Boolean(rule.revoked_at)} onClick={() => setConfirmation({ title: '回收权限规则', description: `回收${rule.tool_name}范围${rule.pattern}。后续调用重新判定当前规则。`, execute: async () => { await mutate(`/agents/${agent}/permission-rules/${rule.id}`, { expected_revision: rule.revision }, 'DELETE') } })}>回收规则</Button></td></tr>)}</tbody></table> : empty}</> },
+    { key: 'skills', label: '技能与版本', disabled: diagnostic.mode === 'diagnostic', children: skillsPanel },
+    { key: 'connectors', label: '连接器', disabled: diagnostic.mode === 'diagnostic', children: connectorsPanel },
+    { key: 'grants', label: 'Grant授权', disabled: diagnostic.mode === 'diagnostic', children: grantsPanel },
+    { key: 'rules', label: '员工规则', disabled: diagnostic.mode === 'diagnostic', children: rulesPanel },
     { key: 'roles', label: '角色与成员', disabled: diagnostic.mode === 'diagnostic', children: membersPanel },
     { key: 'audit', label: '审计与诊断', children: auditPanel }
   ]
-  return <main className="governance-page" aria-busy={loading || busy}><div className="governance-heading"><div><h1>员工与治理</h1><p>当前角色：{identity.role} · 有效身份：{identity.name} · 真实凭证所属者：{identity.credential_owner_id}</p></div><Button disabled={busy} onClick={() => void operate(() => load(), '已刷新当前状态')}>刷新治理</Button></div>{diagnostic.mode === 'normal' && <div className="governance-form-inline"><Field label="治理工作区"><select value={workspace} disabled={busy} onChange={(e) => selectScope(e.target.value, resources.agents.find((item) => item.workspace_id === e.target.value && item.status === 'active')?.id ?? '')}>{resources.workspaces.filter((item) => item.status === 'active').map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Field label="治理员工"><select value={agent} disabled={busy} onChange={(e) => selectScope(workspace, e.target.value)}>{resources.agents.filter((item) => item.workspace_id === workspace && item.status === 'active').map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field></div>}{diagnostic.mode === 'diagnostic' && <section className="governance-diagnostic" role="alert"><h2>只读诊断</h2><p>{diagnostic.reason}</p><p>{diagnostic.hint}</p></section>}{blockReason && <p className="governance-permission">{blockReason}</p>}{error && <p id="governance-error" role="alert">{error}；未提交的编辑内容保持完整。</p>}{note && <p role="status">{note}</p>}<Tabs activeKey={tab} onChange={setTab} items={tabs} />
+  const studioTabs = [
+    { key: 'employees', label: '员工配置', disabled: diagnostic.mode === 'diagnostic', children: employeesPanel },
+    { key: 'profile', label: '员工档案', disabled: diagnostic.mode === 'diagnostic', children: profilePanel },
+    memoryStoreTab('user'), memoryStoreTab('workspace'), memoryStoreTab('soul'),
+    { key: 'skills', label: '技能与版本', disabled: diagnostic.mode === 'diagnostic', children: skillsPanel },
+    { key: 'connectors', label: '连接器', disabled: diagnostic.mode === 'diagnostic', children: connectorsPanel },
+    { key: 'grants', label: 'Grant授权', disabled: diagnostic.mode === 'diagnostic', children: grantsPanel },
+    { key: 'rules', label: '员工规则', disabled: diagnostic.mode === 'diagnostic', children: rulesPanel }
+  ]
+  const tabItems = studio ? studioTabs : view === 'admin' ? tabs.filter((item) => ['workspaces', 'connectors', 'grants', 'rules', 'roles', 'audit'].includes(item.key)) : tabs
+  return <Root className="governance-page" aria-busy={loading || busy}><div className="governance-heading"><div><Heading>{view === 'admin' ? '管理中心' : view === 'studio' ? '数字员工管理' : '员工与治理'}</Heading><p>当前角色：{identity.role} · 有效身份：{identity.name} · 真实凭证所属者：{identity.credential_owner_id}</p></div><Button disabled={busy} onClick={() => void operate(() => load(), '已刷新当前状态')}>刷新治理</Button></div>{diagnostic.mode === 'normal' && <div className="governance-form-inline"><Field label={scopeLabel.workspace}><select value={workspace} disabled={busy} onChange={(e) => selectScope(e.target.value, resources.agents.find((item) => item.workspace_id === e.target.value && item.status === 'active')?.id ?? '')}>{resources.workspaces.filter((item) => item.status === 'active').map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Field label={scopeLabel.agent}><select value={agent} disabled={busy} onChange={(e) => selectScope(workspace, e.target.value)}>{resources.agents.filter((item) => item.workspace_id === workspace && item.status === 'active').map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field></div>}{diagnostic.mode === 'diagnostic' && <section className="governance-diagnostic" role="alert"><h2>只读诊断</h2><p>{diagnostic.reason}</p><p>{diagnostic.hint}</p></section>}{blockReason && <p className="governance-permission">{blockReason}</p>}{error && <p id="governance-error" role="alert">{error}；未提交的编辑内容保持完整。</p>}{note && <p role="status">{note}</p>}<Tabs activeKey={tab} onChange={setTab} items={tabItems} />
     <Modal title={editor ? `${editor.resource ? '编辑' : '创建'}${editor.kind === 'agent' ? '员工' : editor.kind === 'skill' ? '技能' : editor.kind === 'workspace' ? '工作区' : '连接器'}` : ''} open={Boolean(editor)} onCancel={() => { if (!busy) setEditor(null) }} onOk={() => void operate(saveEditor, '资源已保存')} confirmLoading={busy} okText={editor?.kind === 'agent' ? '保存员工' : '保存资源'} cancelText="取消编辑" destroyOnClose>
-      {editor && <div className="governance-editor"><Field label={editor.kind === 'agent' ? '员工名称' : '资源名称'}><input autoFocus aria-describedby="governance-error" value={editor.name} onChange={(e) => setEditor({ ...editor, name: e.target.value })} required /></Field>{editor.kind === 'agent' && <><Field label="员工岗位"><textarea value={editor.position} onChange={(e) => setEditor({ ...editor, position: e.target.value })} required /></Field><Field label="员工模型槽"><select value={editor.slot} onChange={(e) => setEditor({ ...editor, slot: e.target.value as 'main' | 'aux' })}><option value="main">main</option><option value="aux">aux</option></select></Field><Field label="员工技能引用"><select multiple value={editor.skillIds} onChange={(e) => setEditor({ ...editor, skillIds: Array.from(e.target.selectedOptions, (option) => option.value) })}>{resources.skills.filter((item) => item.workspace_id === workspace && item.status === 'active').map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Field label="员工连接器引用"><select multiple value={editor.connectorIds} onChange={(e) => setEditor({ ...editor, connectorIds: Array.from(e.target.selectedOptions, (option) => option.value) })}>{resources.connectors.filter((item) => item.status === 'active').map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><p>资源引用保存配置，执行仍需当前有效Grant。</p></>}{editor.kind === 'skill' && <><Field label="技能描述"><input value={editor.description} onChange={(e) => setEditor({ ...editor, description: e.target.value })} required /></Field>{!editor.resource && <Field label="技能正文"><textarea value={editor.text} onChange={(e) => setEditor({ ...editor, text: e.target.value })} required /></Field>}</>}{editor.kind === 'connector' && <><Field label="连接器类型"><select value={editor.connectorType} disabled={Boolean(editor.resource)} onChange={(e) => setEditor({ ...editor, connectorType: e.target.value as 'http' | 'mcp' })}><option value="http">HTTP</option><option value="mcp">MCP</option></select></Field><Field label="连接器配置JSON"><textarea className="governance-code" value={editor.config} onChange={(e) => setEditor({ ...editor, config: e.target.value })} required /></Field><Field label="连接器凭据"><input type="password" autoComplete="off" value={editor.credential} onChange={(e) => setEditor({ ...editor, credential: e.target.value })} /></Field><p>凭据由服务端绑定，保存后仅展示配置状态。</p></>}{error && <p role="alert">{error}</p>}</div>}
+      {editor && <div className="governance-editor"><p>本次编辑基于修订 {editor.resource?.revision ?? 0}。保存使用当前对象的并发版本校验。</p><Field label={editor.kind === 'agent' ? '员工名称' : '资源名称'}><input autoFocus aria-describedby="governance-error" value={editor.name} onChange={(e) => setEditor({ ...editor, name: e.target.value })} required /></Field>{editor.kind === 'agent' && <><Field label="员工岗位"><textarea value={editor.position} onChange={(e) => setEditor({ ...editor, position: e.target.value })} required /></Field><Field label="员工模型槽"><select value={editor.slot} onChange={(e) => setEditor({ ...editor, slot: e.target.value as 'main' | 'aux' })}><option value="main">main</option><option value="aux">aux</option></select></Field><Field label="员工技能引用"><select multiple value={editor.skillIds} onChange={(e) => setEditor({ ...editor, skillIds: Array.from(e.target.selectedOptions, (option) => option.value) })}>{resources.skills.filter((item) => item.workspace_id === workspace && item.status === 'active').map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><Field label="员工连接器引用"><select multiple value={editor.connectorIds} onChange={(e) => setEditor({ ...editor, connectorIds: Array.from(e.target.selectedOptions, (option) => option.value) })}>{resources.connectors.filter((item) => item.status === 'active').map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></Field><p>资源引用保存配置，执行仍需当前有效Grant。</p></>}{editor.kind === 'skill' && <><Field label="技能描述"><input value={editor.description} onChange={(e) => setEditor({ ...editor, description: e.target.value })} required /></Field>{!editor.resource && <Field label="技能正文"><textarea value={editor.text} onChange={(e) => setEditor({ ...editor, text: e.target.value })} required /></Field>}</>}{editor.kind === 'connector' && <><Field label="连接器类型"><select value={editor.connectorType} disabled={Boolean(editor.resource)} onChange={(e) => setEditor({ ...editor, connectorType: e.target.value as 'http' | 'mcp' })}><option value="http">HTTP</option><option value="mcp">MCP</option></select></Field><Field label="连接器配置JSON"><textarea className="governance-code" value={editor.config} onChange={(e) => setEditor({ ...editor, config: e.target.value })} required /></Field><Field label="连接器凭据"><input type="password" autoComplete="off" value={editor.credential} onChange={(e) => setEditor({ ...editor, credential: e.target.value })} /></Field><p>凭据由服务端绑定，保存后仅展示配置状态。</p></>}{error && <p role="alert">{error}</p>}</div>}
       {editor?.kind === 'connector' && editor.resource && <label><input type="checkbox" checked={editor.clearCredential} onChange={(event) => setEditor({ ...editor, clearCredential: event.target.checked })} />清除已配置凭据</label>}
     </Modal>
     <Modal title={confirmation?.title ?? ''} open={Boolean(confirmation)} okText="确认操作" cancelText="取消操作" confirmLoading={busy} onCancel={() => { if (!busy) setConfirmation(null) }} onOk={() => { if (confirmation) void operate(confirmation.execute, '操作已保存') }}><p>{confirmation?.description}</p>{error && <p role="alert">{error}</p>}</Modal>
@@ -281,5 +383,5 @@ export function Governance({ identity, workspace, agent, revision, diagnostic, c
       <div className="governance-actions"><Button disabled={!canManage || busy || !versionBasis.trim()} onClick={() => void operate(() => publishVersion(), '新版本已发布')}>发布新版本</Button><Button disabled={!canManage || busy || !versionBasis.trim()} onClick={() => void operate(() => publishVersion(true), '旧正文已恢复为新版本')}>恢复旧正文为新版本</Button></div>
       {error && <p role="alert">{error}</p>}
     </Modal>
-  </main>
+  </Root>
 }

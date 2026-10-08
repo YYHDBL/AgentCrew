@@ -1,0 +1,343 @@
+{
+  "employee": {
+    "id": "7cbdab61c4e85b569e45d710cdf01ca5",
+    "name": "真实档案员工-992979b9",
+    "status": "active",
+    "revision": 3,
+    "spec": "{\"connector_ids\":[],\"model_slot\":\"aux\",\"position\":\"逐项核查实际资料来源，保存真实校验依据。\",\"skill_ids\":[\"37835991d01c55669fb90c58966d7159\"]}"
+  },
+  "tasks": [
+    {
+      "id": "b19e47a4c8324555b7922a5db0d6a971",
+      "status": "completed",
+      "cron_job_id": null
+    },
+    {
+      "id": "e12be32a91424a109f5f607d6bb295d0",
+      "status": "completed",
+      "cron_job_id": null
+    }
+  ],
+  "attempts": [
+    {
+      "task_run_id": "b19e47a4c8324555b7922a5db0d6a971",
+      "attempt_no": 1,
+      "outcome": "completed"
+    },
+    {
+      "task_run_id": "e12be32a91424a109f5f607d6bb295d0",
+      "attempt_no": 1,
+      "outcome": "completed"
+    }
+  ],
+  "skill_versions": [
+    {
+      "skill_id": "37835991d01c55669fb90c58966d7159",
+      "version_no": 1,
+      "created_by": "owner",
+      "ledger_id": 8,
+      "sha": "fa7b83cc7deba9e2"
+    },
+    {
+      "skill_id": "37835991d01c55669fb90c58966d7159",
+      "version_no": 2,
+      "created_by": "owner",
+      "ledger_id": 9,
+      "sha": "4cd81f0f527f0da4"
+    },
+    {
+      "skill_id": "7fb6db7a69e75931b85594e05ed43d2b",
+      "version_no": 1,
+      "created_by": "owner",
+      "ledger_id": 2,
+      "sha": "f1be3db5994809a2"
+    },
+    {
+      "skill_id": "c7b7146c6ea65788b6d4161a4982f34b",
+      "version_no": 1,
+      "created_by": "owner",
+      "ledger_id": 1,
+      "sha": "fda9dc70b4bf5891"
+    },
+    {
+      "skill_id": "d902cc4eb75d5b9790c0278523e87aa0",
+      "version_no": 1,
+      "created_by": "owner",
+      "ledger_id": 3,
+      "sha": "d76c6f43afc6edc8"
+    }
+  ],
+  "grants": [
+    {
+      "resource_type": "skill",
+      "resource": "c7b7146c",
+      "grantee_type": "agent",
+      "grantee": "xiaowen",
+      "revoked": 0
+    },
+    {
+      "resource_type": "skill",
+      "resource": "7fb6db7a",
+      "grantee_type": "agent",
+      "grantee": "xiaowen",
+      "revoked": 0
+    },
+    {
+      "resource_type": "skill",
+      "resource": "d902cc4e",
+      "grantee_type": "agent",
+      "grantee": "xiaogang",
+      "revoked": 0
+    },
+    {
+      "resource_type": "connector",
+      "resource": "office-h",
+      "grantee_type": "agent",
+      "grantee": "xiaowen",
+      "revoked": 0
+    },
+    {
+      "resource_type": "agent",
+      "resource": "xiaowen",
+      "grantee_type": "user",
+      "grantee": "lilei",
+      "revoked": 0
+    },
+    {
+      "resource_type": "agent",
+      "resource": "xiaogang",
+      "grantee_type": "user",
+      "grantee": "lilei",
+      "revoked": 0
+    },
+    {
+      "resource_type": "skill",
+      "resource": "37835991",
+      "grantee_type": "agent",
+      "grantee": "7cbdab61",
+      "revoked": 1
+    }
+  ],
+  "rules": [
+    {
+      "agent_id": "xiaowen",
+      "tool_name": "write_file",
+      "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-management-1791445424432/data/workspaces/office/files",
+      "effect": "allow",
+      "revoked": 0
+    },
+    {
+      "agent_id": "7cbdab61c4e85b569e45d710cdf01ca5",
+      "tool_name": "read_file",
+      "pattern": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-management-1791445424432/materials",
+      "effect": "allow",
+      "revoked": 1
+    }
+  ],
+  "audit_summary": {
+    "max_seq": 49,
+    "total": 49
+  },
+  "audit_actions": [
+    {
+      "action": "memory.job_status",
+      "n": 15
+    },
+    {
+      "action": "skill.patched",
+      "n": 5
+    },
+    {
+      "action": "memory.updated",
+      "n": 4
+    },
+    {
+      "action": "governance.skill_seeded",
+      "n": 3
+    },
+    {
+      "action": "memory.curated",
+      "n": 2
+    },
+    {
+      "action": "governance.skill_version_published",
+      "n": 2
+    },
+    {
+      "action": "governance.skill_history_registered",
+      "n": 2
+    },
+    {
+      "action": "governance.task_identities_registered",
+      "n": 1
+    },
+    {
+      "action": "governance.seed_completed",
+      "n": 1
+    },
+    {
+      "action": "governance.seed",
+      "n": 1
+    },
+    {
+      "action": "governance.rule_revoked",
+      "n": 1
+    },
+    {
+      "action": "governance.rule_created",
+      "n": 1
+    },
+    {
+      "action": "governance.identity_changed",
+      "n": 1
+    },
+    {
+      "action": "governance.grant_revoked",
+      "n": 1
+    }
+  ],
+  "event_watermark": {
+    "n": 70
+  },
+  "event_types": [
+    {
+      "type": "memory.job_status",
+      "n": 15
+    },
+    {
+      "type": "governance.resource_changed",
+      "n": 12
+    },
+    {
+      "type": "skill.patched",
+      "n": 5
+    },
+    {
+      "type": "memory.updated",
+      "n": 4
+    },
+    {
+      "type": "step.started",
+      "n": 2
+    },
+    {
+      "type": "step.completed",
+      "n": 2
+    },
+    {
+      "type": "run.started",
+      "n": 2
+    },
+    {
+      "type": "run.queued",
+      "n": 2
+    },
+    {
+      "type": "run.completed",
+      "n": 2
+    },
+    {
+      "type": "memory.snapshot_created",
+      "n": 2
+    },
+    {
+      "type": "memory.curated",
+      "n": 2
+    },
+    {
+      "type": "llm.request_started",
+      "n": 2
+    },
+    {
+      "type": "llm.request_done",
+      "n": 2
+    },
+    {
+      "type": "governance.skill_version_published",
+      "n": 2
+    }
+  ],
+  "models": [
+    {
+      "model": "deepseek-v4.1-flash"
+    }
+  ],
+  "llm_models": [
+    {
+      "model": "deepseek-v4.1-flash"
+    }
+  ],
+  "cron_jobs": [
+    {
+      "id": "d838412069eb55d295f2f7d2558b2379",
+      "name": "员工档案真实计划核查",
+      "enabled": 1,
+      "next_run_at": 1791452717723,
+      "agent": "7cbdab61c4e85b569e45d710cdf01ca5",
+      "created_by": "user"
+    }
+  ],
+  "cron_occurrences": {
+    "n": 0
+  },
+  "memory_ledger": {
+    "n": 9
+  },
+  "memory_entries": [
+    {
+      "store_type": "skill",
+      "n": 4
+    },
+    {
+      "store_type": "soul",
+      "n": 2
+    },
+    {
+      "store_type": "user",
+      "n": 1
+    },
+    {
+      "store_type": "workspace",
+      "n": 1
+    }
+  ],
+  "memory_jobs": [
+    {
+      "kind": "curate",
+      "status": "completed",
+      "n": 2
+    },
+    {
+      "kind": "curate",
+      "status": "failed",
+      "n": 1
+    },
+    {
+      "kind": "summary",
+      "status": "cancelled",
+      "n": 1
+    },
+    {
+      "kind": "summary",
+      "status": "completed",
+      "n": 1
+    }
+  ],
+  "llm_calls": {
+    "n": 2
+  },
+  "tool_calls": {
+    "n": 0
+  },
+  "chain_head_file": "49 99753a697ea3a79f497f6eb8334b2f6276fcf2ab5a25a315abccf2bddd234f76",
+  "files": [
+    {
+      "path": "data/agentcrew.db",
+      "sha256": "de017a315b885028002023ca5903ac2aa8b494c630e2bae8a169c79483d6973f"
+    },
+    {
+      "path": "data/chain-head.txt",
+      "sha256": "b698a3d74498fca75feb20b7dfe01ee6f7973e60b5d8cf8985060d6dfb603de6"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Button, Modal } from 'antd'
 import { api, ApiFailure, type Frame } from './session'
+import type { Identity } from './api/types'
 
 export type MemoryKind = 'user' | 'workspace' | 'soul' | 'skill'
 export const memoryNames: Record<MemoryKind, string> = { user: 'USER 记忆', workspace: '工作区记忆', soul: '员工 soul', skill: '技能管理' }
@@ -11,12 +12,12 @@ interface Skill { id: string; name: string; description: string; revision: numbe
 interface LedgerFile { path: string; content: string | null; sha256: string | null }
 interface Ledger { id: number; change_id: string; action: string; before_text: string; after_text: string; before_metadata: Record<string, unknown>; after_metadata: Record<string, unknown>; before_files: LedgerFile[]; after_files: LedgerFile[]; created_at: string; source: Record<string, unknown> }
 interface Approval { id: string; call_id: string; input_hash: string; tool: string; input: Record<string, unknown>; status: string }
-interface Job { id: string; kind: string; status: string; task_run_id: string | null; model: string | null; error: string | null; report: Record<string, unknown> | null; approvals: Approval[]; usage: { input_tokens: number; output_tokens: number }; created_at: string }
+interface Job { id: string; kind: string; status: string; task_run_id: string | null; model: string | null; error: string | null; report: Record<string, unknown> | null; approvals: Approval[]; usage: { input_tokens: number | null; output_tokens: number | null; complete?: boolean }; created_at: string }
 interface MemorySettings { user_quota: number; workspace_quota: number; soul_quota: number; write_approval: boolean }
 interface Page<T> { items: T[]; next_after: string | null }
 interface Confirmation { title: string; label: string; detail: JSX.Element; run: () => Promise<void> }
 const date = (value: string | null): string => value ? new Date(value).toLocaleString('zh-CN') : '尚未使用'
-const jobName = (kind: string): string => ({ summary: '任务摘要', memory_review: '记忆提炼', skill_review: '技能审查', curate: '记忆治理' })[kind] ?? kind
+const jobName = (kind: string): string => ({ summary: '任务摘要', memory_review: '记忆提炼', skill_review: '技能审查', curate: '记忆治理', trace_audit: '轨迹审查', promote_skill: '真人确认技能固化' })[kind] ?? kind
 
 function LedgerFiles({ files }: { files: LedgerFile[] }): JSX.Element {
   return <div>{files.map((file) => <details key={file.path}><summary>{file.path}</summary><p>{file.content === null ? '文件不存在' : `SHA ${file.sha256}`}</p><pre>{file.content}</pre></details>)}</div>
@@ -33,7 +34,9 @@ export function SoulMemory(props: Omit<Parameters<typeof Memory>[0], 'kind'>): J
   return <Memory {...props} kind="soul" />
 }
 
-export function Memory({ kind, workspace, agent, events, connectionStatus }: { kind: MemoryKind; workspace: string; agent: string; events: Frame[]; connectionStatus: string }): JSX.Element {
+export function Memory({ kind, workspace, agent, events, connectionStatus, identity, embedded = false, onRun }: { kind: MemoryKind; workspace: string; agent: string; events: Frame[]; connectionStatus: string; identity: Identity; embedded?: boolean; onRun?: (taskId: string) => void }): JSX.Element {
+  const Root = embedded ? 'section' : 'main'
+  const Heading = embedded ? 'h2' : 'h1'
   const scope = new URLSearchParams({ workspace_id: workspace, agent_id: agent }).toString()
   const selectionKey = `memory-selection:${scope}:${kind}`
   const [store, setStore] = useState<Store | null>(null)
@@ -64,7 +67,8 @@ export function Memory({ kind, workspace, agent, events, connectionStatus }: { k
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [note, setNote] = useState('')
-  const [readonly, setReadonly] = useState(false)
+  const [storeReadonly, setReadonly] = useState(false)
+  const readonly = storeReadonly || identity.role === 'member' || identity.organization_status !== 'active'
   const [confirm, setConfirm] = useState<Confirmation | null>(null)
   const [search, setSearch] = useState('')
   const [searchAfter, setSearchAfter] = useState<string | null>(null)
@@ -97,11 +101,14 @@ export function Memory({ kind, workspace, agent, events, connectionStatus }: { k
     else sessionStorage.removeItem(`${selectionKey}:skill`)
   }, [selectionKey, selectedId, skillId])
   const load = async (signal?: AbortSignal): Promise<void> => {
-    const [jobPage, configuration] = await Promise.all([
-      api<Page<Job>>(`/memory/jobs?${scope}`, undefined, signal), api<{ memory: MemorySettings }>('/settings', undefined, signal)
-    ])
+    const jobPage = await api<Page<Job>>(`/memory/jobs?${scope}`, undefined, signal)
     if (signal?.aborted || selection.current !== selectionIdentity) return
-    setJobs(jobPage.items); setJobsAfter(jobPage.next_after); setSettings(configuration.memory)
+    setJobs(jobPage.items); setJobsAfter(jobPage.next_after)
+    if (identity.role === 'owner') {
+      const configuration = await api<{ memory: MemorySettings }>('/settings', undefined, signal)
+      if (signal?.aborted || selection.current !== selectionIdentity) return
+      setSettings(configuration.memory)
+    } else { setSettings(null); setSettingsVisible(false) }
     if (kind === 'skill') {
       const index = await api<Page<Skill>>(`/memory/skills?${scope}&archived=true`, undefined, signal)
       if (signal?.aborted || selection.current !== selectionIdentity) return
@@ -124,7 +131,7 @@ export function Memory({ kind, workspace, agent, events, connectionStatus }: { k
     setLoading(true); setError(''); setReadonly(false)
     void load(controller.signal).catch((reason) => { if (!controller.signal.aborted) reportError(reason) }).finally(() => { if (!controller.signal.aborted) setLoading(false) })
     return () => controller.abort()
-  }, [kind, workspace, agent, skillId, filter, ledgerVisible])
+  }, [kind, workspace, agent, skillId, filter, ledgerVisible, identity.effective_user_id, identity.role])
   const watermark = events.at(-1)?.global_seq ?? 0
   useEffect(() => {
     const controller = new AbortController()
@@ -203,14 +210,15 @@ export function Memory({ kind, workspace, agent, events, connectionStatus }: { k
     setConfirm({ title: '治理当前记忆', label: '确认治理', detail: <p>检查十四天及三十天使用记录，保护固定条目和有效引用，完整归档闲置材料。</p>, run: async () => { await api('/memory/curate/run', { workspace_id: workspace, agent_id: agent, client_request_id }) } })
   }
   const filteredEvents = events.filter((event) => ['memory.updated', 'memory.archived', 'skill.patched', 'memory.curated', 'context.compacted'].includes(event.type)).slice(-12).reverse()
-  return <main className="memory-page" aria-label={memoryNames[kind]} aria-busy={loading || busy}>
-    <div className="memory-heading"><div><h1>{memoryNames[kind]}</h1><p>{kind === 'soul' ? `当前员工：${agent}` : kind === 'user' ? '所有者的长期偏好与习惯' : `工作区：${workspace}　当前员工：${agent}`}</p></div><span role="status">{connectionStatus}</span></div>
+  return <Root className="memory-page" aria-label={memoryNames[kind]} aria-busy={loading || busy}>
+    <div className="memory-heading"><div><Heading>{memoryNames[kind]}</Heading><p>{kind === 'soul' ? `当前员工：${agent}` : kind === 'user' ? '所有者的长期偏好与习惯' : `工作区：${workspace}　当前员工：${agent}`}</p></div><span role="status">{connectionStatus}</span></div>
+    {identity.role === 'member' && <p>当前member身份可读取已授权记忆，编辑和治理由owner或admin处理。</p>}
     <MemoryNotice events={events} />
     {error && <p id="memory-error" role="alert">{error} {readonly ? '当前内容为只读状态。' : '输入草稿已保留，可重新读取当前内容并核查修订。'}</p>}
     {note && <p className="memory-success" role="status">{note}</p>}
     <div className="memory-toolbar"><Button ref={newButton} disabled={loading || busy || readonly || (kind === 'skill' && draft)} onClick={() => begin()}>{kind === 'skill' ? '新建技能' : '新建条目'}</Button>
       <Button disabled={busy} onClick={() => void operate(async () => { await load() }, '当前内容已刷新')}>刷新记忆</Button>
-      <Button disabled={!settings} onClick={() => { setSettingsDraft(settings); setSettingsVisible(true) }}>记忆设置</Button>
+      <Button disabled={!settings || identity.role !== 'owner'} onClick={() => { setSettingsDraft(settings); setSettingsVisible(true) }}>记忆设置</Button>
       <Button disabled={busy || readonly} onClick={confirmCuration}>治理记忆</Button>
       <label>条目状态 <select aria-label="条目状态" disabled={busy || draft} value={filter} onChange={(event) => { setFilter(event.target.value); setSelectedId(null) }}><option value="all">全部状态</option>{['active', 'stale', 'archived', 'pinned'].map((state) => <option key={state} value={state}>{states[state]}</option>)}</select></label>
     </div>
@@ -246,7 +254,7 @@ export function Memory({ kind, workspace, agent, events, connectionStatus }: { k
       {ledgerVisible && <section className="memory-ledger"><h2>变更记录</h2>{ledger.map((row) => <article key={row.id}><h3>记录 {row.id}　{row.action}</h3><p>{date(row.created_at)}</p><details><summary>完整变更内容</summary><p>变更前</p><pre>{row.before_text || '空白内容'}</pre><p>变更后</p><pre>{row.after_text || '空白内容'}</pre><pre>{JSON.stringify({ before: row.before_metadata, after: row.after_metadata, source: row.source }, null, 2)}</pre><h4>变更前文件</h4><LedgerFiles files={row.before_files} /><h4>变更后文件</h4><LedgerFiles files={row.after_files} /></details><Button disabled={busy || readonly} onClick={() => setConfirm({ title: '恢复此次变更前内容', label: '确认恢复变更', detail: <><p>恢复完整正文、metadata 和支撑文件，将追加新的变更记录。</p><pre>{row.before_text || '将恢复为空白内容。'}</pre><LedgerFiles files={row.before_files} /></>, run: async () => { const target = `/memory/ledger/${row.id}/rollback`; await api(`${target}?${scope}`, mutation(store!.revision, {}, target)); setDraft(false) } })}>恢复此次变更前内容</Button></article>)}{ledgerAfter && <Button onClick={() => void operate(async () => { const next = await api<Page<Ledger>>(`/memory/ledger?${scope}&store_type=${kind}&store_id=${storeId}&after=${encodeURIComponent(ledgerAfter)}`); setLedger((previous) => [...previous, ...next.items]); setLedgerAfter(next.next_after) }, '', false)}>更多变更记录</Button>}</section>}
     </section></div>
     <section className="memory-search"><h2>历史与记忆检索</h2><form onSubmit={(event) => { event.preventDefault(); void operate(async () => { const result = await api<Page<typeof hits[number]>>(`/memory/search?${scope}&archived=${searchArchived}&query=${encodeURIComponent(search)}`); setHits(result.items); setSearchAfter(result.next_after) }, '检索完成', false) }}><label>查询内容<input aria-label="查询内容" value={search} onChange={(event) => { setSearch(event.target.value); setSearchAfter(null) }} required maxLength={200} /></label><label><input type="checkbox" checked={searchArchived} onChange={(event) => { setSearchArchived(event.target.checked); setSearchAfter(null) }} />包含归档记忆</label><Button htmlType="submit" disabled={busy || !search.trim()}>搜索历史</Button></form>{hits.map((hit) => <details key={`${hit.kind}:${hit.id}`}><summary>{hit.text.slice(0, 100)}</summary><pre>{hit.text}</pre><pre>{JSON.stringify(hit.source, null, 2)}</pre></details>)}{searchAfter && <Button onClick={() => void operate(async () => { const next = await api<Page<typeof hits[number]>>(`/memory/search?${scope}&archived=${searchArchived}&query=${encodeURIComponent(search)}&after=${encodeURIComponent(searchAfter)}`); setHits((previous) => [...previous, ...next.items]); setSearchAfter(next.next_after) }, '', false)}>更多检索结果</Button>}</section>
-    <section className="memory-jobs"><h2>后台作业</h2><p>前台任务完成后，后台作业继续记录提炼结果。新的任务会停止正在执行的辅助作业。</p>{jobs.map((job) => <article key={job.id} className="memory-job"><h3>{jobName(job.kind)}　{states[job.status]}</h3><p>作业 {job.id}　{date(job.created_at)}</p><p>{job.model ? `${job.model}　输入 ${job.usage.input_tokens}　输出 ${job.usage.output_tokens}` : '确定性治理，无模型调用'}</p>{job.error && <p role="status">{job.error}</p>}{job.report && <details><summary>实际作业结果</summary><pre>{JSON.stringify(job.report, null, 2)}</pre></details>}
+    <section className="memory-jobs"><h2>后台作业</h2><p>前台任务完成后，后台作业继续记录提炼结果。新的任务会停止正在执行的辅助作业。</p>{jobs.map((job) => <article key={job.id} className="memory-job"><h3>{jobName(job.kind)}　{states[job.status] ?? job.status}</h3><p>作业 {job.id}　{date(job.created_at)}</p><p>{job.model ? `${job.model}　输入 ${job.usage.complete === false ? '未知' : job.usage.input_tokens ?? '未知'}　输出 ${job.usage.complete === false ? '未知' : job.usage.output_tokens ?? '未知'}` : '确定性治理，无模型调用'}</p>{onRun && job.task_run_id && <Button onClick={() => onRun(job.task_run_id!)}>查看来源任务与报告</Button>}{job.error && <p role="status">{job.error}</p>}{job.report && <details><summary>实际作业结果</summary><pre>{JSON.stringify(job.report, null, 2)}</pre></details>}
       {job.approvals.map((approval) => <section key={approval.id} className="memory-approval"><h4>后台审批：{approval.tool}　{states[approval.status]}</h4><pre>{JSON.stringify(approval.input, null, 2)}</pre>{approval.status === 'pending' && job.status === 'waiting_approval' && <div className="card-actions">{[['allow_once', '本次允许'], ['reject_once', '本次拒绝']].map(([decision, label]) => <Button key={decision} disabled={busy || readonly} onClick={() => void operate(async () => { await api(`/memory/jobs/${job.id}/approvals/${approval.id}?${scope}`, { decision, input_hash: approval.input_hash }) }, `后台审批已${label}`)}>{label}</Button>)}</div>}</section>)}
       {['queued', 'running', 'waiting_approval'].includes(job.status) && <Button disabled={busy || readonly} onClick={() => void operate(async () => { await api(`/memory/jobs/${job.id}/cancel?${scope}`, {}) }, '后台作业已取消')}>取消后台作业</Button>}
     </article>)}{jobsAfter && <Button onClick={() => void operate(async () => { const next = await api<Page<Job>>(`/memory/jobs?${scope}&after=${encodeURIComponent(jobsAfter)}`); setJobs((previous) => [...previous, ...next.items]); setJobsAfter(next.next_after) }, '', false)}>更多后台作业</Button>}</section>
@@ -255,5 +263,5 @@ export function Memory({ kind, workspace, agent, events, connectionStatus }: { k
     <Modal title="记忆设置" open={settingsVisible} okText="保存记忆设置" cancelText="取消设置" confirmLoading={busy} onCancel={() => setSettingsVisible(false)} onOk={() => void operate(async () => { await api('/settings', { memory: settingsDraft }, undefined, 'PATCH'); setSettingsVisible(false) }, '记忆设置已保存')}>
       {settingsDraft && <><p>字符配额包含分隔符和换行，已归档条目不占活动库配额。</p>{[['user_quota', 'USER 配额'], ['workspace_quota', '工作区配额'], ['soul_quota', 'soul 配额']].map(([key, label]) => <label className="memory-setting" key={key}>{label}<input aria-label={label} type="number" min={1} value={settingsDraft[key as 'user_quota']} onChange={(event) => setSettingsDraft({ ...settingsDraft, [key]: Number(event.target.value) })} /></label>)}<label className="memory-setting"><input type="checkbox" checked={settingsDraft.write_approval} onChange={(event) => setSettingsDraft({ ...settingsDraft, write_approval: event.target.checked })} />后台写入需要人工审批</label></>}{error && <p role="alert">{error}</p>}
     </Modal>
-  </main>
+  </Root>
 }

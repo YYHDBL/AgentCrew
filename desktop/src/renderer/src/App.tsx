@@ -5,10 +5,13 @@ import { api, ApiFailure, setIdentityToken, useSession, useMemoryEvents, type Co
 import { Chat, Details, VerificationCards, type PendingVerification } from './Conversation'
 import { Memory, MemoryNotice, memoryNames, type MemoryKind } from './Memory'
 import { Governance } from './Governance'
+import { AgentStudio } from './agents/AgentStudio'
+import { AdminCenter } from './admin/AdminCenter'
 import { RunCenter } from './run-center/RunCenter'
 import { allPages, useGovernanceEvents, type Identity, type Resource, type Diagnostic } from './governance-data'
 
 type NarrowPanel = 'tasks' | 'details' | null
+type PageName = 'tasks' | 'governance' | 'admin' | 'runs' | 'studio' | MemoryKind
 
 export default function App(): JSX.Element {
   const [generation, setGeneration] = useState(0)
@@ -29,7 +32,7 @@ function Application(): JSX.Element {
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState('')
   const [revision, setRevision] = useState(0)
-  const [page, setPage] = useState<'tasks' | 'governance' | 'runs' | MemoryKind>(() => (sessionStorage.getItem('memory-page') as MemoryKind | 'governance' | 'runs' | null) ?? 'tasks')
+  const [page, setPage] = useState<PageName>(() => (sessionStorage.getItem('memory-page') as PageName | null) ?? 'tasks')
   const [runTarget, setRunTarget] = useState<string | null>(null)
   const [identity, setIdentity] = useState<Identity | null>(null)
   const [diagnostic, setDiagnostic] = useState<Diagnostic>({ mode: 'normal' })
@@ -93,6 +96,10 @@ function Application(): JSX.Element {
   const [connection, setConnection] = useState<'connecting' | 'connected' | 'reconnecting'>('connecting')
   const memory = useMemoryEvents(currentWorkspace, currentAgent ?? '', connection === 'connected' && Boolean(currentAgent) && Boolean(currentWorkspace) && diagnostic.mode === 'normal' && identity?.organization_status === 'active')
   const showMemory = (kind: MemoryKind): void => { setPage(kind); sessionStorage.setItem('memory-page', kind); setNarrowPanel(null) }
+  const showPage = (target: PageName): void => { if (target !== 'runs') setRunTarget(null); setPage(target); sessionStorage.setItem('memory-page', target); setNarrowPanel(null) }
+  const openRun = (taskId: string): void => { setRunTarget(taskId); setPage('runs'); sessionStorage.setItem('memory-page', 'runs'); setNarrowPanel(null) }
+  const selectScope = (space: string, employee: string): void => { setWorkspaceId(space); setAgentId(employee); sessionStorage.setItem('workspace-id', space); sessionStorage.setItem('agent-id', employee) }
+  const bumpGovernance = (): void => setGovernanceRevision((value) => value + 1)
   const sidebarButton = useRef<HTMLButtonElement>(null)
   const sidebarCloseButton = useRef<HTMLButtonElement>(null)
   const taskButton = useRef<HTMLButtonElement>(null)
@@ -293,8 +300,11 @@ function Application(): JSX.Element {
             <span className="nav-section">工作空间</span>
             <Button disabled={diagnostic.mode === 'diagnostic'} className={page === 'tasks' ? 'nav-current' : 'nav-link'} aria-current={page === 'tasks' ? 'page' : undefined} onClick={() => { setPage('tasks'); sessionStorage.removeItem('memory-page') }}>工作台</Button>
             {(Object.keys(memoryNames) as MemoryKind[]).map((kind) => <Button key={kind} disabled={diagnostic.mode === 'diagnostic'} className={page === kind ? 'nav-current' : 'nav-link'} aria-current={page === kind ? 'page' : undefined} onClick={() => showMemory(kind)}>{memoryNames[kind]}</Button>)}
-            <Button className={page === 'governance' ? 'nav-current' : 'nav-link'} aria-current={page === 'governance' ? 'page' : undefined} onClick={() => { setPage('governance'); sessionStorage.setItem('memory-page', 'governance') }}>治理管理</Button>
-            <Button disabled={diagnostic.mode === 'diagnostic'} className={page === 'runs' ? 'nav-current' : 'nav-link'} aria-current={page === 'runs' ? 'page' : undefined} onClick={() => { setRunTarget(null); setPage('runs'); sessionStorage.setItem('memory-page', 'runs') }}>运行中心</Button>
+            <span className="nav-section">管理</span>
+            <Button disabled={diagnostic.mode === 'diagnostic'} className={page === 'studio' ? 'nav-current' : 'nav-link'} aria-current={page === 'studio' ? 'page' : undefined} onClick={() => showPage('studio')}>数字员工管理</Button>
+            <Button className={page === 'admin' ? 'nav-current' : 'nav-link'} aria-current={page === 'admin' ? 'page' : undefined} onClick={() => showPage('admin')}>管理中心</Button>
+            <Button className={page === 'governance' ? 'nav-current' : 'nav-link'} aria-current={page === 'governance' ? 'page' : undefined} onClick={() => showPage('governance')}>治理管理</Button>
+            <Button disabled={diagnostic.mode === 'diagnostic'} className={page === 'runs' ? 'nav-current' : 'nav-link'} aria-current={page === 'runs' ? 'page' : undefined} onClick={() => showPage('runs')}>运行中心</Button>
             <div className="nav-bottom">
               <Button ref={sidebarCloseButton} type="text" onClick={toggleSidebar} aria-label="收起侧栏">收起侧栏</Button>
             </div>
@@ -311,7 +321,7 @@ function Application(): JSX.Element {
           </aside>
         )}
 
-        {page === 'runs' ? identity ? <RunCenter identity={identity} revision={governanceEvents.revision + governanceRevision} initialTask={runTarget} /> : <main className="run-center-page"><p role="status">正在核查运行记录读取权限。</p></main> : page === 'governance' ? identity ? <Governance identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={() => setGovernanceRevision((value) => value + 1)} onDiagnostic={setDiagnostic} selectScope={(space, employee) => { setWorkspaceId(space); setAgentId(employee); sessionStorage.setItem('workspace-id', space); sessionStorage.setItem('agent-id', employee) }} /> : <main className="governance-page"><p role="status">正在读取当前治理身份。</p>{actionError && <p role="alert">{actionError}</p>}<Button onClick={() => setIdentityToken('')}>使用真实所有者凭证重新认证</Button></main> : page !== 'tasks' ? currentAgent === null ? <main className="memory-page" aria-busy="true"><p role="status">正在读取当前员工与工作区。</p></main> : <Memory key={`${page}:${currentAgent}`} kind={page} workspace={currentWorkspace} agent={currentAgent} events={memory.events} connectionStatus={memory.status} /> : <main className="task-content">
+        {page === 'runs' ? identity ? <RunCenter identity={identity} revision={governanceEvents.revision + governanceRevision} initialTask={runTarget} /> : <main className="run-center-page"><p role="status">正在核查运行记录读取权限。</p></main> : page === 'governance' || page === 'studio' || page === 'admin' ? identity ? (page === 'studio' ? <AgentStudio identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} events={memory.events} connectionStatus={memory.status} onRun={openRun} /> : page === 'admin' ? <AdminCenter identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} onRun={openRun} /> : <Governance identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} />) : <main className="governance-page"><p role="status">正在读取当前治理身份。</p>{actionError && <p role="alert">{actionError}</p>}<Button onClick={() => setIdentityToken('')}>使用真实所有者凭证重新认证</Button></main> : page !== 'tasks' ? !identity || currentAgent === null ? <main className="memory-page" aria-busy="true"><p role="status">正在读取当前员工与工作区。</p></main> : <Memory key={`${page}:${currentAgent}`} kind={page} workspace={currentWorkspace} agent={currentAgent} events={memory.events} connectionStatus={memory.status} identity={identity} /> : <main className="task-content">
           <div className="content-scroll">
             <div className="task-heading">
               <h1>{selected ? conversations.find((item) => item.id === selected)?.title || '任务对话' : '给数字员工交代一项工作'}</h1>
@@ -321,7 +331,7 @@ function Application(): JSX.Element {
               {displayState === 'interrupted' && lastRun?.task_run_id && <Button disabled={busy || pendingVerifications.length > 0 || connection !== 'connected' || session.status !== '已连接'} loading={busy} onClick={() => void action(`/task-runs/${lastRun.task_run_id}/resume`, {})}>恢复</Button>}
             </div>
             <MemoryNotice events={memory.events} />
-            {runRecordId && <Button onClick={() => { setRunTarget(runRecordId); setPage('runs'); sessionStorage.setItem('memory-page', 'runs') }}>进入此任务运行记录</Button>}
+            {runRecordId && <Button onClick={() => openRun(runRecordId)}>进入此任务运行记录</Button>}
             <VerificationCards calls={pendingVerifications} refreshed={() => setRevision((value) => value + 1)} />
             {(actionError || session.error) && <p id="request-error" role="alert">{actionError || session.error}</p>}
             {selected ? <Chat events={session.events} replayedThrough={session.replayedThrough} /> : <div className="empty-workspace">

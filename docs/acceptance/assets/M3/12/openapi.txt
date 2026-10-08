@@ -1,0 +1,2 @@
+openapi OK: 90 paths, 44 M2 operations, 29 M3 operations, envelope consistent
+EXIT=0
