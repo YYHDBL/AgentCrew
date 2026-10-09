@@ -1,0 +1,1 @@
+{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m1-memory-1791513128907","operations":11,"all_checks_passed":true}

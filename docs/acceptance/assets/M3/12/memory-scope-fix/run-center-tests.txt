@@ -1,0 +1,1 @@
+{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-run-center-1791513473365","cases":8,"task_run_id":"41262f654cf1498db5863e70dfac2e60"}

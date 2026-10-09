@@ -1,0 +1,1 @@
+{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/memory-scope-race-1791513347263","cases":9,"all_checks_passed":true}

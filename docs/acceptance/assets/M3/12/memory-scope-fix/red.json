@@ -1,0 +1,9 @@
+{
+  "commit": "b91e7eb038fb818eeec38af69f24e07f9ed00cf9",
+  "case": "账本分页",
+  "before_rows": 0,
+  "after_rows": 5,
+  "source": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/memory-scope-race-1791512549419",
+  "event_watermark": 348,
+  "audit_sequence": 349
+}

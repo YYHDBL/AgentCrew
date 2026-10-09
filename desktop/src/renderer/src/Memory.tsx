@@ -15,7 +15,7 @@ interface Approval { id: string; call_id: string; input_hash: string; tool: stri
 interface Job { id: string; kind: string; status: string; task_run_id: string | null; model: string | null; error: string | null; report: Record<string, unknown> | null; approvals: Approval[]; usage: { input_tokens: number | null; output_tokens: number | null; complete?: boolean }; created_at: string }
 interface MemorySettings { user_quota: number; workspace_quota: number; soul_quota: number; write_approval: boolean }
 interface Page<T> { items: T[]; next_after: string | null }
-interface Confirmation { title: string; label: string; detail: JSX.Element; run: () => Promise<void> }
+interface Confirmation { title: string; label: string; detail: JSX.Element; run: (current: () => boolean) => Promise<void> }
 const date = (value: string | null): string => value ? new Date(value).toLocaleString('zh-CN') : '尚未使用'
 const jobName = (kind: string): string => ({ summary: '任务摘要', memory_review: '记忆提炼', skill_review: '技能审查', curate: '记忆治理', trace_audit: '轨迹审查', promote_skill: '真人确认技能固化' })[kind] ?? kind
 
@@ -84,13 +84,26 @@ export function Memory({ kind, workspace, agent, events, connectionStatus, ident
   const selected = entries.find((entry) => entry.entry_id === selectedId) ?? null
   const storeId = kind === 'user' ? 'owner' : kind === 'workspace' ? workspace : kind === 'soul' ? agent : skillId
   const path = storeId ? `/memory/stores/${kind}/${storeId}` : null
-  const selectionIdentity = `${scope}:${kind}:${skillId ?? ''}:${filter}`
+  const contextIdentity = `${scope}:${kind}:${identity.effective_user_id}:${identity.role}:${identity.organization_status}`
+  const selectionIdentity = `${contextIdentity}:${skillId ?? ''}:${filter}`
   const selection = useRef(selectionIdentity)
+  const context = useRef(contextIdentity)
+  const scopeGeneration = useRef(0)
   const scopedHits = searchScope === selectionIdentity ? hits : []
   const scopedSearchAfter = searchScope === selectionIdentity ? searchAfter : null
   useLayoutEffect(() => {
-    if (selection.current !== selectionIdentity) { setStore(null); setEntries([]); setSelectedId(null); setLedger([]); setHits([]); setSearchAfter(null); setSearchScope(''); setJobs([]); setJobsAfter(null); setSkills([]); setSkillAfter(null); setDraft(false); setConfirm(null) }
+    scopeGeneration.current += 1
+    if (selection.current !== selectionIdentity) {
+      setStore(null); setEntries([]); setSelectedId(null); setLedger([]); setLedgerAfter(null)
+      setHits([]); setSearchAfter(null); setSearchScope(''); setJobs([]); setJobsAfter(null); setSkills([]); setSkillAfter(null)
+      setDraft(false); setConfirm(null); setText(''); setBasis(''); setName(''); setDescription('')
+      draftTarget.current = null; draftStorePath.current = null
+      setBusy(false); setError(''); setSettingsDraft(null); setSettingsVisible(false)
+    }
+    if (context.current !== contextIdentity) setNote('')
+    context.current = contextIdentity
     selection.current = selectionIdentity; setFileName(''); setFileText(''); setFileLoaded(false)
+    return () => { scopeGeneration.current += 1 }
   }, [selectionIdentity])
   const reportError = (reason: unknown): void => {
     const failure = reason instanceof Error ? reason.message : String(reason)
@@ -104,37 +117,39 @@ export function Memory({ kind, workspace, agent, events, connectionStatus, ident
     else sessionStorage.removeItem(`${selectionKey}:skill`)
   }, [selectionKey, selectedId, skillId])
   const load = async (signal?: AbortSignal): Promise<void> => {
+    const generation = scopeGeneration.current
+    const current = (): boolean => !signal?.aborted && generation === scopeGeneration.current
     const jobPage = await api<Page<Job>>(`/memory/jobs?${scope}`, undefined, signal)
-    if (signal?.aborted || selection.current !== selectionIdentity) return
+    if (!current()) return
     setJobs(jobPage.items); setJobsAfter(jobPage.next_after)
     if (identity.role === 'owner') {
       const configuration = await api<{ memory: MemorySettings }>('/settings', undefined, signal)
-      if (signal?.aborted || selection.current !== selectionIdentity) return
+      if (!current()) return
       setSettings(configuration.memory)
     } else { setSettings(null); setSettingsVisible(false) }
     if (kind === 'skill') {
       const index = await api<Page<Skill>>(`/memory/skills?${scope}&archived=true`, undefined, signal)
-      if (signal?.aborted || selection.current !== selectionIdentity) return
+      if (!current()) return
       setSkills(index.items); setSkillAfter(index.next_after)
     }
     if (path) {
       const value = await api<Store>(`${path}?${scope}&state=${filter}`, undefined, signal)
-      if (signal?.aborted || selection.current !== selectionIdentity) return
+      if (!current()) return
       setStore(value); setEntries(value.entries)
       if (kind === 'skill') setSelectedId((previous) => previous ?? value.entries[0]?.entry_id ?? null)
       if (ledgerVisible) {
         const history = await api<Page<Ledger>>(`/memory/ledger?${scope}&store_type=${kind}&store_id=${storeId}`, undefined, signal)
-        if (!signal?.aborted && selection.current === selectionIdentity) { setLedger(history.items); setLedgerAfter(history.next_after) }
+        if (current()) { setLedger(history.items); setLedgerAfter(history.next_after) }
       }
     }
-    if (!signal?.aborted && selection.current === selectionIdentity) setReadonly(false)
+    if (current()) setReadonly(false)
   }
   useEffect(() => {
     const controller = new AbortController()
     setLoading(true); setError(''); setReadonly(false)
     void load(controller.signal).catch((reason) => { if (!controller.signal.aborted) reportError(reason) }).finally(() => { if (!controller.signal.aborted) setLoading(false) })
     return () => controller.abort()
-  }, [kind, workspace, agent, skillId, filter, ledgerVisible, identity.effective_user_id, identity.role])
+  }, [selectionIdentity, ledgerVisible])
   const watermark = events.at(-1)?.global_seq ?? 0
   useEffect(() => {
     const controller = new AbortController()
@@ -144,12 +159,13 @@ export function Memory({ kind, workspace, agent, events, connectionStatus, ident
   useLayoutEffect(() => {
     if (draft) textInput.current?.focus()
   }, [draft])
-  const operate = async (run: () => Promise<void>, message: string, refresh = true): Promise<void> => {
-    const scopeAtStart = selection.current
+  const operate = async (run: (current: () => boolean) => Promise<void>, message: string, refresh = true): Promise<void> => {
+    const generation = scopeGeneration.current
+    const current = (): boolean => generation === scopeGeneration.current
     setBusy(true); setError(''); setNote('')
-    try { await run(); if (selection.current !== scopeAtStart) return; setNote(message); if (refresh) await load(); setConfirm(null) }
-    catch (reason) { if (selection.current === scopeAtStart) { reportError(reason); if (reason instanceof ApiFailure && reason.code === 'REVISION_CONFLICT') await load() } }
-    finally { setBusy(false) }
+    try { await run(current); if (!current()) return; setNote(message); if (refresh) await load(); if (current()) setConfirm(null) }
+    catch (reason) { if (current()) { reportError(reason); if (reason instanceof ApiFailure && reason.code === 'REVISION_CONFLICT') await load() } }
+    finally { if (current()) setBusy(false) }
   }
   const mutation = (revision: number, extra: Record<string, unknown> = {}, target = path): Record<string, unknown> => {
     const body = { expected_revision: revision, basis: '所有者在记忆界面明确操作', ...extra }
@@ -167,10 +183,12 @@ export function Memory({ kind, workspace, agent, events, connectionStatus, ident
     setDraft(true); setError(''); setNote(''); setLedgerVisible(false)
   }
   const save = async (): Promise<void> => {
-    await operate(async () => {
+    await operate(async (current) => {
       let value: { entry_id: string | null; store_id?: string }
       if (creatingSkill) {
         value = await api('/memory/skills', mutation(0, { workspace_id: workspace, agent_id: agent, name, description, text, basis }, '/memory/skills'))
+        if (!current()) return
+        setNote('技能已保存')
         setSkillId(value.store_id!)
       } else {
         if (!path || draftStorePath.current !== path) throw new Error('编辑目标已发生变化，请取消编辑并重新读取目标记忆库。')
@@ -179,6 +197,7 @@ export function Memory({ kind, workspace, agent, events, connectionStatus, ident
         value = await api(`${target}?${scope}`, mutation(draftRevision.current, { text, basis,
           ...(kind === 'skill' ? { description } : {}) }, `${editing ? 'PATCH' : 'POST'} ${target}`), undefined, editing ? 'PATCH' : 'POST')
       }
+      if (!current()) return
       setSelectedId(value.entry_id); setDraft(false)
     }, kind === 'skill' ? '技能已保存' : '记忆已保存')
   }
@@ -189,25 +208,26 @@ export function Memory({ kind, workspace, agent, events, connectionStatus, ident
     setConfirm({ title: label, label: `确认${label}`, detail: <><p>操作对象：{entry.text}</p><p>{action === 'approve' ? '审核通过后，新会话注入及检索可使用该事实。' : action === 'archive' ? '归档保留完整内容和历史记录，可通过恢复条目重新启用。' : action === 'restore' ? '恢复后该条目重新占用活动库配额。' : '此操作将追加变更记录。'}</p></>,
       run: async () => { await api(endpoint, mutation(store.revision, action === 'approve' || action === 'reject' ? { review_decision: action } : {}, endpoint)) } })
   }
-  const moreEntries = async (): Promise<void> => {
+  const moreEntries = async (current: () => boolean): Promise<void> => {
     if (!store?.next_after || !path) return
     const next = await api<Store>(`${path}?${scope}&state=${filter}&after=${encodeURIComponent(store.next_after)}`)
+    if (!current()) return
     setEntries((previous) => [...previous, ...next.entries]); setStore(next)
   }
   const readFile = async (file: string): Promise<void> => {
     setFileName(file); setFileLoaded(false)
-    await operate(async () => {
+    await operate(async (current) => {
       const value = await api<{ text: string; revision: number }>(`/memory/skills/${skillId}/file?${scope}&file=${encodeURIComponent(file)}`)
-      if (selection.current !== selectionIdentity) return
+      if (!current()) return
       setFileText(value.text); setFileLoaded(true); draftRevision.current = value.revision
     }, '已读取技能支撑文件')
   }
-  const saveFile = async (remove = false): Promise<void> => {
+  const saveFile = async (current: () => boolean, remove = false): Promise<void> => {
     if (!selected || !path || !store) return
     const target = `${path}/entries/${selected.entry_hash}`
     await api(`${target}?${scope}`, mutation(fileLoaded ? draftRevision.current : store.revision,
       { text: selected.text, files: { [fileName]: remove ? null : fileText } }, `PATCH ${target}`), undefined, 'PATCH')
-    setFileLoaded(false)
+    if (current()) setFileLoaded(false)
   }
   const confirmCuration = (): void => {
     const client_request_id = crypto.randomUUID()
@@ -228,10 +248,10 @@ export function Memory({ kind, workspace, agent, events, connectionStatus, ident
     </div>
     {loading && <p role="status">正在读取实际记忆资料。</p>}
     <div className="memory-body"><aside className="memory-index" aria-label={kind === 'skill' ? '技能索引' : '记忆条目'}>
-      {kind === 'skill' ? <>{skills.map((skill) => <button type="button" disabled={busy || draft} key={skill.id} aria-current={skillId === skill.id ? 'true' : undefined} onClick={() => { setSkillId(skill.id); setSelectedId(null); setDraft(false); setLedgerVisible(false) }}><strong>{skill.name}</strong><span>{skill.description}</span><small>{states[skill.state]}　修订 {skill.revision}</small></button>)}{skillAfter && <Button onClick={() => void operate(async () => { const next = await api<Page<Skill>>(`/memory/skills?${scope}&archived=true&after=${encodeURIComponent(skillAfter)}`); setSkills((previous) => [...previous, ...next.items]); setSkillAfter(next.next_after) }, '', false)}>更多技能</Button>}</>
+      {kind === 'skill' ? <>{skills.map((skill) => <button type="button" disabled={busy || draft} key={skill.id} aria-current={skillId === skill.id ? 'true' : undefined} onClick={() => { setSkillId(skill.id); setSelectedId(null); setDraft(false); setLedgerVisible(false) }}><strong>{skill.name}</strong><span>{skill.description}</span><small>{states[skill.state]}　修订 {skill.revision}</small></button>)}{skillAfter && <Button disabled={busy} onClick={() => void operate(async (current) => { const next = await api<Page<Skill>>(`/memory/skills?${scope}&archived=true&after=${encodeURIComponent(skillAfter)}`); if (!current()) return; setSkills((previous) => [...previous, ...next.items]); setSkillAfter(next.next_after) }, '', false)}>更多技能</Button>}</>
         : entries.map((entry) => <button type="button" disabled={busy || draft} key={entry.entry_id} aria-current={selectedId === entry.entry_id ? 'true' : undefined} onClick={() => select(entry)}><span>{entry.text.split('\n')[0]}</span><small>{states[entry.state]}{entry.needs_review ? '　待人工审核' : ''}</small></button>)}
       {!loading && (kind === 'skill' ? skills.length === 0 : entries.length === 0) && <p>当前范围没有条目，可以新建记忆。</p>}
-      {kind !== 'skill' && store?.next_after && <Button onClick={() => void operate(moreEntries, '', false)}>更多条目</Button>}
+      {kind !== 'skill' && store?.next_after && <Button disabled={busy} onClick={() => void operate(moreEntries, '', false)}>更多条目</Button>}
     </aside><section className="memory-detail" aria-label="记忆内容">
       {store && <div className="memory-quota"><span>修订 {store.revision}</span><span>{store.quota === null ? '技能正文按需读取' : `${store.used_characters} / ${store.quota} 字符`}</span>{store.quota !== null && <progress value={store.used_characters} max={store.quota} aria-label="记忆配额占用" />}</div>}
       {draft ? <form onSubmit={(event) => { event.preventDefault(); void save() }} aria-describedby={error ? 'memory-error' : undefined}>
@@ -253,18 +273,18 @@ export function Memory({ kind, workspace, agent, events, connectionStatus, ident
       })() : <p>选择条目查看完整正文、来源和依据。</p>}</>}
       {kind === 'skill' && store && !draft && <section className="memory-files"><h2>支撑文件</h2>{store.files?.map((file) => <Button disabled={busy} key={file} onClick={() => void readFile(file)}>{file}</Button>)}
         <label>支撑文件路径<input aria-label="支撑文件路径" disabled={busy} value={fileName} placeholder="references/checklist.md" onChange={(event) => { setFileName(event.target.value); setFileLoaded(false) }} /></label><label>支撑文件正文<textarea aria-label="支撑文件正文" disabled={busy} value={fileText} onChange={(event) => setFileText(event.target.value)} /></label>
-        <div className="card-actions"><Button disabled={busy || readonly || !selected || !fileName.trim()} onClick={() => void operate(() => saveFile(), '支撑文件已保存')}>保存支撑文件</Button><Button danger disabled={busy || readonly || !selected || !fileLoaded} onClick={() => setConfirm({ title: '删除支撑文件', label: '确认删除支撑文件', detail: <p>删除 {fileName}，完整历史仍保存在变更记录中。</p>, run: () => saveFile(true) })}>删除支撑文件</Button></div>
+        <div className="card-actions"><Button disabled={busy || readonly || !selected || !fileName.trim()} onClick={() => void operate((current) => saveFile(current), '支撑文件已保存')}>保存支撑文件</Button><Button danger disabled={busy || readonly || !selected || !fileLoaded} onClick={() => setConfirm({ title: '删除支撑文件', label: '确认删除支撑文件', detail: <p>删除 {fileName}，完整历史仍保存在变更记录中。</p>, run: (current) => saveFile(current, true) })}>删除支撑文件</Button></div>
       </section>}
-      {ledgerVisible && <section className="memory-ledger"><h2>变更记录</h2>{ledger.map((row) => <article key={row.id}><h3>记录 {row.id}　{row.action}</h3><p>{date(row.created_at)}</p><details><summary>完整变更内容</summary><p>变更前</p><pre>{row.before_text || '空白内容'}</pre><p>变更后</p><pre>{row.after_text || '空白内容'}</pre><pre>{JSON.stringify({ before: row.before_metadata, after: row.after_metadata, source: row.source }, null, 2)}</pre><h4>变更前文件</h4><LedgerFiles files={row.before_files} /><h4>变更后文件</h4><LedgerFiles files={row.after_files} /></details><Button disabled={busy || readonly} onClick={() => setConfirm({ title: '恢复此次变更前内容', label: '确认恢复变更', detail: <><p>恢复完整正文、metadata 和支撑文件，将追加新的变更记录。</p><pre>{row.before_text || '将恢复为空白内容。'}</pre><LedgerFiles files={row.before_files} /></>, run: async () => { const target = `/memory/ledger/${row.id}/rollback`; await api(`${target}?${scope}`, mutation(store!.revision, {}, target)); setDraft(false) } })}>恢复此次变更前内容</Button></article>)}{ledgerAfter && <Button onClick={() => void operate(async () => { const next = await api<Page<Ledger>>(`/memory/ledger?${scope}&store_type=${kind}&store_id=${storeId}&after=${encodeURIComponent(ledgerAfter)}`); setLedger((previous) => [...previous, ...next.items]); setLedgerAfter(next.next_after) }, '', false)}>更多变更记录</Button>}</section>}
+      {ledgerVisible && <section className="memory-ledger"><h2>变更记录</h2>{ledger.map((row) => <article key={row.id}><h3>记录 {row.id}　{row.action}</h3><p>{date(row.created_at)}</p><details><summary>完整变更内容</summary><p>变更前</p><pre>{row.before_text || '空白内容'}</pre><p>变更后</p><pre>{row.after_text || '空白内容'}</pre><pre>{JSON.stringify({ before: row.before_metadata, after: row.after_metadata, source: row.source }, null, 2)}</pre><h4>变更前文件</h4><LedgerFiles files={row.before_files} /><h4>变更后文件</h4><LedgerFiles files={row.after_files} /></details><Button disabled={busy || readonly} onClick={() => setConfirm({ title: '恢复此次变更前内容', label: '确认恢复变更', detail: <><p>恢复完整正文、metadata 和支撑文件，将追加新的变更记录。</p><pre>{row.before_text || '将恢复为空白内容。'}</pre><LedgerFiles files={row.before_files} /></>, run: async (current) => { const target = `/memory/ledger/${row.id}/rollback`; await api(`${target}?${scope}`, mutation(store!.revision, {}, target)); if (current()) setDraft(false) } })}>恢复此次变更前内容</Button></article>)}{ledgerAfter && <Button disabled={busy} onClick={() => void operate(async (current) => { const next = await api<Page<Ledger>>(`/memory/ledger?${scope}&store_type=${kind}&store_id=${storeId}&after=${encodeURIComponent(ledgerAfter)}`); if (!current()) return; setLedger((previous) => [...previous, ...next.items]); setLedgerAfter(next.next_after) }, '', false)}>更多变更记录</Button>}</section>}
     </section></div>
-    <section className="memory-search"><h2>历史与记忆检索</h2><form onSubmit={(event) => { event.preventDefault(); const scopeAtStart = selectionIdentity; void operate(async () => { const result = await api<Page<typeof hits[number]>>(`/memory/search?${scope}&archived=${searchArchived}&query=${encodeURIComponent(search)}`); setHits(result.items); setSearchAfter(result.next_after); setSearchScope(scopeAtStart) }, '检索完成', false) }}><label>查询内容<input aria-label="查询内容" value={search} onChange={(event) => { setSearch(event.target.value); setSearchAfter(null) }} required maxLength={200} /></label><label><input type="checkbox" checked={searchArchived} onChange={(event) => { setSearchArchived(event.target.checked); setSearchAfter(null) }} />包含归档记忆</label><Button htmlType="submit" disabled={busy || !search.trim()}>搜索历史</Button></form>{scopedHits.map((hit) => <details key={`${hit.kind}:${hit.id}`}><summary>{hit.text.slice(0, 100)}</summary><pre>{hit.text}</pre><pre>{JSON.stringify(hit.source, null, 2)}</pre></details>)}{scopedSearchAfter && <Button onClick={() => void operate(async () => { const next = await api<Page<typeof hits[number]>>(`/memory/search?${scope}&archived=${searchArchived}&query=${encodeURIComponent(search)}&after=${encodeURIComponent(scopedSearchAfter)}`); setHits([...scopedHits, ...next.items]); setSearchAfter(next.next_after); setSearchScope(selectionIdentity) }, '', false)}>更多检索结果</Button>}</section>
+    <section className="memory-search"><h2>历史与记忆检索</h2><form onSubmit={(event) => { event.preventDefault(); const scopeAtStart = selectionIdentity; void operate(async (current) => { const result = await api<Page<typeof hits[number]>>(`/memory/search?${scope}&archived=${searchArchived}&query=${encodeURIComponent(search)}`); if (!current()) return; setHits(result.items); setSearchAfter(result.next_after); setSearchScope(scopeAtStart) }, '检索完成', false) }}><label>查询内容<input aria-label="查询内容" value={search} onChange={(event) => { setSearch(event.target.value); setSearchAfter(null) }} required maxLength={200} /></label><label><input type="checkbox" checked={searchArchived} onChange={(event) => { setSearchArchived(event.target.checked); setSearchAfter(null) }} />包含归档记忆</label><Button htmlType="submit" disabled={busy || !search.trim()}>搜索历史</Button></form>{scopedHits.map((hit) => <details key={`${hit.kind}:${hit.id}`}><summary>{hit.text.slice(0, 100)}</summary><pre>{hit.text}</pre><pre>{JSON.stringify(hit.source, null, 2)}</pre></details>)}{scopedSearchAfter && <Button disabled={busy} onClick={() => void operate(async (current) => { const next = await api<Page<typeof hits[number]>>(`/memory/search?${scope}&archived=${searchArchived}&query=${encodeURIComponent(search)}&after=${encodeURIComponent(scopedSearchAfter)}`); if (!current()) return; setHits([...scopedHits, ...next.items]); setSearchAfter(next.next_after); setSearchScope(selectionIdentity) }, '', false)}>更多检索结果</Button>}</section>
     <section className="memory-jobs"><h2>后台作业</h2><p>前台任务完成后，后台作业继续记录提炼结果。新的任务会停止正在执行的辅助作业。</p>{jobs.map((job) => <article key={job.id} className="memory-job"><h3>{jobName(job.kind)}　{states[job.status] ?? job.status}</h3><p>作业 {job.id}　{date(job.created_at)}</p><p>{job.model ? `${job.model}　输入 ${job.usage.complete === false ? '未知' : job.usage.input_tokens ?? '未知'}　输出 ${job.usage.complete === false ? '未知' : job.usage.output_tokens ?? '未知'}` : '确定性治理，无模型调用'}</p>{onRun && job.task_run_id && <Button onClick={() => onRun(job.task_run_id!)}>查看来源任务与报告</Button>}{job.error && <p role="status">{job.error}</p>}{job.report && <details><summary>实际作业结果</summary><pre>{JSON.stringify(job.report, null, 2)}</pre></details>}
       {job.approvals.map((approval) => <section key={approval.id} className="memory-approval"><h4>后台审批：{approval.tool}　{states[approval.status]}</h4><pre>{JSON.stringify(approval.input, null, 2)}</pre>{approval.status === 'pending' && job.status === 'waiting_approval' && <div className="card-actions">{[['allow_once', '本次允许'], ['reject_once', '本次拒绝']].map(([decision, label]) => <Button key={decision} disabled={busy || readonly} onClick={() => void operate(async () => { await api(`/memory/jobs/${job.id}/approvals/${approval.id}?${scope}`, { decision, input_hash: approval.input_hash }) }, `后台审批已${label}`)}>{label}</Button>)}</div>}</section>)}
       {['queued', 'running', 'waiting_approval'].includes(job.status) && <Button disabled={busy || readonly} onClick={() => void operate(async () => { await api(`/memory/jobs/${job.id}/cancel?${scope}`, {}) }, '后台作业已取消')}>取消后台作业</Button>}
-    </article>)}{jobsAfter && <Button onClick={() => void operate(async () => { const next = await api<Page<Job>>(`/memory/jobs?${scope}&after=${encodeURIComponent(jobsAfter)}`); setJobs((previous) => [...previous, ...next.items]); setJobsAfter(next.next_after) }, '', false)}>更多后台作业</Button>}</section>
+    </article>)}{jobsAfter && <Button disabled={busy} onClick={() => void operate(async (current) => { const next = await api<Page<Job>>(`/memory/jobs?${scope}&after=${encodeURIComponent(jobsAfter)}`); if (!current()) return; setJobs((previous) => [...previous, ...next.items]); setJobsAfter(next.next_after) }, '', false)}>更多后台作业</Button>}</section>
     <section className="memory-events"><h2>记忆事件</h2>{filteredEvents.map((event) => <p key={event.global_seq}>事件 {event.global_seq}　{event.type}　{String(event.payload.summary ?? '')}　{date(event.ts)}</p>)}</section>
     <Modal title={confirm?.title} open={confirm !== null} okText={confirm?.label} cancelText="取消操作" confirmLoading={busy} onCancel={() => { if (!busy) setConfirm(null) }} onOk={() => { if (confirm) void operate(confirm.run, `${confirm.title}已完成`) }}><div className="memory-confirm">{confirm?.detail}</div>{error && <p role="alert">{error}</p>}</Modal>
-    <Modal title="记忆设置" open={settingsVisible} okText="保存记忆设置" cancelText="取消设置" confirmLoading={busy} onCancel={() => setSettingsVisible(false)} onOk={() => void operate(async () => { await api('/settings', { memory: settingsDraft }, undefined, 'PATCH'); setSettingsVisible(false) }, '记忆设置已保存')}>
+    <Modal title="记忆设置" open={settingsVisible} okText="保存记忆设置" cancelText="取消设置" confirmLoading={busy} onCancel={() => setSettingsVisible(false)} onOk={() => void operate(async (current) => { await api('/settings', { memory: settingsDraft }, undefined, 'PATCH'); if (current()) setSettingsVisible(false) }, '记忆设置已保存')}>
       {settingsDraft && <><p>字符配额包含分隔符和换行，已归档条目不占活动库配额。</p>{[['user_quota', 'USER 配额'], ['workspace_quota', '工作区配额'], ['soul_quota', 'soul 配额']].map(([key, label]) => <label className="memory-setting" key={key}>{label}<input aria-label={label} type="number" min={1} value={settingsDraft[key as 'user_quota']} onChange={(event) => setSettingsDraft({ ...settingsDraft, [key]: Number(event.target.value) })} /></label>)}<label className="memory-setting"><input type="checkbox" checked={settingsDraft.write_approval} onChange={(event) => setSettingsDraft({ ...settingsDraft, write_approval: event.target.checked })} />后台写入需要人工审批</label></>}{error && <p role="alert">{error}</p>}
     </Modal>
   </Root>

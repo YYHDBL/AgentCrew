@@ -1,0 +1,8 @@
+[checkpoint] 02:34:51 restart-clicked
+[checkpoint] 02:34:53 diagnostics-normal
+[checkpoint] 02:34:53 two-level-verified
+[checkpoint] 02:34:54 promotion-copy-begin
+[checkpoint] 02:34:57 first-app-closed
+[checkpoint] 02:34:57 promotion-app-launched
+[checkpoint] 02:35:04 promotion-done
+{"directory":"/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-management-1791513267090","cases":14}
