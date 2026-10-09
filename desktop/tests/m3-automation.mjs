@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict'
 import { createHash, randomUUID } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
+import { once } from 'node:events'
+import { createServer } from 'node:http'
 import { _electron as electron } from 'playwright-core'
 import { cp, mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -16,6 +18,8 @@ const app = await electron.launch({ args: ['.', `--user-data-dir=${directory}`],
 const page = await app.firstWindow()
 page.setDefaultTimeout(60000)
 let db
+let upstreamServer
+let upstreamDb
 const result = { directory, started_at: new Date().toISOString(), model_config_source: '../backend/data/config.json', cases: [], requests: [], sql: [], screenshots: [], files: [] }
 const pageErrors = []
 page.on('pageerror', (error) => pageErrors.push(error.message))
@@ -128,7 +132,7 @@ const runPlan = async (job, expectedTrigger, expectedFile) => {
   }, Boolean)
   assert.ok(occurrence.id)
   const task = await wait(() => call('GET', `/task-runs/${occurrence.task_run_id}`), (row) => ['completed', 'failed', 'cancelled'].includes(row.status))
-  if (task.status !== 'completed') throw new Error(`真实计划 TaskRun ${task.id} 以 ${task.status} 结束`)
+  if (task.status !== 'completed') throw new Error(`真实计划 TaskRun ${task.id} 以 ${task.status} 结束：${task.error ?? '没有错误详情'}`)
   const attempts = await call('GET', `/task-runs/${task.id}/attempts`)
   const artifacts = await call('GET', `/conversations/${task.conversation_id}/artifacts`)
   assert.equal(attempts.length, 1)
@@ -223,6 +227,7 @@ try {
   result.cron = cronPlan.job
   result.cron_execution = await runPlan(cronPlan.job, 'manual', cronFile)
   await page.locator('.automation-job').filter({ hasText: cronName }).getByRole('button', { name: '编辑', exact: true }).click()
+  assert.equal(await page.getByLabel('计划员工').isDisabled(), true)
   await page.getByLabel('计划名称').fill(`${cronName} edited`)
   await page.getByLabel('cron 表达式').fill('0 1 1 1 *')
   await page.getByRole('button', { name: '核查服务端候选范围与下一次时间', exact: true }).click()
@@ -234,10 +239,12 @@ try {
   const edited = await call('GET', `/cron/jobs/${cronPlan.job.id}`)
   assert.equal(edited.schedule.expr, '0 1 1 1 *')
   assert.equal(edited.revision, cronPlan.job.revision + 1)
+  await page.locator('.automation-job').filter({ hasText: `${cronName} edited` }).waitFor()
   result.cron_edited = edited
   await page.locator('.automation-job').filter({ hasText: `${cronName} edited` }).getByRole('button', { name: '停用', exact: true }).click()
   const disabled = await wait(() => call('GET', `/cron/jobs/${cronPlan.job.id}`), (row) => !row.state.enabled)
   result.cron_disabled = disabled
+  await page.locator('.automation-job').filter({ hasText: `${cronName} edited` }).getByRole('button', { name: '启用', exact: true }).waitFor()
   await page.locator('.automation-job').filter({ hasText: `${cronName} edited` }).getByRole('button', { name: '删除', exact: true }).click()
   await page.getByRole('dialog', { name: '删除计划' }).getByRole('button', { name: '确认删除', exact: true }).click()
   const deleted = await wait(() => call('GET', `/cron/jobs/${cronPlan.job.id}`), (row) => row.deleted_at !== null)
@@ -306,7 +313,7 @@ try {
   const proposalFile = `${basePath}/m3-13-proposal-${randomUUID()}.txt`
   const prompt = `必须仅调用一次schedule_task，精确参数如下：${JSON.stringify({ name: taskName,
     schedule: { kind: 'every', every_ms: 86400000, tz: 'Asia/Shanghai' },
-    instruction: `只使用write_file在${proposalFile}写入“approved actual proposal file”，随后使用read_file核查该文件。不得调用其他工具。`,
+    instruction: `这是新文件创建任务，${proposalFile}尚不存在。首次工具调用只执行write_file，在该路径写入“approved actual proposal file”。write_file返回成功后，下一轮工具调用read_file核查该文件。按照这个顺序执行，仅使用write_file和read_file。`,
     execution_mode: 'new_conversation', pre_authorized: [{ tool: 'write_file', pattern: basePath }] })}。该次只提出计划，等待真人决定。不得自己写入文件。`
   const source = await call('POST', '/conversations', { workspace_id: result.workspace.id, agent_id: result.agent.id, client_request_id: randomUUID(), instruction: prompt })
   result.proposal_source = source
@@ -320,10 +327,16 @@ try {
   await screen('automation-approval-wide', 1440, 900)
   const candidate = proposalBefore.candidates.find((item) => item.tool === 'write_file' && item.pattern === basePath)
   assert.ok(candidate, '真实提案候选不包含服务端提供的写入目录')
-  await page.locator('.automation-proposal').filter({ hasText: taskName }).getByLabel(`${candidate.tool} ${candidate.pattern}`).check().catch(async () => {
-    const matching = page.locator('.automation-proposal .automation-choice').filter({ hasText: candidate.pattern })
-    await matching.locator('input').check()
-  })
+  await page.locator('.automation-proposal').filter({ hasText: taskName }).getByLabel(`${candidate.tool} · ${candidate.pattern}`, { exact: true }).check()
+  const refreshPlan = await call('GET', `/cron/jobs/${deniedPlan.job.id}`)
+  assert.equal(refreshPlan.deleted_at, null)
+  const refreshedName = `${refreshPlan.name} refreshed`
+  result.pending_proposal_plan_update = await call('PATCH', `/cron/jobs/${refreshPlan.id}`, {
+    change_id: randomUUID(), expected_revision: refreshPlan.revision, name: refreshedName })
+  await page.getByRole('heading', { name: refreshedName, exact: true }).waitFor()
+  await wait(() => page.locator('.automation-proposal').filter({ hasText: taskName }).getByRole('button', { name: '批准并创建唯一计划', exact: true }).count(), (count) => count === 1)
+  assert.equal((await call('GET', `/cron/proposals/${proposalId}`)).status, 'pending')
+  result.cases.push('普通计划状态事件刷新列表时待审批提案仍保留')
   const taskState = await call('GET', `/task-runs/${source.task_run_id}`)
   result.proposal_task_state_before = taskState
   const approvalCard = page.locator('.automation-proposal').filter({ hasText: taskName })
@@ -357,25 +370,15 @@ try {
   const rejectedSource = await call('POST', '/conversations', { workspace_id: result.workspace.id, agent_id: result.agent.id, client_request_id: randomUUID(), instruction: proposalInstructionReject })
   const rejectedRows = await wait(() => query('SELECT * FROM cron_proposals WHERE task_run_id=?', [rejectedSource.task_run_id]), (rows) => rows.length > 0)
   const rejectedBefore = await call('GET', `/cron/proposals/${rejectedRows[0].id}`)
+  assert.equal(rejectedBefore.status, 'pending')
   await page.getByRole('button', { name: '刷新实际记录', exact: true }).click()
   const rejectedCard = page.locator('.automation-proposal').filter({ hasText: rejectedBefore.proposal.name })
-  let rejectionState = { proposal: rejectedBefore, cardCount: 0 }
-  if (rejectedBefore.status === 'pending') rejectionState = await wait(async () => ({
-    proposal: await call('GET', `/cron/proposals/${rejectedBefore.id}`), cardCount: await rejectedCard.count()
-  }), (state) => state.proposal.status !== 'pending' || state.cardCount > 0, 30000)
-  if (rejectionState.proposal.status === 'pending') {
-    await rejectedCard.getByRole('button', { name: '拒绝提案', exact: true }).click()
-  }
+  await rejectedCard.getByRole('button', { name: '拒绝提案', exact: true }).click()
   const rejected = await wait(() => call('GET', `/cron/proposals/${rejectedBefore.id}`), (row) => row.status === 'rejected' || row.status === 'expired')
+  assert.equal(rejected.status, 'rejected')
   assert.equal(query("SELECT id FROM cron_jobs WHERE json_extract(metadata,'$.proposal_id')=?", [rejected.id]).length, 0)
   result.rejected = rejected
-  if (rejected.status === 'expired') {
-    const stale = await api('POST', `/cron/proposals/${rejected.id}`, { decision: 'allow_once', input_hash: rejected.input_hash, expected_revision: rejectedBefore.revision, selected: [] })
-    assert.equal(stale.status, 409)
-    assert.equal(query("SELECT id FROM cron_jobs WHERE json_extract(metadata,'$.proposal_id')=?", [rejected.id]).length, 0)
-    result.expired_decision = stale
-  }
-  result.cases.push(rejected.status === 'rejected' ? '界面拒绝真实提案，服务端未创建计划' : '真实服务端使提案过期，旧决定返回409且未创建计划')
+  result.cases.push('界面拒绝真实提案，服务端未创建计划')
 
   const expiringName = `M3-13 expired ${randomUUID()}`
   const expiringPrompt = `必须仅调用一次schedule_task，精确参数如下：${JSON.stringify({ name: expiringName,
@@ -383,6 +386,7 @@ try {
   const expiringSource = await call('POST', '/conversations', { workspace_id: result.workspace.id, agent_id: result.agent.id, client_request_id: randomUUID(), instruction: expiringPrompt })
   const expiringRows = await wait(() => query('SELECT * FROM cron_proposals WHERE task_run_id=?', [expiringSource.task_run_id]), (rows) => rows.length > 0)
   const expiringBefore = await call('GET', `/cron/proposals/${expiringRows[0].id}`)
+  await page.getByRole('heading', { name: expiringName, exact: true }).waitFor()
   const memberIdentity = await call('POST', '/identity/demo', { user_id: 'lilei', change_id: randomUUID() })
   const memberRecord = await api('GET', '/identity', undefined, memberIdentity.identity_token)
   assert.equal(memberRecord.body.data.role, 'member')
@@ -393,12 +397,15 @@ try {
   result.member_decision = { role: memberRecord.body.data.role, status: memberDecision.status, error: memberDecision.body.error }
   await call('POST', `/task-runs/${expiringSource.task_run_id}/cancel`)
   const expired = await wait(() => call('GET', `/cron/proposals/${expiringBefore.id}`), (row) => row.status === 'expired')
+  await wait(() => page.locator('.automation-proposal').filter({ hasText: expiringName }).count(), (count) => count === 0)
+  await page.locator('details.automation-job').filter({ hasText: expiringName }).waitFor({ state: 'attached' })
   const oldApproval = await api('POST', `/cron/proposals/${expired.id}`, {
     decision: 'allow_once', input_hash: expired.input_hash, expected_revision: expiringBefore.revision, selected: []
   })
   assert.equal(oldApproval.status, 409)
   assert.equal(query("SELECT id FROM cron_jobs WHERE json_extract(metadata,'$.proposal_id')=?", [expired.id]).length, 0)
-  result.expired = { proposal: expired, stale_decision: { status: oldApproval.status, error: oldApproval.body.error } }
+  result.expired = { proposal: expired, stale_decision: { status: oldApproval.status, error: oldApproval.body.error },
+    interface_state: { pending_card_count: 0, archived_proposal_present: true } }
   result.cases.push('真实成员身份审批返回403；取消真实待审批任务后提案过期，旧决定返回409且没有计划')
 
   await page.getByRole('button', { name: '工作台', exact: true }).click()
@@ -429,15 +436,105 @@ try {
   result.cases.push('身份切换清除旧员工的计划和提案；回到真人身份后刷新；宽窄窗口与键盘弹窗检查')
   await screen('automation-narrow', 960, 900)
   result.current_identity = await call('GET', '/identity')
+
+  const upstreamPath = `${directory}/actual-upstream.sqlite`
+  upstreamDb = new DatabaseSync(upstreamPath)
+  upstreamDb.exec('CREATE TABLE operations(id INTEGER PRIMARY KEY, body TEXT NOT NULL, created_at TEXT NOT NULL)')
+  upstreamServer = createServer(async (request, response) => {
+    response.setHeader('Content-Type', 'application/json')
+    if (request.method === 'GET') {
+      response.end(JSON.stringify(upstreamDb.prepare('SELECT * FROM operations ORDER BY id').all()))
+      return
+    }
+    assert.equal(request.method, 'POST')
+    const parts = []
+    for await (const part of request) parts.push(part)
+    const committed = upstreamDb.prepare('INSERT INTO operations(body,created_at) VALUES(?,?)')
+      .run(Buffer.concat(parts).toString('utf8'), new Date().toISOString())
+    const saved = upstreamDb.prepare('SELECT * FROM operations WHERE id=?').get(committed.lastInsertRowid)
+    await new Promise((done) => setTimeout(done, 30000))
+    response.end(JSON.stringify(saved))
+  })
+  upstreamServer.listen(0, '127.0.0.1')
+  await once(upstreamServer, 'listening')
+  const upstreamAddress = upstreamServer.address()
+  assert.equal(typeof upstreamAddress, 'object')
+  assert.ok(upstreamAddress?.port)
+  const upstreamUrl = `http://127.0.0.1:${upstreamAddress.port}`
+  const connector = await call('POST', '/connectors', { change_id: randomUUID(), expected_revision: 0,
+    workspace_id: result.workspace.id, name: `M3-13 actual upstream ${randomUUID()}`, type: 'http',
+    config: { url: upstreamUrl, allowed_hosts: ['127.0.0.1'], allowed_ports: [upstreamAddress.port], allow_loopback: true } })
+  const connectorGrant = await call('POST', '/grants', { change_id: randomUUID(), resource_type: 'connector',
+    resource_id: connector.id, grantee_type: 'agent', grantee_id: result.agent.id })
+  const httpRule = await call('POST', `/agents/${result.agent.id}/permission-rules`, { change_id: randomUUID(),
+    tool_name: 'http_request', pattern: '127.0.0.1', effect: 'allow' })
+  const pendingBody = `M3-13 actual committed operation ${randomUUID()}`
+  const pendingJob = await call('POST', '/cron/jobs', { change_id: randomUUID(), workspace_id: result.workspace.id,
+    agent_id: result.agent.id, name: `M3-13 pending verification ${randomUUID()}`, enabled: true,
+    schedule: { kind: 'every', every_ms: 86400000, tz: 'Asia/Shanghai' },
+    pre_authorized: [{ tool: 'http_request', pattern: '127.0.0.1' }],
+    target: { execution_mode: 'new_conversation', conversation_id: null,
+      instruction: `仅调用一次http_request，connector_id=${connector.id}，method=POST，url=${upstreamUrl}/operations，body为${pendingBody}。不调用其他工具。若将来恢复时账本确认该操作已执行，禁止再次发送，只汇报实际核验记录。` } })
+  await page.getByRole('heading', { name: pendingJob.name, exact: true }).waitFor()
+  await page.locator('.automation-job').filter({ hasText: pendingJob.name }).getByRole('button', { name: '手动运行', exact: true }).click()
+  const persisted = await wait(() => upstreamDb.prepare('SELECT * FROM operations ORDER BY id').all(), (rows) => rows.length === 1)
+  assert.equal(persisted[0].body, pendingBody)
+  const pendingOccurrence = (await call('GET', `/cron/jobs/${pendingJob.id}/runs?limit=200`)).items.find((row) => row.task_run_id)
+  assert.ok(pendingOccurrence)
+  const dispatched = query("SELECT call_id,status,side_effect_class FROM tool_calls WHERE task_run_id=? AND tool_name='http_request'", [pendingOccurrence.task_run_id])
+  assert.equal(dispatched.length, 1)
+  assert.equal(dispatched[0].status, 'dispatched')
+  assert.equal(dispatched[0].side_effect_class, 'outcome_unknown')
+  const beforeCrashFile = await stampFile(upstreamPath)
+  const oldPort = await page.evaluate(() => window.agentcrew.getBackendPort())
+  const activeSidecar = execFileSync('ps', ['-axo', 'pid,command'], { encoding: 'utf8' }).split('\n')
+    .find((line) => line.includes('/python3 -m agentcrew_server') && line.includes(directory))
+  assert.ok(activeSidecar)
+  const killedPid = Number(activeSidecar.trim().split(/\s+/)[0])
+  process.kill(killedPid, 'SIGKILL')
+  await wait(() => page.evaluate(() => window.agentcrew.getBackendPort()), (port) => port && port !== oldPort)
+  const pendingTask = await call('GET', `/task-runs/${pendingOccurrence.task_run_id}`)
+  assert.equal(pendingTask.status, 'waiting_verification')
+  const actualOccurrence = (await call('GET', `/cron/jobs/${pendingJob.id}/runs?limit=200`)).items.find((row) => row.id === pendingOccurrence.id)
+  assert.equal(actualOccurrence.status, 'pending_verification')
+  assert.equal(actualOccurrence.retry_count, 0)
+  assert.equal(actualOccurrence.retry_at, null)
+  const blockedResume = await api('POST', `/task-runs/${pendingTask.id}/resume`, {})
+  assert.equal(blockedResume.status, 409)
+  const pendingCalls = await call('GET', `/conversations/${pendingTask.conversation_id}/pending-verifications`)
+  assert.equal(pendingCalls.length, 1)
+  assert.equal(pendingCalls[0].call_id, dispatched[0].call_id)
+  await page.getByRole('button', { name: '刷新实际记录', exact: true }).click()
+  const pendingCard = page.locator('.automation-job').filter({ hasText: pendingJob.name })
+  await wait(() => pendingCard.innerText(), (text) => text.includes('最近状态 待核验'))
+  await pendingCard.locator('summary').click()
+  await screen('automation-pending-verification', 1440, 900)
+  await pendingCard.getByRole('button', { name: '进入工作台安全处理', exact: true }).click()
+  await page.getByRole('region', { name: '待核验副作用', exact: true }).waitFor()
+  assert.ok((await page.getByRole('region', { name: '待核验副作用', exact: true }).innerText()).includes(dispatched[0].call_id))
+  assert.equal((await call('GET', `/task-runs/${pendingTask.id}`)).status, 'waiting_verification')
+  assert.equal((await call('GET', `/conversations/${pendingTask.conversation_id}/pending-verifications`)).length, 1)
+  const afterNavigationFile = await stampFile(upstreamPath)
+  assert.equal(afterNavigationFile.sha256, beforeCrashFile.sha256)
+  assert.equal(afterNavigationFile.mtime, beforeCrashFile.mtime)
+  assert.deepEqual(upstreamDb.prepare('SELECT * FROM operations ORDER BY id').all(), persisted)
+  result.pending_verification = { job: pendingJob, occurrence: actualOccurrence, task: pendingTask, calls: pendingCalls,
+    connector_id: connector.id, grant_id: connectorGrant.id, permission_rule_id: httpRule.id,
+    signal: { pid: killedPid, name: 'SIGKILL', old_port: oldPort, new_port: await page.evaluate(() => window.agentcrew.getBackendPort()) },
+    upstream: { url: upstreamUrl, sql: 'SELECT * FROM operations ORDER BY id', rows: persisted,
+      before: { path: upstreamPath, sha256: beforeCrashFile.sha256, mtime: beforeCrashFile.mtime },
+      after: { path: upstreamPath, sha256: afterNavigationFile.sha256, mtime: afterNavigationFile.mtime } },
+    blocked_resume: { status: blockedResume.status, error: blockedResume.body.error } }
+  result.cases.push('真实HTTP已提交副作用后SIGKILL产生待核验；自动化页面进入同一工作台，恢复返回409且上游文件SHA与mtime保持不变')
   result.audit_verification = await call('POST', '/audit/verify', {})
   const chain = await readFile(`${directory}/data/chain-head.txt`, 'utf8')
   result.audit_chain_head = chain.trim()
 
-  const ids = [atPlan.job.id, everyPlan.job.id, cronPlan.job.id, existingPlan.job.id, deniedPlan.job.id, missedPlan.job.id, approved.job_id, rejected.id]
+  const ids = [atPlan.job.id, everyPlan.job.id, cronPlan.job.id, existingPlan.job.id, deniedPlan.job.id, missedPlan.job.id, approved.job_id, rejected.id, pendingJob.id]
   const placeholders = ids.map(() => '?').join(',')
   result.database = {
     jobs: query(`SELECT * FROM cron_jobs WHERE id IN (${placeholders}) ORDER BY created_at,id`, ids),
-    proposals: query('SELECT * FROM cron_proposals WHERE id IN (?,?) ORDER BY created_at,id', [proposalId, rejected.id]),
+    proposals: query('SELECT * FROM cron_proposals WHERE id IN (?,?,?) ORDER BY created_at,id', [proposalId, rejected.id, expired.id]),
     occurrences: query(`SELECT * FROM cron_job_runs WHERE job_id IN (${placeholders}) ORDER BY triggered_at,id`, ids),
     cron_attempts: query(`SELECT a.* FROM cron_run_attempts a JOIN cron_job_runs r ON r.id=a.occurrence_id WHERE r.job_id IN (${placeholders}) ORDER BY r.job_id,a.retry_no,a.attempt_no`, ids),
     task_runs: query(`SELECT t.* FROM task_runs t WHERE t.cron_job_id IN (${placeholders}) ORDER BY t.created_at,t.id`, ids),
@@ -450,7 +547,7 @@ try {
   result.ended_at = new Date().toISOString()
 } catch (error) {
   failure = error
-  result.failure = { message: error instanceof Error ? error.message : String(error), at: new Date().toISOString() }
+  result.failure = { message: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : null, at: new Date().toISOString() }
   try { result.interface_on_failure = { dialogs: await page.locator('[role="dialog"]').allInnerTexts(), buttons: await page.locator('button').allTextContents() } } catch {}
   if (result.proposal_source?.task_run_id) {
     try { result.failed_proposal_task = { task: query('SELECT * FROM task_runs WHERE id=?', [result.proposal_source.task_run_id]), proposals: query('SELECT * FROM cron_proposals WHERE task_run_id=?', [result.proposal_source.task_run_id]), calls: query('SELECT l.* FROM llm_calls l JOIN steps s ON s.id=l.step_id WHERE s.task_run_id=? ORDER BY s.ordinal,l.id', [result.proposal_source.task_run_id]), events: query('SELECT seq,global_seq,type,payload FROM run_events WHERE task_run_id=? ORDER BY seq', [result.proposal_source.task_run_id]) } } catch {}
@@ -467,6 +564,11 @@ try {
   await writeFile(`${directory}/acceptance-result.json`, safeText)
   db.close()
   await app.close()
+  if (upstreamServer) {
+    upstreamServer.closeAllConnections()
+    await new Promise((done, reject) => upstreamServer.close((error) => error ? reject(error) : done()))
+  }
+  upstreamDb?.close()
   if (credentialMatches) failure = new Error('脱敏证据中发现实际配置凭据')
 }
 console.log(JSON.stringify({ directory, cases: result.cases, screenshots: result.screenshots, failure: result.failure ?? null }, null, 2))

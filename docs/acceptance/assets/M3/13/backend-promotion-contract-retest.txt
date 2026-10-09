@@ -1,0 +1,38 @@
+....F.....                                                               [100%]
+=================================== FAILURES ===================================
+_______ test_cancel_actual_promotion_stream_preserves_unpublished_state ________
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x105b6e0f0>, 'url': 'http://127.0.0.1:52938', 'token': '***', ...}
+promoted = {'report': {'id': '2a4dcb4e808640fd8a7feb6ff87e90f0', 'job_id': '364533c9d9cf43e29f2bd2c75df2a7d6', 'task_run_id': '84...72f18', 'kind': 'promote_skill', 'status': 'completed', 'source_task_run_id': '84e5ee20c8a64f6b8463559d48e63dd4', ...}}
+
+    def test_cancel_actual_promotion_stream_preserves_unpublished_state(server, promoted):
+        report = new_proposal(server)
+        response = confirm(server, report)
+        assert response.status_code == 202, response.text
+        job_id = response.json()["data"]["id"]
+        def started():
+            with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+                return conn.execute("SELECT count(*) FROM memory_job_calls WHERE job_id=? AND type='llm.request_started'", (job_id,)).fetchone()[0]
+>       wait(started, lambda count: count > 0)
+
+tests/test_audit_promote_skill.py:156:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+read = <function test_cancel_actual_promotion_stream_preserves_unpublished_state.<locals>.started at 0x1031aa2a0>
+accepts = <function test_cancel_actual_promotion_stream_preserves_unpublished_state.<locals>.<lambda> at 0x1031aa7a0>
+seconds = 90
+
+    def wait(read, accepts, seconds=90):
+        deadline = time.monotonic() + seconds
+        while time.monotonic() < deadline:
+            value = read()
+            if accepts(value):
+                return value
+            time.sleep(0.05)
+>       raise AssertionError("真实进程及副作用未达到指定验收状态")
+E       AssertionError: 真实进程及副作用未达到指定验收状态
+
+tests/test_cron_recovery_process.py:23: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_audit_promote_skill.py::test_cancel_actual_promotion_stream_preserves_unpublished_state
+1 failed, 9 passed in 281.67s (0:04:41)

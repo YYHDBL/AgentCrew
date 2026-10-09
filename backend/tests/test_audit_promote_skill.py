@@ -89,6 +89,7 @@ def promoted(server):
 
 
 def test_actual_promotion_publishes_model_body_version_and_ledger(server, promoted):
+    from agentcrew_core.reviews import SkillDraft
     job = promoted["job"]
     skill_id = job["skill_id"]
     version = request(server, "GET", f'/api/skills/{skill_id}/versions/{job["version_id"]}').json()["data"]
@@ -102,12 +103,18 @@ def test_actual_promotion_publishes_model_body_version_and_ledger(server, promot
         assert json.loads(ledger["source"])["job_id"] == job["id"]
         assert json.loads(ledger["basis"])["report_id"] == promoted["report"]["id"]
         assert conn.execute("SELECT count(*) FROM skill_reads WHERE execution_id=?", (job["id"],)).fetchone()[0] == 1
+        generated = conn.execute("SELECT result FROM skill_promotions WHERE job_id=?", (job["id"],)).fetchone()
+        assert generated is not None
+        draft = SkillDraft.model_validate_json(generated[0])
+        notifications = [dict(row) for row in conn.execute("SELECT id,global_seq,severity,task_run_id FROM runtime_notifications WHERE task_run_id=? AND severity='error'", (job["source_task_run_id"],))]
+        assert notifications
     path = server["root"] / "skills" / skill_id / "SKILL.md"
     assert path.read_text() == version["content"] and version["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
     assert "机制" in version["content"] and len(version["content"]) > 100
-    assert "无人值守" in version["content"] and "通知" in version["content"]
+    assert version["content"] == draft.text + "\n\n## 机制说明\n\n" + draft.mechanism + "\n"
     assert version["content"].count("## 机制说明") == 1
     (server["root"] / "promotion-actual.json").write_text(json.dumps({**promoted, "version": version, "resource": resource,
+        "actual_model_draft": draft.model_dump(), "source_failure_notifications": notifications,
         "file": {"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "mtime_ns": path.stat().st_mtime_ns}}, ensure_ascii=False, indent=2))
 
 
@@ -146,7 +153,8 @@ def test_cancel_actual_promotion_stream_preserves_unpublished_state(server, prom
     def started():
         with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
             return conn.execute("SELECT count(*) FROM memory_job_calls WHERE job_id=? AND type='llm.request_started'", (job_id,)).fetchone()[0]
-    wait(started, lambda count: count > 0)
+    # 等待串行 aux 队列派发，取消计时从真实模型请求开始。
+    wait(started, lambda count: count > 0, seconds=180)
     before = time.monotonic()
     cancelled = request(server, "POST", f"/api/reviews/jobs/{job_id}/cancel")
     elapsed = time.monotonic() - before

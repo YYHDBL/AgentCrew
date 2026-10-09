@@ -204,18 +204,33 @@ def test_upgrade_nine_preserves_background_foreign_keys(tmp_path):
         await summary(jobs, event, "真实旧运行库的已完成摘要")
     asyncio.run(prepare())
     tables = ("memory_jobs", "session_summaries", "memory_job_calls")
-    before = {table: db.read_conn.execute(f"SELECT * FROM {table}").fetchall() for table in tables}
+    def snapshot():
+        result = {}
+        for table in tables:
+            cursor = db.read_conn.execute(f"SELECT * FROM {table}")
+            columns = tuple(item[0] for item in cursor.description)
+            result[table] = columns, [tuple(row) for row in cursor.fetchall()]
+        return result
+    before = snapshot()
+    def preserves_background_rows():
+        after = snapshot()
+        for table, (columns, rows) in before.items():
+            next_columns, next_rows = after[table]
+            assert next_columns[:len(columns)] == columns
+            assert [row[:len(columns)] for row in next_rows] == rows
+        priority = after["memory_jobs"][0].index("priority")
+        assert all(row[priority] == 0 for row in after["memory_jobs"][1])
     try:
         result = run_migrations(db.write_conn, tmp_path / "backups")
         assert result.applied_versions == list(range(10, MIGRATIONS[-1].version + 1))
         assert db.read_conn.execute("PRAGMA foreign_key_check").fetchall() == []
         assert db.write_conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
-        assert {table: db.read_conn.execute(f"SELECT * FROM {table}").fetchall() for table in tables} == before
+        preserves_background_rows()
         bad = Migration(MIGRATIONS[-1].version + 1, "外键不完整的迁移", ("DELETE FROM memory_jobs",), rebuild_foreign_keys=True)
         with pytest.raises(MigrationFailedError, match="外键校验失败"):
             migrations_module._apply_migration(db.write_conn, bad)
         assert db.write_conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
-        assert {table: db.read_conn.execute(f"SELECT * FROM {table}").fetchall() for table in tables} == before
+        preserves_background_rows()
     finally:
         asyncio.run(jobs.shutdown())
         channel.close()

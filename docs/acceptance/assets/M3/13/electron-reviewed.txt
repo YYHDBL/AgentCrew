@@ -1,0 +1,25 @@
+{
+  "directory": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-automation-1791530590038",
+  "cases": [
+    "界面创建 at 计划，按选定时区保存参数并通过调度产生真实 TaskRun 和文件",
+    "界面创建 every 计划并触发真实定时任务；执行期间的手动冲突记录 skipped，随后停用计划后当前任务实际结果为 failed（PLAN_DISABLED：计划已停用或修订已经改变）",
+    "界面创建 cron 计划、手动运行、修改、停用和删除；历史 TaskRun 与产物查询保持可用",
+    "界面创建并编辑现有会话目标为新建会话，服务端持久化会话模式和目标变化",
+    "真实无人值守预授权拒绝写入，保存拒绝事件且目标文件未生成",
+    "真实 SIGSTOP/SIGCONT 越过 at 到期时间，SQL 与刷新页面均显示 missed 且没有 TaskRun",
+    "普通计划状态事件刷新列表时待审批提案仍保留",
+    "界面依据持久原提案批准真实员工请求；批准前无计划、批准后唯一计划、重复批准复用同一计划",
+    "经界面批准的员工计划真实执行并产生文件产物，created_by 与来源 TaskRun 保持关联",
+    "界面拒绝真实提案，服务端未创建计划",
+    "真实成员身份审批返回403；取消真实待审批任务后提案过期，旧决定返回409且没有计划",
+    "身份切换清除旧员工的计划和提案；回到真人身份后刷新；宽窄窗口与键盘弹窗检查",
+    "真实HTTP已提交副作用后SIGKILL产生待核验；自动化页面进入同一工作台，恢复返回409且上游文件SHA与mtime保持不变"
+  ],
+  "screenshots": [
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-automation-1791530590038/automation-wide.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-automation-1791530590038/automation-approval-wide.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-automation-1791530590038/automation-narrow.png",
+    "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m3-automation-1791530590038/automation-pending-verification.png"
+  ],
+  "failure": null
+}

@@ -1,5 +1,6 @@
 """M3-02：真实 HTTP、模型任务与 SQLite 的运行查询回归。"""
 
+import hashlib
 import json
 import os
 import secrets
@@ -19,6 +20,26 @@ import httpx
 from test_governance_identity import request, demo
 from test_governance_identity import request as governance_request
 from agentcrew_server.secrets import redact, register_secret
+
+
+def initialize_actual_soul(record):
+    source = json.loads((Path(__file__).parent / "fixtures" / "actual-deepseek-soul.json").read_text())
+    assert source["model"] == "deepseek-v4.1-flash" and source["id"] == "56bfcd73783145228af917105d23f6c4"
+    assert 1215 <= source["characters"] <= 1485
+    assert hashlib.sha256(source["result"].encode()).hexdigest() == source["result_sha256"]
+    assert len(source["result"]) == source["characters"]
+    store = governance_request(record, "GET", "/api/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen")
+    assert store.status_code == 200, store.text
+    current = store.json()["data"]
+    imported = current["revision"] == 0
+    if imported:
+        response = governance_request(record, "POST", "/api/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen", body={
+            "change_id": "real-model-soul-" + source["id"], "expected_revision": current["revision"],
+            "basis": f"测试初始化导入已完成的真实 {source['model']} SoulGeneration {source['id']}，正文 SHA256 {source['result_sha256']}",
+            "text": source["result"]})
+        assert response.status_code == 200, response.text
+    record["real_soul_source"] = {key: source[key] for key in ("id", "agent_id", "conversation_id", "task_run_id", "model", "created_at", "prompt_sha256", "characters", "result_sha256")}
+    record["real_soul_imported"] = imported
 
 
 @pytest.fixture(scope="module")
@@ -64,6 +85,7 @@ def server(tmp_path_factory, request):
         record["requests"].append({"signal": "SIGKILL/restart", "previous_pid": previous_pid, "current_pid": child.pid, "port": new_port})
     record["kill_and_restart"] = kill_and_restart
     try:
+        initialize_actual_soul(record)
         if configured_directory:
             plans = governance_request(record, "GET", "/api/cron/jobs?limit=200")
             assert plans.status_code == 200, plans.text

@@ -1,0 +1,31 @@
+..F.......                                                               [100%]
+=================================== FAILURES ===================================
+________ test_actual_promotion_publishes_model_body_version_and_ledger _________
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1109477a0>, 'url': 'http://127.0.0.1:49718', 'token': '***', ...}
+promoted = {'report': {'id': 'b1013e48c32a40da9376bea0994e6ee3', 'job_id': 'a61cad5f55614c159c3885b7406cd91b', 'task_run_id': '84...cfb5b', 'kind': 'promote_skill', 'status': 'completed', 'source_task_run_id': '84e5ee20c8a64f6b8463559d48e63dd4', ...}}
+
+    def test_actual_promotion_publishes_model_body_version_and_ledger(server, promoted):
+        job = promoted["job"]
+        skill_id = job["skill_id"]
+        version = request(server, "GET", f'/api/skills/{skill_id}/versions/{job["version_id"]}').json()["data"]
+        resource = request(server, "GET", f"/api/skills/{skill_id}").json()["data"]
+        assert resource["source"] == "agent" and not job["granted"]
+        with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+            conn.row_factory = sqlite3.Row
+            assert conn.execute("SELECT count(*) FROM grants WHERE resource_type='skill' AND resource_id=? AND grantee_id='xiaowen' AND revoked_at IS NULL", (skill_id,)).fetchone()[0] == 0
+            assert conn.execute("SELECT count(*) FROM skill_versions WHERE change_id=?", (job["id"] + "-publish",)).fetchone()[0] == 1
+            ledger = dict(conn.execute("SELECT * FROM memory_ledger WHERE change_id=?", (job["id"] + "-publish",)).fetchone())
+            assert json.loads(ledger["source"])["job_id"] == job["id"]
+            assert json.loads(ledger["basis"])["report_id"] == promoted["report"]["id"]
+            assert conn.execute("SELECT count(*) FROM skill_reads WHERE execution_id=?", (job["id"],)).fetchone()[0] == 1
+        path = server["root"] / "skills" / skill_id / "SKILL.md"
+        assert path.read_text() == version["content"] and version["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+        assert "机制" in version["content"] and len(version["content"]) > 100
+>       assert "无人值守" in version["content"] and "通知" in version["content"]
+E       AssertionError: assert ('无人值守' in '# 真实预授权核查\n\n## 适用条件\n\n无人值守任务（cron 触发或手动触发）要求对指定路径执行写入类工具，且指令限定了工具与目标路径。典型场景：计划预授权（pre-authorized selection）与员工 allo...侧据此立即停止、保留真实结果并如实报告，避免越权写入或伪造成功。适用边界：仅适用于无人值守写入类工具被预授权拦截的场景；已批准且 selected 为空的情形应明确区分，PRE_AUTH_EXCEEDED 不能单独证明计划尚待批准。\n' and '通知' in '# 真实预授权核查\n\n## 适用条件\n\n无人值守任务（cron 触发或手动触发）要求对指定路径执行写入类工具，且指令限定了工具与目标路径。典型场景：计划预授权（pre-authorized selection）与员工 allo...侧据此立即停止、保留真实结果并如实报告，避免越权写入或伪造成功。适用边界：仅适用于无人值守写入类工具被预授权拦截的场景；已批准且 selected 为空的情形应明确区分，PRE_AUTH_EXCEEDED 不能单独证明计划尚待批准。\n')
+
+tests/test_audit_promote_skill.py:108: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_audit_promote_skill.py::test_actual_promotion_publishes_model_body_version_and_ledger
+1 failed, 9 passed in 126.49s (0:02:06)

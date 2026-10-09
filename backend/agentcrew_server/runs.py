@@ -6,6 +6,7 @@ import re
 from contextlib import contextmanager
 from pathlib import Path
 
+from agentcrew_core.events import RunEventType
 from agentcrew_core.events.run_projection import project_run_state
 
 from .db.projections import _row_to_event
@@ -17,17 +18,19 @@ _HIDDEN = frozenset({"thinking_blocks", "reasoning_content", "thinking", "signat
                      "api_key", "credential", "authorization", "cookie", "identity_token"})
 
 
-def display_value(value):
+def display_value(value, *, _schema=False):
     if isinstance(value, dict):
-        return {key: display_value(item) for key, item in value.items()
-                if key.lower() not in _HIDDEN}
+        return {key: display_value(item, _schema=_schema) for key, item in value.items()
+                if _schema or key.lower() not in _HIDDEN}
     if isinstance(value, list):
-        return [display_value(item) for item in value]
+        return [display_value(item, _schema=_schema) for item in value]
     return redact(value) if isinstance(value, str) else value
 
 
 def event_frame(event):
     frame = display_value(event.as_frame())
+    if event.type == RunEventType.LLM_REQUEST_STARTED and "tool_declarations" in event.payload:
+        frame["payload"]["tool_declarations"] = display_value(event.payload["tool_declarations"], _schema=True)
     frame["attempt_no"] = event.attempt_no
     if event.conversation_id is not None:
         frame["conversation_id"] = event.conversation_id
@@ -234,6 +237,8 @@ class Runs:
                 "attempt_no": rows[0]["attempt_no"], "seq": rows[0]["seq"], "step_id": summary.get("step_id"),
                 "status": summary.get("status") if kind == "tool" else "failed" if summary["error"] else "completed" if summary["latency_ms"] is not None else "running",
                 "summary": display_value(summary), "events": [event_frame(_row_to_event(row)) for row in rows], "missing": missing}
+            if kind == "model":
+                result["summary"]["tool_declarations"] = display_value(summary["tool_declarations"], _schema=True)
         self.require_task(self.db.read_conn, identity, task_id)
         return result
 

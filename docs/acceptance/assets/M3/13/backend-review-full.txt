@@ -1,0 +1,374 @@
+.......................EEEEEEE.......................................... [  9%]
+.............................................F.......................... [ 18%]
+........................................................................ [ 28%]
+........................................................................ [ 37%]
+........................................................................ [ 47%]
+........................................................................ [ 56%]
+........................................................................ [ 66%]
+..........................................................F............. [ 75%]
+........................................................................ [ 85%]
+........................................................................ [ 94%]
+........................................                                 [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_actual_promotion_publishes_model_body_version_and_ledger _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+
+    @pytest.fixture(scope="module")
+    def promoted(server):
+>       report = new_proposal(server)
+                 ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_audit_promote_skill.py:75:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_audit_promote_skill.py:44: in new_proposal
+    return actual_failure_proposal(server, f"请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用{name}、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+instruction = '请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用真实预授权核查-43d94f99、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。'
+
+    def actual_failure_proposal(server, instruction):
+        with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+            task = conn.execute("SELECT task_run_id FROM run_events WHERE type='tool.failed' AND json_extract(payload,'$.error') LIKE '%PRE_AUTH_EXCEEDED%' ORDER BY global_seq DESC LIMIT 1").fetchone()[0]
+        response = request(server, "POST", f"/api/task-runs/{task}/review", body={"client_request_id": uuid.uuid4().hex, "instruction": instruction})
+        assert response.status_code == 202, response.text
+        job_id = response.json()["data"]["id"]
+        review = wait(lambda: request(server, "GET", f"/api/reviews/jobs/{job_id}").json()["data"], lambda value: value["status"] in {"completed", "skipped", "failed", "cancelled"}, seconds=180)
+>       assert review["status"] == "completed", review
+E       AssertionError: {'job_id': '2adf75aa96674959972291c64ddb5fe1', 'kind': 'trace_audit', 'status': 'failed', 'source_task_run_id': '26de9361fc18421586e5683817cbc7dc', ...}
+E       assert 'failed' == 'completed'
+E
+E         - completed
+E         + failed
+
+tests/test_audit_promote_skill.py:35: AssertionError
+__ ERROR at setup of test_independent_grant_then_actual_next_task_reads_skill __
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+
+    @pytest.fixture(scope="module")
+    def promoted(server):
+>       report = new_proposal(server)
+                 ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_audit_promote_skill.py:75:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_audit_promote_skill.py:44: in new_proposal
+    return actual_failure_proposal(server, f"请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用{name}、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+instruction = '请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用真实预授权核查-43d94f99、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。'
+
+    def actual_failure_proposal(server, instruction):
+        with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+            task = conn.execute("SELECT task_run_id FROM run_events WHERE type='tool.failed' AND json_extract(payload,'$.error') LIKE '%PRE_AUTH_EXCEEDED%' ORDER BY global_seq DESC LIMIT 1").fetchone()[0]
+        response = request(server, "POST", f"/api/task-runs/{task}/review", body={"client_request_id": uuid.uuid4().hex, "instruction": instruction})
+        assert response.status_code == 202, response.text
+        job_id = response.json()["data"]["id"]
+        review = wait(lambda: request(server, "GET", f"/api/reviews/jobs/{job_id}").json()["data"], lambda value: value["status"] in {"completed", "skipped", "failed", "cancelled"}, seconds=180)
+>       assert review["status"] == "completed", review
+E       AssertionError: {'job_id': '2adf75aa96674959972291c64ddb5fe1', 'kind': 'trace_audit', 'status': 'failed', 'source_task_run_id': '26de9361fc18421586e5683817cbc7dc', ...}
+E       assert 'failed' == 'completed'
+E
+E         - completed
+E         + failed
+
+tests/test_audit_promote_skill.py:35: AssertionError
+_ ERROR at setup of test_cancel_actual_promotion_stream_preserves_unpublished_state _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+
+    @pytest.fixture(scope="module")
+    def promoted(server):
+>       report = new_proposal(server)
+                 ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_audit_promote_skill.py:75:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_audit_promote_skill.py:44: in new_proposal
+    return actual_failure_proposal(server, f"请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用{name}、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+instruction = '请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用真实预授权核查-43d94f99、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。'
+
+    def actual_failure_proposal(server, instruction):
+        with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+            task = conn.execute("SELECT task_run_id FROM run_events WHERE type='tool.failed' AND json_extract(payload,'$.error') LIKE '%PRE_AUTH_EXCEEDED%' ORDER BY global_seq DESC LIMIT 1").fetchone()[0]
+        response = request(server, "POST", f"/api/task-runs/{task}/review", body={"client_request_id": uuid.uuid4().hex, "instruction": instruction})
+        assert response.status_code == 202, response.text
+        job_id = response.json()["data"]["id"]
+        review = wait(lambda: request(server, "GET", f"/api/reviews/jobs/{job_id}").json()["data"], lambda value: value["status"] in {"completed", "skipped", "failed", "cancelled"}, seconds=180)
+>       assert review["status"] == "completed", review
+E       AssertionError: {'job_id': '2adf75aa96674959972291c64ddb5fe1', 'kind': 'trace_audit', 'status': 'failed', 'source_task_run_id': '26de9361fc18421586e5683817cbc7dc', ...}
+E       assert 'failed' == 'completed'
+E
+E         - completed
+E         + failed
+
+tests/test_audit_promote_skill.py:35: AssertionError
+_ ERROR at setup of test_existing_proposal_name_updates_one_version_without_changing_grants _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+
+    @pytest.fixture(scope="module")
+    def promoted(server):
+>       report = new_proposal(server)
+                 ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_audit_promote_skill.py:75:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_audit_promote_skill.py:44: in new_proposal
+    return actual_failure_proposal(server, f"请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用{name}、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+instruction = '请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用真实预授权核查-43d94f99、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。'
+
+    def actual_failure_proposal(server, instruction):
+        with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+            task = conn.execute("SELECT task_run_id FROM run_events WHERE type='tool.failed' AND json_extract(payload,'$.error') LIKE '%PRE_AUTH_EXCEEDED%' ORDER BY global_seq DESC LIMIT 1").fetchone()[0]
+        response = request(server, "POST", f"/api/task-runs/{task}/review", body={"client_request_id": uuid.uuid4().hex, "instruction": instruction})
+        assert response.status_code == 202, response.text
+        job_id = response.json()["data"]["id"]
+        review = wait(lambda: request(server, "GET", f"/api/reviews/jobs/{job_id}").json()["data"], lambda value: value["status"] in {"completed", "skipped", "failed", "cancelled"}, seconds=180)
+>       assert review["status"] == "completed", review
+E       AssertionError: {'job_id': '2adf75aa96674959972291c64ddb5fe1', 'kind': 'trace_audit', 'status': 'failed', 'source_task_run_id': '26de9361fc18421586e5683817cbc7dc', ...}
+E       assert 'failed' == 'completed'
+E
+E         - completed
+E         + failed
+
+tests/test_audit_promote_skill.py:35: AssertionError
+_ ERROR at setup of test_actual_skill_deny_stops_promotion_before_model_request _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+
+    @pytest.fixture(scope="module")
+    def promoted(server):
+>       report = new_proposal(server)
+                 ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_audit_promote_skill.py:75:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_audit_promote_skill.py:44: in new_proposal
+    return actual_failure_proposal(server, f"请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用{name}、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+instruction = '请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用真实预授权核查-43d94f99、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。'
+
+    def actual_failure_proposal(server, instruction):
+        with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+            task = conn.execute("SELECT task_run_id FROM run_events WHERE type='tool.failed' AND json_extract(payload,'$.error') LIKE '%PRE_AUTH_EXCEEDED%' ORDER BY global_seq DESC LIMIT 1").fetchone()[0]
+        response = request(server, "POST", f"/api/task-runs/{task}/review", body={"client_request_id": uuid.uuid4().hex, "instruction": instruction})
+        assert response.status_code == 202, response.text
+        job_id = response.json()["data"]["id"]
+        review = wait(lambda: request(server, "GET", f"/api/reviews/jobs/{job_id}").json()["data"], lambda value: value["status"] in {"completed", "skipped", "failed", "cancelled"}, seconds=180)
+>       assert review["status"] == "completed", review
+E       AssertionError: {'job_id': '2adf75aa96674959972291c64ddb5fe1', 'kind': 'trace_audit', 'status': 'failed', 'source_task_run_id': '26de9361fc18421586e5683817cbc7dc', ...}
+E       assert 'failed' == 'completed'
+E
+E         - completed
+E         + failed
+
+tests/test_audit_promote_skill.py:35: AssertionError
+_ ERROR at setup of test_sigkill_before_publication_interrupts_actual_promotion _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+
+    @pytest.fixture(scope="module")
+    def promoted(server):
+>       report = new_proposal(server)
+                 ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_audit_promote_skill.py:75:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_audit_promote_skill.py:44: in new_proposal
+    return actual_failure_proposal(server, f"请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用{name}、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+instruction = '请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用真实预授权核查-43d94f99、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。'
+
+    def actual_failure_proposal(server, instruction):
+        with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+            task = conn.execute("SELECT task_run_id FROM run_events WHERE type='tool.failed' AND json_extract(payload,'$.error') LIKE '%PRE_AUTH_EXCEEDED%' ORDER BY global_seq DESC LIMIT 1").fetchone()[0]
+        response = request(server, "POST", f"/api/task-runs/{task}/review", body={"client_request_id": uuid.uuid4().hex, "instruction": instruction})
+        assert response.status_code == 202, response.text
+        job_id = response.json()["data"]["id"]
+        review = wait(lambda: request(server, "GET", f"/api/reviews/jobs/{job_id}").json()["data"], lambda value: value["status"] in {"completed", "skipped", "failed", "cancelled"}, seconds=180)
+>       assert review["status"] == "completed", review
+E       AssertionError: {'job_id': '2adf75aa96674959972291c64ddb5fe1', 'kind': 'trace_audit', 'status': 'failed', 'source_task_run_id': '26de9361fc18421586e5683817cbc7dc', ...}
+E       assert 'failed' == 'completed'
+E
+E         - completed
+E         + failed
+
+tests/test_audit_promote_skill.py:35: AssertionError
+_ ERROR at setup of test_revoking_current_skill_grant_cancels_actual_review_stream _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+
+    @pytest.fixture(scope="module")
+    def promoted(server):
+>       report = new_proposal(server)
+                 ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_audit_promote_skill.py:75:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_audit_promote_skill.py:44: in new_proposal
+    return actual_failure_proposal(server, f"请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用{name}、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x1224f4170>, 'url': 'http://127.0.0.1:64795', 'token': '***', ...}
+instruction = '请分析这项实际PRE_AUTH_EXCEEDED失败的可复用机制。真人明确要求独立归档一个新技能，建议名称采用真实预授权核查-43d94f99、existing_skill_id为null；本次归档需要完整的适用条件与可核查清单，当前索引中相同机理可作为参考。完整机理与边界必须由真实事件支持，禁止绕过预授权或补写未执行的结果。证据不足时如实说明。'
+
+    def actual_failure_proposal(server, instruction):
+        with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+            task = conn.execute("SELECT task_run_id FROM run_events WHERE type='tool.failed' AND json_extract(payload,'$.error') LIKE '%PRE_AUTH_EXCEEDED%' ORDER BY global_seq DESC LIMIT 1").fetchone()[0]
+        response = request(server, "POST", f"/api/task-runs/{task}/review", body={"client_request_id": uuid.uuid4().hex, "instruction": instruction})
+        assert response.status_code == 202, response.text
+        job_id = response.json()["data"]["id"]
+        review = wait(lambda: request(server, "GET", f"/api/reviews/jobs/{job_id}").json()["data"], lambda value: value["status"] in {"completed", "skipped", "failed", "cancelled"}, seconds=180)
+>       assert review["status"] == "completed", review
+E       AssertionError: {'job_id': '2adf75aa96674959972291c64ddb5fe1', 'kind': 'trace_audit', 'status': 'failed', 'source_task_run_id': '26de9361fc18421586e5683817cbc7dc', ...}
+E       assert 'failed' == 'completed'
+E
+E         - completed
+E         + failed
+
+tests/test_audit_promote_skill.py:35: AssertionError
+=================================== FAILURES ===================================
+_____________ test_employee_snapshot_and_current_allow_revocation ______________
+
+server = {'root': PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/02-api-acceptance/identity-h...t object at 0x12273f7d0>, 'url': 'http://127.0.0.1:65290', 'token': '***', ...}
+executions = {'task': 'e8e6261496eb4d7ab23aa59e275f6cec', 'conversation': 'c8353b5eb56d4ae693306c9db3018882', 'target': PosixPath('...sktop/data/m3-intermediate/02-api-acceptance/authorized-run-center-4fb88482266b498ba645285ea2720b5c/m3-run-query.txt')}
+employee_rules = None
+
+    def test_employee_snapshot_and_current_allow_revocation(server, executions, employee_rules):
+        workspace = request(server, "GET", "/api/workspaces/office").json()["data"]["data_dir"]
+        target = Path(workspace) / ("m3-current-allow-" + uuid.uuid4().hex + ".txt")
+        job = create_job(server, "existing", f"仅调用write_file将 M3 revoked allow 写入 {target}，保留实际结果。禁止改用其他工具。",
+            [{"tool": "write_file", "pattern": workspace}], executions["conversation"])
+        employee = request(server, "GET", "/api/agents/xiaowen").json()["data"]
+        new_position = "更新后的真实岗位-" + uuid.uuid4().hex
+        changed = request(server, "PATCH", "/api/agents/xiaowen", body={"change_id": uuid.uuid4().hex,
+            "expected_revision": employee["revision"], "spec": {**employee["spec"], "position": new_position}})
+        assert changed.status_code == 200, changed.text
+        rules = request(server, "GET", "/api/agents/xiaowen/permission-rules?limit=200").json()["data"]["items"]
+        rule = next(value for value in rules if value["tool_name"] == "write_file" and value["effect"] == "allow" and value["pattern"] == workspace)
+        assert request(server, "DELETE", f'/api/agents/xiaowen/permission-rules/{rule["id"]}', body={"change_id": uuid.uuid4().hex, "expected_revision": rule["revision"]}).status_code == 200
+        run_now(server, job)
+        occurrence = wait_occurrence(server, job)
+>       assert occurrence["status"] == "failed", occurrence
+E       AssertionError: {'id': '1663f15396d64d868f493b85cffe0883', 'job_id': 'cdf10b5f556b5151bedf75c73921ad05', 'revision': 1, 'trigger': 'manual', ...}
+E       assert 'completed' == 'failed'
+E
+E         - failed
+E         + completed
+
+tests/test_cron_execution.py:169: AssertionError
+_______________ test_sigkill_history_and_resume_with_real_model ________________
+
+tmp_path = PosixPath('/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/13-review-full/test_sigkill_history_and_resum0')
+
+    def test_sigkill_history_and_resume_with_real_model(tmp_path):
+        directory = tmp_path / "runtime"
+        directory.mkdir()
+        shutil.copy2(os.environ["AGENTCREW_TEST_CONFIG_SOURCE"], directory / "config.json")
+        token = secrets.token_urlsafe(32)
+        register_secret(token)
+        records = []
+
+        def launch():
+            log = (directory / f"process-{len(records)}.log").open("w")
+            with socket.socket() as listener:
+                listener.bind(("127.0.0.1", 0))
+                requested_port = listener.getsockname()[1]
+            child = subprocess.Popen([sys.executable, "-m", "agentcrew_server", "--data-dir", str(directory), "--port", str(requested_port)],
+                env={**os.environ, "AGENTCREW_TOKEN": token}, stdout=subprocess.PIPE, stderr=log, text=True)
+            line = child.stdout.readline().strip()
+            assert line.startswith("AGENTCREW_READY "), redact((directory / f"process-{len(records)}.log").read_text())
+            port = json.loads(line.split(" ", 1)[1])["port"]
+            client = httpx.Client(base_url=f"http://127.0.0.1:{port}", headers={"Authorization": f"Bearer {token}"}, timeout=60)
+            records.append({"pid": child.pid, "port": port})
+            return child, client, log
+
+        child, client, log = launch()
+
+        def request(method, path, body=None):
+            response = client.request(method, path, json=body)
+            value = response.json() if response.content else None
+            records.append({"method": method, "path": path, "request": body, "status": response.status_code,
+                            "response": json.loads(redact(json.dumps(value, ensure_ascii=False)))})
+            assert response.status_code < 400, response.text
+            return value["data"] if value else None
+
+        def wait(read, accepts, seconds=120):
+            deadline = time.monotonic() + seconds
+            while time.monotonic() < deadline:
+                value = read()
+                if accepts(value):
+                    return value
+                time.sleep(0.1)
+            raise AssertionError("真实模型及运行状态未达到指定验收条件")
+
+        try:
+            workspace = request("GET", "/api/workspaces/office")["data_dir"]
+            first = os.path.join(workspace, "m3-before-kill.txt")
+            second = os.path.join(workspace, "m3-after-resume.txt")
+            created = request("POST", "/api/conversations", {"workspace_id": "office", "agent_id": "xiaowen",
+                "client_request_id": uuid.uuid4().hex,
+                "instruction": f"先调用 write_file 将 M3 before kill 写入 {first}，然后必须调用 ask_user 提问是否继续，并等待真人回答。获得回答后调用 write_file 将 M3 after resume 写入 {second}。恢复时保留已完成文件，不重复写入。"})
+            task, conversation = created["task_run_id"], created["conversation"]["id"]
+            def initial_question():
+                state = request("GET", f"/api/task-runs/{task}")
+                assert state["status"] != "failed", state
+                for item in request("GET", f"/api/task-runs/{task}/approvals?status=pending"):
+                    request("POST", f'/api/tool-approvals/{item["call_id"]}', {"decision": "allow_once", "input_hash": item["input_hash"]})
+                return request("GET", f"/api/conversations/{conversation}/questions")
+
+>           question = wait(initial_question, bool)[0]
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_run_center_recovery.py:78:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/test_run_center_recovery.py:57: in wait
+    value = read()
+            ^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def initial_question():
+        state = request("GET", f"/api/task-runs/{task}")
+>       assert state["status"] != "failed", state
+E       AssertionError: {'id': '5c0ce9172ce4423cb8489a3aabc01d40', 'conversation_id': '9a97ca14fad14e21ac8b7b67b689c503', 'instruction': '先调用 ...ill_history_and_resum0/runtime/workspaces/office/files/m3-after-resume.txt。恢复时保留已完成文件，不重复写入。', 'status': 'failed', ...}
+E       assert 'failed' != 'failed'
+
+tests/test_run_center_recovery.py:73: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /Users/yyhdbl/Desktop/workMate/agentcrew-desktop/backend/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_cron_execution.py::test_employee_snapshot_and_current_allow_revocation
+FAILED tests/test_run_center_recovery.py::test_sigkill_history_and_resume_with_real_model
+ERROR tests/test_audit_promote_skill.py::test_actual_promotion_publishes_model_body_version_and_ledger
+ERROR tests/test_audit_promote_skill.py::test_independent_grant_then_actual_next_task_reads_skill
+ERROR tests/test_audit_promote_skill.py::test_cancel_actual_promotion_stream_preserves_unpublished_state
+ERROR tests/test_audit_promote_skill.py::test_existing_proposal_name_updates_one_version_without_changing_grants
+ERROR tests/test_audit_promote_skill.py::test_actual_skill_deny_stops_promotion_before_model_request
+ERROR tests/test_audit_promote_skill.py::test_sigkill_before_publication_interrupts_actual_promotion
+ERROR tests/test_audit_promote_skill.py::test_revoking_current_skill_grant_cancels_actual_review_stream
+2 failed, 751 passed, 1 warning, 7 errors in 1565.12s (0:26:05)

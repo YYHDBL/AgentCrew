@@ -108,7 +108,7 @@ export function Automation({ identity, workspace, agent, revision, diagnostic, s
   useEffect(() => {
     const request = generation.current
     const controller = new AbortController()
-    setJobs([]); setHistory({}); setProposals([]); setError('')
+    setJobs([]); setHistory({}); setError('')
     void (async () => {
       const [spaceRows, employeeRows, conversationRows] = await Promise.all([
         allPages<Resource>('/workspaces', controller.signal), allPages<Resource>('/agents', controller.signal), api<Conversation[]>('/conversations', undefined, controller.signal)
@@ -121,7 +121,7 @@ export function Automation({ identity, workspace, agent, revision, diagnostic, s
         selectScope(workspace, availableAgents[0]?.id ?? '')
         return
       }
-      setConversations(conversationRows.filter((row) => row.workspace_id === workspace && row.agent_id === agent))
+      setConversations(conversationRows.filter((row) => row.workspace_id === workspace))
       const allJobs = await allPages<CronJob>(`/cron/jobs?workspace_id=${encodeURIComponent(workspace)}`, controller.signal)
       const visible = allJobs.filter((job) => job.metadata.agent_id === agent)
       const histories = await Promise.all(visible.map(async (job) => [job.id, await allPages<CronOccurrence>(`/cron/jobs/${job.id}/runs?limit=200`, controller.signal)] as const))
@@ -142,12 +142,14 @@ export function Automation({ identity, workspace, agent, revision, diagnostic, s
     let subscription: AbortController | undefined
     let retry: ReturnType<typeof setTimeout> | undefined
     let cursor = 0
-    const proposalIds = new Set<string>()
     const loadProposal = async (id: string): Promise<void> => {
       try {
         const proposal = await api<ScheduleProposal>(`/cron/proposals/${id}`, undefined, lifetime.signal)
         if (lifetime.signal.aborted || request !== generation.current || proposal.proposal.workspace_id !== workspace || proposal.proposal.agent_id !== agent) return
-        setProposals((previous) => [proposal, ...previous.filter((item) => item.id !== proposal.id)])
+        setProposals((previous) => {
+          const current = previous.find((item) => item.id === proposal.id)
+          return current && current.revision > proposal.revision ? previous : [proposal, ...previous.filter((item) => item.id !== proposal.id)]
+        })
         setChoices((previous) => previous[proposal.id] ? previous : { ...previous, [proposal.id]: proposal.selected })
       } catch (reason) {
         if (lifetime.signal.aborted || request !== generation.current) return
@@ -177,13 +179,13 @@ export function Automation({ identity, workspace, agent, revision, diagnostic, s
           },
           onmessage(message) {
             if (lifetime.signal.aborted || request !== generation.current || !message.data || message.event === 'ping') return
-            if (message.event === 'shutdown' || message.event === 'resync') { cursor = 0; proposalIds.clear(); subscription?.abort(); setRefresh((value) => value + 1); return }
+            if (message.event === 'shutdown' || message.event === 'resync') { cursor = 0; subscription?.abort(); setRefresh((value) => value + 1); return }
             const event = parseEventFrame(message.data)
             if (event === null || !Number.isSafeInteger(event.global_seq) || event.global_seq <= cursor) return
             cursor = event.global_seq
             if (event.type === 'cron.proposal_requested' || event.type === 'cron.proposal_resolved') {
               const id = (event.payload as { proposal_id?: unknown } | undefined)?.proposal_id
-              if (typeof id === 'string' && !proposalIds.has(id)) { proposalIds.add(id); void loadProposal(id) }
+              if (typeof id === 'string') void loadProposal(id)
             }
             if (event.type.startsWith('cron.job_')) setRefresh((value) => value + 1)
           },
@@ -231,8 +233,9 @@ export function Automation({ identity, workspace, agent, revision, diagnostic, s
       if (requestGeneration !== generation.current) return
       const allowed = draft.selected.filter((entry) => value.candidates.some((candidate) => candidate.tool === entry.tool && candidate.pattern === entry.pattern))
       setDraft({ ...draft, selected: allowed }); setPreview(value)
-    } catch (reason) { setError(reason instanceof Error ? reason.message : String(reason)) }
-    finally { setBusy(false) }
+    } catch (reason) {
+      if (requestGeneration === generation.current) setError(reason instanceof Error ? reason.message : String(reason))
+    } finally { if (requestGeneration === generation.current) setBusy(false) }
   }
 
   const saveDraft = async (): Promise<void> => {
@@ -250,8 +253,9 @@ export function Automation({ identity, workspace, agent, revision, diagnostic, s
       } else {
         await api('/cron/jobs', { ...request, pre_authorized: actualPreview.selected })
       }
+      if (requestGeneration !== generation.current) return
       setDraft(null); setPreview(null); setNote('计划已由服务端保存。'); refreshData()
-    } catch (reason) { setError(reason instanceof Error ? reason.message : String(reason)) }
+    } catch (reason) { if (requestGeneration === generation.current) setError(reason instanceof Error ? reason.message : String(reason)) }
     finally { if (requestGeneration === generation.current) setBusy(false) }
   }
 
@@ -354,19 +358,20 @@ export function Automation({ identity, workspace, agent, revision, diagnostic, s
     </section>
     <Modal title={draft?.id ? '编辑自动化计划' : '创建自动化计划'} open={Boolean(draft)} width={760} okText={draft?.id ? '保存修改' : '创建计划'} cancelText="取消编辑" confirmLoading={busy} okButtonProps={{ disabled: readonly || !preview }} onCancel={() => { if (!busy) setDraft(null) }} onOk={() => void saveDraft()} afterOpenChange={(open) => { if (open) requestAnimationFrame(() => planNameInput.current?.focus()) }} destroyOnClose>
       {draft && <div className="automation-form">
-        <label>计划名称<input ref={planNameInput} aria-label="计划名称" required maxLength={80} value={draft.name} onChange={(event) => { setDraft({ ...draft, name: event.target.value }); setPreview(null) }} /></label>
-        <label>计划类型<select aria-label="计划类型" value={draft.kind} onChange={(event) => { setDraft({ ...draft, kind: event.target.value as Schedule['kind'] }); setPreview(null) }}><option value="at">at 一次性</option><option value="every">every 固定间隔</option><option value="cron">cron 日历规则</option></select></label>
-        {draft.kind === 'at' && <label>计划时间<input aria-label="计划时间" type="datetime-local" step="1" value={draft.at} onChange={(event) => { setDraft({ ...draft, at: event.target.value }); setPreview(null) }} /></label>}
-        {draft.kind === 'every' && <label>间隔秒数<input aria-label="间隔秒数" type="number" min="1" step="1" value={draft.every} onChange={(event) => { setDraft({ ...draft, every: event.target.value }); setPreview(null) }} /></label>}
-        {draft.kind === 'cron' && <label>cron 表达式<input aria-label="cron 表达式" value={draft.expr} onChange={(event) => { setDraft({ ...draft, expr: event.target.value }); setPreview(null) }} /><small>使用五字段或末尾秒字段六字段表达式。</small></label>}
-        <label>IANA 时区<input aria-label="IANA 时区" value={draft.tz} onChange={(event) => { setDraft({ ...draft, tz: event.target.value }); setPreview(null) }} /></label>
-        <label>员工<select aria-label="计划员工" value={draft.agent} onChange={(event) => { setDraft({ ...draft, agent: event.target.value }); setPreview(null) }}>{agents.map((row) => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
-        <label>执行会话<select aria-label="执行会话模式" value={draft.mode} onChange={(event) => { setDraft({ ...draft, mode: event.target.value as Draft['mode'], conversation: '', selected: [] }); setPreview(null) }}><option value="new_conversation">新建会话</option><option value="existing">使用现有会话</option></select></label>
-        {draft.mode === 'existing' && <label>现有会话<select aria-label="现有会话" value={draft.conversation} onChange={(event) => { setDraft({ ...draft, conversation: event.target.value }); setPreview(null) }}><option value="">选择可见会话</option>{conversations.map((row) => <option key={row.id} value={row.id}>{row.title || row.id} · {row.id}</option>)}</select></label>}
-        <label>执行指令<textarea aria-label="执行指令" rows={5} value={draft.instruction} onChange={(event) => { setDraft({ ...draft, instruction: event.target.value }); setPreview(null) }} /></label>
-        <label className="automation-checkbox"><input type="checkbox" checked={draft.enabled} onChange={(event) => { setDraft({ ...draft, enabled: event.target.checked }); setPreview(null) }} />创建后启用</label>
+        <label>计划名称<input ref={planNameInput} aria-label="计划名称" disabled={busy || readonly} required maxLength={80} value={draft.name} onChange={(event) => { setDraft({ ...draft, name: event.target.value }); setPreview(null) }} /></label>
+        <label>计划类型<select aria-label="计划类型" disabled={busy || readonly} value={draft.kind} onChange={(event) => { setDraft({ ...draft, kind: event.target.value as Schedule['kind'] }); setPreview(null) }}><option value="at">at 一次性</option><option value="every">every 固定间隔</option><option value="cron">cron 日历规则</option></select></label>
+        {draft.kind === 'at' && <label>计划时间<input aria-label="计划时间" disabled={busy || readonly} type="datetime-local" step="1" value={draft.at} onChange={(event) => { setDraft({ ...draft, at: event.target.value }); setPreview(null) }} /></label>}
+        {draft.kind === 'every' && <label>间隔秒数<input aria-label="间隔秒数" disabled={busy || readonly} type="number" min="1" step="1" value={draft.every} onChange={(event) => { setDraft({ ...draft, every: event.target.value }); setPreview(null) }} /></label>}
+        {draft.kind === 'cron' && <label>cron 表达式<input aria-label="cron 表达式" disabled={busy || readonly} value={draft.expr} onChange={(event) => { setDraft({ ...draft, expr: event.target.value }); setPreview(null) }} /><small>使用五字段或末尾秒字段六字段表达式。</small></label>}
+        <label>IANA 时区<input aria-label="IANA 时区" disabled={busy || readonly} value={draft.tz} onChange={(event) => { setDraft({ ...draft, tz: event.target.value }); setPreview(null) }} /></label>
+        <label>员工<select aria-label="计划员工" disabled={busy || readonly || Boolean(draft.id)} value={draft.agent} onChange={(event) => { setDraft({ ...draft, agent: event.target.value, conversation: '' }); setPreview(null) }}>{agents.map((row) => <option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
+        {draft.id && <p>已存在计划的员工身份固定；如需更换员工，请另建计划并重新核查授权范围。</p>}
+        <label>执行会话<select aria-label="执行会话模式" disabled={busy || readonly} value={draft.mode} onChange={(event) => { setDraft({ ...draft, mode: event.target.value as Draft['mode'], conversation: '', selected: [] }); setPreview(null) }}><option value="new_conversation">新建会话</option><option value="existing">使用现有会话</option></select></label>
+        {draft.mode === 'existing' && <label>现有会话<select aria-label="现有会话" disabled={busy || readonly} value={draft.conversation} onChange={(event) => { setDraft({ ...draft, conversation: event.target.value }); setPreview(null) }}><option value="">选择可见会话</option>{conversations.filter((row) => row.agent_id === draft.agent).map((row) => <option key={row.id} value={row.id}>{row.title || row.id} · {row.id}</option>)}</select></label>}
+        <label>执行指令<textarea aria-label="执行指令" disabled={busy || readonly} rows={5} value={draft.instruction} onChange={(event) => { setDraft({ ...draft, instruction: event.target.value }); setPreview(null) }} /></label>
+        <label className="automation-checkbox"><input type="checkbox" disabled={busy || readonly} checked={draft.enabled} onChange={(event) => { setDraft({ ...draft, enabled: event.target.checked }); setPreview(null) }} />创建后启用</label>
         <Button disabled={busy || readonly || !draft.name.trim() || !draft.instruction.trim() || (draft.mode === 'existing' && !draft.conversation)} onClick={() => void checkPreview()}>核查服务端候选范围与下一次时间</Button>
-        {preview && <section className="automation-preview"><h3>服务端预览</h3><p>下一次运行：{dateTime(preview.next_run_at)} · 授权摘要 SHA256：{preview.authorization_sha256}</p>{preview.candidates.length ? preview.candidates.map((candidate) => <label className="automation-choice" key={`${candidate.tool}:${candidate.pattern}`}><input type="checkbox" checked={draft.selected.some((item) => item.tool === candidate.tool && item.pattern === candidate.pattern)} onChange={() => { const exists = draft.selected.some((item) => item.tool === candidate.tool && item.pattern === candidate.pattern); setDraft({ ...draft, selected: exists ? draft.selected.filter((item) => item.tool !== candidate.tool || item.pattern !== candidate.pattern) : [...draft.selected, candidate] }) }} />{candidate.tool} · {candidate.pattern}</label>) : <p>当前授权没有可选择的预授权范围。</p>}</section>}
+        {preview && <section className="automation-preview"><h3>服务端预览</h3><p>下一次运行：{dateTime(preview.next_run_at)} · 授权摘要 SHA256：{preview.authorization_sha256}</p>{preview.candidates.length ? preview.candidates.map((candidate) => <label className="automation-choice" key={`${candidate.tool}:${candidate.pattern}`}><input type="checkbox" disabled={busy || readonly} checked={draft.selected.some((item) => item.tool === candidate.tool && item.pattern === candidate.pattern)} onChange={() => { const exists = draft.selected.some((item) => item.tool === candidate.tool && item.pattern === candidate.pattern); setDraft({ ...draft, selected: exists ? draft.selected.filter((item) => item.tool !== candidate.tool || item.pattern !== candidate.pattern) : [...draft.selected, candidate] }) }} />{candidate.tool} · {candidate.pattern}</label>) : <p>当前授权没有可选择的预授权范围。</p>}</section>}
         {error && <p role="alert">{error}</p>}
       </div>}
     </Modal>

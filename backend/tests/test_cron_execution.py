@@ -47,12 +47,19 @@ def test_unattended_gate_requires_both_layers_and_rejects_interaction():
     assert unattended_gate(needs_approval_read, {"path": "/approved/input.txt"}, True, [], [], "employee", Path("/approved")).action == "deny"
 
 
-def wait_occurrence(server, job, identity=None):
+def wait_occurrence(server, job, identity=None, occurrence_id=None):
     deadline = time.monotonic() + 90
     while time.monotonic() < deadline:
         history = request(server, "GET", f'/api/cron/jobs/{job["id"]}/runs', identity=identity).json()["data"]["items"]
-        if history and history[0]["status"] in {"completed", "failed", "skipped", "pending_verification", "interrupted"}:
-            return history[0]
+        if occurrence_id:
+            actual = next((row for row in history if row["id"] == occurrence_id), None)
+            if actual and actual["status"] in {"completed", "failed", "skipped", "pending_verification", "interrupted"}:
+                return actual
+        else:
+            actual_run = next((row for row in reversed(history) if row["task_run_id"] and row["status"] in
+                {"completed", "failed", "pending_verification", "interrupted"}), None)
+            if actual_run:
+                return actual_run
         time.sleep(0.05)
     raise AssertionError("真实无人值守发生未达到终态")
 
@@ -155,15 +162,26 @@ def test_employee_snapshot_and_current_allow_revocation(server, executions, empl
         "expected_revision": employee["revision"], "spec": {**employee["spec"], "position": new_position}})
     assert changed.status_code == 200, changed.text
     rules = request(server, "GET", "/api/agents/xiaowen/permission-rules?limit=200").json()["data"]["items"]
-    rule = next(value for value in rules if value["tool_name"] == "write_file" and value["effect"] == "allow" and value["pattern"] == workspace)
-    assert request(server, "DELETE", f'/api/agents/xiaowen/permission-rules/{rule["id"]}', body={"change_id": uuid.uuid4().hex, "expected_revision": rule["revision"]}).status_code == 200
-    run_now(server, job)
-    occurrence = wait_occurrence(server, job)
+    matching = [value for value in rules if value["tool_name"] == "write_file" and value["effect"] == "allow"
+                and value["pattern"] == workspace and value.get("revoked_at") is None]
+    assert matching
+    for rule in matching:
+        assert request(server, "DELETE", f'/api/agents/xiaowen/permission-rules/{rule["id"]}', body={"change_id": uuid.uuid4().hex, "expected_revision": rule["revision"]}).status_code == 200
+    remaining = request(server, "GET", "/api/agents/xiaowen/permission-rules?limit=200").json()["data"]["items"]
+    assert not any(value["tool_name"] == "write_file" and value["effect"] == "allow" and value["pattern"] == workspace
+                   and value.get("revoked_at") is None for value in remaining)
+    registered = run_now(server, job)
+    occurrence = wait_occurrence(server, job, occurrence_id=registered["id"])
     assert occurrence["status"] == "failed", occurrence
     assert not target.exists()
     record = request(server, "GET", f'/api/task-runs/{occurrence["task_run_id"]}').json()["data"]
     assert record["agent_spec_snapshot"] == job["metadata"]["agent_spec_snapshot"]
     assert record["agent_spec_snapshot"]["position"] != new_position
+    with sqlite3.connect(server["root"] / "agentcrew.db") as conn:
+        assert conn.execute("SELECT count(*) FROM tool_calls WHERE task_run_id=? AND tool_name='write_file' AND dispatched_at IS NOT NULL", (occurrence["task_run_id"],)).fetchone()[0] == 0
+    (server["root"] / "cron-current-rule-revocation.json").write_text(json.dumps({"job_id": job["id"],
+        "revoked_rule_ids": [rule["id"] for rule in matching], "occurrence": occurrence, "task": record,
+        "target_path": str(target), "target_exists": target.exists(), "write_dispatch_count": 0}, ensure_ascii=False, indent=2))
     assert request(server, "POST", "/api/agents/xiaowen/permission-rules", body={"change_id": uuid.uuid4().hex,
         "tool_name": "write_file", "pattern": workspace, "effect": "allow"}).status_code == 200
 
@@ -232,15 +250,15 @@ def test_real_http_connector_grant_is_rechecked(server, persistent_http):
     assert rule.status_code == 200, rule.text
     instruction = f"仅调用http_request，指定connector_id={connector['id']}，method=POST，url={persistent_http['url']}/ordinary，body为 M3 actual HTTP。保留真实结果。禁止使用bash或其他工具。"
     job = create_job(server, "new_conversation", instruction, [{"tool": "http_request", "pattern": "127.0.0.1"}])
-    run_now(server, job)
-    result = wait_occurrence(server, job)
+    registered = run_now(server, job)
+    result = wait_occurrence(server, job, occurrence_id=registered["id"])
     assert result["status"] == "completed", result
     with sqlite3.connect(persistent_http["database"]) as conn:
         actual = conn.execute("SELECT id,body,auth_sha256 FROM operations").fetchall()
         assert len(actual) == 1, actual
     assert request(server, "DELETE", f'/api/grants/{grant["id"]}', body={"change_id": uuid.uuid4().hex, "expected_revision": grant["revision"]}).status_code == 200
-    run_now(server, job)
-    denied = wait_occurrence(server, job)
+    denied_run = run_now(server, job)
+    denied = wait_occurrence(server, job, occurrence_id=denied_run["id"])
     with sqlite3.connect(persistent_http["database"]) as conn:
         assert conn.execute("SELECT id,body,auth_sha256 FROM operations").fetchall() == actual
     with sqlite3.connect(server["root"] / "agentcrew.db") as conn:

@@ -17,6 +17,7 @@ from pathlib import Path
 import httpx
 
 from agentcrew_server.secrets import redact, register_secret
+from test_run_center_api import initialize_actual_soul
 
 
 def test_sigkill_history_and_resume_with_real_model(tmp_path):
@@ -61,6 +62,9 @@ def test_sigkill_history_and_resume_with_real_model(tmp_path):
         raise AssertionError("真实模型及运行状态未达到指定验收条件")
 
     try:
+        initialized = {"client": client, "requests": records}
+        initialize_actual_soul(initialized)
+        records.append({"real_soul_source": initialized["real_soul_source"], "real_soul_imported": initialized["real_soul_imported"]})
         workspace = request("GET", "/api/workspaces/office")["data_dir"]
         first = os.path.join(workspace, "m3-before-kill.txt")
         second = os.path.join(workspace, "m3-after-resume.txt")
