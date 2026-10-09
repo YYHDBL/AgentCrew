@@ -212,6 +212,55 @@ button:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-
 .scope-line { max-height: 130px; overflow: auto; overflow-wrap: anywhere; }
 .composer small { color: #5b6a7d; margin-bottom: 8px; }
 
+.automation-page { flex: 1; min-width: 0; overflow: auto; padding: 28px 32px; background: #fff; color: #17243b; }
+.automation-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.automation-heading h1 { margin: 0 0 8px; font-size: 28px; }
+.automation-heading p, .automation-job > p, .automation-proposal > p, .automation-impact { color: #5b6a7d; line-height: 1.6; overflow-wrap: anywhere; }
+.automation-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.automation-scope { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 20px; margin: 20px 0 28px; padding: 16px; background: #f6f8fb; border-radius: 12px; }
+.automation-scope label, .automation-form > label { display: grid; gap: 6px; min-width: 190px; font-size: 13px; }
+.automation-scope select, .automation-form input:not([type='checkbox']), .automation-form select, .automation-form textarea { min-width: 0; width: 100%; padding: 9px 10px; border: 1px solid #dce3eb; border-radius: 8px; color: #17243b; background: #fff; font: inherit; }
+.automation-scope > span { color: #5b6a7d; font-size: 13px; }
+.automation-page section { margin: 26px 0; }
+.automation-page section > h2 { margin: 0 0 12px; font-size: 18px; }
+.automation-job, .automation-proposal { margin: 12px 0; padding: 18px; border: 1px solid #dce3eb; border-radius: 12px; background: #fff; }
+.automation-proposal { border-color: #d9a85e; background: #fffaf0; }
+.automation-job header, .automation-proposal header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.automation-job h3, .automation-proposal h3 { margin: 0; font-size: 16px; }
+.automation-job header p, .automation-proposal header p { margin: 6px 0; color: #5b6a7d; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.automation-job strong, .automation-proposal header > span { padding: 5px 9px; border-radius: 8px; background: #eef3fa; font-size: 12px; white-space: nowrap; }
+.automation-job details { margin-top: 14px; padding-top: 12px; border-top: 1px solid #dce3eb; }
+.automation-job summary { cursor: pointer; font-weight: 600; }
+.automation-job ol { padding-left: 24px; }
+.automation-job li { padding: 10px 0; line-height: 1.6; overflow-wrap: anywhere; }
+.automation-job li .automation-actions { margin-top: 8px; }
+.automation-attempt { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid #edf0f4; }
+.automation-attempt span { flex: 1 1 300px; }
+.automation-impact { margin: 12px 0 0; font-size: 12px; }
+.automation-empty { padding: 20px; border: 1px dashed #dce3eb; border-radius: 12px; text-align: center; color: #5b6a7d; }
+.automation-error, .automation-warning { padding: 12px 14px; border-radius: 8px; color: #8e3137; background: #fff0f0; line-height: 1.6; overflow-wrap: anywhere; }
+.automation-note { padding: 12px 14px; border-radius: 8px; color: #166b4b; background: #eaf7f1; line-height: 1.6; }
+.automation-proposal dl { display: grid; grid-template-columns: minmax(120px, 180px) minmax(0, 1fr); gap: 8px 14px; margin: 14px 0; }
+.automation-proposal dt { color: #5b6a7d; }
+.automation-proposal dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.automation-proposal pre { max-height: 240px; overflow: auto; margin: 0; padding: 10px; background: #fff; border: 1px solid #e5e8ee; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.automation-choice { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; overflow-wrap: anywhere; }
+.automation-form { display: grid; gap: 14px; max-height: 68vh; overflow: auto; padding: 4px; }
+.automation-form small { color: #5b6a7d; }
+.automation-form .automation-checkbox { display: flex; align-items: center; }
+.automation-form .automation-checkbox input, .automation-choice input { margin-top: 4px; }
+.automation-preview { padding: 12px; border: 1px solid #dce3eb; border-radius: 8px; background: #f6f8fb; }
+.automation-preview h3 { margin: 0 0 8px; font-size: 15px; }
+.automation-preview p { overflow-wrap: anywhere; }
+.automation-page :is(button, a, input, select, textarea, summary):focus-visible { outline: 2px solid #315eb5; outline-offset: 2px; }
+
+@media (max-width: 800px) {
+  .automation-page { padding: 18px 16px; }
+  .automation-heading { flex-direction: column; }
+  .automation-proposal dl { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .automation-proposal dd { margin-bottom: 8px; }
+}
+
 @media (max-width: 979px) {
   .navigation { flex-basis: 66px; padding: 24px 6px 12px; align-items: center; }
   .nav-section { display: none; }

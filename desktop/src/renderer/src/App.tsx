@@ -8,10 +8,11 @@ import { Governance } from './Governance'
 import { AgentStudio } from './agents/AgentStudio'
 import { AdminCenter } from './admin/AdminCenter'
 import { RunCenter } from './run-center/RunCenter'
+import { Automation } from './automation/Automation'
 import { allPages, useGovernanceEvents, type Identity, type Resource, type Diagnostic } from './governance-data'
 
 type NarrowPanel = 'tasks' | 'details' | null
-type PageName = 'tasks' | 'governance' | 'admin' | 'runs' | 'studio' | MemoryKind
+type PageName = 'tasks' | 'governance' | 'admin' | 'runs' | 'studio' | 'automation' | MemoryKind
 
 export default function App(): JSX.Element {
   const [generation, setGeneration] = useState(0)
@@ -306,6 +307,7 @@ function Application(): JSX.Element {
             <Button className={page === 'admin' ? 'nav-current' : 'nav-link'} aria-current={page === 'admin' ? 'page' : undefined} onClick={() => showPage('admin')}>管理中心</Button>
             <Button className={page === 'governance' ? 'nav-current' : 'nav-link'} aria-current={page === 'governance' ? 'page' : undefined} onClick={() => showPage('governance')}>治理管理</Button>
             <Button disabled={diagnostic.mode === 'diagnostic'} className={page === 'runs' ? 'nav-current' : 'nav-link'} aria-current={page === 'runs' ? 'page' : undefined} onClick={() => showPage('runs')}>运行中心</Button>
+            <Button disabled={diagnostic.mode === 'diagnostic'} className={page === 'automation' ? 'nav-current' : 'nav-link'} aria-current={page === 'automation' ? 'page' : undefined} onClick={() => showPage('automation')}>自动化</Button>
             <div className="nav-bottom">
               <Button ref={sidebarCloseButton} type="text" onClick={toggleSidebar} aria-label="收起侧栏">收起侧栏</Button>
             </div>
@@ -322,7 +324,7 @@ function Application(): JSX.Element {
           </aside>
         )}
 
-        {page === 'runs' ? identity ? <RunCenter identity={identity} revision={governanceEvents.revision + governanceRevision} initialTask={runTarget} /> : <main className="run-center-page"><p role="status">正在核查运行记录读取权限。</p></main> : page === 'governance' || page === 'studio' || page === 'admin' ? identity ? (page === 'studio' ? <AgentStudio identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} events={studioMemory.events} connectionStatus={studioMemory.status} onRun={openRun} /> : page === 'admin' ? <AdminCenter identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} onRun={openRun} /> : <Governance identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} />) : <main className="governance-page"><p role="status">正在读取当前治理身份。</p>{actionError && <p role="alert">{actionError}</p>}<Button onClick={() => setIdentityToken('')}>使用真实所有者凭证重新认证</Button></main> : page !== 'tasks' ? !identity || currentAgent === null ? <main className="memory-page" aria-busy="true"><p role="status">正在读取当前员工与工作区。</p></main> : <Memory key={`${page}:${currentAgent}`} kind={page} workspace={currentWorkspace} agent={currentAgent} events={memory.events} connectionStatus={memory.status} identity={identity} /> : <main className="task-content">
+        {page === 'automation' ? identity ? <Automation key={`${workspaceId}:${agentId}:${identity.effective_user_id}:${identity.role}`} identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} selectScope={selectScope} onRun={openRun} onConversation={choose} /> : <main className="automation-page"><p role="status">正在核查自动化读取权限。</p></main> : page === 'runs' ? identity ? <RunCenter identity={identity} revision={governanceEvents.revision + governanceRevision} initialTask={runTarget} /> : <main className="run-center-page"><p role="status">正在核查运行记录读取权限。</p></main> : page === 'governance' || page === 'studio' || page === 'admin' ? identity ? (page === 'studio' ? <AgentStudio identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} events={studioMemory.events} connectionStatus={studioMemory.status} onRun={openRun} /> : page === 'admin' ? <AdminCenter identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} onRun={openRun} /> : <Governance identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} />) : <main className="governance-page"><p role="status">正在读取当前治理身份。</p>{actionError && <p role="alert">{actionError}</p>}<Button onClick={() => setIdentityToken('')}>使用真实所有者凭证重新认证</Button></main> : page !== 'tasks' ? !identity || currentAgent === null ? <main className="memory-page" aria-busy="true"><p role="status">正在读取当前员工与工作区。</p></main> : <Memory key={`${page}:${currentAgent}`} kind={page} workspace={currentWorkspace} agent={currentAgent} events={memory.events} connectionStatus={memory.status} identity={identity} /> : <main className="task-content">
           <div className="content-scroll">
             <div className="task-heading">
               <h1>{selected ? conversations.find((item) => item.id === selected)?.title || '任务对话' : '给数字员工交代一项工作'}</h1>

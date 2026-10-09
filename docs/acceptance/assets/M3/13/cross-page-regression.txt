@@ -1,0 +1,10 @@
+日期：2026-10-09，Asia/Shanghai
+
+cd desktop && node tests/m3-run-center.mjs
+真实 Electron / HTTP / SQLite 回归：8 项通过。
+验收目录：desktop/.artifacts/m3-run-center-1791519546288
+
+cd desktop && node tests/m3-management.mjs
+真实 Electron / HTTP / SQLite 回归：14 项通过。
+包含员工管理、身份切换与记忆范围隔离检查。
+验收目录：desktop/.artifacts/m3-management-1791519612377

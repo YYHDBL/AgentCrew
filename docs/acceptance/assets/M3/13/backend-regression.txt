@@ -1,0 +1,207 @@
+WARN Failed to acquire project environment lock: No such file or directory (os error 2) at path "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/data/m3-intermediate/13-tmp/.tmpRBPOTC"
+.FFFF.............EEEE.EFF.............................................. [ 53%]
+......EEEE.EEEFEE..............................................          [100%]
+==================================== ERRORS ====================================
+_____ ERROR at setup of test_real_existing_and_new_conversation_file_runs ______
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': '400b176b9e324c5a987d2b5fcd3f35f4', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+_ ERROR at setup of test_real_missing_plan_allow_and_ask_user_have_no_waiting __
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': '400b176b9e324c5a987d2b5fcd3f35f4', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+______ ERROR at setup of test_current_deny_and_scope_stop_real_file_calls ______
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': '400b176b9e324c5a987d2b5fcd3f35f4', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+____ ERROR at setup of test_employee_snapshot_and_current_allow_revocation _____
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': '400b176b9e324c5a987d2b5fcd3f35f4', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+___ ERROR at setup of test_paused_queue_and_busy_conversation_stay_unchanged ___
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': '400b176b9e324c5a987d2b5fcd3f35f4', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+_______ ERROR at setup of test_query_list_filters_and_current_visibility _______
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': 'c9c27e4b01294554ae964d1722c16e7b', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+_____ ERROR at setup of test_fixed_event_watermark_and_exact_call_location _____
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': 'c9c27e4b01294554ae964d1722c16e7b', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+________ ERROR at setup of test_metrics_match_separate_sql_aggregations ________
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': 'c9c27e4b01294554ae964d1722c16e7b', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+________ ERROR at setup of test_history_pagination_during_real_new_task ________
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': 'c9c27e4b01294554ae964d1722c16e7b', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+__ ERROR at setup of test_attempt_and_historical_configuration_remain_visible __
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': 'c9c27e4b01294554ae964d1722c16e7b', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+______ ERROR at setup of test_actual_model_failure_reports_unknown_usage _______
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': 'c9c27e4b01294554ae964d1722c16e7b', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+_______ ERROR at setup of test_run_list_snapshot_survives_status_changes _______
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': 'c9c27e4b01294554ae964d1722c16e7b', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+__ ERROR at setup of test_tail_starts_after_frozen_head_and_keeps_pagination ___
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': 'c1cca934e55f47788bf369b6d0efc55c', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+____________ ERROR at setup of test_tail_rejects_negative_watermark ____________
+tests/test_run_center_api.py:125: in executions
+    assert runs[0]["status"] == "completed", runs
+E   AssertionError: [{'id': 'c1cca934e55f47788bf369b6d0efc55c', 'instruction': '调用 write_file 将内容 M3 real run center 写入 /Users/yyhdbl/Desk...ead_file 核查内容。最后调用 read_file 读取同目录不存在的 missing-m3.txt，保留实际错误并说明结果。', 'status': 'failed', 'current_attempt_no': 0, ...}]
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+=================================== FAILURES ===================================
+_______ test_real_proposal_forces_human_and_approved_narrowed_plan_runs ________
+tests/test_schedule_task_approval.py:65: in test_real_proposal_forces_human_and_approved_narrowed_plan_runs
+    proposal, target, source_task, directory = propose(server)
+                                               ^^^^^^^^^^^^^^^
+tests/test_schedule_task_approval.py:38: in propose
+    cards = wait(lambda: request(server, "GET", f"/api/task-runs/{task_id}/approvals?status=pending").json()["data"], lambda rows: any(item["tool"] == "schedule_task" for item in rows))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_cron_recovery_process.py:23: in wait
+    raise AssertionError("真实进程及副作用未达到指定验收状态")
+E   AssertionError: 真实进程及副作用未达到指定验收状态
+__________ test_rejection_has_no_plan_and_same_decision_is_idempotent __________
+tests/test_schedule_task_approval.py:101: in test_rejection_has_no_plan_and_same_decision_is_idempotent
+    proposal, target, task, _directory = propose(server)
+                                         ^^^^^^^^^^^^^^^
+tests/test_schedule_task_approval.py:38: in propose
+    cards = wait(lambda: request(server, "GET", f"/api/task-runs/{task_id}/approvals?status=pending").json()["data"], lambda rows: any(item["tool"] == "schedule_task" for item in rows))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_cron_recovery_process.py:23: in wait
+    raise AssertionError("真实进程及副作用未达到指定验收状态")
+E   AssertionError: 真实进程及副作用未达到指定验收状态
+_________ test_suggested_scope_cannot_become_an_unapproved_capability __________
+tests/test_schedule_task_approval.py:115: in test_suggested_scope_cannot_become_an_unapproved_capability
+    proposal, target, task, _directory = propose(server, interval=60000, execution_mode="existing", suggested=suggestion)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_schedule_task_approval.py:38: in propose
+    cards = wait(lambda: request(server, "GET", f"/api/task-runs/{task_id}/approvals?status=pending").json()["data"], lambda rows: any(item["tool"] == "schedule_task" for item in rows))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_cron_recovery_process.py:23: in wait
+    raise AssertionError("真实进程及副作用未达到指定验收状态")
+E   AssertionError: 真实进程及副作用未达到指定验收状态
+___________ test_cancelled_source_expires_proposal_without_creation ____________
+tests/test_schedule_task_approval.py:136: in test_cancelled_source_expires_proposal_without_creation
+    proposal, target, task, _directory = propose(server)
+                                         ^^^^^^^^^^^^^^^
+tests/test_schedule_task_approval.py:38: in propose
+    cards = wait(lambda: request(server, "GET", f"/api/task-runs/{task_id}/approvals?status=pending").json()["data"], lambda rows: any(item["tool"] == "schedule_task" for item in rows))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_cron_recovery_process.py:23: in wait
+    raise AssertionError("真实进程及副作用未达到指定验收状态")
+E   AssertionError: 真实进程及副作用未达到指定验收状态
+_________________ test_real_http_connector_grant_is_rechecked __________________
+tests/test_cron_execution.py:237: in test_real_http_connector_grant_is_rechecked
+    assert result["status"] == "completed", result
+E   AssertionError: {'id': '084ecb0669b94a49aff7ad6466035498', 'job_id': '72292a5dbe63535cb56140320bb30ec2', 'revision': 1, 'trigger': 'manual', ...}
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+_______________ test_at_every_cron_produce_real_scheduled_files ________________
+tests/test_cron_execution.py:271: in test_at_every_cron_produce_real_scheduled_files
+    assert outcome["status"] == "completed", outcome
+E   AssertionError: {'id': 'c626b91557464db7a782409f548ad591', 'job_id': 'fa3f3fc24be15fbe917b0b99a7867c99', 'revision': 1, 'trigger': 'scheduled', ...}
+E   assert 'failed' == 'completed'
+E
+E     - completed
+E     + failed
+_______________ test_sigkill_history_and_resume_with_real_model ________________
+tests/test_run_center_recovery.py:78: in test_sigkill_history_and_resume_with_real_model
+    question = wait(initial_question, bool)[0]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_run_center_recovery.py:57: in wait
+    value = read()
+            ^^^^^^
+tests/test_run_center_recovery.py:73: in initial_question
+    assert state["status"] != "failed", state
+E   AssertionError: {'id': '4f7ddd9cde5341369651ad187b1532dd', 'conversation_id': 'e2cd68c5a5a4415092baedfb1eadd6e6', 'instruction': '先调用 ...ill_history_and_resum0/runtime/workspaces/office/files/m3-after-resume.txt。恢复时保留已完成文件，不重复写入。', 'status': 'failed', ...}
+E   assert 'failed' != 'failed'
+=========================== short test summary info ============================
+FAILED tests/test_schedule_task_approval.py::test_real_proposal_forces_human_and_approved_narrowed_plan_runs
+FAILED tests/test_schedule_task_approval.py::test_rejection_has_no_plan_and_same_decision_is_idempotent
+FAILED tests/test_schedule_task_approval.py::test_suggested_scope_cannot_become_an_unapproved_capability
+FAILED tests/test_schedule_task_approval.py::test_cancelled_source_expires_proposal_without_creation
+FAILED tests/test_cron_execution.py::test_real_http_connector_grant_is_rechecked
+FAILED tests/test_cron_execution.py::test_at_every_cron_produce_real_scheduled_files
+FAILED tests/test_run_center_recovery.py::test_sigkill_history_and_resume_with_real_model
+ERROR tests/test_cron_execution.py::test_real_existing_and_new_conversation_file_runs
+ERROR tests/test_cron_execution.py::test_real_missing_plan_allow_and_ask_user_have_no_waiting
+ERROR tests/test_cron_execution.py::test_current_deny_and_scope_stop_real_file_calls
+ERROR tests/test_cron_execution.py::test_employee_snapshot_and_current_allow_revocation
+ERROR tests/test_cron_execution.py::test_paused_queue_and_busy_conversation_stay_unchanged
+ERROR tests/test_run_center_api.py::test_query_list_filters_and_current_visibility
+ERROR tests/test_run_center_api.py::test_fixed_event_watermark_and_exact_call_location
+ERROR tests/test_run_center_api.py::test_metrics_match_separate_sql_aggregations
+ERROR tests/test_run_center_api.py::test_history_pagination_during_real_new_task
+ERROR tests/test_run_center_api.py::test_attempt_and_historical_configuration_remain_visible
+ERROR tests/test_run_center_api.py::test_actual_model_failure_reports_unknown_usage
+ERROR tests/test_run_center_api.py::test_run_list_snapshot_survives_status_changes
+ERROR tests/test_run_center_tail.py::test_tail_starts_after_frozen_head_and_keeps_pagination
+ERROR tests/test_run_center_tail.py::test_tail_rejects_negative_watermark - A...
+7 failed, 114 passed, 14 errors in 965.08s (0:16:05)

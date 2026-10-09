@@ -1,0 +1,6 @@
+日期：2026-10-09，Asia/Shanghai
+命令：cd desktop && node tests/m3-automation.mjs
+结果：退出码 0；11 项真实 Electron 场景完成，renderer page error 数量为 0。
+实际运行目录（Git 忽略）：desktop/.artifacts/m3-automation-1791519965637
+
+场景包括 at/every/cron 计划、现有会话目标编辑、手动冲突、计划停用与删除、无人值守预授权拒绝、真实 SIGSTOP/SIGCONT missed、员工提案批准/拒绝/过期/重复决定、member 权限拒绝、身份切换清理、宽窄窗口、审批焦点及刷新恢复。
