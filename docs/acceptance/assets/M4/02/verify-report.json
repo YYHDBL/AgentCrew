@@ -1,0 +1,131 @@
+{
+  "verify": {
+    "generated_at": "2026-10-10T23:09:30+0800",
+    "checks": [
+      {
+        "check": "真实模型凭据可用",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "就绪标记（7.8s ≤ 30.0s 预算）",
+        "result": "passed",
+        "detail": "ready_port=24027 lines=['2026-10-10 23:08:36,187 INFO uvicorn.error Application startup complete.', '2026-10-10 23:08:36,187 INFO uvicorn.error Uvicorn running on http://127.0.0.1:24027 (Press CTRL+C to quit)', 'AGENTCREW_READY {\"port\": 24027}']"
+      },
+      {
+        "check": "健康响应 ok",
+        "result": "passed",
+        "detail": "status_code=200"
+      },
+      {
+        "check": "FTS5 检索接口（MATCH 查询路径）",
+        "result": "passed",
+        "detail": "status_code=200 body={\"data\":{\"items\":[],\"next_after\":null,\"method\":\"trigram\"}}"
+      },
+      {
+        "check": "真实模型工具调用任务终态 completed",
+        "result": "passed",
+        "detail": "attempts=1"
+      },
+      {
+        "check": "工具调用真实写入目标文件",
+        "result": "passed",
+        "detail": "exists=True",
+        "attempts": [
+          {
+            "attempt": 1,
+            "task_run_id": "bff935fec18e44f09ffded251c8e3d70",
+            "status": "completed",
+            "fail_payload": ""
+          }
+        ]
+      },
+      {
+        "check": "SQLite 数据库已初始化",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "迁移版本已写入",
+        "result": "passed",
+        "detail": "user_version=21"
+      },
+      {
+        "check": "FTS5 虚拟表存在（SQLite 扩展随包可用）",
+        "result": "passed",
+        "detail": "tables=['messages_fts', 'memory_fts', 'summaries_fts']"
+      },
+      {
+        "check": "审计链两级校验通过日志",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "计数资源读取（context.budget_checked）",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "SIGTERM 优雅退出 exit 0",
+        "result": "passed",
+        "detail": "exit_code=0"
+      },
+      {
+        "check": "第二次启动就绪（父进程看护场景）",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "父进程终止后 sidecar 自行退出",
+        "result": "passed",
+        "detail": "exit_code=0"
+      },
+      {
+        "check": "无残留 sidecar 进程",
+        "result": "passed",
+        "detail": "leftover=[]"
+      }
+    ],
+    "stdout_tail": [
+      "2026-10-10 23:08:35,994 INFO agentcrew.server startup.begin data_dir=/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m4-sidecar/data log_level=info env覆盖字段=无",
+      "2026-10-10 23:08:35,995 INFO agentcrew.server startup.db opened journal_mode=wal busy_timeout=5000ms",
+      "2026-10-10 23:08:36,026 INFO agentcrew.server startup.migrations applied v0→v21 已应用=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21] 升级前快照=/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/.artifacts/m4-sidecar/data/backups/db-v0-20261010T150835Z.sqlite",
+      "2026-10-10 23:08:36,026 INFO agentcrew.server startup.audit 审计链校验通过（0 条）",
+      "2026-10-10 23:08:36,051 INFO agentcrew.server startup.bus 事件总线就绪（队列上限 1000，SSE 连接上限 32）",
+      "2026-10-10 23:08:36,051 INFO agentcrew.server startup.provider main=deepseek-v4.1-flash @ https://opencode.ai/zen/go/v1 aux=deepseek-v4.1-flash @ https://opencode.ai/zen/go/v1",
+      "2026-10-10 23:08:36,150 INFO uvicorn.error Started server process [26613]",
+      "2026-10-10 23:08:36,151 INFO uvicorn.error Waiting for application startup.",
+      "2026-10-10 23:08:36,187 INFO uvicorn.error Application startup complete.",
+      "2026-10-10 23:08:36,187 INFO uvicorn.error Uvicorn running on http://127.0.0.1:24027 (Press CTRL+C to quit)",
+      "AGENTCREW_READY {\"port\": 24027}"
+    ],
+    "log_tail": "OST https://opencode.ai/zen/go/v1/chat/completions \"HTTP/1.1 200 OK\"\n2026-10-10 23:08:58,449 INFO agentcrew.context context.budget_checked slot=aux session=eefe351771144277b364b5db1fd0fbcf counts={'model': 'deepseek-v4.1-flash', 'context_window': 1000000, 'counting_method': 'tokenizers/official-deepseek-v4.1', 'tokenizer_revision': '2cba9e42aa026125f3ed06c6d98c1db82f7ca027', 'system_tokens': 18, 'history_tokens': 256, 'tool_result_tokens': 0, 'output_reserved': 8192, 'total_input_tokens': 274} source=https://models.dev/api.json#opencode-go/deepseek-v4.1-flash sha256=c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b\n2026-10-10 23:09:02,289 INFO httpx HTTP Request: POST https://opencode.ai/zen/go/v1/chat/completions \"HTTP/1.1 200 OK\"\n2026-10-10 23:09:11,754 INFO agentcrew.context context.budget_checked slot=main session=eefe351771144277b364b5db1fd0fbcf counts={'model': 'deepseek-v4.1-flash', 'context_window': 1000000, 'counting_method': 'tokenizers/official-deepseek-v4.1', 'tokenizer_revision': '2cba9e42aa026125f3ed06c6d98c1db82f7ca027', 'system_tokens': 3528, 'history_tokens': 83, 'tool_result_tokens': 0, 'output_reserved': 8192, 'total_input_tokens': 3611} source=https://models.dev/api.json#opencode-go/deepseek-v4.1-flash sha256=c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b\n2026-10-10 23:09:14,709 INFO httpx HTTP Request: POST https://opencode.ai/zen/go/v1/chat/completions \"HTTP/1.1 200 OK\"\n2026-10-10 23:09:16,908 INFO agentcrew.context context.budget_checked slot=main session=eefe351771144277b364b5db1fd0fbcf counts={'model': 'deepseek-v4.1-flash', 'context_window': 1000000, 'counting_method': 'tokenizers/official-deepseek-v4.1', 'tokenizer_revision': '2cba9e42aa026125f3ed06c6d98c1db82f7ca027', 'system_tokens': 3528, 'history_tokens': 345, 'tool_result_tokens': 61, 'output_reserved': 8192, 'total_input_tokens': 3934} source=https://models.dev/api.json#opencode-go/deepseek-v4.1-flash sha256=c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b\n2026-10-10 23:09:19,815 INFO httpx HTTP Request: POST https://opencode.ai/zen/go/v1/chat/completions \"HTTP/1.1 200 OK\"\n2026-10-10 23:09:19,866 INFO agentcrew.context context.budget_checked slot=aux session=eefe351771144277b364b5db1fd0fbcf counts={'model': 'deepseek-v4.1-flash', 'context_window': 1000000, 'counting_method': 'tokenizers/official-deepseek-v4.1', 'tokenizer_revision': '2cba9e42aa026125f3ed06c6d98c1db82f7ca027', 'system_tokens': 72, 'history_tokens': 116, 'tool_result_tokens': 0, 'output_reserved': 8192, 'total_input_tokens': 188} source=https://models.dev/api.json#opencode-go/deepseek-v4.1-flash sha256=c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b\n2026-10-10 23:09:19,884 INFO agentcrew.server shutdown.begin 触发源=signal 15（SSE shutdown 帧已投递）\n2026-10-10 23:09:19,902 INFO uvicorn.error Shutting down\n2026-10-10 23:09:20,004 INFO uvicorn.error Waiting for application shutdown.\n2026-10-10 23:09:20,004 INFO agentcrew.server shutdown.begin 优雅关闭（总预算 10s；停收新请求由 uvicorn 完成）\n2026-10-10 23:09:20,006 INFO agentcrew.server shutdown.run_manager stopped\n2026-10-10 23:09:20,308 INFO agentcrew.server shutdown.provider closed\n2026-10-10 23:09:20,319 INFO agentcrew.server shutdown.checkpoint wal_checkpoint(PASSIVE) busy=0 wal_frames=982 checkpointed=982\n2026-10-10 23:09:20,322 INFO agentcrew.server shutdown.chain_head 快照至 seq=25\n2026-10-10 23:09:20,325 INFO agentcrew.server shutdown.db closed\n2026-10-10 23:09:20,325 INFO agentcrew.server shutdown.done\n2026-10-10 23:09:20,325 INFO uvicorn.error Application shutdown complete.\n2026-10-10 23:09:20,325 INFO uvicorn.error Finished server process [26613]\n2026-10-10 23:09:20,325 INFO agentcrew.server shutdown.begin 触发源=signal 15（SSE shutdown 帧已投递）\n2026-10-10 23:09:20,326 INFO agentcrew.server shutdown.begin 触发源=signal 15（SSE shutdown 帧已投递）\n2026-10-10 23:09:20,326 INFO agentcrew.server shutdown.signal 收到信号 [15, 15]，已优雅关闭\n2026-10-10 23:09:20,326 INFO agentcrew.server shutdown.exit 正常退出（exit 0）\n"
+  },
+  "build": {
+    "python": "3.12.12",
+    "pyinstaller": "6.17.0",
+    "binary": {
+      "path": "desktop/resources/sidecar/darwin-arm64/agentcrew-sidecar",
+      "size_bytes": 35065424,
+      "sha256": "81bdf7fb6ba8bb7f250736f6dafcc6631c119867f1bf16aa09f9362ca75d89a6"
+    },
+    "tokenizers": [
+      {
+        "key": "deepseek-v4.1",
+        "revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+        "files": [
+          {
+            "name": "tokenizer.json",
+            "sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b",
+            "size_bytes": 6367257
+          },
+          {
+            "name": "encoding/encoding.py",
+            "sha256": "502bdaec8a3fd88ebc24c4721a7038fbe42f2063c664638127056107920035c1",
+            "size_bytes": 37316
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -25,6 +25,7 @@ dev = [
     "pyyaml>=6",
     "openapi-spec-validator>=0.7",
     "httpx-sse>=0.4,<0.5",
+    "pyinstaller==6.17.0",
 ]
 
 [project.scripts]

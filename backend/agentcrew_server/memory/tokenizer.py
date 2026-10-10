@@ -1,9 +1,15 @@
-"""经源码核查并固定 SHA 的官方 tokenizer 和消息编码实现。"""
+"""经源码核查并固定 SHA 的官方 tokenizer 和消息编码实现。
+
+生产（桌面包）由壳经 AGENTCREW_TOKENIZER_DIR 显式传入只读资源目录，
+从 <dir>/<prompt_format>/ 按固定 SHA 加载，不经网络；开发模式按固定
+revision 从官方仓库取得并写入本地缓存（backend-service §4 可复现流程）。
+"""
 
 from __future__ import annotations
 
 import hashlib
 import importlib.util
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -15,6 +21,7 @@ from agentcrew_core.provider.glm_anthropic import SlotConfig
 
 TOKENIZER_FIELDS = ("context_window", "context_window_source", "tokenizer_repository",
                     "tokenizer_revision", "tokenizer_sha256", "prompt_format")
+TOKENIZER_DIR_ENV = "AGENTCREW_TOKENIZER_DIR"
 DEEPSEEK_V41 = {
     "context_window": 1_000_000,
     "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
@@ -27,6 +34,36 @@ ENCODING_SHA256 = "502bdaec8a3fd88ebc24c4721a7038fbe42f2063c66463812705610792003
 CACHE_DIR = Path(__file__).resolve().parents[3] / "data" / "tokenizers"
 
 
+def _checked(path: Path, expected: str) -> Path:
+    if not path.is_file():
+        raise ContextBudgetError(f"TOKENIZER_UNAVAILABLE：官方编码文件缺失：{path.name}")
+    if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+        raise ContextBudgetError(f"TOKENIZER_UNAVAILABLE：官方编码文件 SHA 不一致：{path.name}")
+    return path
+
+
+def _local_resources(cfg: SlotConfig) -> list[Path] | None:
+    """生产资源目录：<dir>/<prompt_format>/tokenizer.json 与 encoding/encoding.py。"""
+    value = os.environ.get(TOKENIZER_DIR_ENV, "").strip()
+    if not value:
+        return None
+    base = Path(value).expanduser() / cfg.prompt_format
+    return [_checked(base / "tokenizer.json", cfg.tokenizer_sha256),
+            _checked(base / "encoding" / "encoding.py", ENCODING_SHA256)]
+
+
+def _downloaded_resources(cfg: SlotConfig) -> list[Path]:
+    """开发模式：按固定 revision 从官方仓库取得，SHA 不符即失败。"""
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    paths = []
+    for name, expected in (("tokenizer.json", cfg.tokenizer_sha256),
+                           ("encoding/encoding.py", ENCODING_SHA256)):
+        path = Path(hf_hub_download(repo_id=cfg.tokenizer_repository,
+            filename=name, revision=cfg.tokenizer_revision, cache_dir=CACHE_DIR, token=False))
+        paths.append(_checked(path, expected))
+    return paths
+
+
 @lru_cache(maxsize=8)
 def load_counter(cfg: SlotConfig) -> RequestCounter:
     if cfg.context_window <= 0 or not cfg.context_window_source:
@@ -35,15 +72,7 @@ def load_counter(cfg: SlotConfig) -> RequestCounter:
             or cfg.base_url != "https://opencode.ai/zen/go/v1" \
             or any(getattr(cfg, key) != value for key, value in DEEPSEEK_V41.items()):
         raise ContextBudgetError("TOKENIZER_UNAVAILABLE：模型、服务或编码版本缺少经核查的计数依据")
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    paths = []
-    for name, expected in (("tokenizer.json", cfg.tokenizer_sha256),
-                           ("encoding/encoding.py", ENCODING_SHA256)):
-        path = Path(hf_hub_download(repo_id=cfg.tokenizer_repository,
-            filename=name, revision=cfg.tokenizer_revision, cache_dir=CACHE_DIR, token=False))
-        if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
-            raise ContextBudgetError(f"TOKENIZER_UNAVAILABLE：官方编码文件 SHA 不一致：{name}")
-        paths.append(path)
+    paths = _local_resources(cfg) or _downloaded_resources(cfg)
     spec = importlib.util.spec_from_file_location("agentcrew_deepseek_v41_encoding", paths[1])
     if spec is None or spec.loader is None:
         raise ContextBudgetError("TOKENIZER_UNAVAILABLE：官方编码实现无法加载")

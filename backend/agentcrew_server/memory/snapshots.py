@@ -167,32 +167,45 @@ class MemorySnapshots:
                       "正文不足最低字符数时补充岗位工作方法，超过最高字符数时精简重复表达。"
                       "只输出正文，只描写岗位职责、工作方法、沟通和核验纪律。"
                       "具体偏好、历史经历、业务事实、人员资料和授权状态必须省略。\n真实岗位：\n" + role)
-            previous = self.db.read_conn.execute("SELECT * FROM memory_soul_generations WHERE agent_id=? AND prompt=? AND status='completed' ORDER BY created_at DESC LIMIT 1", (identity.agent_id, prompt)).fetchone()
-            if previous:
-                generation_id, text = previous["id"], previous["result"]
-                identity = MemoryIdentity(identity.workspace_id, identity.agent_id, "agent", identity.agent_id, previous["conversation_id"], previous["task_run_id"])
-            else:
+            # 配额校验保持不变；真实 aux 输出存在长度方差（M4 实测单发命中率不足），
+            # 未达配额时带自检字数再生，最多三次，全部不符才失败
+            generation_id: str | None = None
+            text = ""
+            last_error = None
+            for attempt in range(3):
+                effective_prompt = prompt
+                if attempt:
+                    effective_prompt = (prompt + f"\n自检结果：上一次输出 {len(text)} 字符，"
+                                         f"不满足 {lower} 至 {upper} 的配额。请调整每段篇幅后重新输出完整正文。")
+                previous = self.db.read_conn.execute("SELECT * FROM memory_soul_generations WHERE agent_id=? AND prompt=? AND status='completed' ORDER BY created_at DESC LIMIT 1", (identity.agent_id, effective_prompt)).fetchone()
+                if previous:
+                    generation_id, text = previous["id"], previous["result"]
+                    identity = MemoryIdentity(identity.workspace_id, identity.agent_id, "agent", identity.agent_id, previous["conversation_id"], previous["task_run_id"])
+                    break
                 generation_id = uuid.uuid4().hex
-                await self.events.channel.execute(lambda conn: self._begin_generation(conn, generation_id, identity, aux_model, prompt))
+                await self.events.channel.execute(lambda conn: self._begin_generation(conn, generation_id, identity, aux_model, effective_prompt))
                 recorded = []
                 async def sink(event_type, payload):
                     recorded.append({"type": event_type, "payload": payload})
                     await self.events.channel.execute(lambda conn: self._update_generation(conn, generation_id, events=canonical(recorded)))
                 async def forbidden(call):
                     raise MemorySnapshotError(failure("SOUL_TOOL_FORBIDDEN", "初始 soul 生成不能执行工具"))
-                messages = [user_text_message(prompt)]
+                messages = [user_text_message(effective_prompt)]
                 try:
                     result = await run_task(messages, LoopDeps(request=lambda: provider.stream("aux", messages, [], thinking={"type": "disabled"}, system="根据给出的真实岗位生成员工自我认知，遵守正文格式与字符配额。"),
                         execute=forbidden, emit=sink, on_progress=lambda: None, gates=LoopGates(max_steps=1), model=aux_model, model_slot="aux"))
                     text = result.final_text.strip()
                     if result.status != "completed" or not lower <= len(text) <= upper or len(parse_entries(text)) != 1:
-                        error = failure("SOUL_GENERATION_FAILED", "真实 aux 未生成符合配额的初始 soul", reason=result.reason, characters=len(text), minimum=lower, maximum=upper)
-                        await self.events.channel.execute(lambda conn: self._update_generation(conn, generation_id, status="failed", result=text, error=canonical(error)))
-                        raise MemorySnapshotError(error)
+                        last_error = failure("SOUL_GENERATION_FAILED", "真实 aux 未生成符合配额的初始 soul", reason=result.reason, characters=len(text), minimum=lower, maximum=upper)
+                        await self.events.channel.execute(lambda conn: self._update_generation(conn, generation_id, status="failed", result=text, error=canonical(last_error)))
+                        continue
                     await self.events.channel.execute(lambda conn: self._update_generation(conn, generation_id, status="completed", result=text))
+                    break
                 finally:
                     cancelling = asyncio.current_task().cancelling()
                     await self.events.channel.execute(lambda conn: self._end_unfinished_generation(conn, generation_id, cancelling))
+            else:
+                raise MemorySnapshotError(last_error)
             require(await self.store.change(identity, "soul", identity.agent_id, change_id=generation_id, expected_revision=0,
                 basis=f"真实员工岗位 {role}；aux 生成记录 {generation_id}", operations=[{"action": "add", "text": text}]))
 

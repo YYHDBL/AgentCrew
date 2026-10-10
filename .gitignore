@@ -21,6 +21,9 @@ desktop/.artifacts/
 # Electron 打包
 release/
 
+# M4 打包生成的 sidecar/计数资源（声明在 scripts/release/，产物不入库）
+desktop/resources/
+
 # macOS
 .DS_Store
 
