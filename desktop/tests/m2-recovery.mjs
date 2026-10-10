@@ -6,6 +6,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import { createServer } from 'node:http'
 import { execFileSync } from 'node:child_process'
 import { DatabaseSync } from 'node:sqlite'
+import { closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 const directory = resolve('.artifacts', `m2-recovery-${Date.now()}`)
 await mkdir(`${directory}/data`, { recursive: true })
@@ -50,7 +51,7 @@ const page = await app.firstWindow()
 page.setDefaultTimeout(180000)
 await page.emulateMedia({ reducedMotion: 'reduce' })
 let db
-const evidence = { directory, models: Object.fromEntries(Object.entries(configuration.models).map(([name, slot]) => [name, { provider: slot.provider, model: slot.model }])), requests: [], screenshots: [] }
+const evidence = { directory, models: Object.fromEntries(Object.entries(configuration.models).map(([name, slot]) => [name, { provider: slot.provider, model: slot.model }])), requests: [], interface_evidence: [] }
 const request = async (method, path, body) => {
   const observed = await page.evaluate(async ({ method, path, body }) => {
     const port = await window.agentcrew.getBackendPort()
@@ -194,9 +195,10 @@ try {
   evidence.event_watermark = db.prepare('SELECT max(global_seq) AS seq FROM run_events').get().seq
   evidence.audit_sequence = db.prepare('SELECT max(seq) AS seq FROM audit_log').get().seq
   await page.reload()
-  await page.locator('.notice').filter({ hasText: /已连接 · (idle|failed)/ }).waitFor()
-  await page.screenshot({ path: `${directory}/recovered.png` })
-  evidence.screenshots.push(`${directory}/recovered.png`)
+  await page.getByText('任务服务已连接', { exact: true }).waitFor()
+  await page.locator('.task-status').filter({ hasText: /已完成|执行失败/ }).waitFor()
+  await recordDesktopEvidence(page, `${directory}/recovered.json`)
+  evidence.interface_evidence.push(`${directory}/recovered.json`)
   await writeFile(`${directory}/result.json`, JSON.stringify(safe(evidence), null, 2))
   process.stdout.write(JSON.stringify({ directory, task_run_id: taskId, status: evidence.final_status, actual_operations: evidence.upstream.operations.length }) + '\n')
 } finally {
@@ -205,9 +207,13 @@ try {
     evidence.actual_tool_states = db.prepare('SELECT call_id,task_run_id,tool_name,status,input_hash,dispatched_at FROM tool_calls ORDER BY prepared_at').all()
     await writeFile(`${directory}/result.json`, JSON.stringify(safe(evidence), null, 2))
   }
-  await app.close()
-  heldResponse?.destroy()
-  await new Promise((done) => server.close(done))
+  try {
+    await closeDesktop(app, page)
+  } finally {
+    heldResponse?.destroy()
+    server.closeAllConnections()
+    await new Promise((done) => server.close(done))
+  }
   db?.close()
   upstream.close()
 }

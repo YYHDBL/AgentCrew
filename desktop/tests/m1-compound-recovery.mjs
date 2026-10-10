@@ -5,6 +5,7 @@ import { resolve, basename } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { createHash, randomUUID } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
+import { openConversation, openRunDetails, closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 const directory = resolve('.artifacts', `m1-compound-${Date.now()}`)
 const conversationId = '6018b39c95f9457c8836930dba028b9f'
@@ -27,7 +28,7 @@ page.setDefaultTimeout(180000)
 await page.emulateMedia({ reducedMotion: 'reduce' })
 const errors = []
 page.on('pageerror', (error) => errors.push(error.message))
-const output = { directory, conversation_id: conversationId, checkpoints, screenshots: [] }
+const output = { directory, conversation_id: conversationId, checkpoints, interface_evidence: [] }
 const get = (path) => page.evaluate(async (path) => {
   const port = await window.agentcrew.getBackendPort()
   const token = await window.agentcrew.getToken()
@@ -49,8 +50,7 @@ const signature = async (path) => ({ sha256: sha(await readFile(path)), mtime_ns
 try {
   await page.getByText('任务服务已连接', { exact: true }).waitFor()
   const conversation = (await get('/conversations')).find((item) => item.id === conversationId)
-  const title = conversation.title || await page.evaluate((date) => `任务 ${new Date(date).toLocaleString('zh-CN')}`, conversation.last_activity_at)
-  await page.locator('.recent-tasks button').filter({ hasText: title }).click()
+  await openConversation(page, conversation.id)
   const snapshotPath = `${directory}/data/conversations/${conversationId}/memory-snapshot.json`
   const snapshotBefore = await signature(snapshotPath)
   const marker = randomUUID()
@@ -69,7 +69,7 @@ try {
   const intent = await waitFor(async () => {
     const state = db.prepare('SELECT status FROM task_runs WHERE id=?').get(task.id)
     if (state.status === 'failed') throw new Error('真实模型请求失败，请检查任务事件和原始响应证据')
-    const approvals = page.locator('.approval').getByRole('button', { name: '允许', exact: true }).first()
+    const approvals = page.locator('.approval').getByRole('button', { name: '仅本次允许', exact: true }).first()
     if (await approvals.count() && await approvals.isEnabled()) await approvals.click()
     return db.prepare("SELECT change_id,status,plan FROM memory_changes WHERE status='prepared' AND json_extract(plan,'$.identity.task_run_id')=? ORDER BY created_at DESC LIMIT 1").get(task.id)
   }, Boolean)
@@ -80,11 +80,11 @@ try {
   assert.equal(repaired.status, 'committed')
   const repairedMemory = await signature(materials.memory_path)
   assert.equal(db.prepare("SELECT COUNT(*) AS count FROM memory_entries WHERE store_type='workspace' AND text LIKE '贯穿核验临时材料%' AND state='archived'").get().count, 60)
-  await page.screenshot({ path: `${directory}/memory-interrupted.png` })
-  output.screenshots.push(`${directory}/memory-interrupted.png`)
+  await recordDesktopEvidence(page, `${directory}/memory-interrupted.json`)
+  output.interface_evidence.push(`${directory}/memory-interrupted.json`)
   await page.getByRole('button', { name: '恢复', exact: true }).click()
   await waitFor(async () => {
-    const approval = page.locator('.approval').getByRole('button', { name: '允许', exact: true }).first()
+    const approval = page.locator('.approval').getByRole('button', { name: '仅本次允许', exact: true }).first()
     if (await approval.count() && await approval.isEnabled()) await approval.click()
     const questions = await get(`/conversations/${conversationId}/questions`)
     if (questions.length) throw new Error('真实模型需要额外回答，请检查该任务问题记录')
@@ -111,10 +111,11 @@ try {
   const fileBeforeRefresh = await signature(file)
   const events = (await get(`/task-runs/${task.id}/events?after_seq=0&limit=500`)).items
   await page.reload()
+  await openRunDetails(page)
   await page.getByRole('heading', { name: '已恢复 · 第 2 次尝试', exact: true }).last().waitFor()
   assert.deepEqual(await signature(file), fileBeforeRefresh)
-  await page.screenshot({ path: `${directory}/compound-completed.png` })
-  output.screenshots.push(`${directory}/compound-completed.png`)
+  await recordDesktopEvidence(page, `${directory}/compound-completed.json`)
+  output.interface_evidence.push(`${directory}/compound-completed.json`)
   output.result = { observed_prepared: { change_id: intent.change_id, status: intent.status }, killed_pid: pid,
     old_port: oldPort, new_port: await page.evaluate(() => window.agentcrew.getBackendPort()), final,
     ledger, memory_event_count: eventCount, write_file_side_effects: writes.length, write_file_ledger: writes, memory_after_recovery: repairedMemory,
@@ -127,5 +128,5 @@ try {
 } finally {
   await writeFile(`${directory}/compound-output.json`, JSON.stringify(output, null, 2))
   db.close()
-  await app.close()
+  await closeDesktop(app, page)
 }

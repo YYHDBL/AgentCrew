@@ -3,6 +3,7 @@ import { _electron as electron } from 'playwright-core'
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { resolve, basename } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
+import { openMemory, openConversation, closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 const seed = resolve(process.argv[2])
 const source = JSON.parse(await readFile(resolve(process.argv[3]), 'utf8'))
@@ -18,7 +19,7 @@ const app = await electron.launch({ args: ['.', `--user-data-dir=${directory}`],
 const page = await app.firstWindow()
 page.setDefaultTimeout(60000)
 const db = new DatabaseSync(`${directory}/data/agentcrew.db`, { readOnly: true })
-const output = { directory, screenshots: [], operations: [] }
+const output = { directory, interface_evidence: [], operations: [] }
 try {
   await page.getByText('任务服务已连接', { exact: true }).waitFor()
   const conversation = await page.evaluate(async (id) => {
@@ -28,16 +29,15 @@ try {
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     return (await response.json()).data.find((row) => row.id === id)
   }, source.cross_date.conversation_id)
-  const title = conversation.title || await page.evaluate((date) => `任务 ${new Date(date).toLocaleString('zh-CN')}`, conversation.last_activity_at)
-  await page.locator('.recent-tasks button').filter({ hasText: title }).click()
+  await openConversation(page, conversation.id)
   for (const [label, text, name] of [['USER 记忆', '用户喜欢以简洁中文汇报', 'user'],
     ['工作区记忆', '项目资料使用项目编号分类保存', 'workspace'],
     ['员工 soul', '处理资料时先确认用户提供的列顺序', 'soul']]) {
-    await page.getByRole('button', { name: label, exact: true }).click()
+    await openMemory(page, label)
     await page.getByText(text, { exact: true }).first().waitFor()
     await page.getByText(text, { exact: true }).first().click()
-    await page.screenshot({ path: `${directory}/${name}.png` })
-    output.screenshots.push(`${directory}/${name}.png`)
+    await recordDesktopEvidence(page, `${directory}/${name}.json`)
+    output.interface_evidence.push(`${directory}/${name}.json`)
     output.operations.push(label)
   }
   const before = db.prepare('SELECT COUNT(*) AS count FROM llm_calls').get().count
@@ -58,13 +58,13 @@ try {
   }
   assert.equal(db.prepare('SELECT COUNT(*) AS count FROM llm_calls').get().count, before)
   await page.locator('.memory-search details').first().scrollIntoViewIfNeeded()
-  await page.screenshot({ path: `${directory}/chinese-search.png` })
-  output.screenshots.push(`${directory}/chinese-search.png`)
+  await recordDesktopEvidence(page, `${directory}/chinese-search.json`)
+  output.interface_evidence.push(`${directory}/chinese-search.json`)
   output.search_model_calls = { before, after: before }
   output.all_checks_passed = true
   console.log(JSON.stringify({ directory, operations: output.operations.length, all_checks_passed: true }))
 } finally {
   db.close()
-  await app.close()
+  await closeDesktop(app, page)
   await writeFile(`${directory}/view-output.json`, JSON.stringify(output, null, 2))
 }

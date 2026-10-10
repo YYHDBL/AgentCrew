@@ -65,9 +65,10 @@ function scheduleOf(draft: Draft): Schedule {
 
 function occurrenceRun(row: CronOccurrence): string | null { return row.task_run_id ?? row.attempts.find((attempt) => attempt.task_run_id)?.task_run_id ?? null }
 
-export function Automation({ identity, workspace, agent, revision, diagnostic, selectScope, onRun, onConversation }: {
+export function Automation({ identity, workspace, agent, revision, diagnostic, selectScope, onRun, onConversation, initialJob }: {
   identity: Identity; workspace: string; agent: string; revision: number; diagnostic: Diagnostic
   selectScope: (workspace: string, agent: string) => void; onRun: (taskRunId: string) => void; onConversation: (conversationId: string) => void
+  initialJob?: string | null
 }): JSX.Element {
   const [workspaces, setWorkspaces] = useState<Resource[]>([])
   const [agents, setAgents] = useState<Resource[]>([])
@@ -86,11 +87,18 @@ export function Automation({ identity, workspace, agent, revision, diagnostic, s
   const [streamRefresh, setStreamRefresh] = useState(0)
   const generation = useRef(0)
   const newPlanTrigger = useRef<HTMLButtonElement>(null)
+  const focusedJob = useRef<string | null>(null)
   const planNameInput = useRef<HTMLInputElement>(null)
   const wasDraftOpen = useRef(false)
   const draftOpen = Boolean(draft)
   const identityKey = `${identity.effective_user_id}:${identity.role}:${identity.organization_status}`
   const readonly = diagnostic.mode !== 'normal' || identity.organization_status !== 'active' || identity.role === 'member'
+
+  useEffect(() => {
+    if (!initialJob || focusedJob.current === initialJob || !jobs.some((job) => job.id === initialJob)) return
+    document.getElementById(`cron-job-${initialJob}`)?.focus()
+    focusedJob.current = initialJob
+  }, [initialJob, jobs])
 
   useLayoutEffect(() => {
     generation.current += 1
@@ -346,7 +354,7 @@ export function Automation({ identity, workspace, agent, revision, diagnostic, s
       {proposals.some((proposal) => proposal.status !== 'pending') && <details className="automation-job"><summary>已决定或已失效提案（{proposals.filter((proposal) => proposal.status !== 'pending').length}）</summary>{proposals.filter((proposal) => proposal.status !== 'pending').map((proposal) => <p key={proposal.id}>{proposal.proposal.name} · {statusText[proposal.status] ?? proposal.status} · 员工 {proposal.proposal.agent_id} · 提案 {proposal.id}{proposal.job_id ? ` · 计划 ${proposal.job_id}` : ''} · 决定者 {proposal.decided_by ?? '服务端'} · {proposal.decided_at ?? '时间未提供'}</p>)}</details>}
     </section>
     <section aria-labelledby="automation-jobs-heading"><h2 id="automation-jobs-heading">计划与发生记录</h2>
-      {jobs.length === 0 ? <p className="automation-empty">当前范围没有可见计划。</p> : jobs.map((job) => <article className="automation-job" key={job.id}>
+      {jobs.length === 0 ? <p className="automation-empty">当前范围没有可见计划。</p> : jobs.map((job) => <article className="automation-job" id={`cron-job-${job.id}`} tabIndex={-1} key={job.id}>
         <header><div><h3>{job.name}</h3><p>{job.id} · 创建身份 {job.metadata.created_by === 'agent' ? `员工 ${job.metadata.agent_id}` : `真人 ${job.metadata.owner_id}`} · {job.metadata.created_via_task_run_id ? `来源 TaskRun ${job.metadata.created_via_task_run_id}` : '人工创建'}</p></div><strong>{job.state.enabled ? '启用' : '停用'}</strong></header>
         <p>{job.schedule.kind === 'at' ? `一次性时刻 ${dateTime(job.schedule.at_ms, job.schedule.tz)}` : job.schedule.kind === 'every' ? `每 ${job.schedule.every_ms / 1000} 秒` : `cron ${job.schedule.expr}`} · 时区 {job.schedule.tz} · 下次运行 {dateTime(job.state.next_run_at, job.schedule.tz)} · 最近状态 {statusText[job.state.last_status ?? ''] ?? '尚未运行'} · 自动重试 {job.state.retry_count}/{job.state.max_retries}</p>
         <p>员工 {job.metadata.agent_id} · {job.target.execution_mode === 'existing' ? `现有会话 ${job.target.conversation_id}` : '新建会话'} · {job.target.instruction}</p>

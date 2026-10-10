@@ -6,6 +6,7 @@ import { randomUUID } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
 import { createServer } from 'node:http'
 import { governanceWorkflows } from './m2-governance-workflows.mjs'
+import { openSettings, changeIdentity, closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 const directory = resolve('.artifacts', `m2-governance-${Date.now()}`)
 await mkdir(`${directory}/data`, { recursive: true })
@@ -33,7 +34,7 @@ const app = await electron.launch({ args: ['.', `--user-data-dir=${directory}`],
   executablePath: resolve('node_modules/electron/dist/Electron.app/Contents/MacOS/Electron') })
 const page = await app.firstWindow()
 page.setDefaultTimeout(60000)
-const result = { directory, cases: [], requests: [], screenshots: [] }
+const result = { directory, cases: [], requests: [], interface_evidence: [] }
 const waitFor = async (read, accepts, seconds = 90) => {
   const deadline = Date.now() + seconds * 1000
   while (Date.now() < deadline) {
@@ -56,16 +57,16 @@ const request = async (method, path, body, owner = false) => {
 }
 try {
   await page.getByText('任务服务已连接', { exact: true }).waitFor()
-  await page.getByRole('button', { name: '治理管理', exact: true }).waitFor()
+  await page.getByRole('button', { name: '设置', exact: true }).waitFor()
   await governanceWorkflows({ page, directory, endpoint, upstream, request, waitFor, result })
-  await page.getByRole('button', { name: '治理管理', exact: true }).click()
+  await openSettings(page, '权限与审计')
   await page.getByRole('heading', { name: '员工与治理', exact: true }).waitFor()
-  await page.getByLabel('演示身份').selectOption('lilei')
+  await changeIdentity(page, 'lilei')
   await page.getByText('当前角色：member', { exact: false }).waitFor()
   assert.equal((await request('POST', '/workspaces', { change_id: randomUUID(), expected_revision: 0, name: '成员无权创建' })).status, 403)
   assert.equal(await page.getByRole('button', { name: '创建员工', exact: true }).isEnabled(), false)
   result.cases.push({ name: '成员管理操作不可用，当前身份来自服务端', passed: true })
-  await page.getByLabel('演示身份').selectOption('owner')
+  await changeIdentity(page, 'owner')
   await page.getByText('当前角色：owner', { exact: false }).waitFor()
   await page.getByLabel('治理工作区').selectOption('office')
   await page.getByLabel('治理员工').selectOption('xiaowen')
@@ -158,14 +159,14 @@ try {
   await page.getByRole('button', { name: '禁用组织', exact: true }).click()
   await page.getByRole('button', { name: '确认操作', exact: true }).click()
   await page.getByRole('button', { name: '启用组织', exact: true }).waitFor()
-  assert.equal(await page.getByRole('button', { name: '＋ 新建任务', exact: true }).isEnabled(), false)
+  assert.equal(await page.getByRole('button', { name: '新建任务', exact: true }).isEnabled(), false)
   await page.getByRole('button', { name: '启用组织', exact: true }).click()
   await page.getByRole('button', { name: '确认操作', exact: true }).click()
   await page.getByRole('button', { name: '禁用组织', exact: true }).waitFor()
   result.cases.push({ name: '组织禁用停止业务并允许真实owner重新启用', passed: true })
   const analyticsRule = (await request('POST', '/agents/xiaogang/permission-rules', { change_id: randomUUID(), tool_name: 'bash',
     pattern: `printf analytics-audit-${randomUUID()}`, effect: 'deny' })).value
-  await page.getByLabel('演示身份').selectOption('wangming')
+  await changeIdentity(page, 'wangming')
   await page.getByText('当前角色：admin', { exact: false }).waitFor()
   await page.getByRole('tab', { name: '审计与诊断', exact: true }).click()
   await page.getByLabel('审计资源').fill(`permission_rule:${analyticsRule.id}`)
@@ -177,7 +178,7 @@ try {
   assert.equal((await request('PUT', '/workspaces/analytics/members/wangming', { change_id: randomUUID(), expected_revision: analyticsAccess.revision, enabled: false }, true)).status, 200)
   await waitFor(() => page.getByRole('tabpanel', { name: '审计与诊断', exact: true }).locator('tbody tr').filter({ hasText: analyticsRule.id }).count(), (count) => count === 0)
   result.cases.push({ name: '非当前工作区撤权通知到达并清理跨工作区审计缓存', passed: true })
-  await page.getByLabel('演示身份').selectOption('owner')
+  await changeIdentity(page, 'owner')
   await page.getByText('当前角色：owner', { exact: false }).waitFor()
   await page.getByRole('tab', { name: '审计与诊断', exact: true }).click()
   await page.getByRole('button', { name: '验证审计链', exact: true }).click()
@@ -201,8 +202,8 @@ try {
   await page.getByRole('button', { name: '创建验证备份', exact: true }).click()
   await page.locator('.governance-backup').first().waitFor()
   await page.getByText('内部链：通过', { exact: true }).scrollIntoViewIfNeeded()
-  await page.screenshot({ path: `${directory}/audit.png` })
-  result.screenshots.push(`${directory}/audit.png`)
+  await recordDesktopEvidence(page, `${directory}/audit.json`)
+  result.interface_evidence.push(`${directory}/audit.json`)
   await page.reload()
   await page.getByRole('heading', { name: '员工与治理', exact: true }).waitFor()
   await page.getByRole('tab', { name: '审计与诊断', exact: true }).click()
@@ -213,15 +214,15 @@ try {
   writable.close()
   await page.getByRole('button', { name: '验证审计链', exact: true }).click()
   await page.getByRole('heading', { name: '只读诊断', exact: true }).waitFor()
-  assert.equal(await page.getByRole('button', { name: '＋ 新建任务', exact: true }).isEnabled(), false)
+  assert.equal(await page.getByRole('button', { name: '新建任务', exact: true }).isEnabled(), false)
   await page.getByRole('button', { name: '查询审计', exact: true }).click()
   await page.getByRole('button', { name: '恢复此备份', exact: true }).first().click()
   await page.getByRole('button', { name: '确认操作', exact: true }).click()
   await page.getByRole('button', { name: '重启并完整验证', exact: true }).waitFor()
   await page.getByRole('dialog').waitFor({ state: 'hidden' })
   await page.getByRole('heading', { name: '只读诊断', exact: true }).scrollIntoViewIfNeeded()
-  await page.screenshot({ path: `${directory}/diagnostic.png` })
-  result.screenshots.push(`${directory}/diagnostic.png`)
+  await recordDesktopEvidence(page, `${directory}/diagnostic.json`)
+  result.interface_evidence.push(`${directory}/diagnostic.json`)
   const previousPort = await page.evaluate(() => window.agentcrew.getBackendPort())
   await page.getByRole('button', { name: '重启并完整验证', exact: true }).click()
   await waitFor(() => page.evaluate(() => window.agentcrew.getBackendPort()), (port) => port && port !== previousPort)
@@ -230,8 +231,8 @@ try {
   await page.getByText('内部链：通过', { exact: true }).waitFor()
   await page.getByText('锚点：通过', { exact: true }).waitFor()
   await page.getByText('内部链：通过', { exact: true }).scrollIntoViewIfNeeded()
-  await page.screenshot({ path: `${directory}/restored.png` })
-  result.screenshots.push(`${directory}/restored.png`)
+  await recordDesktopEvidence(page, `${directory}/restored.json`)
+  result.interface_evidence.push(`${directory}/restored.json`)
   result.cases.push({ name: '篡改后的只读诊断、真实受控备份恢复和重启完整验证', passed: true })
   await page.getByRole('tab', { name: '组织与工作区', exact: true }).click()
   const spaces = (await request('GET', '/workspaces?limit=200')).value.items.filter((row) => row.status === 'active')
@@ -242,7 +243,7 @@ try {
   await page.getByRole('button', { name: '确认操作', exact: true }).click()
   await waitFor(async () => (await request('GET', '/workspaces/office')).value?.status, (value) => value === 'active')
   result.cases.push({ name: '全部工作区禁用后仍可通过真实管理界面重新启用', passed: true })
-  await page.getByRole('tab', { name: '数字员工', exact: true }).click()
+  await page.locator('.governance-page').getByRole('tab', { name: '数字员工', exact: true }).click()
   await page.getByRole('button', { name: '创建员工', exact: true }).focus()
   await page.keyboard.press('Enter')
   await page.getByRole('dialog').waitFor()
@@ -254,10 +255,10 @@ try {
   const soul = (await request('GET', '/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen')).value
   assert.equal((await request('POST', '/memory/stores/soul/xiaowen?workspace_id=office&agent_id=xiaowen', { change_id: randomUUID(), expected_revision: soul.revision,
     basis: '所有者配置真实成员任务与撤权缓存核查', text: '我是负责办公材料核查的数字员工，按真实任务指令简短说明，遵守当前角色、Grant和文件范围。' })).status, 200)
-  await page.getByLabel('演示身份').selectOption('lilei')
+  await changeIdentity(page, 'lilei')
   await page.getByRole('heading', { name: '员工与治理', exact: true }).waitFor()
   await page.getByText('当前角色：member', { exact: false }).waitFor()
-  await page.getByRole('button', { name: '＋ 新建任务', exact: true }).click()
+  await page.getByRole('button', { name: '新建任务', exact: true }).click()
   const privateMarker = `真实成员私有任务-${randomUUID()}`
   await page.getByRole('textbox', { name: '任务指令', exact: true }).fill(`只用简短文字确认收到指令，核查标识${privateMarker}。`)
   await page.getByRole('button', { name: '发送任务', exact: true }).click()
@@ -288,8 +289,8 @@ try {
   assert.equal(await page.locator('.message').count(), 0)
   assert.equal(await page.getByRole('button', { name: '发送任务', exact: true }).count(), 0)
   result.cases.push({ name: '成员资格失效后认证拒绝并清理私有界面', passed: true })
-  await page.getByLabel('演示身份').selectOption('owner')
-  await page.getByRole('button', { name: '治理管理', exact: true }).click()
+  await changeIdentity(page, 'owner', { restore: false })
+  await openSettings(page, '权限与审计')
   await page.getByText('当前角色：owner', { exact: false }).waitFor()
   const db = new DatabaseSync(`${directory}/data/agentcrew.db`, { readOnly: true })
   result.resources = db.prepare('SELECT id,name,spec,status,revision FROM agents ORDER BY created_at').all()
@@ -301,7 +302,11 @@ try {
   process.stdout.write(JSON.stringify({ directory, cases: result.cases.length }) + '\n')
 } finally {
   await writeFile(`${directory}/partial-result.json`, JSON.stringify(safe(result), null, 2))
-  await app.close()
-  await new Promise((done) => server.close(done))
-  upstream.close()
+  try {
+    await closeDesktop(app, page)
+  } finally {
+    server.closeAllConnections()
+    await new Promise((done) => server.close(done))
+    upstream.close()
+  }
 }

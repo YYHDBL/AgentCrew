@@ -4,6 +4,7 @@ import { cp, mkdir, readFile, symlink, writeFile } from 'node:fs/promises'
 import { basename, resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
+import { openSettings, changeIdentity, closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 import { createServer } from 'node:http'
 
 const directory = resolve('.artifacts', `m3-management-${Date.now()}`)
@@ -26,7 +27,7 @@ const page = await app.firstWindow()
 page.setDefaultTimeout(60000)
 const errors = []
 page.on('pageerror', (error) => errors.push(error.message))
-const result = { directory, cases: [], screenshots: [], requests: [] }
+const result = { directory, cases: [], interface_evidence: [], requests: [] }
 const request = async (method, path, body, owner = false, target = page) => {
   const pending = target.evaluate(async ({ method, path, body, owner }) => {
     const port = await window.agentcrew.getBackendPort()
@@ -52,10 +53,10 @@ const wait = async (read, accepts) => {
   }
   throw new Error('真实员工管理状态未在期限内满足验收条件')
 }
-const screenshot = async (name) => {
-  const path = `${directory}/${name}.png`
-  await page.screenshot({ path })
-  result.screenshots.push(path)
+const recordInterface = async (name) => {
+  const path = `${directory}/${name}.json`
+  await recordDesktopEvidence(page, path)
+  result.interface_evidence.push(path)
 }
 const run = async (agent, instruction) => {
   const created = await request('POST', '/conversations', { workspace_id: 'office', agent_id: agent, instruction, client_request_id: randomUUID() })
@@ -67,7 +68,7 @@ const run = async (agent, instruction) => {
 }
 try {
   await page.getByText('任务服务已连接', { exact: true }).waitFor()
-  await page.getByRole('button', { name: '数字员工管理', exact: true }).click()
+  await openSettings(page, '数字员工')
   await page.getByRole('heading', { name: '数字员工管理', exact: true }).waitFor()
   await page.getByLabel('档案工作区').selectOption('office')
   await page.getByRole('tab', { name: '员工配置', exact: true }).click()
@@ -156,7 +157,7 @@ try {
   await page.locator('.governance-table tbody tr').filter({ hasText: employeeName }).first().waitFor()
   result.cases.push('刷新后档案范围、员工列表与技能版本状态一致')
 
-  await page.getByRole('button', { name: '管理中心', exact: true }).click()
+  await openSettings(page, '组织管理')
   await page.getByRole('tabpanel', { name: '组织与工作区', exact: true }).waitFor()
   await page.getByLabel('治理工作区').selectOption('office')
   await page.getByLabel('治理员工').selectOption(employee.id)
@@ -187,8 +188,8 @@ try {
   await page.locator('.governance-table tbody tr').filter({ hasText: '实际HTTP档案校验' }).getByRole('button', { name: '验证连接', exact: true }).click()
   await wait(() => upstream.prepare('SELECT count(*) AS n FROM requests').get().n, (count) => count > 0)
   result.connector_requests = upstream.prepare('SELECT * FROM requests').all()
-  await screenshot('admin-center')
-  await page.getByRole('button', { name: '数字员工管理', exact: true }).click()
+  await recordInterface('admin-center')
+  await openSettings(page, '数字员工')
   const futureAt = Date.now() + 2 * 60 * 60 * 1000
   const cronCreated = await request('POST', '/cron/jobs', { change_id: randomUUID(), workspace_id: 'office', agent_id: employee.id, name: '员工档案真实计划核查',
     schedule: { kind: 'at', at_ms: futureAt, tz: 'Asia/Shanghai' }, target: { instruction: '核对员工档案中的定时任务记录。', execution_mode: 'new_conversation', conversation_id: null }, pre_authorized: [] })
@@ -199,11 +200,10 @@ try {
   assert.ok((await page.getByText('创建来源user', { exact: false }).count()) > 0)
   result.cron_job = { id: cronJob.id, name: cronJob.name, next_run_at: cronJob.state.next_run_at, agent: cronJob.metadata.agent_id }
   result.cases.push('员工档案定时任务来自真实服务端记录')
-  await screenshot('agent-studio')
+  await recordInterface('agent-studio')
   result.cases.push('管理中心实际HTTP连接校验与员工档案')
 
-  await page.getByLabel('演示身份').selectOption('lilei')
-  await wait(() => page.getByLabel('演示身份').inputValue(), (value) => value === 'lilei')
+  await changeIdentity(page, 'lilei')
   await page.getByRole('tab', { name: '员工配置', exact: true }).click()
   await page.getByText('当前member角色仅能查看已授权资源', { exact: false }).first().waitFor()
   assert.equal(await page.getByRole('button', { name: '创建员工', exact: true }).isEnabled(), false)
@@ -222,9 +222,8 @@ try {
   result.cases.push('真实撤权后档案自动切换并清理旧员工检索正文')
   await request('POST', '/grants', { change_id: randomUUID(), resource_type: 'agent', resource_id: 'xiaowen', grantee_type: 'user', grantee_id: 'lilei' }, true)
   result.cases.push('member管理操作禁用与真实403')
-  await page.getByLabel('演示身份').selectOption('owner')
-  await wait(() => page.getByLabel('演示身份').inputValue(), (value) => value === 'owner')
-  await page.getByRole('button', { name: '管理中心', exact: true }).click()
+  await changeIdentity(page, 'owner')
+  await openSettings(page, '组织管理')
   await page.getByRole('tab', { name: '审计与诊断', exact: true }).click()
   await wait(() => db.prepare("SELECT count(*) AS n FROM memory_jobs WHERE status IN ('queued','running','waiting_approval','cancelling')").get().n, (value) => value === 0)
   await page.getByRole('button', { name: '创建验证备份', exact: true }).click()
@@ -233,7 +232,7 @@ try {
   db.prepare('UPDATE audit_log SET detail=? WHERE seq=?').run(JSON.stringify({ independent_library_tamper: randomUUID() }), lastAudit)
   await page.getByRole('button', { name: '验证审计链', exact: true }).click()
   await page.getByRole('heading', { name: '只读诊断', exact: true }).waitFor()
-  assert.equal(await page.getByRole('button', { name: '数字员工管理', exact: true }).isEnabled(), false)
+  assert.equal(await page.locator('.settings-shell > .ant-tabs > .ant-tabs-nav').getByRole('tab', { name: /数字员工$/ }).isEnabled(), false)
   await app.evaluate(({ BrowserWindow }, path) => {
     const session = BrowserWindow.getAllWindows()[0].webContents.session
     globalThis.managementDownloadResult = null
@@ -247,7 +246,7 @@ try {
   const exportedRows = JSON.parse(await readFile(`${directory}/audit-export.json`, 'utf8'))
   assert.ok(exportedRows.rows.length > 0 && exportedRows.rows.every((row) => Number.isSafeInteger(row.seq)))
   result.audit_export = { filename: download.filename, rows: exportedRows.rows.length }
-  await screenshot('diagnostic')
+  await recordInterface('diagnostic')
   await page.getByRole('button', { name: '恢复此备份', exact: true }).first().click()
   await page.getByRole('button', { name: '确认操作', exact: true }).click()
   await page.getByRole('button', { name: '重启并完整验证', exact: true }).click()
@@ -259,10 +258,10 @@ try {
   await page.getByText('内部链：通过', { exact: true }).waitFor()
   await page.getByText('锚点：通过', { exact: true }).waitFor()
   checkpoint('two-level-verified')
-  await screenshot('restored')
+  await recordInterface('restored')
   result.cases.push('独立验收库篡改后的只读诊断、导出、受控恢复与完整验证')
 
-  await page.getByRole('button', { name: '数字员工管理', exact: true }).click()
+  await openSettings(page, '数字员工')
   await page.getByRole('heading', { name: '数字员工管理', exact: true }).waitFor()
   await page.setViewportSize({ width: 960, height: 900 })
   await page.getByRole('tab', { name: '员工档案', exact: true }).click()
@@ -289,17 +288,17 @@ try {
   const relocation = new DatabaseSync(`${promotionDirectory}/data/agentcrew.db`)
   relocation.prepare('UPDATE workspaces SET data_dir=REPLACE(data_dir, ?, ?)').run(preparedRoot, `${promotionDirectory}/data`)
   relocation.close()
-  await app.close()
+  await closeDesktop(app, page)
   checkpoint('first-app-closed')
   const promotionApp = await electron.launch({ args: ['.', `--user-data-dir=${promotionDirectory}`],
     executablePath: resolve('node_modules/electron/dist/Electron.app/Contents/MacOS/Electron') })
   checkpoint('promotion-app-launched')
+  const promotionPage = await promotionApp.firstWindow()
   try {
-    const promotionPage = await promotionApp.firstWindow()
     promotionPage.setDefaultTimeout(60000)
     promotionPage.on('pageerror', (error) => errors.push(error.message))
     await promotionPage.getByText('任务服务已连接', { exact: true }).waitFor()
-    await promotionPage.getByRole('button', { name: '数字员工管理', exact: true }).click()
+    await openSettings(promotionPage, '数字员工')
     await promotionPage.getByRole('heading', { name: '数字员工管理', exact: true }).waitFor()
     await promotionPage.getByLabel('档案工作区').selectOption('office')
     await wait(() => promotionPage.getByLabel('档案员工').inputValue(), (value) => value === 'xiaowen')
@@ -321,12 +320,12 @@ try {
     await promotionPage.getByRole('button', { name: '查看来源任务与报告', exact: true }).click()
     await promotionPage.getByRole('heading', { name: '运行中心', exact: true }).waitFor()
     await wait(() => promotionPage.getByRole('textbox', { name: '任务标识', exact: true }).inputValue(), (value) => value.length > 0)
-    await promotionPage.screenshot({ path: `${promotionDirectory}/promotion-source.png` })
-    result.screenshots.push(`${promotionDirectory}/promotion-source.png`)
+    await recordDesktopEvidence(promotionPage, `${promotionDirectory}/promotion-source.json`)
+    result.interface_evidence.push(`${promotionDirectory}/promotion-source.json`)
     result.promotion_skill = { id: promoted.id, name: promoted.name, versions: promotionVersions.map((row) => row.version_no) }
     result.cases.push('真实固化技能展示账本提案来源并进入来源任务与报告')
   } finally {
-    await promotionApp.close()
+    await closeDesktop(promotionApp, promotionPage)
   }
   checkpoint('promotion-done')
   assert.deepEqual(errors, [])
@@ -339,8 +338,12 @@ try {
   await writeFile(`${directory}/result.json`, JSON.stringify(result, null, 2))
   console.log(JSON.stringify({ directory, cases: result.cases.length }))
 } finally {
-  try { await app.close() } catch { /* 固化核查前第一实例已经关闭 */ }
-  await new Promise((done) => service.close(done))
-  upstream.close()
-  try { db.close() } catch { /* 恢复验证后已经关闭 */ }
+  try {
+    await closeDesktop(app, page)
+  } finally {
+    service.closeAllConnections()
+    await new Promise((done) => service.close(done))
+    upstream.close()
+    try { db.close() } catch { /* 恢复验证后已经关闭 */ }
+  }
 }

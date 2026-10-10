@@ -4,6 +4,7 @@ import { readFile, writeFile, stat } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { createHash } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
+import { openConversation, openRunDetails, closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 const directory = resolve(process.argv[2])
 const taskId = process.argv[3]
@@ -28,12 +29,12 @@ try {
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     return (await response.json()).data.find((row) => row.id === id)
   }, run.conversation_id)
-  const title = conversation.title || await page.evaluate((date) => `任务 ${new Date(date).toLocaleString('zh-CN')}`, conversation.last_activity_at)
-  await page.getByRole('button', { name: '工作台', exact: true }).click()
-  await page.locator('.recent-tasks button').filter({ hasText: title }).click()
+  await openConversation(page, conversation.id)
+  await openRunDetails(page)
   await page.getByRole('heading', { name: '已恢复 · 第 2 次尝试', exact: true }).last().waitFor()
   assert.deepEqual(await signature(), before)
   await page.reload()
+  await openRunDetails(page)
   await page.getByRole('heading', { name: '已恢复 · 第 2 次尝试', exact: true }).last().waitFor()
   assert.deepEqual(await signature(), before)
   const ledger = db.prepare("SELECT call_id,status,dispatched_at,completed_at,input_hash FROM tool_calls WHERE task_run_id=? AND tool_name='write_file' AND dispatched_at IS NOT NULL").all(taskId)
@@ -47,10 +48,10 @@ try {
   result.actual_event_counts = counts
   result.file_after_restart_and_refresh = await signature()
   result.all_checks_passed = true
-  await page.screenshot({ path: `${directory}/replay-stable.png` })
+  await recordDesktopEvidence(page, `${directory}/replay-stable.json`)
   console.log(JSON.stringify(result))
 } finally {
   db.close()
-  await app.close()
+  await closeDesktop(app, page)
   await writeFile(`${directory}/replay-output.json`, JSON.stringify(result, null, 2))
 }

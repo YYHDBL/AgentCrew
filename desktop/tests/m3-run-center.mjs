@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
+import { changeIdentity, openConversation, closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 const directory = resolve('.artifacts', `m3-run-center-${Date.now()}`)
 await mkdir(`${directory}/data`, { recursive: true })
@@ -23,7 +24,7 @@ const errors = []
 page.on('pageerror', (error) => errors.push(error.message))
 const requests = []
 page.on('request', (request) => { if (request.url().includes('/api/')) requests.push({ method: request.method(), path: new URL(request.url()).pathname }) })
-const result = { directory, cases: [], screenshots: [], requests }
+const result = { directory, cases: [], interface_evidence: [], requests }
 const fileState = async (path) => ({ sha256: createHash('sha256').update(await readFile(path)).digest('hex'), mtimeMs: (await stat(path)).mtimeMs })
 const http = async (method, path, body) => page.evaluate(async ({ method, path, body }) => {
   const port = await window.agentcrew.getBackendPort()
@@ -105,9 +106,8 @@ try {
   await page.getByRole('button', { name: '工作台', exact: true }).click()
   const conversation = (await http('GET', '/conversations')).find((item) => item.id === completed.conversation_id)
   assert.ok(conversation)
-  const label = conversation.title || await page.evaluate((date) => `任务 ${new Date(date).toLocaleString('zh-CN')}`, conversation.last_activity_at)
-  await page.locator('.recent-tasks button').filter({ hasText: label }).click()
-  await page.getByRole('button', { name: '进入此任务运行记录', exact: true }).click()
+  await openConversation(page, conversation.id)
+  await page.getByRole('button', { name: '查看运行记录', exact: true }).click()
   await page.getByRole('textbox', { name: '任务标识', exact: true }).waitFor()
   assert.equal(await page.getByRole('textbox', { name: '任务标识', exact: true }).inputValue(), recovered.task_run_id)
   result.cases.push('工作台完成任务进入同一 TaskRun 记录')
@@ -161,13 +161,12 @@ try {
     await page.setViewportSize({ width, height })
     await page.getByRole('button', { name: '从头回放', exact: true }).focus()
     assert.equal(await page.getByRole('button', { name: '从头回放', exact: true }).evaluate((node) => node === document.activeElement), true)
-    const screenshot = `${directory}/run-center-${name}.png`
-    await page.screenshot({ path: screenshot })
-    result.screenshots.push(screenshot)
+    const evidence = `${directory}/run-center-${name}.json`
+    await recordDesktopEvidence(page, evidence)
+    result.interface_evidence.push(evidence)
   }
   result.cases.push('宽窄窗口与键盘焦点')
-  await page.getByLabel('演示身份').selectOption('lilei')
-  await wait(() => page.getByLabel('演示身份').inputValue(), (value) => value === 'lilei')
+  await changeIdentity(page, 'lilei')
   await page.getByRole('textbox', { name: '任务标识', exact: true }).fill(target.task_run_id)
   await page.getByRole('button', { name: '打开任务记录', exact: true }).click()
   await page.getByRole('alert').first().waitFor()
@@ -185,6 +184,6 @@ try {
   await writeFile(`${directory}/result.json`, raw)
   console.log(JSON.stringify({ directory, cases: result.cases.length, task_run_id: target.task_run_id }))
 } finally {
-  await app.close()
+  await closeDesktop(app, page)
   db.close()
 }

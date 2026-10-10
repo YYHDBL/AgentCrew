@@ -1,11 +1,5 @@
-interface AgentCrewDesktopApi {
-  getBackendPort(): Promise<number | null>
-  getToken(): Promise<string | null>
-  restartBackend(): Promise<void>
-  selectMaterials(kind: 'files' | 'folders'): Promise<string[]>
-  notify(title: string, body: string): Promise<boolean>
-  openPath(path: string): Promise<string>
-  setKeepAwake(enabled: boolean): Promise<void>
-}
+import type { AgentCrewDesktopApi } from '../../preload/types'
 
-interface Window { agentcrew: AgentCrewDesktopApi }
+declare global {
+  interface Window { agentcrew: AgentCrewDesktopApi }
+}

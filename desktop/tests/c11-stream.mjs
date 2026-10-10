@@ -6,6 +6,7 @@ import { resolve } from 'node:path'
 import { createServer, request as httpRequest } from 'node:http'
 import { once } from 'node:events'
 import { getLines, getMessages } from '@microsoft/fetch-event-source/lib/cjs/parse.js'
+import { openRunDetails, closeDesktop } from './helpers/desktop.mjs'
 
 // 使用真实 Electron、后端与 GLM，检查断线恢复和恢复后的增量。
 const directory = resolve('.artifacts', `c11-stream-${Date.now()}`)
@@ -123,7 +124,7 @@ try {
   assert.equal(await page.locator('.message.user').count(), 1)
   await page.getByRole('textbox', { name: '问题回答', exact: true }).fill('前端恢复检查完成')
   await page.getByRole('button', { name: '提交回答', exact: true }).click()
-  await page.waitForFunction(() => document.querySelector('.notice')?.textContent?.includes('· idle'))
+  await page.locator('.task-status.status-completed').waitFor()
   const initial = await request(`/conversations/${id}/state`)
   record({ check: 'question-refresh-answer', passed: true, head: initial.at_global_seq })
 
@@ -131,7 +132,7 @@ try {
   const offset = requests.length
   process.kill(backendPid(), 'SIGKILL')
   await waitForRestart(oldPort)
-  await page.waitForFunction(() => document.querySelector('.notice')?.textContent?.startsWith('已连接'))
+  await page.getByText('任务服务已连接', { exact: true }).waitFor()
   const reconnect = requests.slice(offset).filter(({ path }) => path.includes(`/conversations/${id}/`))
   const snapshotIndex = reconnect.findIndex(({ path }) => path.endsWith('/state'))
   const streamIndex = reconnect.findIndex(({ path }) => path.includes('/stream?'))
@@ -139,16 +140,16 @@ try {
   assert.ok(snapshotIndex >= 0 && snapshotIndex < streamIndex, '重连必须先获取 state，再读取事件')
   assert.equal(await page.locator('.message.user').count(), 1)
   await send('仅回复“恢复后的新增指令完成”，不要调用工具。')
-  await page.waitForFunction(() => document.querySelectorAll('.message.assistant').length === 2 && document.querySelector('.notice')?.textContent?.includes('· idle'))
+  await page.waitForFunction(() => document.querySelectorAll('.message.assistant').length === 2 && document.querySelector('.task-status.status-completed'))
   const after = await request(`/conversations/${id}/state`)
   assert.ok(after.at_global_seq > initial.at_global_seq)
   assert.equal(await page.locator('.message.user').count(), 2)
   record({ check: 'restart-incremental-events', passed: true, head: after.at_global_seq })
 
-  await page.getByRole('button', { name: '＋ 新建任务', exact: true }).click()
+  await page.getByRole('button', { name: '新建任务', exact: true }).click()
   interruptModel = true
   await send('请写一篇两百字左右的中文文章，解释春季植物生长的过程。直接输出文章，不要调用工具。')
-  await page.waitForFunction(() => document.querySelector('.notice')?.textContent?.includes('· idle') && document.querySelector('.message.assistant'))
+  await page.waitForFunction(() => document.querySelector('.task-status.status-completed') && document.querySelector('.message.assistant'))
   const retryId = await page.evaluate(() => sessionStorage.getItem('conversation'))
   const runs = await request(`/conversations/${retryId}/task-runs`)
   const history = await request(`/task-runs/${runs[0].id}/events?after_seq=0&limit=500`)
@@ -158,13 +159,15 @@ try {
   assert.ok(history.items.some(event => event.type === 'llm.request_done' && event.payload.step_id === failed.payload.step_id))
   assert.ok(history.items.some(event => event.type === 'run.completed'))
   record({ check: 'model-retry-events', failed: failed.global_seq, completed: history.items.at(-1).global_seq })
+  await openRunDetails(page)
   assert.equal(await page.getByRole('heading', { name: '模型请求失败 · 已恢复', exact: true }).count(), 1)
   assert.equal(await page.getByRole('heading', { name: '执行错误', exact: true }).count(), 0)
   await page.reload()
+  await openRunDetails(page)
   await page.getByRole('heading', { name: '模型请求失败 · 已恢复', exact: true }).waitFor()
   record({ check: 'model-retry-rendering', passed: true })
 
-  await page.getByRole('button', { name: '＋ 新建任务', exact: true }).click()
+  await page.getByRole('button', { name: '新建任务', exact: true }).click()
   await send('必须调用 ask_user 提问“队列背压检查等待”，等待我回答。')
   await page.getByRole('textbox', { name: '问题回答', exact: true }).waitFor()
   const pressureId = await page.evaluate(() => sessionStorage.getItem('conversation'))
@@ -172,7 +175,7 @@ try {
   holdFrom = pressureState.at_global_seq
   await app.evaluate(({ session }, address) => session.defaultSession.setProxy({ proxyRules: address, proxyBypassRules: '<-loopback>' }), `http://127.0.0.1:${backendProxy.address().port}`)
   await page.reload()
-  await page.waitForFunction(() => document.querySelector('.notice')?.textContent?.startsWith('已连接'))
+  await page.getByText('任务服务已连接', { exact: true }).waitFor()
   assert.ok(heldStream, '实时会话流必须已经进入真实代理的背压状态')
   const credentials = await page.evaluate(async () => ({ port: await window.agentcrew.getBackendPort(), token: await window.agentcrew.getToken() }))
   const direct = async (path, body) => {
@@ -191,7 +194,7 @@ try {
   heldStream.forward()
   heldStream = null
   await page.waitForFunction(() => document.querySelector('.queue')?.textContent?.includes('排队中 · 1006 条') && document.querySelectorAll('.message.user').length === 1007)
-  await page.waitForFunction(() => document.querySelector('.notice')?.textContent?.startsWith('已连接'))
+  await page.getByText('任务服务已连接', { exact: true }).waitFor()
   const resync = controls.find(control => control.type === 'resync')
   assert.ok(resync, '真实后端必须发送 resync，不能用普通断线代替')
   const recoveredState = requests.find(({ path, time }) => path === `/api/conversations/${pressureId}/state` && time >= resync.time)
@@ -202,7 +205,7 @@ try {
   record({ check: 'resync-full-recovery', passed: true, cursor: resync.data.last_continuous_global_seq, head: pressureHead.at_global_seq, snapshotDelayMs: recoveredState.time - resync.time, messages: 1007 })
   await direct(`/conversations/${pressureId}/queue/cancel`, { all: true })
   await direct(`/task-runs/${pressureHead.current_task_run_id}/cancel`, {})
-  await page.waitForFunction(() => document.querySelector('.notice')?.textContent?.includes('· idle') && !document.querySelector('.queue'))
+  await page.waitForFunction(() => document.querySelector('.task-status.status-cancelled') && !document.querySelector('.queue'))
   const shutdownState = await direct(`/conversations/${pressureId}/state`)
   await page.evaluate(id => sessionStorage.removeItem(`cursor:${id}`), pressureId)
   const shutdownPort = credentials.port
@@ -214,15 +217,18 @@ try {
   assert.equal(savedCursor, shutdown.data.last_continuous_global_seq)
   assert.equal(savedCursor, shutdownState.at_global_seq)
   await waitForRestart(shutdownPort)
-  await page.waitForFunction(() => document.querySelector('.notice')?.textContent?.startsWith('已连接'))
+  await page.getByText('任务服务已连接', { exact: true }).waitFor()
   assert.equal(await page.locator('.message.user').count(), 1007)
   record({ check: 'shutdown-cursor-reconnect', passed: true, cursor: savedCursor })
   assert.deepEqual(errors, [])
 } finally {
   await writeFile(`${directory}/output.json`, JSON.stringify(output, null, 2))
-  await app.close()
-  modelProxy.closeAllConnections()
-  await new Promise(resolve => modelProxy.close(resolve))
-  backendProxy.closeAllConnections()
-  await new Promise(resolve => backendProxy.close(resolve))
+  try {
+    await closeDesktop(app, page)
+  } finally {
+    modelProxy.closeAllConnections()
+    await new Promise(resolve => modelProxy.close(resolve))
+    backendProxy.closeAllConnections()
+    await new Promise(resolve => backendProxy.close(resolve))
+  }
 }

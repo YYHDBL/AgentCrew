@@ -5,6 +5,7 @@ import { resolve, basename } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import { randomUUID } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
+import { openMemory, openConversation, closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 const directory = resolve('.artifacts', `m1-memory-${Date.now()}`)
 await mkdir(directory, { recursive: true })
@@ -17,7 +18,7 @@ page.setDefaultTimeout(120000)
 await page.emulateMedia({ reducedMotion: 'reduce' })
 const errors = []
 page.on('pageerror', (error) => errors.push(error.message))
-const result = { directory, screenshots: [], operations: [] }
+const result = { directory, interface_evidence: [], operations: [] }
 const data = (path) => page.evaluate(async (path) => {
   const port = await window.agentcrew.getBackendPort()
   const token = await window.agentcrew.getToken()
@@ -36,7 +37,7 @@ const waitFor = async (read, predicate, seconds = 240) => {
 }
 try {
   await page.getByText('任务服务已连接', { exact: true }).waitFor()
-  await page.getByRole('button', { name: 'USER 记忆', exact: true }).click()
+  await openMemory(page, 'USER 记忆')
   await page.getByRole('heading', { name: 'USER 记忆', exact: true }).waitFor()
   await page.getByRole('button', { name: '新建条目', exact: true }).click()
   await page.getByRole('textbox', { name: '记忆正文', exact: true }).fill('桌面核验偏好：需要清晰的中文报告。')
@@ -71,7 +72,7 @@ try {
   await page.getByText('已通过人工审核', { exact: true }).waitFor()
   result.operations.push('risk-review')
   for (const [label, text] of [['工作区记忆', '桌面核验事实：材料保存在当前工作区。'], ['员工 soul', '桌面核验教训：先确认材料来源。']]) {
-    await page.getByRole('button', { name: label, exact: true }).click()
+    await openMemory(page, label)
     await page.getByRole('button', { name: '新建条目', exact: true }).click()
     await page.getByRole('textbox', { name: '记忆正文', exact: true }).fill(text)
     await page.getByRole('textbox', { name: '保存依据', exact: true }).fill('所有者通过真实界面填写的资料。')
@@ -79,7 +80,7 @@ try {
     await page.getByText(text, { exact: true }).first().waitFor()
     result.operations.push(label)
   }
-  await page.getByRole('button', { name: '技能管理', exact: true }).click()
+  await openMemory(page, '技能管理')
   await page.getByRole('button', { name: '新建技能', exact: true }).click()
   await page.getByRole('textbox', { name: '技能名称', exact: true }).fill('桌面材料核验')
   await page.getByRole('textbox', { name: '技能描述', exact: true }).fill('核查真实材料的来源与编号')
@@ -102,12 +103,12 @@ try {
   await page.getByText('支撑文件已保存', { exact: true }).waitFor()
   result.operations.push('support-file-failure-corrected')
   result.operations.push('create-skill')
-  await page.screenshot({ path: `${directory}/memory-skill.png` })
-  result.screenshots.push(`${directory}/memory-skill.png`)
+  await recordDesktopEvidence(page, `${directory}/memory-skill.json`)
+  result.interface_evidence.push(`${directory}/memory-skill.json`)
   await page.reload()
   await page.getByRole('heading', { name: '技能管理', exact: true }).waitFor()
   await page.getByText('桌面材料核验', { exact: true }).first().waitFor()
-  await page.getByRole('button', { name: 'USER 记忆', exact: true }).click()
+  await openMemory(page, 'USER 记忆')
   await page.getByText('桌面核验偏好：需要清晰的中文报告。', { exact: true }).first().click()
   await page.getByText('桌面核验偏好：需要清晰的中文报告。', { exact: true }).first().waitFor()
   await page.getByRole('button', { name: '编辑条目', exact: true }).click()
@@ -140,15 +141,12 @@ try {
   await page.getByRole('button', { name: '取消编辑', exact: true }).click()
   await waitFor(() => page.getByRole('button', { name: '新建条目', exact: true }).evaluate((element) => element === document.activeElement), Boolean)
   result.operations.push('keyboard-focus')
-  await page.screenshot({ path: `${directory}/memory-user.png` })
-  result.screenshots.push(`${directory}/memory-user.png`)
+  await recordDesktopEvidence(page, `${directory}/memory-user.json`)
+  result.interface_evidence.push(`${directory}/memory-user.json`)
   const counterDb = new DatabaseSync(`${directory}/data/agentcrew.db`, { readOnly: true })
   const counter = counterDb.prepare('SELECT conversation_id,user_turns FROM memory_trigger_state ORDER BY user_turns DESC LIMIT 1').get()
-  const conversation = (await data('/conversations')).find((item) => item.id === counter.conversation_id)
-  const title = conversation.title || await page.evaluate((date) => `任务 ${new Date(date).toLocaleString('zh-CN')}`, conversation.last_activity_at)
-  await page.getByRole('button', { name: '工作台', exact: true }).click()
-  await page.locator('.recent-tasks button').filter({ hasText: title }).click()
-  await page.getByRole('button', { name: 'USER 记忆', exact: true }).click()
+  await openConversation(page, counter.conversation_id)
+  await openMemory(page, 'USER 记忆')
   await page.getByRole('button', { name: '记忆设置', exact: true }).click()
   await page.getByRole('checkbox', { name: '后台写入需要人工审批', exact: true }).check()
   await page.getByRole('button', { name: '保存记忆设置', exact: true }).click()
@@ -169,9 +167,9 @@ try {
   const job = await waitFor(() => counterDb.prepare("SELECT id,status FROM memory_jobs WHERE kind='memory_review' AND trigger_key=?").get(`${counter.conversation_id}:${target}`), (row) => row?.status === 'waiting_approval')
   const pending = await data(`/memory/jobs/${job.id}`)
   const approval = pending.approvals.find((item) => item.status === 'pending')
-  await page.locator('.details-scroll .memory-approval').getByRole('button', { name: '本次允许', exact: true }).last().click()
+  await page.locator('.memory-approval').getByRole('button', { name: '本次允许', exact: true }).last().click()
   const backgroundResult = await waitFor(async () => {
-    const button = page.locator('.details-scroll .memory-approval').getByRole('button', { name: '本次允许', exact: true }).last()
+    const button = page.locator('.memory-approval').getByRole('button', { name: '本次允许', exact: true }).last()
     if (await button.count() && await button.isEnabled()) await button.click()
     const ledger = counterDb.prepare("SELECT COUNT(*) AS count FROM memory_ledger WHERE json_extract(source,'$.job_id')=?").get(job.id)
     return { ...ledger, status: counterDb.prepare('SELECT status FROM memory_jobs WHERE id=?').get(job.id).status }
@@ -186,7 +184,7 @@ try {
     .then((rows) => rows.find((row) => row.instruction === '新的前台指令：停止本次后台继续执行，请直接确认已收到新的任务。'))
   await waitFor(() => counterDb.prepare('SELECT status FROM memory_jobs WHERE id=?').get(job.id), (row) => ['cancelled', 'completed'].includes(row.status))
   await waitFor(() => data(`/conversations/${counter.conversation_id}/task-runs`), (rows) => rows.some((row) => row.id === cancellingTask.id && row.status === 'completed'))
-  await page.getByRole('button', { name: 'USER 记忆', exact: true }).click()
+  await openMemory(page, 'USER 记忆')
   await page.getByText('记住了', { exact: true }).first().waitFor()
   await page.reload()
   await page.getByRole('heading', { name: 'USER 记忆', exact: true }).waitFor()
@@ -199,8 +197,8 @@ try {
     new_frontend_task_run_id: cancellingTask.id,
     ledger: counterDb.prepare("SELECT id,change_id,global_seq,source,after_text FROM memory_ledger WHERE json_extract(source,'$.job_id')=?").all(job.id) }
   result.operations.push('real-background-approval-notification-refresh')
-  await page.screenshot({ path: `${directory}/memory-background.png` })
-  result.screenshots.push(`${directory}/memory-background.png`)
+  await recordDesktopEvidence(page, `${directory}/memory-background.json`)
+  result.interface_evidence.push(`${directory}/memory-background.json`)
   counterDb.close()
   const db = new DatabaseSync(`${directory}/data/agentcrew.db`, { readOnly: true })
   result.queries = ['SELECT store_type,store_id,entry_hash,state,needs_review,text FROM memory_entries WHERE text LIKE \'桌面%\'',
@@ -211,7 +209,7 @@ try {
   console.log(JSON.stringify({ directory, operations: result.operations.length, all_checks_passed: true }))
 } finally {
   await writeFile(`${directory}/memory-output.json`, JSON.stringify(result, null, 2))
-  await app.close()
+  await closeDesktop(app, page)
 }
 
 if (process.argv.includes('--final')) {

@@ -185,8 +185,10 @@ class Identities:
             self.require(identity, "owner")
         if path in {"/api/health", "/api/identity", "/api/diagnostics", "/api/identity/demo"}:
             return
-        if path.startswith("/api/diagnostics/") or path == "/api/audit/verify" or path.startswith("/api/settings"):
+        if path.startswith("/api/diagnostics/") or path == "/api/audit/verify" or (path.startswith("/api/settings") and path != "/api/settings/desktop"):
             self.require(identity, "owner")
+        if path == "/api/runtime/power-event":
+            self.require(identity, "manage")
         if path.startswith("/api/memberships/") or "/members/" in path:
             self.require(identity, "owner")
         elif any(path.startswith(prefix) for prefix in ("/api/workspaces", "/api/agents", "/api/skills", "/api/connectors", "/api/grants", "/api/organization")) and method != "GET":

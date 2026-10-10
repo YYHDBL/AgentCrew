@@ -36,6 +36,7 @@ from .schema_v17 import V17_STATEMENTS
 from .schema_v18 import V18_STATEMENTS
 from .schema_v19 import V19_STATEMENTS
 from .schema_v20 import V20_STATEMENTS
+from .schema_v21 import V21_STATEMENTS
 
 _SNAPSHOT_KEEP = 3
 _BUSY_RETRIES = 3
@@ -70,6 +71,7 @@ MIGRATIONS: tuple[Migration, ...] = (
     Migration(version=18, name="M3 轨迹审查与报告", statements=V18_STATEMENTS, rebuild_foreign_keys=True),
     Migration(version=19, name="M3 真人确认技能固化", statements=V19_STATEMENTS),
     Migration(version=20, name="M3 固化确认请求及分析要求绑定", statements=V20_STATEMENTS),
+    Migration(version=21, name="M3-14 桌面行为偏好", statements=V21_STATEMENTS),
 )
 
 

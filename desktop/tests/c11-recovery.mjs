@@ -3,6 +3,7 @@ import { _electron as electron } from 'playwright-core'
 import { mkdir, copyFile, readFile, writeFile } from 'node:fs/promises'
 import { execFileSync } from 'node:child_process'
 import { resolve } from 'node:path'
+import { openRunDetails, closeDesktop } from './helpers/desktop.mjs'
 
 // 真实中断保留旧审批事件，再通过界面恢复并批准同一任务的新审批。
 const directory = resolve('.artifacts', `c11-recovery-${Date.now()}`)
@@ -39,7 +40,7 @@ try {
   const [run] = await waitFor(() => request(`/conversations/${conversation}/task-runs`), (runs) => runs.length > 0)
   const before = await waitFor(() => request(`/task-runs/${run.id}/events?after_seq=0&limit=500`), (history) => history.items.some((event) => ['permission.requested', 'run.failed', 'run.completed'].includes(event.type)))
   assert.ok(before.items.some((event) => event.type === 'permission.requested'), JSON.stringify(before.items.filter((event) => event.type.startsWith('run.'))))
-  await page.getByRole('button', { name: '允许', exact: true }).first().waitFor()
+  await page.getByRole('button', { name: '仅本次允许', exact: true }).first().waitFor()
   const oldPort = await page.evaluate(() => window.agentcrew.getBackendPort())
   const processLine = execFileSync('ps', ['-axo', 'pid,command'], { encoding: 'utf8' }).split('\n').find((line) => line.includes('/python3 -m agentcrew_server') && line.includes(directory))
   assert.ok(processLine)
@@ -60,6 +61,7 @@ try {
   const resumed = history.items.find((event) => event.type === 'run.resumed')
   const permission = history.items.find((event) => event.type === 'permission.requested' && event.global_seq > resumed.global_seq)
   assert.equal(permission.task_run_id, run.id)
+  await openRunDetails(page)
   await page.getByRole('heading', { name: '已恢复 · 第 2 次尝试', exact: true }).waitFor()
   const expiredApproval = page.locator('.process-card').filter({ has: page.getByRole('heading', { name: '审批已失效', exact: true }) })
   await expiredApproval.first().waitFor({ timeout: 10000 })
@@ -68,12 +70,13 @@ try {
   const activeApprovals = await page.locator('.approval').count()
   assert.ok(activeApprovals >= 1)
   await page.reload()
+  await openRunDetails(page)
   await expiredApproval.first().waitFor()
   assert.equal(await expiredApproval.getByRole('button').count(), 0)
   await page.locator('.approval').first().waitFor()
   assert.equal(await page.locator('.approval').count(), activeApprovals)
   output.expired_approval = { tool_call_ids: oldPermissions.map((event) => event.payload.tool_call_id), historical_cards: oldPermissions.length, historical_card_visible: true, buttons: 0, active_approvals: activeApprovals, replay_preserved: true }
-  const approval = page.locator('.approval').first().getByRole('button', { name: '允许', exact: true })
+  const approval = page.locator('.approval').first().getByRole('button', { name: '仅本次允许', exact: true })
   await approval.waitFor()
   assert.equal(await approval.isEnabled(), true)
   const terminal = await waitFor(async () => {
@@ -86,6 +89,7 @@ try {
   const scope = await request(`/conversations/${conversation}/scope`)
   assert.equal((await readFile(`${scope.workspace_dir}/c11-recovery/recovered.txt`, 'utf8')).trim(), 'C11 recovery completed')
   await page.reload()
+  await openRunDetails(page)
   await page.getByRole('heading', { name: '已恢复 · 第 2 次尝试', exact: true }).waitFor()
   assert.equal(await page.locator('.approval').count(), 0)
   assert.equal(await page.getByRole('button', { name: '恢复', exact: true }).count(), 0)
@@ -97,5 +101,5 @@ try {
   console.log(JSON.stringify(output, null, 2))
 } finally {
   await writeFile(`${directory}/recovery-output.json`, JSON.stringify(output, null, 2))
-  await app.close()
+  await closeDesktop(app, page)
 }

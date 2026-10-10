@@ -7,6 +7,7 @@ import { _electron as electron } from 'playwright-core'
 import { cp, mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
+import { changeIdentity, closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 const directory = resolve('.artifacts', `m3-automation-${Date.now()}`)
 await mkdir(`${directory}/data`, { recursive: true })
@@ -20,7 +21,7 @@ page.setDefaultTimeout(60000)
 let db
 let upstreamServer
 let upstreamDb
-const result = { directory, started_at: new Date().toISOString(), model_config_source: '../backend/data/config.json', cases: [], requests: [], sql: [], screenshots: [], files: [] }
+const result = { directory, started_at: new Date().toISOString(), model_config_source: '../backend/data/config.json', cases: [], requests: [], sql: [], interface_evidence: [], files: [] }
 const pageErrors = []
 page.on('pageerror', (error) => pageErrors.push(error.message))
 page.on('request', (request) => {
@@ -73,8 +74,8 @@ const wait = async (read, accept, timeout = 180000) => {
 }
 const screen = async (name, width, height) => {
   await page.setViewportSize({ width, height })
-  await page.screenshot({ path: `${directory}/${name}.png` })
-  result.screenshots.push(`${directory}/${name}.png`)
+  await recordDesktopEvidence(page, `${directory}/${name}.json`)
+  result.interface_evidence.push(`${directory}/${name}.json`)
 }
 const localInput = (epoch, timezone) => {
   const parts = new Intl.DateTimeFormat('en-CA', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).formatToParts(epoch)
@@ -411,7 +412,7 @@ try {
   await page.getByRole('button', { name: '工作台', exact: true }).click()
   await page.getByRole('button', { name: '自动化', exact: true }).click()
   await page.getByRole('heading', { name: '自动化', exact: true }).waitFor()
-  await page.getByLabel('演示身份').selectOption('lilei')
+  await changeIdentity(page, 'lilei')
   const memberView = await wait(() => call('GET', '/identity'), (identity) => identity.effective_user_id === 'lilei')
   assert.equal(memberView.role, 'member')
   await page.getByRole('button', { name: '自动化', exact: true }).click()
@@ -419,7 +420,7 @@ try {
   assert.equal(await page.locator('.automation-job').filter({ hasText: atName }).count(), 0)
   assert.equal(await page.locator('.automation-proposal').filter({ hasText: taskName }).count(), 0)
   result.identity_scope = { effective_user_id: memberView.effective_user_id, role: memberView.role, owner_plan_hidden: true, owner_proposal_hidden: true }
-  await page.getByLabel('演示身份').selectOption('owner')
+  await changeIdentity(page, 'owner')
   await wait(() => call('GET', '/identity'), (identity) => identity.effective_user_id === 'owner')
   await page.getByRole('button', { name: '自动化', exact: true }).click()
   await page.getByRole('heading', { name: '自动化', exact: true }).waitFor()
@@ -563,13 +564,16 @@ try {
   const safeText = JSON.stringify(safeResult, null, 2)
   await writeFile(`${directory}/acceptance-result.json`, safeText)
   db.close()
-  await app.close()
-  if (upstreamServer) {
-    upstreamServer.closeAllConnections()
-    await new Promise((done, reject) => upstreamServer.close((error) => error ? reject(error) : done()))
+  try {
+    await closeDesktop(app, page)
+  } finally {
+    if (upstreamServer) {
+      upstreamServer.closeAllConnections()
+      await new Promise((done, reject) => upstreamServer.close((error) => error ? reject(error) : done()))
+    }
+    upstreamDb?.close()
   }
-  upstreamDb?.close()
   if (credentialMatches) failure = new Error('脱敏证据中发现实际配置凭据')
 }
-console.log(JSON.stringify({ directory, cases: result.cases, screenshots: result.screenshots, failure: result.failure ?? null }, null, 2))
+console.log(JSON.stringify({ directory, cases: result.cases, interface_evidence: result.interface_evidence, failure: result.failure ?? null }, null, 2))
 if (failure) throw failure

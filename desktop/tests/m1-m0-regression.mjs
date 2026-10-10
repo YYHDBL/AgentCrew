@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve, basename } from 'node:path'
 import { createHash } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
+import { openRunDetails, closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 // 真实中断保留旧审批事件，再通过界面恢复并批准同一任务的新审批。
 const directory = resolve('.artifacts', `m1-m0-${Date.now()}`)
@@ -19,7 +20,7 @@ const signature = async (path) => ({ sha256: sha(await readFile(path)), mtime_ns
 const app = await electron.launch({ args: ['.', `--user-data-dir=${directory}`], executablePath: resolve('node_modules/electron/dist/Electron.app/Contents/MacOS/Electron') })
 const page = await app.firstWindow()
 page.setDefaultTimeout(180000)
-const output = { directory, operations: [], screenshots: [] }
+const output = { directory, operations: [], interface_evidence: [] }
 const errors = []
 page.on('pageerror', (error) => errors.push(error.message))
 const request = (path) => page.evaluate(async (path) => {
@@ -47,7 +48,7 @@ try {
   const [run] = await waitFor(() => request(`/conversations/${conversation}/task-runs`), (runs) => runs.length > 0)
   const before = await waitFor(() => request(`/task-runs/${run.id}/events?after_seq=0&limit=500`), (history) => history.items.some((event) => ['permission.requested', 'run.failed', 'run.completed'].includes(event.type)))
   assert.ok(before.items.some((event) => event.type === 'permission.requested'), JSON.stringify(before.items.filter((event) => event.type.startsWith('run.'))))
-  await page.getByRole('button', { name: '允许', exact: true }).first().waitFor()
+  await page.getByRole('button', { name: '仅本次允许', exact: true }).first().waitFor()
   const oldPort = await page.evaluate(() => window.agentcrew.getBackendPort())
   const processLine = execFileSync('ps', ['-axo', 'pid,command'], { encoding: 'utf8' }).split('\n').find((line) => /\/python(?:3(?:\.12)?)? -m agentcrew_server/.test(line) && line.includes(directory))
   assert.ok(processLine)
@@ -68,6 +69,7 @@ try {
   const resumed = history.items.find((event) => event.type === 'run.resumed')
   const permission = history.items.find((event) => event.type === 'permission.requested' && event.global_seq > resumed.global_seq)
   assert.equal(permission.task_run_id, run.id)
+  await openRunDetails(page)
   await page.getByRole('heading', { name: '已恢复 · 第 2 次尝试', exact: true }).waitFor()
   const expiredApproval = page.locator('.process-card').filter({ has: page.getByRole('heading', { name: '审批已失效', exact: true }) })
   await expiredApproval.first().waitFor({ timeout: 10000 })
@@ -76,12 +78,13 @@ try {
   const activeApprovals = await page.locator('.approval').count()
   assert.ok(activeApprovals >= 1)
   await page.reload()
+  await openRunDetails(page)
   await expiredApproval.first().waitFor()
   assert.equal(await expiredApproval.getByRole('button').count(), 0)
   await page.locator('.approval').first().waitFor()
   assert.equal(await page.locator('.approval').count(), activeApprovals)
   output.expired_approval = { tool_call_ids: oldPermissions.map((event) => event.payload.tool_call_id), historical_cards: oldPermissions.length, historical_card_visible: true, buttons: 0, active_approvals: activeApprovals, replay_preserved: true }
-  const approval = page.locator('.approval').first().getByRole('button', { name: '允许', exact: true })
+  const approval = page.locator('.approval').first().getByRole('button', { name: '仅本次允许', exact: true })
   await approval.waitFor()
   assert.equal(await approval.isEnabled(), true)
   const terminal = await waitFor(async () => {
@@ -96,6 +99,7 @@ try {
   const recoveredPath = `${scope.workspace_dir}/c11-recovery/recovered.txt`
   const fileBeforeRefresh = await signature(recoveredPath)
   await page.reload()
+  await openRunDetails(page)
   await page.getByRole('heading', { name: '已恢复 · 第 2 次尝试', exact: true }).waitFor()
   assert.equal(await page.locator('.approval').count(), 0)
   assert.equal(await page.getByRole('button', { name: '恢复', exact: true }).count(), 0)
@@ -106,13 +110,13 @@ try {
   output.events = (await request(`/task-runs/${run.id}/events?after_seq=0&limit=500`)).items.map(({ global_seq, seq, type, task_run_id, payload }) => ({ global_seq, seq, type, task_run_id, ...(type === 'permission.resolved' ? { decision: payload.decision, tool_call_id: payload.tool_call_id } : {}) }))
   assert.ok(!output.events.some((event) => event.type === 'permission.resolved' && oldPermissions.some((old) => old.payload.tool_call_id === event.tool_call_id)))
   output.operations.push('sigkill-approval-refresh-resume')
-  await page.screenshot({ path: `${directory}/recovery-completed.png` })
-  output.screenshots.push(`${directory}/recovery-completed.png`)
+  await recordDesktopEvidence(page, `${directory}/recovery-completed.json`)
+  output.interface_evidence.push(`${directory}/recovery-completed.json`)
   const send = async (text, name = '发送任务') => {
     await page.getByRole('textbox', { name: '任务指令', exact: true }).fill(text)
     await page.getByRole('button', { name, exact: true }).click()
   }
-  await page.getByRole('button', { name: '＋ 新建任务', exact: true }).click()
+  await page.getByRole('button', { name: '新建任务', exact: true }).click()
   await send('必须实际调用 ask_user 工具提问“贯穿排队验收等待”，等待我的回答。')
   await page.getByRole('textbox', { name: '问题回答', exact: true }).waitFor()
   const queuedConversation = await page.evaluate(() => sessionStorage.getItem('conversation'))
@@ -137,8 +141,8 @@ try {
   await waitFor(() => request(`/conversations/${queuedConversation}/state`), (state) => state.queue.length === 0)
   output.queue = { conversation_id: queuedConversation, tasks: queuedRuns, state: queueState }
   output.operations.push('question-queue-stop-continue-cancel-refresh')
-  await page.screenshot({ path: `${directory}/queue-completed.png` })
-  output.screenshots.push(`${directory}/queue-completed.png`)
+  await recordDesktopEvidence(page, `${directory}/queue-completed.json`)
+  output.interface_evidence.push(`${directory}/queue-completed.json`)
   const imported = await page.evaluate(async (files) => {
     const port = await window.agentcrew.getBackendPort()
     const token = await window.agentcrew.getToken()
@@ -161,7 +165,7 @@ try {
   await page.reload()
   await page.locator('.recent-tasks button').first().click()
   const materialRuns = await waitFor(async () => {
-    const approval = page.locator('.approval').getByRole('button', { name: '允许', exact: true }).first()
+    const approval = page.locator('.approval').getByRole('button', { name: '仅本次允许', exact: true }).first()
     if (await approval.count() && await approval.isEnabled()) await approval.click()
     return request(`/conversations/${imported.conversation.id}/task-runs`)
   }, (runs) => ['completed', 'failed'].includes(runs[0].status))
@@ -185,17 +189,18 @@ try {
   await page.reload()
   await page.locator('.recent-tasks button').first().click()
   const partialRuns = await waitFor(async () => {
-    const approval = page.locator('.approval').getByRole('button', { name: '允许', exact: true }).first()
+    const approval = page.locator('.approval').getByRole('button', { name: '仅本次允许', exact: true }).first()
     if (await approval.count() && await approval.isEnabled()) await approval.click()
     return request(`/conversations/${partial.conversation.id}/task-runs`)
   }, (runs) => ['completed', 'failed'].includes(runs[0].status))
   assert.equal(partialRuns[0].status, 'completed')
+  await openRunDetails(page)
   await page.getByText(/导入失败：/).waitFor()
   output.materials = { conversation_id: imported.conversation.id, task_run_id: imported.task_run_id,
     imports: imported.materials, originals: materials.files, partial }
   output.operations.push('twenty-real-materials-partial-failure')
-  await page.screenshot({ path: `${directory}/materials-imported.png` })
-  output.screenshots.push(`${directory}/materials-imported.png`)
+  await recordDesktopEvidence(page, `${directory}/materials-imported.json`)
+  output.interface_evidence.push(`${directory}/materials-imported.json`)
   const db = new DatabaseSync(`${directory}/data/agentcrew.db`, { readOnly: true })
   output.queries = ['SELECT MAX(global_seq) AS event_watermark FROM run_events',
     'SELECT id,status,current_attempt_no FROM task_runs ORDER BY created_at',
@@ -223,5 +228,5 @@ try {
   console.log(JSON.stringify(output, null, 2))
 } finally {
   await writeFile(`${directory}/recovery-output.json`, JSON.stringify(output, null, 2))
-  await app.close()
+  await closeDesktop(app, page)
 }

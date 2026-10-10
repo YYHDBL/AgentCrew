@@ -4,6 +4,7 @@ import { cp, mkdir, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
+import { openSettings, openMemory, changeIdentity, closeDesktop } from './helpers/desktop.mjs'
 
 const directory = resolve('.artifacts', `memory-scope-race-${Date.now()}`)
 await mkdir(`${directory}/data`, { recursive: true })
@@ -83,7 +84,7 @@ try {
   await page.evaluate(() => { sessionStorage.setItem('workspace-id', 'office'); sessionStorage.setItem('agent-id', 'xiaowen') })
   await page.reload()
   await page.getByText('任务服务已连接', { exact: true }).waitFor()
-  await page.getByRole('button', { name: '数字员工管理', exact: true }).click()
+  await openSettings(page, '数字员工')
   await wait(() => page.getByLabel('档案员工').inputValue(), (value) => value === 'xiaowen')
   cdp = await page.context().newCDPSession(page)
   cdp.on('Fetch.requestPaused', (event) => {
@@ -131,9 +132,9 @@ try {
   await wait(() => panel('员工 soul').locator('.memory-ledger article').count(), (count) => count === 55)
   evidence.cases.push({ name: '当前授权范围正常分页', before_rows: 50, after_rows: 55 })
 
-  await page.getByRole('button', { name: '技能管理', exact: true }).click()
+  await openMemory(page, '技能管理')
   const skillsUrl = await pause('skills', page.getByRole('button', { name: '更多技能', exact: true }))
-  await page.getByRole('button', { name: '数字员工管理', exact: true }).click()
+  await openSettings(page, '数字员工')
   await page.getByRole('tab', { name: '员工 soul', exact: true }).click()
   await select('analytics', 'xiaogang')
   const beforeSkills = await rows('员工 soul', '.memory-index button')
@@ -143,7 +144,7 @@ try {
   assert.deepEqual(afterSkills, beforeSkills)
   await select('office', 'xiaowen')
 
-  await page.getByRole('button', { name: '技能管理', exact: true }).click()
+  await openMemory(page, '技能管理')
   await page.getByRole('button', { name: '新建技能', exact: true }).click()
   const skillName = `实际保存核查${randomUUID().slice(0, 8)}`
   await page.getByLabel('技能名称', { exact: true }).fill(skillName)
@@ -155,14 +156,14 @@ try {
   await page.getByRole('heading', { name: skillName, exact: true }).waitFor()
   assert.equal(await page.getByRole('button', { name: '编辑条目', exact: true }).isEnabled(), true)
   evidence.cases.push({ name: '实际新建技能提示、正文选中及后续编辑', skill_name: skillName })
-  await page.getByRole('button', { name: '数字员工管理', exact: true }).click()
+  await openSettings(page, '数字员工')
 
   const second = (await request('POST', '/agents', { change_id: randomUUID(), expected_revision: 0, workspace_id: 'office', name: '撤权后仍可见员工',
     spec: { position: '核查真实分页撤权边界', model_slot: 'main', skill_ids: [], connector_ids: [] } })).value.id
   assert.equal((await request('POST', '/grants', { change_id: randomUUID(), resource_type: 'agent', resource_id: second, grantee_type: 'user', grantee_id: 'lilei' })).status, 200)
   assert.equal((await request('POST', `/memory/stores/soul/${second}?workspace_id=office&agent_id=${second}`, { change_id: randomUUID(), expected_revision: 0,
     text: '当前已授权员工材料', basis: '所有者创建独立范围对照材料' })).status, 200)
-  await page.getByLabel('演示身份').selectOption('lilei')
+  await changeIdentity(page, 'lilei')
   await page.getByRole('tab', { name: '员工 soul', exact: true }).click()
   await panel('员工 soul').locator('.memory-index button').filter({ hasText: marker }).first().click()
   await panel('员工 soul').getByRole('button', { name: '查看变更记录', exact: true }).click()
@@ -181,7 +182,7 @@ try {
   console.log(JSON.stringify({ directory, cases: evidence.cases.length, all_checks_passed: true }))
 } finally {
   if (cdp) await cdp.send('Fetch.disable')
-  await app.close()
+  await closeDesktop(app, page)
   if (db) {
     evidence.event_watermark = db.prepare('SELECT max(global_seq) AS n FROM run_events').get().n
     evidence.audit_sequence = db.prepare('SELECT max(seq) AS n FROM audit_log').get().n

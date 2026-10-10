@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process'
 import { resolve, basename } from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
 import { DatabaseSync } from 'node:sqlite'
+import { openConversation, openRunDetails, closeDesktop, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 const seed = resolve('../data/m1-compression-validation-01')
 const conversationId = '74ea536019444da3b4d95535622a4be7'
@@ -19,7 +20,7 @@ page.setDefaultTimeout(180000)
 await page.emulateMedia({ reducedMotion: 'reduce' })
 const errors = []
 page.on('pageerror', (error) => errors.push(error.message))
-const output = { directory, conversation_id: conversationId, screenshots: [] }
+const output = { directory, conversation_id: conversationId, interface_evidence: [] }
 const request = (path) => page.evaluate(async (path) => {
   const port = await window.agentcrew.getBackendPort()
   const token = await window.agentcrew.getToken()
@@ -44,8 +45,7 @@ try {
   const conversations = await request('/conversations')
   const selected = conversations.find((conversation) => conversation.id === conversationId)
   assert.ok(selected)
-  const label = selected.title || await page.evaluate((date) => `任务 ${new Date(date).toLocaleString('zh-CN')}`, selected.last_activity_at)
-  await page.locator('.recent-tasks button').filter({ hasText: label }).click()
+  await openConversation(page, selected.id)
   await waitFor(() => page.evaluate(() => sessionStorage.getItem('conversation')),
     (value) => value === conversationId)
   database = new DatabaseSync(`${directory}/data/agentcrew.db`, { readOnly: true })
@@ -61,11 +61,11 @@ try {
     (runs) => runs.some((item) => item.instruction.includes(marker))).then((runs) =>
     runs.find((item) => item.instruction.includes(marker)))
   output.task_run_id = run.id
-  const approval = page.locator('.approval').getByRole('button', { name: '允许', exact: true })
+  const approval = page.locator('.approval').getByRole('button', { name: '仅本次允许', exact: true })
   await approval.first().waitFor()
   await approval.first().click()
   const checked = await waitFor(async () => {
-    const active = page.locator('.approval').getByRole('button', { name: '允许', exact: true }).first()
+    const active = page.locator('.approval').getByRole('button', { name: '仅本次允许', exact: true }).first()
     if (await active.count() && await active.isEnabled()) await active.click()
     return request(`/task-runs/${run.id}/events?after_seq=0&limit=500`)
   },
@@ -92,15 +92,16 @@ try {
   await page.getByRole('button', { name: '恢复', exact: true }).waitFor()
   await waitFor(() => page.evaluate(() => window.agentcrew.getBackendPort()), (port) => port && port !== oldPort)
   await page.locator('.content-scroll').evaluate((element) => { element.scrollTop = element.scrollHeight })
+  await openRunDetails(page)
   await page.locator('.details-scroll').evaluate((element) => { element.scrollTop = element.scrollHeight })
-  await page.screenshot({ path: `${directory}/interrupted.png` })
-  output.screenshots.push(`${directory}/interrupted.png`)
+  await recordDesktopEvidence(page, `${directory}/interrupted.json`)
+  output.interface_evidence.push(`${directory}/interrupted.json`)
   output.sigkill = { killed_pid: killedPid, old_port: oldPort,
     new_port: await page.evaluate(() => window.agentcrew.getBackendPort()),
     file_before: beforeFile }
   await page.getByRole('button', { name: '恢复', exact: true }).click()
   const terminal = await waitFor(async () => {
-    const active = page.locator('.approval').getByRole('button', { name: '允许', exact: true }).first()
+    const active = page.locator('.approval').getByRole('button', { name: '仅本次允许', exact: true }).first()
     if (await active.count() && await active.isEnabled()) await active.click()
     return request(`/conversations/${conversationId}/task-runs`)
   },
@@ -114,11 +115,12 @@ try {
   const writes = events.filter((event) => event.type === 'tool.prepared' && event.payload.tool_name === 'write_file')
   assert.equal(writes.length, 1)
   await page.reload()
+  await openRunDetails(page)
   await page.getByRole('heading', { name: '已恢复 · 第 2 次尝试', exact: true }).last().waitFor()
   await page.locator('.content-scroll').evaluate((element) => { element.scrollTop = element.scrollHeight })
   await page.locator('.details-scroll').evaluate((element) => { element.scrollTop = element.scrollHeight })
-  await page.screenshot({ path: `${directory}/completed.png` })
-  output.screenshots.push(`${directory}/completed.png`)
+  await recordDesktopEvidence(page, `${directory}/completed.json`)
+  output.interface_evidence.push(`${directory}/completed.json`)
   output.file_after = afterFile
   output.snapshot = snapshotBefore
   output.checkpoints = checkpointsBefore
@@ -130,5 +132,5 @@ try {
 } finally {
   await writeFile(`${directory}/recovery-output.json`, JSON.stringify(output, null, 2))
   database?.close()
-  await app.close()
+  await closeDesktop(app, page)
 }

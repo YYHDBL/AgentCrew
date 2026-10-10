@@ -72,6 +72,8 @@ class RuntimeState:
     cron_recovery: object | None = None
     cron_proposals: object | None = None
     trace_audit: object | None = None
+    notifications: object | None = None  # M3-14 起装配
+    desktop_preferences: object | None = None  # M3-14 起装配
 
     async def stop_execution(self) -> None:
         cancellations = []

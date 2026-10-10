@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import { createHash, randomUUID } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { DatabaseSync } from 'node:sqlite'
+import { openSettings, recordDesktopEvidence } from './helpers/desktop.mjs'
 
 export async function governanceWorkflows({ page, directory, endpoint, upstream, request, waitFor, result }) {
   const runtime = await page.evaluate(async () => ({ port: await window.agentcrew.getBackendPort(), token: await window.agentcrew.getToken() }))
@@ -69,10 +70,10 @@ export async function governanceWorkflows({ page, directory, endpoint, upstream,
     const firstTarget = 'm2-13/approved/first.txt'
     const first = await create(`仅调用write_file在当前工作区写入${firstTarget}，完整正文为M2 actual first write。等待文件审批，完成后依据真实工具结果说明。`)
     const firstCard = await approval(first, firstTarget)
-    await page.locator('.approval').filter({ hasText: firstTarget }).getByRole('button', { name: '总是允许', exact: true }).click()
+    await page.locator('.approval').filter({ hasText: firstTarget }).getByRole('button', { name: '始终允许', exact: true }).click()
     await page.getByRole('dialog', { name: '确认永久权限规则', exact: true }).waitFor()
-    await page.screenshot({ path: `${directory}/permanent-rule.png` })
-    result.screenshots.push(`${directory}/permanent-rule.png`)
+    await recordDesktopEvidence(page, `${directory}/permanent-rule.json`)
+    result.interface_evidence.push(`${directory}/permanent-rule.json`)
     await page.getByRole('button', { name: '确认保存永久规则', exact: true }).click()
     await waitFor(() => events(first.task_run_id, 'permission.resolved').some((event) => JSON.parse(event.payload).tool_call_id === firstCard.call_id), Boolean)
     await terminal(first, '请依据已经完成的真实文件写入简短说明结果。')
@@ -88,7 +89,7 @@ export async function governanceWorkflows({ page, directory, endpoint, upstream,
     const externalPath = `${materialRoot}/authorized-external/created.txt`
     const external = await create(`仅调用write_file写入已经授权目录的绝对路径${externalPath}，完整正文为M2 actual external write。等待审批后核查结果。`, 'office', 'xiaowen', [`${materialRoot}/authorized-external`])
     const externalCard = await approval(external, 'created.txt')
-    await page.locator('.approval').filter({ hasText: externalPath }).getByRole('button', { name: '允许', exact: true }).click()
+    await page.locator('.approval').filter({ hasText: externalPath }).getByRole('button', { name: '仅本次允许', exact: true }).click()
     await waitFor(() => events(external.task_run_id, 'permission.resolved').some((event) => JSON.parse(event.payload).tool_call_id === externalCard.call_id), Boolean)
     await terminal(external, '请依据已经批准的真实文件操作完成结果核查。')
     assert.equal(await readFile(externalPath, 'utf8'), 'M2 actual external write')
@@ -137,7 +138,7 @@ export async function governanceWorkflows({ page, directory, endpoint, upstream,
       'SELECT call_id,task_run_id,tool_name,status,dispatched_at FROM tool_calls ORDER BY prepared_at',
       'SELECT global_seq,type,task_run_id,payload FROM run_events ORDER BY global_seq',
       'SELECT seq,actor_id,action,resource_type,resource_id FROM audit_log ORDER BY seq'].map((sql) => ({ sql, rows: db.prepare(sql).all() }))
-    await page.getByRole('button', { name: '治理管理', exact: true }).click()
+    await openSettings(page, '权限与审计')
     await page.getByRole('heading', { name: '员工与治理', exact: true }).waitFor()
   } finally {
     db.close()
