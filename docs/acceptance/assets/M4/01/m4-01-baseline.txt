@@ -1,0 +1,12 @@
+# M4-01 核验证据 2026-10-10T14:37:08Z
+- source_commit: 8fb8060b927043451768972b9b4eeb730021ec3a
+- dirty(M4-01 提交前的工作树修改，仅版本/文档): 7 个文件
+## 版本一致性
+desktop/package.json version: 0.4.0
+agentcrew_core.__version__: 0.4.0
+pyproject dynamic version via hatch: ['version']
+## 锁文件 SHA-256
+6cbad955aaeedfbc97a7769b09af93ef3fb40dd5f35ecf4621d0f431857ad5ee  desktop/package-lock.json
+bdd685d13cc97e42ac586de686742ca9fe6dc18deca5084cb75e0f564d5b759f  backend/uv.lock
+## schema 校验
+release-manifest.schema.json valid JSON schema, required roots: 8

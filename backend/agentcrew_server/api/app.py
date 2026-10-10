@@ -14,6 +14,8 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from agentcrew_core import __version__
+
 from ..runtime import RuntimeState
 from .approvals import install_approval_routes
 from .auth import BearerAuthMiddleware
@@ -128,7 +130,7 @@ def create_app(runtime: RuntimeState) -> FastAPI:
 
     app = FastAPI(
         title="AgentCrew Sidecar",
-        version="0.1.0",
+        version=__version__,
         lifespan=lifespan,
         docs_url=None,
         redoc_url=None,

@@ -10,6 +10,8 @@ from openai import AsyncOpenAI, omit
 from openai.lib.streaming.chat import ChatCompletionStreamState
 from openai.types.chat import ChatCompletionChunk
 
+from agentcrew_core import __version__
+
 from .base import Slot
 from .glm_anthropic import SlotConfig
 from .types import StreamEvent, ToolCall, Usage
@@ -80,7 +82,7 @@ class OpenAICompatibleProvider:
         temperature: float | None = None,
     ) -> AsyncIterator[StreamEvent]:
         cfg = self._slots[slot]
-        headers = {"User-Agent": "agentcrew/0.1.0"}
+        headers = {"User-Agent": f"agentcrew/{__version__}"}
         if self._session_id:
             headers["x-opencode-session"] = self._session_id
         client = AsyncOpenAI(api_key=cfg.api_key, base_url=cfg.base_url,

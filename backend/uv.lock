@@ -4,7 +4,6 @@ requires-python = ">=3.11"
 
 [[package]]
 name = "agentcrew"
-version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },
