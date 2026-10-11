@@ -4,7 +4,7 @@ import { writeFile } from 'node:fs/promises'
 import { setTimeout as delay } from 'node:timers/promises'
 
 const memoryLabels = ['USER 记忆', '工作区记忆', '员工 soul', '技能管理']
-const settingsTabs = { settings: '桌面行为', studio: '数字员工', admin: '组织管理', governance: '权限与审计' }
+const settingsTabs = { model: '模型连接', settings: '桌面行为', studio: '数字员工', admin: '组织管理', governance: '权限与审计' }
 const closedApplications = new WeakSet()
 
 async function navigation(page) {

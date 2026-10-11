@@ -1587,6 +1587,23 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/settings/models/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 对已保存配置发起真实验证（计数资产检查 + 一次真实小请求）；区别于"配置已保存" */
+        post: operations["verifyModelSettings"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/memory/stores/{store_type}/{store_id}": {
         parameters: {
             query: {
@@ -2460,6 +2477,8 @@ export interface components {
                 main?: components["schemas"]["ModelSlot"];
                 aux?: components["schemas"]["ModelSlot"];
             };
+            /** @description 服务端受控的已知模型元数据（M4-04：窗口/编码 revision/hash 不允许用户手填） */
+            catalog?: components["schemas"]["ModelCatalogEntry"][];
             gates?: {
                 max_steps?: number;
                 stall_seconds?: number;
@@ -2481,6 +2500,8 @@ export interface components {
              */
             provider?: "glm" | "openai-compatible";
             model?: string;
+            /** @description 请求地址（非密钥，界面可直接呈现） */
+            base_url?: string;
             context_window?: number | null;
             context_window_source?: string | null;
             tokenizer_repository?: string | null;
@@ -2496,6 +2517,49 @@ export interface components {
              * @enum {string}
              */
             effective_source?: "env" | "file";
+        };
+        ModelCatalogEntry: {
+            /** @enum {string} */
+            provider: "glm" | "openai-compatible";
+            model: string;
+            base_url: string;
+            /** @description 界面展示名 */
+            label: string;
+            /** @description 是否有经核查的官方计数依据；false 时任务将在预算检查前明确失败 */
+            counting_available: boolean;
+            context_window?: number | null;
+            context_window_source?: string | null;
+            tokenizer_repository?: string | null;
+            tokenizer_revision?: string | null;
+            tokenizer_sha256?: string | null;
+            prompt_format?: string | null;
+        };
+        ModelVerifyData: {
+            /** @description 说明验证产生的真实请求；密钥不随结果返回 */
+            note: string;
+            results: {
+                main?: components["schemas"]["ModelVerifyResult"];
+                aux?: components["schemas"]["ModelVerifyResult"];
+            };
+        };
+        ModelVerifyResult: {
+            /** @description 槽位模型与密钥均已配置 */
+            configured: boolean;
+            counting: {
+                ok: boolean;
+                context_window?: number;
+                counting_method?: string;
+                source?: string;
+                /** @description 失败原因（如 TOKENIZER_UNAVAILABLE：缺失/哈希不符/无核查依据） */
+                error?: string;
+            };
+            request: {
+                /** @description 对配置端点的一次真实小请求成功 */
+                ok: boolean;
+                elapsed_ms?: number;
+                /** @description 分类后的失败原因 */
+                error?: string;
+            };
         };
         SettingsPatchRequest: {
             models?: {
@@ -7240,6 +7304,90 @@ export interface operations {
                     "application/json": components["schemas"]["Error"];
                 };
             };
+            /** @description 错误信封 */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description 错误信封 */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description 错误信封 */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description 错误信封 */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description 错误信封 */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    verifyModelSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @description 缺省验证两个槽位 */
+                    slots?: ("main" | "aux")[];
+                };
+            };
+        };
+        responses: {
+            /** @description 每槽位计数与真实请求结果（脱敏） */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["ModelVerifyData"];
+                    };
+                };
+            };
+            /** @description 错误信封 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            403: components["responses"]["ErrEnvelope"];
             /** @description 错误信封 */
             404: {
                 headers: {

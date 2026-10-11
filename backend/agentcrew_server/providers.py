@@ -20,6 +20,33 @@ from agentcrew_core.memory.budget import ContextBudgetError
 _log = logging.getLogger("agentcrew.context")
 
 
+def known_models() -> list[dict[str, Any]]:
+    """服务端受控的已知模型目录（M4-04）：窗口/编码 revision/hash 等元数据
+    只来自服务端核查，不开放用户手填。GLM 的官方计数依据在 M4-09 核查后
+    才标记可用。"""
+    glm_none = {"context_window": None, "context_window_source": None,
+                "tokenizer_repository": None, "tokenizer_revision": None,
+                "tokenizer_sha256": None, "prompt_format": None}
+    return [
+        {
+            "provider": "openai-compatible",
+            "model": "deepseek-v4.1-flash",
+            "base_url": "https://opencode.ai/zen/go/v1",
+            "label": "DeepSeek V4.1 Flash（OpenCode Go）",
+            "counting_available": True,
+            **DEEPSEEK_V41,
+        },
+        {
+            "provider": "glm",
+            "model": "",
+            "base_url": DEFAULT_BASE_URL,
+            "label": "GLM（Anthropic 协议）",
+            "counting_available": False,
+            **glm_none,
+        },
+    ]
+
+
 def bind_slot(entry: dict[str, Any]) -> SlotConfig:
     provider = entry.get("provider", "glm")
     if provider not in ("glm", "openai-compatible"):

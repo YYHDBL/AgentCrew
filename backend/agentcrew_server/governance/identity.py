@@ -186,7 +186,12 @@ class Identities:
         if path in {"/api/health", "/api/identity", "/api/diagnostics", "/api/identity/demo"}:
             return
         if path.startswith("/api/diagnostics/") or path == "/api/audit/verify" or (path.startswith("/api/settings") and path != "/api/settings/desktop"):
-            self.require(identity, "owner")
+            # GET /api/settings 是脱敏视图：成员只读（M4-04）；其余（PATCH、
+            # verify 的真实请求等）仍要求 owner
+            if path == "/api/settings" and request.method == "GET":
+                pass
+            else:
+                self.require(identity, "owner")
         if path == "/api/runtime/power-event":
             self.require(identity, "manage")
         if path.startswith("/api/memberships/") or "/members/" in path:

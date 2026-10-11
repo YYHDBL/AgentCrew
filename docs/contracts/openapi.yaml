@@ -225,6 +225,10 @@ components:
           properties:
             main: { $ref: "#/components/schemas/ModelSlot" }
             aux: { $ref: "#/components/schemas/ModelSlot" }
+        catalog:
+          type: array
+          description: 服务端受控的已知模型元数据（M4-04：窗口/编码 revision/hash 不允许用户手填）
+          items: { $ref: "#/components/schemas/ModelCatalogEntry" }
         gates:
           type: object
           properties:
@@ -244,6 +248,7 @@ components:
       properties:
         provider: { type: string, enum: [glm, openai-compatible], description: glm 使用 Anthropic Messages；openai-compatible 使用 Chat Completions }
         model: { type: string }
+        base_url: { type: string, description: 请求地址（非密钥，界面可直接呈现） }
         context_window: { type: [integer, "null"], minimum: 1 }
         context_window_source: { type: [string, "null"] }
         tokenizer_repository: { type: [string, "null"] }
@@ -254,6 +259,52 @@ components:
         api_key_configured: { type: boolean }
         api_key_hint: { type: string, description: 尾 4 位 }
         effective_source: { type: string, enum: [env, file], description: v1.1：该槽当前生效来源 }
+    ModelCatalogEntry:
+      type: object
+      required: [provider, model, base_url, label, counting_available]
+      properties:
+        provider: { type: string, enum: [glm, openai-compatible] }
+        model: { type: string }
+        base_url: { type: string }
+        label: { type: string, description: 界面展示名 }
+        counting_available: { type: boolean, description: 是否有经核查的官方计数依据；false 时任务将在预算检查前明确失败 }
+        context_window: { type: [integer, "null"], minimum: 1 }
+        context_window_source: { type: [string, "null"] }
+        tokenizer_repository: { type: [string, "null"] }
+        tokenizer_revision: { type: [string, "null"] }
+        tokenizer_sha256: { type: [string, "null"] }
+        prompt_format: { type: [string, "null"] }
+    ModelVerifyData:
+      type: object
+      required: [results, note]
+      properties:
+        note: { type: string, description: 说明验证产生的真实请求；密钥不随结果返回 }
+        results:
+          type: object
+          properties:
+            main: { $ref: "#/components/schemas/ModelVerifyResult" }
+            aux: { $ref: "#/components/schemas/ModelVerifyResult" }
+    ModelVerifyResult:
+      type: object
+      required: [configured, counting, request]
+      properties:
+        configured: { type: boolean, description: 槽位模型与密钥均已配置 }
+        counting:
+          type: object
+          required: [ok]
+          properties:
+            ok: { type: boolean }
+            context_window: { type: integer }
+            counting_method: { type: string }
+            source: { type: string }
+            error: { type: string, description: 失败原因（如 TOKENIZER_UNAVAILABLE：缺失/哈希不符/无核查依据） }
+        request:
+          type: object
+          required: [ok]
+          properties:
+            ok: { type: boolean, description: 对配置端点的一次真实小请求成功 }
+            elapsed_ms: { type: integer }
+            error: { type: string, description: 分类后的失败原因 }
     SettingsPatchRequest:
       type: object
       properties:
@@ -2368,6 +2419,38 @@ paths:
                 properties:
                   data: { $ref: "#/components/schemas/SettingsPatchData" }
         "500": { $ref: "#/components/responses/ErrEnvelope" }
+  /api/settings/models/verify:
+    post:
+      operationId: verifyModelSettings
+      tags: [settings]
+      x-implementation-card: M4-04
+      x-domain-card: F010
+      summary: 对已保存配置发起真实验证（计数资产检查 + 一次真实小请求）；区别于"配置已保存"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                slots:
+                  type: array
+                  items: { type: string, enum: [main, aux] }
+                  minItems: 1
+                  description: 缺省验证两个槽位
+      responses:
+        <<: *memory_errors
+        "200":
+          description: 每槽位计数与真实请求结果（脱敏）
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data: { $ref: "#/components/schemas/ModelVerifyData" }
+        "403": { $ref: "#/components/responses/ErrEnvelope" }
   /api/memory/stores/{store_type}/{store_id}:
     parameters:
       - { $ref: "#/components/parameters/MemoryStoreType" }

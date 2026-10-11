@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { RefObject } from 'react'
 import { Badge, Button, Dropdown, Input, Tabs, Tooltip } from 'antd'
-import { AppstoreOutlined, ArrowDownOutlined, ArrowUpOutlined, BellOutlined, BookOutlined, ClockCircleOutlined, CloseOutlined, FileTextOutlined, FolderOpenOutlined, MenuFoldOutlined, MenuUnfoldOutlined, PaperClipOutlined, PlusOutlined, ProfileOutlined, SafetyCertificateOutlined, SearchOutlined, SettingOutlined, TeamOutlined, UnorderedListOutlined, UserOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, ApiOutlined, ArrowDownOutlined, ArrowUpOutlined, BellOutlined, BookOutlined, ClockCircleOutlined, CloseOutlined, FileTextOutlined, FolderOpenOutlined, MenuFoldOutlined, MenuUnfoldOutlined, PaperClipOutlined, PlusOutlined, ProfileOutlined, SafetyCertificateOutlined, SearchOutlined, SettingOutlined, TeamOutlined, UnorderedListOutlined, UserOutlined } from '@ant-design/icons'
 import { api, ApiFailure, setIdentityToken, useSession, useMemoryEvents, type Conversation } from './session'
 import { Artifacts, Chat, Details, ExecutionSummary, VerificationCards, type PendingVerification } from './Conversation'
 import { currentState, statusNames, taskTitle, displayTime } from './conversation-view'
@@ -12,6 +12,7 @@ import { AdminCenter } from './admin/AdminCenter'
 import { RunCenter } from './run-center/RunCenter'
 import { Automation } from './automation/Automation'
 import { DesktopSettings } from './DesktopSettings'
+import { ModelSettings } from './ModelSettings'
 import { NotificationCenter, useNotifications } from './Notifications'
 import { ExitConfirmation } from './ExitConfirmation'
 import type { Notification } from './api/types'
@@ -20,7 +21,7 @@ import { allPages, useGovernanceEvents, type Identity, type Resource, type Diagn
 import appIcon from '../../../assets/brand/agentcrew-icon.png'
 
 type NarrowPanel = 'tasks' | 'details' | null
-type PageName = 'tasks' | 'governance' | 'admin' | 'runs' | 'studio' | 'automation' | 'settings' | 'notifications' | MemoryKind
+type PageName = 'tasks' | 'governance' | 'admin' | 'runs' | 'studio' | 'automation' | 'settings' | 'model' | 'notifications' | MemoryKind
 
 export default function App(): JSX.Element {
   const [generation, setGeneration] = useState(0)
@@ -50,6 +51,8 @@ function Application({ exitPending }: { exitPending: boolean }): JSX.Element {
   const [jobTarget, setJobTarget] = useState<string | null>(null)
   const [notificationTarget, setNotificationTarget] = useState<string | null>(null)
   const [identity, setIdentity] = useState<Identity | null>(null)
+  const [modelsReady, setModelsReady] = useState<boolean | null>(null)
+  const [settingsRevision, setSettingsRevision] = useState(0)
   const [diagnostic, setDiagnostic] = useState<Diagnostic>({ mode: 'normal' })
   const [workspaces, setWorkspaces] = useState<Resource[]>([])
   const [agents, setAgents] = useState<Resource[]>([])
@@ -260,6 +263,20 @@ function Application({ exitPending }: { exitPending: boolean }): JSX.Element {
     return () => controller.abort()
   }, [connection, governanceEvents.revision, governanceRevision])
 
+  useEffect(() => {
+    if (connection !== 'connected' || diagnostic.mode !== 'normal') return
+    const controller = new AbortController()
+    void api<{ models: Record<string, { model?: string; api_key_configured?: boolean }> }>('/settings', undefined, controller.signal).then((view) => {
+      if (controller.signal.aborted) return
+      const ready = ['main', 'aux'].every((slot) => view.models[slot]?.model && view.models[slot]?.api_key_configured)
+      setModelsReady(ready)
+    }, (reason: Error) => {
+      if (controller.signal.aborted || reason instanceof ApiFailure) return
+      throw reason
+    })
+    return () => controller.abort()
+  }, [connection, diagnostic.mode, governanceRevision, settingsRevision])
+
   const changeDemo = async (user: string): Promise<void> => {
     setBusy(true); setActionError('')
     try {
@@ -318,10 +335,11 @@ function Application({ exitPending }: { exitPending: boolean }): JSX.Element {
   const showTasks = sidebarOpen && (compact ? narrowPanel === 'tasks' : taskListOpen)
   const showDetails = narrow ? narrowPanel === 'details' : detailsOpen
   const currentRunEvents = session.events.filter((event) => event.task_run_id === runRecordId || event.payload.source_task_run_id === runRecordId)
-  const pageTitles: Record<PageName, string> = { ...memoryNames, tasks: selected ? selectedTitle : '新建任务', runs: '运行中心', automation: '自动化', notifications: '通知中心', settings: '设置', studio: '设置', admin: '设置', governance: '设置' }
+  const pageTitles: Record<PageName, string> = { ...memoryNames, tasks: selected ? selectedTitle : '新建任务', runs: '运行中心', automation: '自动化', notifications: '通知中心', settings: '设置', model: '设置', studio: '设置', admin: '设置', governance: '设置' }
   const pageTitle = pageTitles[page]
-  const settingsPage = ['settings', 'studio', 'admin', 'governance'].includes(page)
+  const settingsPage = ['settings', 'model', 'studio', 'admin', 'governance'].includes(page)
   const settingsItems = [
+    { key: 'model', label: <><ApiOutlined /> 模型连接</>, children: <ModelSettings identity={identity} enabled={desktopEnabled} onSaved={() => setSettingsRevision((value) => value + 1)} /> },
     { key: 'settings', label: <><SettingOutlined /> 桌面行为</>, children: <DesktopSettings identity={identity} enabled={desktopEnabled} /> },
     { key: 'studio', label: <><TeamOutlined /> 数字员工</>, disabled: diagnostic.mode === 'diagnostic', children: identity && <AgentStudio identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} events={studioMemory.events} connectionStatus={studioMemory.status} onRun={openRun} /> },
     { key: 'admin', label: <><UserOutlined /> 组织管理</>, children: identity && <AdminCenter identity={identity} workspace={workspaceId} agent={agentId} revision={governanceEvents.revision + governanceRevision} diagnostic={diagnostic} changed={bumpGovernance} onDiagnostic={setDiagnostic} selectScope={selectScope} onRun={openRun} /> },
@@ -429,7 +447,7 @@ function Application({ exitPending }: { exitPending: boolean }): JSX.Element {
         )}
 
         {settingsPage ? <div className="settings-shell">
-          <div className="settings-heading"><h1>设置</h1><p>桌面行为、数字员工、组织管理与权限设置。</p>
+          <div className="settings-heading"><h1>设置</h1><p>模型连接、桌面行为、数字员工、组织管理与权限设置。</p>
             <label className="identity-control"><span>演示身份</span><select aria-label="演示身份" value={identity?.effective_user_id ?? ''} disabled={busy || diagnostic.mode === 'diagnostic'} onChange={(event) => void changeDemo(event.target.value)}><option value="" disabled>等待服务端认证</option><option value="owner">真实所有者</option><option value="wangming">王明 · 演示成员</option><option value="lilei">李蕾 · 演示成员</option></select></label>
             {actionError && <p role="alert">{actionError}</p>}
             {!identity && <><p role="status">正在读取当前治理身份。</p><Button onClick={() => setIdentityToken('')}>使用真实所有者凭证重新认证</Button></>}
@@ -461,6 +479,7 @@ function Application({ exitPending }: { exitPending: boolean }): JSX.Element {
               <span className="empty-eyebrow">你的数字员工工作空间</span>
               <h1>今天，需要处理什么？</h1>
               <p>交代任务、附上材料，执行过程和需要你决定的事项会显示在这里。</p>
+              {modelsReady === false && <p className="model-setup-hint" role="status">模型连接尚未配置，任务暂时无法执行。<Button type="link" onClick={() => showPage('model')}>前往模型设置</Button></p>}
               <div className="empty-capabilities"><span><FileTextOutlined />文件与资料</span><span><ProfileOutlined />整理与分析</span><span><ClockCircleOutlined />计划与日常工作</span></div>
             </div>}
             </div>
@@ -486,7 +505,7 @@ function Application({ exitPending }: { exitPending: boolean }): JSX.Element {
                 <div>{state?.can_cancel && <Tooltip title="停止任务"><Button danger shape="circle" icon={<CloseOutlined />} aria-label="停止任务" disabled={busy} onClick={() => void action(`/task-runs/${state.current_task_run_id}/cancel`, {})} /></Tooltip>}<Tooltip title={state?.can_queue ? '加入队列' : '发送任务'}><Button type="primary" shape="circle" icon={<ArrowUpOutlined />} aria-label={state?.can_queue ? '加入队列' : '发送任务'} disabled={busy || !identity || diagnostic.mode !== 'normal' || !agentId || !draft.trim() || connection !== 'connected' || Boolean(selected && !state?.can_send && !state?.can_queue)} onClick={() => { toLatest(); void send() }} /></Tooltip></div>
               </div>
             </div>
-            <div className="composer-caption"><small id="composer-help">{diagnostic.mode !== 'normal' ? '当前处于只读诊断，任务提交已停用。' : connection !== 'connected' ? '等待任务服务连接后发送指令。' : selected && !state ? '正在恢复任务记录。' : pendingVerifications.length ? '请先完成操作核验，再继续处理任务。' : state?.can_queue ? '新指令将进入队列。' : state?.waiting_approvals ? '请先处理待审批的操作。' : state?.waiting_questions ? '请先回答员工的问题。' : selected && !state?.can_send ? '当前任务暂时无法接收新指令。' : 'Enter 发送 · Shift+Enter 换行'}</small><small>{identity?.demo ? '演示身份' : '当前身份'} · {identity?.name ?? '正在验证'}</small></div>
+            <div className="composer-caption"><small id="composer-help">{diagnostic.mode !== 'normal' ? '当前处于只读诊断，任务提交已停用。' : connection !== 'connected' ? '等待任务服务连接后发送指令。' : modelsReady === false ? '模型连接未配置，任务无法执行；请先在设置中完成模型连接。' : selected && !state ? '正在恢复任务记录。' : pendingVerifications.length ? '请先完成操作核验，再继续处理任务。' : state?.can_queue ? '新指令将进入队列。' : state?.waiting_approvals ? '请先处理待审批的操作。' : state?.waiting_questions ? '请先回答员工的问题。' : selected && !state?.can_send ? '当前任务暂时无法接收新指令。' : 'Enter 发送 · Shift+Enter 换行'}</small><small>{identity?.demo ? '演示身份' : '当前身份'} · {identity?.name ?? '正在验证'}</small></div>
           </div>
         </main>}
 

@@ -29,7 +29,8 @@ from .config import DEFAULTS, Config, ConfigError, apply_env, load_config, merge
 from .db.audit import SNAPSHOT_EVERY, append_audit, snapshot_chain_head
 from .db.write_channel import WriteChannel
 from .memory.tokenizer import TOKENIZER_FIELDS
-from .providers import bind_slot
+from .providers import DEFAULT_BASE_URL, bind_slot, known_models
+from .secrets import register_secret
 
 _log = logging.getLogger("agentcrew.settings")
 
@@ -93,6 +94,8 @@ class SettingsService:
             models[slot] = {
                 "provider": entry.get("provider", ""),
                 "model": entry.get("model", ""),
+                "base_url": entry.get("base_url", "")
+                or (DEFAULT_BASE_URL if entry.get("provider", "glm") == "glm" else ""),
                 "api_key_configured": bool(key),
                 "api_key_hint": key[-4:] if key else "",
                 "effective_source": "env" if env_sourced else "file",
@@ -102,6 +105,7 @@ class SettingsService:
         return {
             "config_version": str(self._file_object().get("config_version", 0)),
             "models": models,
+            "catalog": known_models(),
             "gates": dict(cfg.get("gates", {})),
             "limits": dict(cfg.get("limits", {})),
             "memory": dict(cfg["memory"]),
@@ -141,8 +145,11 @@ class SettingsService:
             raise SettingsWriteFailed(
                 f"配置文件写入失败（{self._path}）：{e}") from None
 
-        # 文件已成新事实：重载生效配置（用构造时的同一环境，覆盖链一致）
+        # 文件已成新事实：重载生效配置（用构造时的同一环境，覆盖链一致）；
+        # 新密钥立即进入脱敏登记表（此后任何日志/错误文本出现都会被遮蔽）
         self._config = load_config(self._data_dir, self._env)
+        for key in self._config.api_keys():
+            register_secret(key)
         ignored = sorted(p for p in self._config.env_fields if p in touched)
         audit_status = await self._audit(
             new_file["config_version"], touched, cleared)

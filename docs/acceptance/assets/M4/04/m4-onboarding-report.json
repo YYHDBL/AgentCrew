@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-10-11T03:58:59.809Z",
+  "results": [
+    {
+      "check": "空配置启动：设置可用且提示未配置",
+      "result": "passed",
+      "detail": ""
+    },
+    {
+      "check": "界面保存后显示已配置（脱敏尾 4 位）",
+      "result": "passed",
+      "detail": "[\"密钥已配置（尾 4 位 R-KH）\",\"密钥已配置（尾 4 位 R-KH）\"]"
+    },
+    {
+      "check": "真实密钥不出现在 DOM",
+      "result": "passed",
+      "detail": ""
+    },
+    {
+      "check": "GET 仅返回脱敏状态",
+      "result": "passed",
+      "detail": ""
+    },
+    {
+      "check": "验证连接：两槽计数与真实请求均通过",
+      "result": "passed",
+      "detail": "主模型（main）\n\n计数资产：通过（窗口 1,000,000，官方 tokenizer + 消息编码（SHA-256 固定））\n\n连接请求：通过（3432ms，真实小请求）\n辅助模型（aux，摘要与记忆提炼）\n\n计数资产：通过（窗口 1,000,000，官方 tokenizer + 消息编码（SHA-256 固定））\n\n连接请求：通过（2663ms，真实小请求）"
+    },
+    {
+      "check": "真实任务完成：审批后文件写入并读取",
+      "result": "passed",
+      "detail": "onboarding 1791691068775"
+    },
+    {
+      "check": "任务终态 completed",
+      "result": "passed",
+      "detail": "completed"
+    },
+    {
+      "check": "无效密钥：连接验证明确失败",
+      "result": "passed",
+      "detail": "主模型（main）\n\n计数资产：通过（窗口 1,000,000，官方 tokenizer + 消息编码（SHA-256 固定））\n\n连接请求：未通过：AuthenticationError：Error code: 401 - {'type': 'error', 'error': {'type': 'AuthError', 'message': 'Invalid API key.'}}\n辅助模型（a"
+    },
+    {
+      "check": "不可达地址：连接验证明确失败",
+      "result": "passed",
+      "detail": "主模型（main）\n\n计数资产：未通过：MODEL_WINDOW_UNKNOWN：模型槽未配置实际窗口和来源\n\n连接请求：未通过：ContextBudgetError：MODEL_WINDOW_UNKNOWN：模型槽未配置实际窗口和来源\n辅助模型（aux，摘要与记忆提炼）\n\n计数资产：通过（窗口 1,000,000，官方 tokenizer + 消息编码（SHA-256 固定））\n\n连接请求：通过（2606ms，真实小请求）"
+    },
+    {
+      "check": "保存失败保留草稿并显示原因",
+      "result": "passed",
+      "detail": ""
+    },
+    {
+      "check": "成员只读：输入与保存禁用，视图可读",
+      "result": "passed",
+      "detail": ""
+    },
+    {
+      "check": "清除密钥生效（显式操作）",
+      "result": "passed",
+      "detail": ""
+    },
+    {
+      "check": "重新配置密钥生效",
+      "result": "passed",
+      "detail": ""
+    },
+    {
+      "check": "重启后配置持久：已有配置不重复引导",
+      "result": "passed",
+      "detail": ""
+    },
+    {
+      "check": "缺计数资源：验证明确失败（不估算、不静默）",
+      "result": "passed",
+      "detail": "主模型（main）\n\n计数资产：未通过：TOKENIZER_UNAVAILABLE：官方编码文件缺失：tokenizer.json\n\n连接请求：未通过：ContextBudgetError：TOKENIZER_UNAVAILABLE：官方编码文件缺失：tokenizer.json\n辅助模型（aux，摘要与记忆提炼）\n\n计数资产：未通过：TOKENIZER_UNAVAILABLE：官方编码文件缺失：tokenizer.json\n\n连接请求：未通过：ContextBudgetEr"
+    },
+    {
+      "check": "env 覆盖字段提示实际生效来源",
+      "result": "passed",
+      "detail": ""
+    }
+  ]
+}
