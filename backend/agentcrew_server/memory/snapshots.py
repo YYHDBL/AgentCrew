@@ -168,15 +168,16 @@ class MemorySnapshots:
                       "只输出正文，只描写岗位职责、工作方法、沟通和核验纪律。"
                       "具体偏好、历史经历、业务事实、人员资料和授权状态必须省略。\n真实岗位：\n" + role)
             # 配额校验保持不变；真实 aux 输出存在长度方差（M4 实测单发命中率不足），
-            # 未达配额时带自检字数再生，最多三次，全部不符才失败
+            # 未达配额时带自检字数与方向再生，最多五次，全部不符才失败
             generation_id: str | None = None
             text = ""
             last_error = None
-            for attempt in range(3):
+            for attempt in range(5):
                 effective_prompt = prompt
                 if attempt:
+                    direction = "低于最低字符数，请扩写每段" if len(text) < lower else "超过最高字符数，请精简每段"
                     effective_prompt = (prompt + f"\n自检结果：上一次输出 {len(text)} 字符，"
-                                         f"不满足 {lower} 至 {upper} 的配额。请调整每段篇幅后重新输出完整正文。")
+                                         f"不满足 {lower} 至 {upper} 的配额，{direction}后重新输出完整正文。")
                 previous = self.db.read_conn.execute("SELECT * FROM memory_soul_generations WHERE agent_id=? AND prompt=? AND status='completed' ORDER BY created_at DESC LIMIT 1", (identity.agent_id, effective_prompt)).fetchone()
                 if previous:
                     generation_id, text = previous["id"], previous["result"]
@@ -201,6 +202,12 @@ class MemorySnapshots:
                         continue
                     await self.events.channel.execute(lambda conn: self._update_generation(conn, generation_id, status="completed", result=text))
                     break
+                except MemorySnapshotError:
+                    raise  # 语义性失败（如工具禁用）不属于可重试的生成方差
+                except Exception as error:  # noqa: BLE001 —— 上游流异常/传输错误计入本次尝试
+                    last_error = failure("SOUL_GENERATION_FAILED", "真实 aux 生成执行异常", reason=f"{type(error).__name__}：{error}", characters=len(text), minimum=lower, maximum=upper)
+                    await self.events.channel.execute(lambda conn: self._update_generation(conn, generation_id, status="failed", result=text, error=canonical(last_error)))
+                    continue
                 finally:
                     cancelling = asyncio.current_task().cancelling()
                     await self.events.channel.execute(lambda conn: self._end_unfinished_generation(conn, generation_id, cancelling))

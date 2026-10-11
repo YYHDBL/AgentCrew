@@ -1,0 +1,118 @@
+{
+  "checks": {
+    "generated_at": "2026-10-11T04:33:53.635Z",
+    "results": [
+      {
+        "check": "CFBundleIdentifier = app.agentcrew.desktop",
+        "result": "passed",
+        "detail": "app.agentcrew.desktop"
+      },
+      {
+        "check": "CFBundleName / CFBundleDisplayName = AgentCrew",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "CFBundleShortVersionString = 0.4.0",
+        "result": "passed",
+        "detail": "0.4.0"
+      },
+      {
+        "check": "LSMinimumSystemVersion 记录为 13.0.0",
+        "result": "passed",
+        "detail": "13.0.0"
+      },
+      {
+        "check": "包内 sidecar 与计数资源存在",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "第三方依赖许可随包（licenses/）",
+        "result": "passed",
+        "detail": "count=65"
+      },
+      {
+        "check": "壳与 sidecar 均为 arm64 单架构",
+        "result": "passed",
+        "detail": "electron=arm64 sidecar=arm64"
+      },
+      {
+        "check": "sidecar 保留可执行权限",
+        "result": "passed",
+        "detail": "mode=755"
+      },
+      {
+        "check": "ASAR 含主进程/preload/renderer",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "ASAR 无开发数据库/配置密钥/日志/测试材料",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "Resources 无开发数据文件",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "真实模型密钥不出现在应用包",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "ICNS 原生解码",
+        "result": "passed",
+        "detail": "  pixelWidth: 1024"
+      },
+      {
+        "check": "品牌 PNG 原生解码（1024）",
+        "result": "passed",
+        "detail": "  pixelWidth: 1024"
+      },
+      {
+        "check": "以打包模式启动（resourcesPath 指向 .app 内）",
+        "result": "passed",
+        "detail": "/Users/yyhdbl/Desktop/workMate/agentcrew-desktop/desktop/release/mac-arm64/AgentCrew.app/Contents/Resources"
+      },
+      {
+        "check": "打包应用经界面完成真实任务（审批-写入）",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "打包应用正常退出",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "DMG 含 AgentCrew.app 与 Applications 拖入入口",
+        "result": "passed",
+        "detail": ".DS_Store,.VolumeIcon.icns,.background,.fseventsd,AgentCrew.app,Applications"
+      },
+      {
+        "check": "DMG 中的应用完整可执行",
+        "result": "passed",
+        "detail": ""
+      },
+      {
+        "check": "应用与 DMG SHA-256 清单已生成",
+        "result": "passed",
+        "detail": "{\"dmg\":{\"path\":\"release/AgentCrew-0.4.0-arm64.dmg\",\"sha256\":\"c72658aea6bcceb5ebb756a5b83ea89c7885e7cddf7e59a3ef54094979d8f4b7\",\"bytes\":169622483},\"macos_binary_sha256\":\"e06891704834df56f24489e1f971428"
+      }
+    ]
+  },
+  "hashes": {
+    "dmg": {
+      "path": "release/AgentCrew-0.4.0-arm64.dmg",
+      "sha256": "c72658aea6bcceb5ebb756a5b83ea89c7885e7cddf7e59a3ef54094979d8f4b7",
+      "bytes": 169622483
+    },
+    "macos_binary_sha256": "e06891704834df56f24489e1f971428161ae17312143624af13736255cc0ab34",
+    "app_asar_sha256": "dae9a0692560fbe1679889dfd3c81600242a11826b323ab97b1563a45b004b7c",
+    "sidecar_sha256": "f4777a2aba2c097cd00916ee74d5f143c75cc40347602c587b21431e526cc172",
+    "tokenizer_sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b"
+  }
+}

@@ -4,7 +4,7 @@
 
 `agentcrew-icon.png` 为 1024 × 1024 的正式资源，供 Electron Dock、窗口、侧栏品牌与欢迎界面使用。主进程通过 electron-vite 的资源导入机制将 PNG 随构建产物保存，应用启动时使用 Electron 原生 Dock API 设置图标。
 
-`agentcrew.icns` 包含 16、32、128、256、512 像素及对应两倍尺寸的图像表示，使用 macOS `sips` 与 `iconutil` 制作。项目当前尚无应用安装包配置，此资源供 macOS 应用包图标配置使用。
+`agentcrew.icns` 包含 16、32、128、256、512 像素及对应两倍尺寸的图像表示，使用 macOS `sips` 与 `iconutil` 制作。M4-05 起由 `desktop/electron-builder.yml` 的 `mac.icon` 引用，随 AgentCrew.app 打包为 `Contents/Resources/icon.icns`（Finder/Dock 显示即此资源），并由 `desktop/tests/m4-package.mjs` 做 `sips` 原生解码核验。
 
 ## 生成方式与提示词
 
@@ -18,4 +18,4 @@ Use case: logo-brand. Asset type: final production macOS Dock application icon f
 
 ## 验证
 
-执行 `npm run typecheck` 与 `npm run build` 核查图标资源的导入和构建。执行 `node tests/brand-icon.integration.mjs` 核查真实 Electron 启动、原生 PNG 解码、透明边缘、ICNS 图像表示、侧栏图片和 favicon 加载，以及正常退出。检查结果保存到已忽略的 `desktop/.artifacts/`。
+执行 `npm run typecheck` 与 `npm run build` 核查图标资源的导入和构建。执行 `node tests/brand-icon.integration.mjs` 核查真实 Electron 启动、原生 PNG 解码、透明边缘、ICNS 图像表示、侧栏图片和 favicon 加载，以及正常退出。打包后执行 `npm run package:mac && node tests/m4-package.mjs` 核查 ICNS 随包与原生解码。检查结果保存到已忽略的 `desktop/.artifacts/`。

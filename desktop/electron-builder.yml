@@ -1,0 +1,33 @@
+# AgentCrew macOS 打包配置（M4-05）。版本来自 package.json（0.4.0 基准），
+# 不得另行生成产品版本。sidecar 与计数资源由 scripts/release/build_sidecar.py
+# 生成到 desktop/resources/（忽略目录）后作为外置资源携带。
+appId: app.agentcrew.desktop
+productName: AgentCrew
+copyright: Copyright © 2026 AgentCrew contributors
+directories:
+  output: release
+  buildResources: assets/brand
+files:
+  - out/**
+  - package.json
+  - "!node_modules/**"
+asar: true
+extraResources:
+  - { from: resources/sidecar/darwin-arm64, to: sidecar/darwin-arm64 }
+  - { from: resources/tokenizers, to: tokenizers }
+  - { from: .artifacts/m4-build/licenses, to: licenses }
+mac:
+  category: public.app-category.productivity
+  icon: assets/brand/agentcrew.icns
+  minimumSystemVersion: 13.0.0
+  target:
+    - { target: dir, arch: [arm64] }
+    - { target: dmg, arch: [arm64] }
+  artifactName: AgentCrew-${version}-arm64.${ext}
+dmg:
+  title: AgentCrew ${version}
+  window: { width: 540, height: 360 }
+  contents:
+    - { x: 140, y: 180, type: file }
+    - { x: 400, y: 180, type: link, path: /Applications }
+npmRebuild: false
