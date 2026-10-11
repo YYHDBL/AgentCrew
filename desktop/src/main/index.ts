@@ -4,6 +4,10 @@ import { isAbsolute, join } from 'node:path'
 import { Sidecar, appendLaunchLog } from './sidecar'
 import appIconPath from '../../assets/brand/agentcrew-icon.png?asset'
 
+// 稳定应用名决定 userData（~/Library/Application Support/AgentCrew），
+// 开发与打包一致；测试用 --user-data-dir 覆盖不受影响。
+app.setName('AgentCrew')
+
 interface Preferences { close_to_quit: boolean; prevent_sleep: boolean }
 interface ImpactJob { id: string; name: string; state?: { next_run_at?: number | null } }
 interface ImpactRun { id: string; status?: string }
@@ -199,7 +203,9 @@ function createWindow(): void {
   })
   window.on('closed', () => { window = null })
 
-  if (process.env.ELECTRON_RENDERER_URL) {
+  // 生产只加载包内 renderer；ELECTRON_RENDERER_URL 仅开发构建生效，
+  // 外部注入的渲染地址在打包态不可加载任意网页。
+  if (!app.isPackaged && process.env.ELECTRON_RENDERER_URL) {
     void window.loadURL(process.env.ELECTRON_RENDERER_URL)
   } else {
     void window.loadFile(join(__dirname, '../renderer/index.html'))
