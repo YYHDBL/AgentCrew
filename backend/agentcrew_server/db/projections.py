@@ -143,9 +143,11 @@ def _run_resumed(conn: sqlite3.Connection, ev: Event) -> None:
 
 def _run_finished(conn: sqlite3.Connection, ev: Event, status: str, outcome: str,
                   final_text: str | None = None) -> None:
+    pending = conn.execute("SELECT 1 FROM tool_calls WHERE task_run_id=? AND status='pending_verification' LIMIT 1", (ev.task_run_id,)).fetchone()
+    task_status = "waiting_verification" if pending and status in {"completed", "failed"} else status
     conn.execute(
         "UPDATE task_runs SET status=?, finished_at=?, updated_at=? WHERE id=?",
-        (status, ev.ts, ev.ts, ev.task_run_id),
+        (task_status, None if task_status == "waiting_verification" else ev.ts, ev.ts, ev.task_run_id),
     )
     conn.execute(
         "UPDATE run_attempts SET status=?, outcome=?, ended_at=? WHERE task_run_id=?"
@@ -310,6 +312,12 @@ def _tool_verification(conn: sqlite3.Connection, ev: Event) -> None:
     status = "completed" if verdict == "confirmed_executed" else "not_executed"
     _tool_status(conn, ev, status, finish=True,
                  output_summary=f"verified_by_user:{verdict}:{ev.payload.get('note', '')}")
+    remaining = conn.execute("SELECT 1 FROM tool_calls WHERE task_run_id=? AND status='pending_verification' LIMIT 1", (ev.task_run_id,)).fetchone()
+    if remaining is None:
+        terminal = conn.execute("SELECT type FROM run_events WHERE task_run_id=? AND type IN ('run.completed','run.failed','run.cancelled') ORDER BY global_seq DESC LIMIT 1", (ev.task_run_id,)).fetchone()
+        settled = "completed" if terminal and terminal[0] == "run.completed" else "interrupted"
+        conn.execute("UPDATE task_runs SET status=?,finished_at=?,updated_at=? WHERE id=? AND status='waiting_verification'",
+            (settled, ev.ts if settled == "completed" else None, ev.ts, ev.task_run_id))
 
 
 # ── 产物 → artifacts ────────────────────────────────────────────────
@@ -483,7 +491,43 @@ HANDLERS: dict[RunEventType, Handler] = {
     RunEventType.PERMISSION_REQUESTED: _noop,
     RunEventType.PERMISSION_RESOLVED: _noop,
     RunEventType.CONTEXT_COMPACTED: _noop,
+    RunEventType.CONTEXT_BUDGET_CHECKED: _noop,
     RunEventType.TOOL_RESULT_EXTERNALIZED: _noop,
+    RunEventType.MEMORY_UPDATED: _noop,
+    RunEventType.MEMORY_ARCHIVED: _noop,
+    RunEventType.MEMORY_SNAPSHOT_CREATED: _noop,
+    RunEventType.SKILL_PATCHED: _noop,
+    RunEventType.MEMORY_JOB_STATUS: _noop,
+    RunEventType.MEMORY_SUMMARY_CREATED: _noop,
+    RunEventType.MEMORY_APPROVAL_REQUESTED: _noop,
+    RunEventType.MEMORY_APPROVAL_RESOLVED: _noop,
+    RunEventType.MEMORY_CURATED: _noop,
+    # 治理数据是业务事实，执行投影不从事件重建这些资源。
+    RunEventType.GOVERNANCE_RESOURCE_CHANGED: _noop,
+    RunEventType.GOVERNANCE_IDENTITY_CHANGED: _noop,
+    RunEventType.GOVERNANCE_ROLE_CHANGED: _noop,
+    RunEventType.GOVERNANCE_GRANT_CHANGED: _noop,
+    RunEventType.GOVERNANCE_RULE_CHANGED: _noop,
+    RunEventType.GOVERNANCE_SKILL_VERSION_PUBLISHED: _noop,
+    RunEventType.GOVERNANCE_AUTHORIZATION_CHECKED: _noop,
+    RunEventType.GOVERNANCE_AUDIT_VERIFIED: _noop,
+    RunEventType.GOVERNANCE_BACKUP_CREATED: _noop,
+    RunEventType.GOVERNANCE_BACKUP_RESTORED: _noop,
+    RunEventType.GOVERNANCE_ACCESS_DENIED: _noop,
+    # 自动化和审查的业务事实由各领域服务持久化。
+    RunEventType.CRON_JOB_CHANGED: _noop,
+    RunEventType.CRON_JOB_FIRED: _noop,
+    RunEventType.CRON_JOB_MISSED: _noop,
+    RunEventType.CRON_JOB_SKIPPED: _noop,
+    RunEventType.CRON_JOB_FAILED: _noop,
+    RunEventType.CRON_JOB_STATUS: _noop,
+    RunEventType.CRON_PROPOSAL_REQUESTED: _noop,
+    RunEventType.CRON_PROPOSAL_RESOLVED: _noop,
+    RunEventType.REVIEW_JOB_STATUS: _noop,
+    RunEventType.AUDIT_REPORTED: _noop,
+    RunEventType.NOTIFICATION_CREATED: _noop,
+    RunEventType.NOTIFICATION_UPDATED: _noop,
+    RunEventType.RUNTIME_POWER_CHANGED: _noop,
     # C8：question.* 驱动 task_runs 派生态 waiting_user（计数器仍在内存 FSM）
     RunEventType.QUESTION_REQUESTED: _question_requested,
     RunEventType.QUESTION_ANSWERED: _question_answered,

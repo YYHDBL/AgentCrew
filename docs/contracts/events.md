@@ -3,6 +3,8 @@
 > 维护者：后端 Agent ｜ 权威定义在各详设；新增机制**先加事件类型再实现**（纪律）。
 > **SSE 语义（v1.1）**：载荷 = `{global_seq, task_run_id?, seq?, type, payload, ts}`；游标（from/after_seq）**排他**；控制帧：`event:resync`（溢出终止，data 含最后连续 global_seq）、`event:shutdown`（优雅关闭，客户端存游标）、`event:ping` 心跳；FSM 快照带 `at_global_seq` 配对续播。
 
+展示事件的机器可读契约为[events.schema.json](events.schema.json)，登记全部正式事件类型以及工具、计划、提案、审查和报告载荷。TypeScript联合类型由json-schema-to-typescript生成；订阅使用Ajv校验已知事件，未知事件忽略。`npm run check:api`在内存中重新生成并比较既有文件，不修改检查对象。新增事件同步更新schema与后端枚举，真实事件验收核对所有已保存展示帧。
+
 ## M0 帧与 payload schema
 
 以下字段定义对应 C8 运行时。`?` 表示字段可以省略；允许 JSON `null` 的字段明确写出 `null`，省略与 `null` 分别处理。`integer` 为整数，`object` 为 JSON 对象，`T[]` 为数组。未知附加字段允许保留，已列字段的名称和类型保持兼容。事件由执行层发射，投影表消费同一载荷。
@@ -33,8 +35,8 @@
 | `queue.paused` / `queue.resumed` | `{}` | 暂停或继续队列；合法动作读取 state 的能力字段。 |
 | `step.started` | `{step_id: string, ordinal: integer, model_slot?: string}` | 建立步骤，`step_id` 用于关联同一步骤中的请求重试。 |
 | `step.completed` | `{step_id: string, input_tokens?: integer, output_tokens?: integer, latency_ms?: integer}` | 模型回合完成；后续工具事件独立表示工具执行状态。 |
-| `llm.request_started` | `{llm_call_id: string, step_id: string, model: string, retry_no?: integer}` | 每次请求尝试有独立 `llm_call_id`；同一步骤重试保留 `step_id`。 |
-| `llm.request_done` | `{llm_call_id: string, step_id: string, text: string, tool_uses: ToolUse[], thinking_blocks: ThinkingBlock[], prompt_tokens: integer, completion_tokens: integer, latency_ms: integer, stop_reason: string \| null}` | C8 完整回复。`tool_uses=[]` 表示最终文本回合；包含工具调用的回合继续执行工具，文本保留在事件中。 |
+| `llm.request_started` | `{llm_call_id: string, step_id: string, model: string, model_slot?: string, retry_no?: integer, tool_declarations?: object[]}` | 每次请求尝试有独立 `llm_call_id`；同一步骤重试保留 `step_id`，model_slot记录实际使用的main或aux配置槽。M3起保存本次实际工具声明，历史缺失单独标明。 |
+| `llm.request_done` | `{llm_call_id: string, step_id: string, text: string, tool_uses: ToolUse[], thinking_blocks: ThinkingBlock[], prompt_tokens: integer|null, completion_tokens: integer|null, usage_received?: boolean, latency_ms: integer, stop_reason: string \| null}` | C8 完整回复。`tool_uses=[]` 表示最终文本回合；包含工具调用的回合继续执行工具，文本保留在事件中。M3起缺失usage保存null。 |
 | `llm.request_failed` | `{llm_call_id: string, step_id: string, error: string, retry_no: integer}` | `error` 含错误分类与说明。该请求结束，后续允许同一步骤重试；后续成功应显示已恢复。 |
 
 `ToolUse = {id: string, name: string, input: object}`；`ThinkingBlock = {text: string, signature: string}`。C8 的 `llm.request_done` 总是携带数组，空数组和空字符串也保留。文本 delta 当前未公开为会话事件；D2 逐字呈现读取持久化全文，历史恢复立即呈现全文。
@@ -89,14 +91,75 @@
 ## 材料与任务（v1.4，F001）
 `materials.imported`（payload: 逐文件结果 original_path/stored_name/error + folders 逐项结果 path/error——外审回稿：逐项结果随事件持久化，创建响应与幂等重放同源读回；部分失败仍创建任务）/ `conversation.updated`（标题由首条指令生成等元数据变化）
 
-## 上下文（M1，harness-session 占位）
-`context.compacted / tool.result_externalized`
+## M1 记忆、技能、后台与上下文
 
-## 记忆与技能（M1，memory-system §11）
-`memory.updated / memory.archived / skill.patched`
+M1 的会话后台事件没有前台 `task_run_id/seq`；来源任务放入 payload 的 `source_task_run_id`。人工管理及启动治理事件允许没有 conversation_id，使用 payload.scope 定义当前 owner/workspace/agent 范围；会话事件流只返回所属会话，记忆管理流只返回当前身份可读范围。所有事件沿用提交后的全局水位和排他续播，不修改前台任务状态及等待计数。M1-02 持久化与事件写入同事务，M1-11 实际验证 HTTP/SSE，M1-12 验证界面重放。
+
+`GET /api/memory/stream` 使用实际已登记的 workspace_id/agent_id：USER 变更属于当前所有者共享范围，workspace 变更向同工作区发送，soul、Skill、后台作业及会话上下文事件同时匹配工作区和员工。订阅注册后固定已提交 head，补播到 head 后按排他 global_seq 接收实时事件；范围过滤之前不向客户端发送正文或依据。新上下文预算与压缩事件由 EventStore 从真实会话记录补充 scope；旧上下文事件补播读取关联会话范围，不修改历史载荷。
+
+`MemoryScope = {owner_id: string, workspace_id: string | null, agent_id: string | null}`。`ChangePayload = {change_id: string, ledger_id: integer, store_type: "user" | "workspace" | "soul" | "skill", store_id: string, entry_id: string | null, entry_hash: string | null, revision: integer, action: string, summary: string, scope: MemoryScope, source_task_run_id: string | null, job_id: string | null}`。摘要最多200字符并执行凭据脱敏；正文及 metadata 的完整前后状态由账本保存。
+
+| 事件 | 必填 payload | 实施与消费 |
+|---|---|---|
+| `memory.updated` | ChangePayload | M1-02 的创建、编辑、固定、恢复、审核和账本恢复；通知引用 change_id，重播不重复显示同一变更 |
+| `memory.archived` | ChangePayload，加 `archive_path: string` | M1-02/M1-10 的完整归档，保持原材料及恢复身份 |
+| `skill.patched` | ChangePayload，加 `name: string, description: string, files: string[]` | M1-05，description≤60字符，索引及正文使用分别处理 |
+| `memory.snapshot_created` | `{snapshot_id: string, conversation_id: string, snapshot_sha256: string, stores: object[], scope: MemoryScope}` | M1-03，同会话首次执行唯一；stores 保存身份、修订和校验值 |
+| `memory.job_status` | `{job_id: string, kind: string, status: string, scope: MemoryScope, trigger_global_seq: integer, source_task_run_id: string \| null, model: string \| null, config_version: string, usage: {input_tokens: integer, output_tokens: integer}, error: string \| null}` | M1-06/M1-09，状态使用 OpenAPI MemoryJob 枚举；取消完成才提交 cancelled，错误先脱敏 |
+| `memory.summary_created` | `{job_id: string, source_task_run_id: string, summary_id: string, summary: string, scope: MemoryScope}` | M1-06，summary≤200字符，与唯一任务摘要同事务 |
+| `memory.approval_requested` | `{job_id: string, approval_id: string, call_id: string, tool: string, input: object, input_hash: string, scope: MemoryScope}` | M1-09，独立作业身份；不创建前台等待计数 |
+| `memory.approval_resolved` | `{job_id: string, approval_id: string, decision: "allow_once" \| "reject_once" \| "expired", actor: string, scope: MemoryScope}` | M1-09，终止作业先让旧审批失效；同决定重试读取首次结果 |
+| `memory.curated` | `{job_id: string, report: object, last_curate_at: string, scope: MemoryScope}` | M1-10，完整成功后更新治理水位，报告包含检查/陈旧/归档/豁免标识及原因 |
+| `context.budget_checked` | `{model: string, context_window: integer, counting_method: string, tokenizer_revision: string, system_tokens: integer, history_tokens: integer, tool_result_tokens: integer, output_reserved: integer, total_input_tokens: integer}` | M1-07，模型请求前记录完整请求计数和输出预算 |
+| `tool.result_externalized` | `{call_id: string, artifact_path: string, sha256: string, size_bytes: integer, prefix_bytes: integer, source_global_seq: integer}` | M1-07/M1-08，完整结果裁剪前保存，prefix_bytes≤2048，工件随任务保留 |
+| `context.compacted` | `{checkpoint_id: string, snapshot_id: string, source_global_seq: integer, replaced_from_global_seq: integer, replaced_to_global_seq: integer, before_tokens: integer, after_tokens: integer, summarized_messages: integer, template_version: string, checkpoint_sha256: string}` | M1-08，事件与摘要/保留消息检查点同事务；恢复只重放检查点后续事件 |
+
+后台模型请求和工具明细保存为独立作业记录，使用 job_id/call_id 和来源 global_seq 查询。新前台消息两秒内取消 aux、审批和流；已准备的变更根据持久化状态完成恢复。恢复检查包括记录数量、文件 SHA/mtime、副作用次数和两级审计。
 
 ## 治理（M2，governance §6）
-`governance.grant_changed / governance.rule_changed`
 
-## 定时与审计（M3/P5，cron-and-audit §3）
-`cron.job_fired / cron.job_missed / cron.job_skipped / cron.job_failed / audit.reported`
+治理事件由业务服务与审计在同一写通道事务追加，提交后按 global_seq 发布。组织事件没有 task_run_id/seq；其 resource_id、change_id 与 audit_seq 直接关联权威业务记录。`GovernanceScope = {org_id: string, workspace_id: string | null, agent_id: string | null, owner_id: string | null}`。scope 在写入时由真实关联生成。owner 可查看本组织，admin 限登记工作区，member 限自身可见员工及自身 actor 记录；组织角色事件仅 owner 和受影响成员可读。过滤在发送正文之前执行，补播和实时推送逐次核查当前权限，撤权后的 SSE 在心跳复查或新事件前关闭。
+
+`GovernanceChange = {change_id: string, resource_type: string, resource_id: string, revision: integer, actor_id: string, credential_owner_id: string, audit_seq: integer, scope: GovernanceScope}`。载荷不包含凭据、identity_token、连接器认证头或 Skill 正文；正文通过已鉴权资源 API 读取。新增字段先按本契约登记，再实施；客户端忽略未知事件类型。
+
+| 事件 | payload schema | 实施及影响 |
+|---|---|---|
+| `governance.resource_changed` | GovernanceChange，加 `status: "active" \| "disabled" \| "archived"` | M2-02/11，更新真实资源与修订，禁用时取消相关调用 |
+| `governance.identity_changed` | GovernanceChange，加 `effective_user_id: string` | M2-03，演示标识签发审计；不改变其他请求身份 |
+| `governance.role_changed` | GovernanceChange，加 `user_id: string, role: "owner" \| "admin" \| "member", status: "active" \| "disabled"` | M2-03，重新查询当前权限并结束无权订阅 |
+| `governance.grant_changed` | GovernanceChange，加 `grantee_type: "user" \| "agent", grantee_id: string, revoked_at: string \| null, capability_type: string, capability_id: string, revocation_changed?: boolean` | M2-05，实际撤销后重新组装工具与索引，已派发调用取消并核验；重复撤销旧记录的revocation_changed=false保留审计，不触发新Grant的执行取消 |
+| `governance.rule_changed` | GovernanceChange，加 `agent_id: string, tool_name: string, effect: "allow" \| "deny", revoked_at: string \| null`；撤销带 `revocation_changed: boolean`，永久审批带 `source_task_run_id/source_call_id` | M2-07，员工规则查询刷新，deny 优先；无实际撤销变化保持任务状态，永久拒绝决定保留当前审批任务的正常收尾 |
+| `governance.skill_version_published` | GovernanceChange，加 `version_id: string, version_no: integer, ledger_id: integer, sha256: string, status: string` | M2-04/11，change_id关联M1 skill.patched；恢复正文发布新版本，当前禁用或归档状态触发执行取消及副作用核验 |
+| `governance.authorization_checked` | `{scope: GovernanceScope, actor_id: string, agent_id: string, allowed: boolean, reason: string, authorization_sha256: string, call_id?: string}` | M2-05/09，任务或尝试关联时保留其 task_run_id，明确当前有效权限 |
+| `governance.audit_verified` | GovernanceChange，加 `internal: object, anchor: object` | M2-10，仅可信链可追加成功验证；失败切入只读诊断，原断点保留 |
+| `governance.backup_created` | GovernanceChange，加 `kind: "database" \| "directory"` | M2-10，自洽快照和文件校验完成后，与审计及幂等记录同事务提交；恢复请求保存独立持久化计划，诊断期间禁止追加损坏审计链 |
+| `governance.backup_restored` | GovernanceChange，加 `preserved_path: string` | M2-10，启动恢复完成且完整审计校验通过后，按恢复change_id幂等追加真实操作者与保留材料位置；诊断期间不写入损坏链 |
+| `governance.access_denied` | GovernanceChange，加 `method: string, code: string, reason: string` | M2-10，已认证请求的角色或范围拒绝与审计同事务，包含真实凭证身份及有效身份，禁止记录认证头和请求正文 |
+
+治理拒绝使用现有工具失败事件及审计 action=permission.denied。审批请求/决定增加有效 actor、真实 credential_owner_id、agent_id、resource_id 和 authorization_sha256；相同决定重试返回首次记录，失去活动执行方的旧卡返回409并展示失效。run.started/resumed 的 context_fingerprint 增加任务配置修订、skill_versions 和 authorization_sha256，恢复不改写历史尝试。
+
+连接器tool.prepared附加connector_id及connector_revision，工具目录绑定相同配置修订；审批和dispatched登记在同一写通道内核对当前修订，实际HTTP/MCP传输继续核对当前Grant与该次绑定修订。服务端认证头和凭据不进入输入、目录、事件或产物，HTTP响应正文及派生元数据执行凭据脱敏。明确承诺external_idempotency的写入端点禁止重定向；普通HTTP/MCP写入保持outcome_unknown。stdio传输使用官方SDK、固定环境白名单和Seatbelt，服务退出时清理整个进程组。
+
+## M3 自动化、模型审查及生命周期
+
+作业域事件使用既有 run_events 的 global_seq 和 scope，未关联任务时省略 task_run_id/seq/conversation_id。已关联任务时保留真实任务身份及任务内 seq，attempt_no来自实际尝试；通知通过独立 notification_id 关联。M2安全审计 audit_seq 与模型报告 report_id 分别保存。
+
+`CronPayload = {job_id: string, occurrence_id: string, revision: integer, trigger: scheduled|manual, scheduled_at: integer|null, triggered_at: integer, source_task_run_id: string|null, retry_no: integer, status: string, reason: string|null, scope: GovernanceScope, notification_id: string|null, audit_seq: integer}`。时间为UTC Unix毫秒；手动发生保留client_request_id。各次重试保持同一occurrence_id。
+
+| 事件 | 必填载荷与附加字段 | 归属及消费 |
+|---|---|---|
+| `cron.job_changed` | `{job_id, revision, change_id, enabled, deleted_at, scope, audit_seq}` | M3-03，修改与审计同事务，旧定时器复查revision |
+| `cron.job_fired` | CronPayload | M3-04/05，提交发生及任务关联后派发，重试不重复初始计数 |
+| `cron.job_missed` | CronPayload，加`missed_count: integer, missed_through: integer` | M3-04，覆盖错过范围，不创建执行任务 |
+| `cron.job_skipped` | CronPayload | M3-04/05，冲突、暂停、等待人工或待核验，无排队副作用 |
+| `cron.job_failed` | CronPayload，加`retry_at: integer|null` | M3-05/06，当前权限拒绝、未知副作用等不得设置重试 |
+| `cron.job_status` | CronPayload，加`retry_at: integer|null` | M3-05/06，completed/interrupted/pending_verification/retry_wait/cancelled真实收敛 |
+| `cron.proposal_requested` | `{proposal_id, call_id, input_hash, revision, source_task_run_id, scope}` | M3-07，不可变提案通过鉴权API读取，必经真人决定 |
+| `cron.proposal_resolved` | `{proposal_id, call_id, decision, selected, input_hash, revision, actor_id, job_id, scope, audit_seq}` | M3-07，批准绑定选择与计划；过期decision=expired |
+| `review.job_status` | `{job_id, kind, status, source_task_run_id, attempt_no, trigger_global_seq, model, config_version, reason, report_id, skill_id, usage, scope}` | M3-08/09，作业域事件，状态见TraceJob；无报告保存实际skipped原因 |
+| `audit.reported` | `{report_id, job_id, source_task_run_id, attempt_no, source_global_seq, model, root_cause_event, scope}` | M3-08，有有效真实报告才发送，引用必须属于输入任务、尝试及水位 |
+| `notification.created` | `{notification_id, source_global_seq, job_id, source_task_run_id, severity, scope}` | M3-14，与领域终态同事务创建，持久唯一 |
+| `notification.updated` | `{notification_id, read_at, presented_at, scope}` | M3-14，独立已读与认领，重放不重复弹出 |
+| `runtime.power_changed` | `{event: suspend|resume, observed_at: string, source: electron_power_monitor, scope}` | M3-14，记录实际macOS事件，resume重新核查到期 |
+
+回放API返回展示投影，移除thinking_blocks、reasoning_content、认证值和隐藏推理；原始事实继续由服务器保留。事件精确引用为`{task_run_id, attempt_no, seq, global_seq}`，任务内seq和global_seq分别核对。报告水位之后的恢复或新事件不改变既有报告的适用尝试。

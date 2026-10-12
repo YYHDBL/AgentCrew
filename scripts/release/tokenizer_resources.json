@@ -1,0 +1,20 @@
+{
+  "comment": "随包分发的官方模型计数资源声明（版本控制）。构建脚本按 revision 从官方来源取得并逐文件核对 SHA-256 后复制到 desktop/resources/tokenizers/<key>/；运行时经 AGENTCREW_TOKENIZER_DIR 加载并再次核对同一 SHA。新增资源（如 M4-09 GLM）在此登记。",
+  "entries": [
+    {
+      "key": "deepseek-v4.1",
+      "provider": "openai-compatible",
+      "model": "deepseek-v4.1-flash",
+      "repository": "deepseek-ai/DeepSeek-V4.1-Flash",
+      "revision": "2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/tree/2cba9e42aa026125f3ed06c6d98c1db82f7ca027",
+      "license": "https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash/raw/main/LICENSE",
+      "context_window": 1000000,
+      "context_window_source": "https://models.dev/api.json#opencode-go/deepseek-v4.1-flash",
+      "files": [
+        { "name": "tokenizer.json", "sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b" },
+        { "name": "encoding/encoding.py", "sha256": "502bdaec8a3fd88ebc24c4721a7038fbe42f2063c664638127056107920035c1" }
+      ]
+    }
+  ]
+}

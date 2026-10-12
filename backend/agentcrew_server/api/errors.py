@@ -17,6 +17,11 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from ..memory.snapshots import MemorySnapshotError
+from ..tool_outputs import ArtifactIntegrityError
+from ..memory.checkpoints import CheckpointCorrupt
+from agentcrew_core.memory.pagination import MemoryCursorError
+from ..db.write_channel import DiagnosticWriteError
 
 log = logging.getLogger("agentcrew.api.errors")
 
@@ -29,6 +34,20 @@ class ErrorCode(str, Enum):
     UNAUTHORIZED = "UNAUTHORIZED"                      # 401 Bearer 缺失/错误（C3）
     APPROVAL_PENDING = "APPROVAL_PENDING"              # 409 等待审批时发指令
     APPROVAL_STALE = "APPROVAL_STALE"                  # 409 审批已被不同决定处理
+    IDEMPOTENCY_CONFLICT = "IDEMPOTENCY_CONFLICT"
+    SYSTEM_BUSY = "SYSTEM_BUSY"
+    ENTRY_HASH_CONFLICT = "ENTRY_HASH_CONFLICT"
+    REVISION_CONFLICT = "REVISION_CONFLICT"
+    PATCH_CONFLICT = "PATCH_CONFLICT"
+    EXTERNAL_MODIFICATION = "EXTERNAL_MODIFICATION"
+    QUOTA_EXCEEDED = "QUOTA_EXCEEDED"
+    SAVE_SKIPPED = "SAVE_SKIPPED"
+    READ_REQUIRED = "READ_REQUIRED"
+    REVIEW_REQUIRED = "REVIEW_REQUIRED"
+    JOB_NOT_RUNNING = "JOB_NOT_RUNNING"
+    CREDENTIAL_REJECTED = "CREDENTIAL_REJECTED"
+    REVIEW_FORBIDDEN = "REVIEW_FORBIDDEN"
+    STORE_RECOVERING = "STORE_RECOVERING"
     PENDING_VERIFICATION = "PENDING_VERIFICATION"      # 409 resume 被待核验阻塞
     REPLAY_CORRUPT = "REPLAY_CORRUPT"                  # 409 重放遇损坏事件行（C9）
     QUEUE_EMPTY = "QUEUE_EMPTY"                        # 409 继续队列时无指令
@@ -51,6 +70,20 @@ DEFAULT_STATUS: dict[ErrorCode, int] = {
     ErrorCode.UNAUTHORIZED: 401,
     ErrorCode.APPROVAL_PENDING: 409,
     ErrorCode.APPROVAL_STALE: 409,
+    ErrorCode.IDEMPOTENCY_CONFLICT: 409,
+    ErrorCode.SYSTEM_BUSY: 409,
+    ErrorCode.ENTRY_HASH_CONFLICT: 409,
+    ErrorCode.REVISION_CONFLICT: 409,
+    ErrorCode.PATCH_CONFLICT: 409,
+    ErrorCode.EXTERNAL_MODIFICATION: 409,
+    ErrorCode.QUOTA_EXCEEDED: 409,
+    ErrorCode.SAVE_SKIPPED: 409,
+    ErrorCode.READ_REQUIRED: 409,
+    ErrorCode.REVIEW_REQUIRED: 409,
+    ErrorCode.JOB_NOT_RUNNING: 409,
+    ErrorCode.CREDENTIAL_REJECTED: 422,
+    ErrorCode.REVIEW_FORBIDDEN: 403,
+    ErrorCode.STORE_RECOVERING: 503,
     ErrorCode.PENDING_VERIFICATION: 409,
     ErrorCode.REPLAY_CORRUPT: 409,
     ErrorCode.QUEUE_EMPTY: 409,
@@ -109,6 +142,36 @@ def error_response(
 
 
 def install_error_handlers(app) -> None:
+    @app.exception_handler(DiagnosticWriteError)
+    async def diagnostic_write_error(_: Request, exc: DiagnosticWriteError) -> JSONResponse:
+        return error_response(ErrorCode.DIAGNOSTIC_MODE, str(exc))
+
+    @app.exception_handler(UnicodeDecodeError)
+    async def _memory_encoding_error(_: Request, exc: UnicodeDecodeError) -> JSONResponse:
+        return error_response(ErrorCode.EXTERNAL_MODIFICATION, "持久化文件的 UTF-8 校验失败",
+            detail={"encoding": exc.encoding, "start": exc.start, "end": exc.end})
+    @app.exception_handler(MemoryCursorError)
+    async def _memory_cursor_error(_: Request, exc: MemoryCursorError) -> JSONResponse:
+        return error_response(ErrorCode.VALIDATION_ERROR, str(exc))
+    @app.exception_handler(ArtifactIntegrityError)
+    async def _artifact_integrity_error(_: Request, exc: ArtifactIntegrityError) -> JSONResponse:
+        return error_response(ErrorCode.REPLAY_CORRUPT,
+            "恢复工件完整性核验失败，任务保持中断状态",
+            detail={"warnings": [str(exc)], "reason": exc.reason,
+                    "artifact_path": str(exc.path)})
+
+    @app.exception_handler(CheckpointCorrupt)
+    async def _checkpoint_error(_: Request, exc: CheckpointCorrupt) -> JSONResponse:
+        return error_response(ErrorCode.REPLAY_CORRUPT,
+            "上下文检查点完整性核验失败，任务保持中断状态",
+            detail={"warnings": [str(exc)]})
+
+    @app.exception_handler(MemorySnapshotError)
+    async def _memory_snapshot_error(_: Request, exc: MemorySnapshotError) -> JSONResponse:
+        value = exc.result
+        return JSONResponse({"error": {"code": value["error"], "message": value["message"], "detail": value.get("details", {})}},
+                            status_code=409 if value["error"].startswith("SNAPSHOT_") else 503 if value["error"] == "SOUL_GENERATION_UNAVAILABLE" else 422)
+
     @app.exception_handler(ApiError)
     async def _api_error(_: Request, exc: ApiError) -> JSONResponse:
         return error_response(exc.code, exc.message, detail=exc.detail, status=exc.status)
@@ -133,7 +196,7 @@ def install_error_handlers(app) -> None:
         return error_response(
             ErrorCode.VALIDATION_ERROR,
             "请求体校验失败",
-            detail={"errors": jsonable_encoder(exc.errors())[:50]},
+            detail={"errors": jsonable_encoder([{key: value for key, value in error.items() if key != "input"} for error in exc.errors()[:50]])},
         )
 
     @app.exception_handler(Exception)

@@ -9,8 +9,7 @@ always_scope_preview 的范围写 agent_permission_rules。
 决定提交语义（v1.1）：同决定重试 → 200 幂等返回首次结果；不同决定 →
 409 APPROVAL_STALE；携带的 input_hash 与当前调用不一致 → 409（防"批的是
 A 执行的是 B"）；call_id 无 REQUESTED 记录 → 404。进程重启后 Future 丢失
-但 pending 事件在库——决定仍可提交并落库（执行上下文已随重启消亡，属 C9
-对账域）。
+但 pending 事件在库——未处理决定因活动执行方消失而过期。
 
 外审回稿（C6 第三轮）写入纪律：
 - 一切库写入（事件、审计、规则、链头快照）只经 WriteChannel 单写线程——
@@ -29,7 +28,7 @@ import asyncio
 import json
 import logging
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -45,6 +44,9 @@ from agentcrew_core.tools import (
     evaluate_gate,
 )
 from agentcrew_core.tools.gate import PermissionRule
+from agentcrew_core.tools.gate import GateResult
+from agentcrew_core.tools.builtin.externalize import _check_path
+from agentcrew_core.tools.judgment import bash_readonly, filesystem_boundary, normalize_filesystem
 from agentcrew_core.tools.scheduler import input_hash
 
 from .db.audit import SNAPSHOT_EVERY, append_audit, snapshot_chain_head
@@ -74,6 +76,7 @@ class _Pending:
     conversation_id: str
     agent_id: str
     ctx: WorkContext | None = None  # 闸门放行 http_request 时登记本次授权
+    attempt_no: int = 0
 
 
 def _now() -> str:
@@ -94,12 +97,13 @@ class ApprovalService:
         self._store = event_store
         self._channel = event_store.channel  # 唯一写通道（含审计/规则/快照）
         self._chain_head_path = chain_head_path
+        event_store.audit_anchor_path = chain_head_path
         self._pending: dict[str, _Pending] = {}
         self.scheduler: ToolScheduler | None = None  # cli 装配后注入
 
     # ── 闸门（调度器挂钩，ask 在此挂起）──────────────────────────
     async def gate(self, invocation: ToolInvocation, meta: ToolMetadata,
-                   readonly_verdict: bool) -> str:
+                   readonly_verdict: bool) -> str | GateResult:
         # task_run_id 由 run_tool 的调用链经 invocation 侧上下文携带——
         # 闸门挂钩本身拿不到 WorkContext，改从 pending 上下文注册表按
         # call_id 取（run_tool 先注册再执行）
@@ -107,11 +111,21 @@ class ApprovalService:
         ih = input_hash(invocation.input)
         cwd = ctx_info.ctx.cwd if ctx_info.ctx is not None else None
         rules = await asyncio.to_thread(self._load_rules, ctx_info.agent_id)
-        result = evaluate_gate(meta, invocation.input, readonly_verdict,
-                               rules, ctx_info.agent_id, cwd)
+        boundary = self._file_boundary(invocation, ctx_info.ctx)
+        result = GateResult("deny", boundary) if boundary else evaluate_gate(
+            meta, invocation.input, readonly_verdict, rules, ctx_info.agent_id, cwd)
+        automation = self.automation.current_gate(ctx_info.task_run_id, meta, invocation.input, readonly_verdict, rules, cwd) if hasattr(self, "automation") else None
+        if automation is not None:
+            result = GateResult("deny", boundary) if boundary else automation
+        confirmed_replay = False
+        if meta.name == "schedule_task" and result.action == "ask":
+            prior = self.proposals.prior_decision(ctx_info, invocation.call_id, invocation.input)
+            if prior is not None:
+                result = GateResult(prior, "本次调用读取持久真人决定")
+                confirmed_replay = prior == "allow"
         if result.action == "allow":
             # governance §3：闸门放行（自动/规则命中）全部入审计链
-            action = ("permission.rule_allowed" if result.matched_pattern
+            action = ("permission.confirmed_replay" if confirmed_replay else "permission.pre_authorized_pass" if automation is not None and result.reason.startswith("pre_authorized_pass") else "permission.rule_allowed" if result.matched_pattern
                       else "permission.auto_allowed")
             await self._audit("system", "gate", action, "tool_call",
                               invocation.call_id,
@@ -128,10 +142,11 @@ class ApprovalService:
                               {"tool": meta.name, "input_hash": ih,
                                "pattern": result.matched_pattern,
                                "agent_id": ctx_info.agent_id})
-            return "deny"
+            return result if automation is not None or meta.requires_human_confirmation else "deny"
         # ask：发卡（含四选项/input_hash/target/范围预览）→ 挂起。
         # 请求事件与请求审计同事务（governance §2.3"全部进审计链"）
         pattern = always_scope_pattern(meta.name, invocation.input, cwd)
+        proposal = self.proposals.prepare(ctx_info, invocation.input) if meta.name == "schedule_task" else None
 
         def _audit_requested(conn, event):
             append_audit(
@@ -141,19 +156,23 @@ class ApprovalService:
                 detail=_detail(tool=meta.name, input_hash=ih,
                                agent_id=ctx_info.agent_id, target=pattern),
             )
+            if proposal is not None:
+                self.proposals.register_in_tx(conn, ctx_info, invocation.call_id, proposal)
 
         await self._store.append(
             task_run_id=ctx_info.task_run_id,
             conversation_id=ctx_info.conversation_id,
+            attempt_no=ctx_info.attempt_no,
             type=RunEventType.PERMISSION_REQUESTED,
             payload={
                 "tool_call_id": invocation.call_id,
                 "tool": meta.name,
                 "risk": meta.risk_level,
-                "options": list(DECISIONS),
+                "options": ["allow_once", "reject_once"] if proposal is not None else list(DECISIONS),
                 "input_hash": ih,
                 "target": approval_target(meta.name, invocation.input, cwd),
                 "always_scope_preview": pattern,
+                **({"proposal_id": invocation.call_id} if proposal is not None else {}),
             },
             extra_writes=_audit_requested,
         )
@@ -165,20 +184,21 @@ class ApprovalService:
 
     def _mark_http_approved(self, invocation: ToolInvocation,
                             meta: ToolMetadata, ctx_info: _Pending) -> None:
-        """http_request：闸门放行（规则/人工）即本次主机的授权——执行器
-        硬限制（allowed_hosts）放行（M0 默认为空 = 全部需审批，v1.7）。"""
+        """记录本次批准身份，连接器范围由执行服务独立检查。"""
         if meta.name == "http_request" and ctx_info.ctx is not None:
             ctx_info.ctx.approved_calls.add(invocation.call_id)
 
     # ── 决定提交（API 入口）──────────────────────────────────────
     async def submit(self, call_id: str, decision: str,
-                     client_input_hash: str | None = None) -> dict[str, Any]:
+                     client_input_hash: str | None = None, request_identity=None, proposal_decision=None) -> dict[str, Any]:
         if decision not in DECISIONS:
             raise ApprovalStale(f"非法决定：{decision}")
         requested = await asyncio.to_thread(self._find_request, call_id)
         if requested is None:
             raise ApprovalNotFound(call_id)
         task_run_id, conversation_id, payload = requested
+        if payload.get("tool") == "schedule_task" and proposal_decision is None:
+            raise ApprovalStale("计划创建必须使用绑定提案及范围的真人决定接口")
         if client_input_hash is not None \
                 and client_input_hash != payload.get("input_hash"):
             raise ApprovalStale("input_hash 与当前调用不一致（审批卡已过期）")
@@ -190,7 +210,7 @@ class ApprovalService:
             lambda conn: self._decide_tx(
                 conn, call_id=call_id, decision=decision,
                 task_run_id=task_run_id, conversation_id=conversation_id,
-                payload=payload, agent_id=agent_id))
+                payload=payload, agent_id=agent_id, request_identity=request_identity, proposal_decision=proposal_decision))
         if outcome["kind"] == "existing":
             first_decision, decided_at = outcome["first"]
             if decision == first_decision:
@@ -202,68 +222,108 @@ class ApprovalService:
         if audit_seq % SNAPSHOT_EVERY == 0:  # 每 100 条快照链头（governance §3）
             await self._channel.execute(
                 lambda conn: snapshot_chain_head(conn, self._chain_head_path))
-        pending = self._pending.pop(call_id, None)
+        pending = self._pending.get(call_id)
         if pending is not None and not pending.future.done():
             # submit 可能跑在另一个事件循环（HTTP 服务线程）——跨线程唤醒
             # 必须走 call_soon_threadsafe，直接 set_result 不唤醒对方循环
-            pending.loop.call_soon_threadsafe(pending.future.set_result, decision)
+            def deliver():
+                if not pending.future.done():
+                    pending.future.set_result(decision)
+            pending.loop.call_soon_threadsafe(deliver)
         # decided_at 以决定事件的落库时刻为准（幂等重放读取同源）
         return {"decision": decision, "decided_at": event.ts,
                 "idempotent_replay": False}
 
     def _decide_tx(self, conn, *, call_id: str, decision: str,
                    task_run_id: str, conversation_id: str, payload: dict,
-                   agent_id: str) -> dict[str, Any]:
-        conn.execute("BEGIN IMMEDIATE")
-        try:
+                   agent_id: str, request_identity=None, proposal_decision=None) -> dict[str, Any]:
+        published = []
+        with conn:
+            conn.execute("BEGIN IMMEDIATE")
+            first_audit_seq = conn.execute("SELECT coalesce(max(seq),0) FROM audit_log").fetchone()[0]
+            actor_id = request_identity.effective_user_id if request_identity is not None else "owner"
+            if request_identity is not None:
+                self.identities.conversation(request_identity, conversation_id, conn)
+                if decision in ("allow_always", "reject_always"):
+                    workspace_id = self.identities.resources.get("agent", agent_id, conn)["workspace_id"]
+                    self.identities.require(request_identity, "manage", workspace_id, conn)
+            proposal_selected = None
+            if payload.get("tool") == "schedule_task":
+                proposal_selected = self.proposals.validate_decision(conn, call_id, decision, request_identity, proposal_decision)
             first = self._resolution_row(conn, call_id)
             if first is not None:
                 conn.execute("COMMIT")  # 只读事务（并发窗口内已有首次决定）
                 return {"kind": "existing", "first": first}
+            pending = self._pending.get(call_id)
+            task = conn.execute("SELECT status,current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()
+            if pending is None or pending.future.done() or task is None or task[0] not in {"running", "waiting_user"} or task[1] != pending.attempt_no:
+                raise ApprovalStale("审批执行方已经停止，未处理审批已过期")
+            if (pending.task_run_id, pending.conversation_id, pending.agent_id, pending.tool_name) != (task_run_id, conversation_id, agent_id, payload.get("tool")):
+                raise ApprovalStale("审批绑定的任务或员工已经过期")
+            call = conn.execute("SELECT tool_name,input,input_hash,status FROM tool_calls WHERE call_id=?", (call_id,)).fetchone()
+            if call is None or call[2] != pending.input_hash or call[2] != payload.get("input_hash") or call[3] != "prepared":
+                raise ApprovalStale("审批绑定的调用参数或状态已经过期")
+            inputs = json.loads(call[1])
+            boundary = self._file_boundary(ToolInvocation(call_id, call[0], inputs), pending.ctx)
+            registry = pending.ctx.registry if pending.ctx.registry is not None else self.scheduler.registry
+            meta = registry.get(call[0]).metadata
+            result = evaluate_gate(meta, inputs, False, self._load_rules(agent_id, conn), agent_id, pending.ctx.cwd)
+            if decision.startswith("allow") and (boundary or result.action == "deny"):
+                raise ApprovalStale(boundary or result.reason)
+            if hasattr(self, "grants"):
+                self.grants.check_tool(task_run_id, call[0], inputs, conn)
+                self.grants.check_binding(task_run_id, call_id, conn)
             event = self._store.append_in_tx(
                 conn, task_run_id=task_run_id,
                 conversation_id=conversation_id,
+                attempt_no=pending.attempt_no,
                 type=RunEventType.PERMISSION_RESOLVED,
-                payload={"tool_call_id": call_id, "decision": decision},
+                payload={"tool_call_id": call_id, "decision": decision, "actor_id": actor_id,
+                    "credential_owner_id": request_identity.credential_owner_id if request_identity else "owner",
+                    **({"proposal_id": call_id, "selected": proposal_selected} if proposal_decision is not None else {})},
             )
+            published.append(event)
             audit_seq = append_audit(
-                conn, ts=_now(), actor_type="user", actor_id="owner",
+                conn, ts=_now(), actor_type="user", actor_id=actor_id,
                 action=f"permission.resolved:{decision}",
                 resource_type="tool_call", resource_id=call_id,
                 detail=_detail(target=payload.get("target"),
                                input_hash=payload.get("input_hash"),
                                agent_id=agent_id),
             )
+            if proposal_decision is not None:
+                published.extend(self.proposals.resolve_in_tx(conn, call_id, decision, request_identity, proposal_decision, proposal_selected))
+                audit_seq = conn.execute("SELECT max(seq) FROM audit_log").fetchone()[0]
             if decision in ("allow_always", "reject_always"):
                 effect = "allow" if decision == "allow_always" else "deny"
                 pattern = payload.get("always_scope_preview") or ""
-                conn.execute(
-                    "INSERT INTO agent_permission_rules (id, agent_id,"
-                    " tool_name, pattern, effect, created_by_user_id, created_at)"
-                    " VALUES (?, ?, ?, ?, ?, 'owner', ?)",
-                    (uuid.uuid4().hex, agent_id, str(payload.get("tool") or ""),
-                     pattern, effect, _now()),
-                )
+                rule_id = uuid.uuid4().hex
+                if hasattr(self, "rules"):
+                    rule = self.rules.insert(conn, rule_id, agent_id, {"change_id": "approval-rule-" + call_id,
+                        "tool_name": payload["tool"], "pattern": pattern, "effect": effect}, actor_id)
+                else:
+                    conn.execute("INSERT INTO agent_permission_rules(id,agent_id,tool_name,pattern,effect,created_by_user_id,created_at) VALUES(?,?,?,?,?,?,?)",
+                        (rule_id, agent_id, payload["tool"], pattern, effect, actor_id, _now()))
                 audit_seq = append_audit(
-                    conn, ts=_now(), actor_type="user", actor_id="owner",
+                    conn, ts=_now(), actor_type="user", actor_id=actor_id,
                     action="permission.rule.created",
-                    resource_type="permission_rule", resource_id=call_id,
+                    resource_type="permission_rule", resource_id=rule_id,
                     detail=_detail(tool=payload.get("tool"), pattern=pattern,
                                    effect=effect, agent_id=agent_id,
                                    input_hash=payload.get("input_hash")),
                 )
-            conn.execute("COMMIT")
-            # COMMIT 成功后、闭包返回前发布（写线程内）——发布顺序 = 提交顺序
-            # （外审回稿：闭包外发布会让写线程先发布更大 global_seq，SSE 去重
-            # 把后到的较小序号永久丢弃）
-            self._store.publish(event)
-            return {"kind": "written", "event": event, "audit_seq": audit_seq}
-        except Exception:
-            try:
-                conn.execute("ROLLBACK")
-            except Exception:
-                pass
-            raise
+                if hasattr(self, "rules"):
+                    published.append(self._store.append_in_tx(conn, task_run_id=None, conversation_id=None,
+                        type=RunEventType.GOVERNANCE_RULE_CHANGED, payload={"resource_type": "permission_rule", "resource_id": rule_id,
+                            "change_id": rule["change_id"], "revision": rule["revision"], "actor_id": actor_id,
+                            "credential_owner_id": request_identity.credential_owner_id, "audit_seq": audit_seq,
+                            "source_task_run_id": task_run_id, "source_call_id": call_id,
+                            "scope": self.rules.resources.scope("agent", agent_id, conn), **self.rules.event(rule)}))
+        for item in published:
+            self._store.publish(item)
+        if first_audit_seq // SNAPSHOT_EVERY != audit_seq // SNAPSHOT_EVERY:
+            snapshot_chain_head(conn, self._chain_head_path)
+        return {"kind": "written", "event": event, "audit_seq": audit_seq}
 
     # ── pending 查询（界面刷新恢复审批卡，v1.4）──────────────────
     async def list_approvals(self, task_run_id: str, status: str) -> list[dict]:
@@ -274,6 +334,7 @@ class ApprovalService:
 
     def _approval_rows(self, task_run_id: str) -> list[dict]:
         conn = self._db.read_conn
+        task = conn.execute("SELECT status,current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()
         rows = conn.execute(
             "SELECT payload, created_at FROM run_events"
             " WHERE task_run_id = ? AND type = 'permission.requested'"
@@ -284,6 +345,8 @@ class ApprovalService:
             p = json.loads(payload_text)
             call_id = p.get("tool_call_id")
             resolved = self._find_resolution(call_id)
+            pending = self._pending.get(call_id)
+            active = pending is not None and not pending.future.done() and task is not None and task[0] in {"running", "waiting_user"} and task[1] == pending.attempt_no
             out.append({
                 "call_id": call_id, "tool": p.get("tool"),
                 "target": p.get("target"), "input_hash": p.get("input_hash"),
@@ -291,6 +354,8 @@ class ApprovalService:
                 "always_scope_preview": p.get("always_scope_preview"),
                 "requested_at": requested_at,
                 "decision": resolved[0] if resolved else None,
+                "stale": resolved is None and not active,
+                "attempt_no": pending.attempt_no if pending is not None else None,
             })
         return out
 
@@ -299,6 +364,29 @@ class ApprovalService:
                        agent_id: str, invocation: ToolInvocation,
                        ctx: WorkContext) -> Any:
         """带闸门执行一次工具：事件落库（emit 接 EventStore）+ 三级闸门。"""
+        ctx = replace(ctx, approved_calls=set(), filesystem=filesystem_boundary(ctx))
+        fixed = ctx.filesystem
+        ctx.filesystem_resolver = lambda: self._current_filesystem(fixed)
+        if hasattr(self, "connectors"):
+            ctx.registry = self.connectors.registry(task_run_id, self.scheduler.registry)
+        if hasattr(self, "grants"):
+            view = self.grants.check_tool(task_run_id, invocation.name, invocation.input)
+            if "selected_connector" in view:
+                ctx.connector_id = view["selected_connector"]["id"]
+                ctx.allowed_hosts = list(view["selected_connector"]["config"]["allowed_hosts"])
+                ctx.enforce_http_hosts = True
+                if ctx.registry is not None:
+                    from agentcrew_core.connectors import connector_effect
+                    from agentcrew_core.tools import ToolRegistry
+                    original = ctx.registry.get("http_request")
+                    selected = view["selected_connector"]
+                    classified = replace(original, metadata=replace(original.metadata, side_effect_class=connector_effect(
+                        invocation.input.get("method", "GET"), invocation.input["url"], selected["config"])),
+                        prepared_extras=lambda _input: {"connector_id": selected["id"], "connector_revision": selected["revision"]})
+                    registry = ToolRegistry()
+                    for name in ctx.registry.names():
+                        registry.register(classified if name == "http_request" else ctx.registry.get(name))
+                    ctx.registry = registry
         loop = asyncio.get_running_loop()
         future: asyncio.Future = loop.create_future()
         ih = input_hash(invocation.input)
@@ -306,20 +394,17 @@ class ApprovalService:
             future=future, loop=loop, input_hash=ih,
             tool_name=invocation.name, task_run_id=task_run_id,
             conversation_id=conversation_id, agent_id=agent_id, ctx=ctx,
+            attempt_no=self._db.read_conn.execute("SELECT current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()[0],
         )
         ctx.emit = self._make_emit(task_run_id, conversation_id)
         try:
             assert self.scheduler is not None, "cli 未装配 scheduler"
             result = await self.scheduler.run(invocation, ctx)
-            # governance §3：risk≥medium 的工具完成/失败入审计链
-            tool = self.scheduler.registry.get(invocation.name)
-            if tool is not None and tool.metadata.risk_level in ("medium", "high"):
-                await self._audit(
-                    "system", "tools",
-                    "tool.completed" if result.ok else "tool.failed",
-                    "tool_call", invocation.call_id,
-                    {"tool": invocation.name, "input_hash": ih,
-                     "ok": result.ok, "error": result.error})
+            if result.details.get("record_failed") or result.error == "EVENT_PERSIST_FAILED":
+                tool = (ctx.registry if ctx.registry is not None else self.scheduler.registry).get(invocation.name)
+                if result.details.get("record_failed") and tool is not None and not tool.metadata.read_only:
+                    await ctx.emit("tool.pending_verification", {"call_id": invocation.call_id})
+                raise RuntimeError("EVENT_PERSIST_FAILED：工具事件未持久化，执行立即停止并核对真实效果")
             return result
         finally:
             self._pending.pop(invocation.call_id, None)
@@ -330,17 +415,65 @@ class ApprovalService:
             raise ApprovalNotFound(f"执行上下文不存在（重启后的孤儿卡）：{call_id}")
         return pending
 
+    def _current_filesystem(self, fixed):
+        code = [Path(path) for row in self._db.read_conn.execute("SELECT s.source_path,s.canonical_path FROM connector_startup_files s JOIN connectors c ON c.id=s.connector_id AND c.revision=s.connector_revision") for path in row]
+        return normalize_filesystem(fixed.read_roots, fixed.protected, fixed.write_roots,
+            [*fixed.readonly_roots, *code], canonical_roots=True)
+
+    def check_current(self, conn, task_run_id, call_id):
+        pending = self._pending.get(call_id)
+        task = conn.execute("SELECT status,current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()
+        if pending is None or pending.future.cancelled() or task is None or pending.task_run_id != task_run_id or task[1] != pending.attempt_no:
+            raise ApprovalStale("派发时审批执行方或尝试已经过期")
+        row = conn.execute("SELECT tool_name,input FROM tool_calls WHERE task_run_id=? AND call_id=?", (task_run_id, call_id)).fetchone()
+        if row is None:
+            raise ApprovalStale("派发缺少调用绑定")
+        inputs = json.loads(row[1])
+        boundary = self._file_boundary(ToolInvocation(call_id, row[0], inputs), pending.ctx)
+        registry = pending.ctx.registry if pending.ctx.registry is not None else self.scheduler.registry
+        meta = registry.get(row[0]).metadata
+        readonly = bash_readonly(inputs["command"], pending.ctx.cwd)[0] if row[0] == "bash" else meta.read_only
+        result = evaluate_gate(meta, inputs, readonly, self._load_rules(pending.agent_id, conn), pending.agent_id, pending.ctx.cwd)
+        if hasattr(self, "automation"):
+            automated = self.automation.current_gate(task_run_id, meta, inputs, readonly, self._load_rules(pending.agent_id, conn), pending.ctx.cwd, conn)
+            if automated is not None:
+                result = automated
+        if boundary or result.action == "deny":
+            raise ApprovalStale(boundary or result.reason)
+        if result.action == "ask":
+            decision = self._resolution_row(conn, call_id)
+            if decision is None or not decision[0].startswith("allow"):
+                raise ApprovalStale("当前规则要求人工审批，调用缺少本次允许决定")
+
     def _make_emit(self, task_run_id: str, conversation_id: str):
+        attempt_no = self._db.read_conn.execute("SELECT current_attempt_no FROM task_runs WHERE id=?", (task_run_id,)).fetchone()[0]
         async def sink(event_type: str, payload: dict) -> None:
-            await self._store.append(
+            def audit_result(conn, event):
+                if event_type not in {"tool.completed", "tool.failed", "tool.pending_verification"}:
+                    return
+                row = conn.execute("SELECT tool_name,risk_level,input_hash FROM tool_calls WHERE call_id=?", (payload["call_id"],)).fetchone()
+                if row is not None and (row[1] in {"medium", "high"} or payload.get("error")):
+                    append_audit(conn, ts=event.ts, actor_type="system", actor_id="tools", action=event_type,
+                        resource_type="tool_call", resource_id=payload["call_id"],
+                        detail=_detail(tool=row[0], input_hash=row[2], task_run_id=task_run_id,
+                            ok=event_type == "tool.completed", error=payload.get("error")))
+            return await self._store.append(
                 task_run_id=task_run_id, conversation_id=conversation_id,
-                type=RunEventType(event_type), payload=payload,
+                attempt_no=attempt_no, type=RunEventType(event_type), payload=payload,
+                extra_writes=audit_result,
             )
         return sink
 
     # ── 库操作（读：to_thread 内每线程只读连接）────────────────────
-    def _load_rules(self, agent_id: str) -> list[PermissionRule]:
-        rows = self._db.read_conn.execute(
+    @staticmethod
+    def _file_boundary(invocation, ctx):
+        if invocation.name in {"read_file", "write_file"}:
+            return _check_path(ctx, invocation.input.get("path", ""), read_only=invocation.name == "read_file")
+        return None
+
+    def _load_rules(self, agent_id: str, conn=None) -> list[PermissionRule]:
+        connection = conn if conn is not None else self._db.read_conn
+        rows = connection.execute(
             "SELECT agent_id, tool_name, pattern, effect FROM"
             " agent_permission_rules WHERE agent_id = ? AND revoked_at IS NULL",
             (agent_id,),
@@ -390,21 +523,24 @@ class ApprovalService:
                      resource_type: str, resource_id: str,
                      detail: dict) -> None:
         def write(conn):
-            conn.execute("BEGIN IMMEDIATE")
-            try:
+            pending = self._context_for(resource_id)
+            with conn:
+                conn.execute("BEGIN IMMEDIATE")
                 seq = append_audit(
                     conn, ts=_now(), actor_type=actor_type, actor_id=actor_id,
                     action=action, resource_type=resource_type,
                     resource_id=resource_id, detail=_detail(**detail),
                 )
-                conn.execute("COMMIT")
-                return seq
-            except Exception:
-                try:
-                    conn.execute("ROLLBACK")
-                except Exception:
-                    pass
-                raise
+                scope = conn.execute("SELECT c.workspace_id,c.agent_id,w.org_id FROM conversations c LEFT JOIN workspaces w ON w.id=c.workspace_id WHERE c.id=?", (pending.conversation_id,)).fetchone()
+                operator = conn.execute("SELECT effective_user_id FROM task_governance WHERE task_run_id=?", (pending.task_run_id,)).fetchone()
+                authorization = self.grants.view(pending.task_run_id, conn)["sha256"] if hasattr(self, "grants") else input_hash(detail)
+                event = self._store.append_in_tx(conn, task_run_id=pending.task_run_id, conversation_id=pending.conversation_id,
+                    attempt_no=pending.attempt_no, type=RunEventType.GOVERNANCE_AUTHORIZATION_CHECKED,
+                    payload=json.loads(_detail(actor_id=operator[0] if operator else "owner", agent_id=pending.agent_id, allowed=not action.startswith("permission.denied"),
+                        reason=detail.get("reason", action), authorization_sha256=authorization, call_id=resource_id, audit_seq=seq,
+                        scope={"org_id": scope[2], "workspace_id": scope[0], "agent_id": scope[1], "owner_id": None})))
+            self._store.publish(event)
+            return seq
 
         seq = await self._channel.execute(write)
         if seq % SNAPSHOT_EVERY == 0:  # 每 100 条快照链头（governance §3）

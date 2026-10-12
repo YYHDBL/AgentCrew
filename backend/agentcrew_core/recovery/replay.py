@@ -2,10 +2,9 @@
 
 - replay_messages：从 run_events 行重放重建消息上下文。唯一原料是
   llm.request_done 载荷（回复全文 + 全部 tool_use 块 + thinking 签名，
-  v1.7）与 tool.* 终态事件；超限输出按 §2.3 读工件（read_artifact 注入，
-  缺失 → "工件缺失"占位降级，任务继续）——判定按 **artifact_path 字段**
-  驱动（不匹配文案：bash/read_file/http_request 指针文案不同，failed 也
-  可能带工件）；
+  v1.7）与 tool.* 终态事件；M1 带 SHA 的工件沿用事件中的前缀和指针，
+  完整性由服务层先核验。既有工件仍通过 read_artifact 读取，缺失时
+  返回明确占位与告警；
 - side_effect_ledger：副作用账本两段系统提示的文本（§7）；ask_user 的
   已答/未答事实与重放共用 question_answers（单一事实源）；
 - file_hash_matches：verifiable 类启动核验（文件存在且 sha256 一致）。
@@ -70,6 +69,8 @@ def _assistant_from_request_done(p: dict) -> dict:
 def replay_messages(
     rows: list[tuple[int, str, str]],
     read_artifact: Callable[[str], str | None] | None = None,
+    *, instruction_task_id: str | None = None,
+    include_event_sources: bool = False,
 ) -> ReplayResult:
     """按序重放一个 TaskRun 的全部事件（跨 attempt），重建消息上下文。
 
@@ -87,10 +88,13 @@ def replay_messages(
     dispatched: set[str] = set()
     # call_id → (content, is_error)；verification_submitted 晚到时覆盖
     outcomes: dict[str, tuple[str, bool]] = {}
+    outcome_sources: dict[str, int] = {}
     answers = question_answers(rows)  # ask_user 的已答事实（与账本同源）
 
     def read_externalized(p: dict) -> str:
         """§2.3：带 artifact_path 的输出读工件；缺失 → 占位降级（继续）。"""
+        if (p.get("details") or {}).get("sha256") and "prefix_bytes" in p["details"]:
+            return p["output"]
         real = reader(p["artifact_path"])
         if real is None:
             warn(f"工件缺失：{p['artifact_path']}（该工具输出降级为占位）")
@@ -119,6 +123,10 @@ def replay_messages(
             content.append({"type": "tool_result", "tool_use_id": u["id"],
                             "content": body, "is_error": is_error})
         out.messages.append({"role": "user", "content": content})
+        if include_event_sources:
+            sources = [outcome_sources[u["id"]] for u in open_calls if u["id"] in outcome_sources]
+            if sources:
+                out.messages[-1]["_event_global_seqs"] = sources
 
     open_calls: list[dict] = []
     for seq, etype, payload_text in sorted(rows, key=lambda r: r[0]):
@@ -131,9 +139,13 @@ def replay_messages(
                 continue
             instruction = p.get("instruction", "")
             if instruction:
-                out.messages.append(
-                    {"role": "user",
-                     "content": [{"type": "text", "text": instruction}]})
+                message = {"role": "user",
+                           "content": [{"type": "text", "text": instruction}]}
+                if instruction_task_id is not None:
+                    message["_task_instruction_id"] = instruction_task_id
+                if include_event_sources:
+                    message["_event_global_seqs"] = [seq]
+                out.messages.append(message)
             continue
         if etype == "llm.request_done":
             try:
@@ -146,6 +158,8 @@ def replay_messages(
                 continue
             flush(open_calls)
             msg = _assistant_from_request_done(p)
+            if include_event_sources:
+                msg["_event_global_seqs"] = [seq]
             out.messages.append(msg)
             open_calls = [c for c in msg["content"]
                           if c["type"] == "tool_use"]
@@ -166,6 +180,7 @@ def replay_messages(
             if p.get("artifact_path"):
                 body = read_externalized(p)
             outcomes[call_id] = (body, False)
+            outcome_sources[call_id] = seq
         elif etype == "tool.failed":
             err = p.get("error") or "TOOL_FAILED"
             if p.get("artifact_path"):
@@ -175,7 +190,9 @@ def replay_messages(
             else:
                 body = f"错误：{err}"
             outcomes[call_id] = (body, True)
+            outcome_sources[call_id] = seq
         elif etype == "tool.verification_submitted":
+            outcome_sources[call_id] = seq
             verdict = p.get("verdict")
             if verdict == "confirmed_executed":
                 outcomes[call_id] = ("（中断后经用户确认已执行；原始输出未记录）",

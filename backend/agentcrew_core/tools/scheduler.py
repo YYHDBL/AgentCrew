@@ -21,9 +21,14 @@ import json
 import logging
 import re
 import uuid
+from dataclasses import replace
 
-from .judgment import bash_readonly
+from jsonschema import Draft202012Validator
+from ..events import Event
+
+from .judgment import bash_readonly, filesystem_boundary
 from .metadata import Tool, ToolInvocation, ToolMetadata, ToolResult, WorkContext
+from .builtin.externalize import _externalize
 
 _log = logging.getLogger("agentcrew.tools")
 
@@ -91,43 +96,10 @@ def redact_event_input(name: str, input: dict) -> dict:
 # （外审回稿：JSON 损坏与 schema 不符共用 ≤2 次重试 → unparseable）
 INVALID_PARAMS = "INVALID_PARAMS"
 
-_TYPES = {"string": str, "integer": int, "number": (int, float),
-          "boolean": bool, "array": list, "object": dict}
-
-
-def _type_name(value) -> str:
-    return type(value).__name__
-
-
 def validate_tool_input(schema: dict, input: dict) -> str | None:
-    """JSON Schema 子集校验（object/required/properties 类型/数组 items）——
-    M0 五件套的参数定义只用到这些；返回错误描述或 None。
-    缺参/类型不符不再交给工具执行（那会烧掉最多 40 回合才自纠），
-    而是走"错误回填重说"通道（harness §5 三招之三）。"""
-    if not isinstance(input, dict):
-        return f"参数必须是 JSON 对象，得到 {_type_name(input)}"
-    props = schema.get("properties") or {}
-    for field in schema.get("required") or []:
-        if field not in input:
-            return f"缺少必填参数 {field}"
-    for key, value in input.items():
-        spec = props.get(key)
-        if not isinstance(spec, dict):
-            continue  # 未声明的附加键不拦（向前兼容）
-        expected = spec.get("type")
-        if expected in _TYPES and not isinstance(value, _TYPES[expected]):
-            # bool 是 int 的子类：布尔值不得冒充 integer/number
-            if isinstance(value, bool) and expected in ("integer", "number"):
-                return f"参数 {key} 需要 {expected}，得到 boolean"
-            return f"参数 {key} 需要 {expected}，得到 {_type_name(value)}"
-        if expected == "array" and isinstance(value, list):
-            items = spec.get("items")
-            if isinstance(items, dict) and "type" in items:
-                want = _TYPES.get(items["type"])
-                if want and any(not isinstance(v, want) for v in value):
-                    return (f"参数 {key} 的数组元素需要 "
-                            f"{items['type']}")
-    return None
+    """执行完整 JSON Schema 校验，错误回填既有解析重试通道。"""
+    error = next(Draft202012Validator(schema).iter_errors(input), None)
+    return f"{list(error.path)}: {error.message}" if error else None
 
 
 class ToolScheduler:
@@ -143,13 +115,15 @@ class ToolScheduler:
         return self._registry
 
     async def run(self, invocation: ToolInvocation, ctx: WorkContext) -> ToolResult:
-        tool = self._registry.get(invocation.name)
+        tool = (ctx.registry if ctx.registry is not None else self._registry).get(invocation.name)
         if tool is None:
             return ToolResult(ok=False, error="UNKNOWN_TOOL",
                               details={"known": self._registry.names()})
         if not _CALL_ID_PATTERN.fullmatch(invocation.call_id or ""):
             return ToolResult(ok=False, error="INVALID_CALL_ID",
                               details={"call_id": invocation.call_id[:40]})
+        ctx = replace(ctx)
+        filesystem_boundary(ctx)
         # 入口即做不可变快照（外审回稿 F04）：审批哈希绑定的是快照，此后
         # 对原 dict 的任何修改都不影响 prepared/闸门/执行三处的一致性
         invocation = ToolInvocation(
@@ -205,14 +179,16 @@ class ToolScheduler:
         # 挂钩内部完成 ask 的挂起等待；deny 时补记 tool.failed 事件。
         if self._gate is not None:
             decision = await self._gate(invocation, meta, effective_readonly)
-            if decision != "allow":
+            action = decision.action if hasattr(decision, "action") else decision
+            if action != "allow":
+                error = "PERMISSION_DENIED" + (": " + decision.reason if hasattr(decision, "reason") else "")
                 await self._emit_strict(ctx, "tool.failed", {
                     "call_id": invocation.call_id,
-                    "error": "PERMISSION_DENIED",
+                    "error": error,
                     "output_summary": "",
                 })
-                return ToolResult(ok=False, error="PERMISSION_DENIED",
-                                  details={"gate": decision})
+                return ToolResult(ok=False, error=error,
+                                  details={"gate": action})
 
         # dispatched 紧邻实际执行写入（外审回稿 S08）：取得并发名额与串行锁
         # 之前不声明 dispatched——否则等待名额期间被取消的调用会被恢复流程
@@ -240,10 +216,7 @@ class ToolScheduler:
         except asyncio.TimeoutError:
             result = ToolResult(ok=False, error="TIMEOUT",
                                 details={"timeout_ms": meta.timeout_ms})
-        except Exception as e:  # noqa: BLE001 —— 工具异常收敛为结果，不崩任务
-            _log.exception("tool.failed %s", meta.name)
-            result = ToolResult(ok=False, error=f"TOOL_CRASH:{type(e).__name__}",
-                                details={"message": str(e)[:200]})
+        await _externalize(ctx, invocation.call_id, result, meta.max_output_bytes)
         payload = {
             "call_id": invocation.call_id,
             # §2.3 持久化契约：事件必须携带完整工具输出（≤32KB 内联；超出由
@@ -259,19 +232,23 @@ class ToolScheduler:
         if not result.ok:
             payload["error"] = result.error
         # 副作用已发生，记录失败不可撤销——标记后交上层（C9 待核验）
-        if not await self._emit_strict(ctx, "tool.completed" if result.ok
-                                       else "tool.failed", payload):
+        recorded = await self._emit_strict(ctx, "tool.completed" if result.ok else "tool.failed", payload)
+        if not recorded:
             result.details["record_failed"] = True
+        elif isinstance(recorded, Event):
+            result.event_global_seq = recorded.global_seq
         return result
 
     async def _emit_strict(self, ctx: WorkContext, event_type: str,
-                           payload: dict) -> bool:
+                           payload: dict) -> bool | Event:
         """发出事件；失败返回 False（不吞——调用方决定阻断或标记）。"""
         if ctx.emit is None:
             return True
         try:
-            await ctx.emit(event_type, payload)
-            return True
+            event = await ctx.emit(event_type, payload)
+            if event_type == "tool.dispatched" and event is not None:
+                ctx.source_global_seq = event.global_seq
+            return event if event is not None else True
         except Exception:  # noqa: BLE001
             _log.exception("tool.emit_failed %s", event_type)
             return False

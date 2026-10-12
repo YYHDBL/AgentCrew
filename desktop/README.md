@@ -1,11 +1,24 @@
 # AgentCrew 桌面工程
 
-在本目录执行 `npm ci` 安装依赖，然后执行 `npm run dev` 同时启动 Electron 窗口与真实 Python sidecar。开发环境需要 `uv` 可执行文件在 `PATH` 中，并在 `../backend/` 执行 `uv sync`。默认开发数据目录为 `../backend/data`，真实模型配置放在其中的 `config.json`，该目录不提交。指定 Electron `--user-data-dir` 或运行安装应用时，后端使用相应应用数据目录下的 `data`。main 进程负责监管重启。`npm run typecheck` 检查 TypeScript；`npm run build` 完成类型检查并构建 main、preload 和渲染层。
+本目录包含 Electron 主进程、preload 接口、React 界面和桌面测试。开发环境要求与模型配置方法见[项目首页](../README.zh-CN.md)，接口生成与打包说明见[开发指南](../docs/development.md)。
 
-`src/main/index.ts` 管理窗口、托盘和原生能力，`src/main/sidecar.ts` 管理后端进程。`src/preload/index.ts` 暴露端口、临时凭证、材料选择、通知、定位本地路径与休眠控制窄接口。渲染层的 `session.ts` 管理真实 HTTP 和会话 SSE，`Conversation.tsx` 展示聊天、步骤、工具、审批与提问，`App.tsx` 组合会话列表、输入和队列操作。
+## 运行与构建
 
-执行 `npm run build && node tests/c11-real.mjs` 进行真实 Electron/GLM 验收，需有效的 `../backend/data/config.json`。脚本使用 `playwright-core` 和项目 Electron，在 `.artifacts/` 中建立隔离数据目录，真实调用模型并写入三个验收文件；截图与不含凭证的结果进入 `../docs/acceptance/assets/C11/`。
+在 `../backend/` 执行 `uv sync --locked --python 3.12` 后，在本目录执行：
 
-执行 `node tests/c11-real.mjs --text-only` 进行相同操作与断言，文本结果保存在本次 `.artifacts/c11-*/` 目录，不进行截图操作。执行 `node tests/c11-stream.mjs` 检查提问中刷新、重启后的快照配对与新增事件、真实模型文本传输中断后的重试呈现、会话流背压产生的 resync，以及优雅关闭的 shutdown 游标。该检查通过本地代理转发真实响应并施加传输故障，排队压力指令全部取消，运行数据与文本结果保存在 `.artifacts/c11-stream-*/`。
+```sh
+npm ci
+npm run dev
+```
 
-执行 `npm run build && node tests/c11-recovery.mjs` 核验中断恢复后的审批显示。测试使用真实 Electron、GLM、文件和 SIGKILL，确认未恢复的 interrupted 任务隐藏旧审批卡，通过界面恢复后，同一任务的新审批可见、可点击，批准后文件写入成功并完成任务；完成后刷新保留恢复卡并隐藏审批和恢复按钮。真实事件与运行数据保存在 `.artifacts/c11-recovery-*/`。
+开发模式自动启动 Python 任务服务。默认数据目录为 `../backend/data/`；安装应用或指定 `--user-data-dir` 时，服务使用应用用户目录下的 `data/`。
+
+执行 `npm run build` 完成类型检查以及 main、preload 和 renderer 的构建。执行 `npm ci --prefix tools/api-generator` 安装接口生成工具，然后执行 `npm run check:api` 检查生成文件是否与正式契约一致。
+
+## 代码入口
+
+`src/main/index.ts` 管理窗口、托盘、通知与原生能力，`src/main/sidecar.ts` 管理后端进程启动和监管。`src/preload/` 提供受限的原生接口。`src/renderer/src/session.ts` 管理 HTTP 和会话 SSE，`App.tsx` 组合工作台、运行中心、员工管理、自动化与设置页面。
+
+## 回归检查
+
+执行 `node tests/m3-contract-types.mjs`，使用 `tests/fixtures/actual-review-events.json` 中的真实事件检查类型和运行时校验器。其他集成测试位于 `tests/`，执行前检查各脚本需要的模型配置和文件操作范围。测试运行数据保存在已忽略的 `.artifacts/` 或 `../data/` 目录。

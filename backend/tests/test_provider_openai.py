@@ -1,5 +1,6 @@
 import asyncio
 import json
+from pathlib import Path
 
 import httpx
 import pytest
@@ -9,6 +10,29 @@ from agentcrew_core.provider.openai_compatible import chat_messages
 from agentcrew_core.provider.types import ToolCall
 from agentcrew_core.tools.metadata import ToolResult
 from agentcrew_server.providers import bind_slot, build_provider
+
+
+def test_recorded_opencode_null_deltas_preserve_actual_tool_identity():
+    from openai._streaming import SSEDecoder
+    from openai.lib.streaming.chat import ChatCompletionStreamState
+    from openai.types.chat import ChatCompletionChunk
+    from agentcrew_core.provider import openai_compatible
+
+    # 真实 2026-10-03 响应，仅验证已收到的分片，保持中断状态。
+    raw = Path(__file__).with_name("fixtures").joinpath("opencode-null-tool-delta.sse").read_bytes()
+    state = ChatCompletionStreamState()
+    chunks = [ChatCompletionChunk.model_validate(json.loads(event.data))
+              for event in SSEDecoder().iter_bytes(iter([raw]))]
+    originals = [chunk.model_dump() for chunk in chunks]
+    for chunk in chunks:
+        state.handle_chunk(openai_compatible.normalize_chat_chunk(chunk))
+    call = state.current_completion_snapshot.choices[0].message.tool_calls[0]
+    assert call.id == "chatcmpl-tool-b4781891f114923a"
+    assert call.type == "function"
+    assert call.function.name == "memory_write"
+    assert call.function.arguments == ""
+    assert state.current_completion_snapshot.choices[0].finish_reason is None
+    assert [chunk.model_dump() for chunk in chunks] == originals
 
 
 def test_chat_messages_preserve_tool_results_and_thinking():

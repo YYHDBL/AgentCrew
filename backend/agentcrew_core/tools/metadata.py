@@ -23,7 +23,8 @@ class ToolMetadata:
     concurrent_safe: bool
     side_effect_class: SideEffectClass
     timeout_ms: int = 60_000
-    max_output_bytes: int = 100_000
+    max_output_bytes: int = 32 * 1024
+    requires_human_confirmation: bool = False
 
 
 @dataclass(frozen=True)
@@ -42,10 +43,13 @@ class ToolResult:
     artifact_path: str | None = None      # 外部化工件指针
     error: str | None = None              # OUT_OF_SCOPE / PROTECTED_PATH / TIMEOUT…
     details: dict[str, Any] = field(default_factory=dict)
+    output_source: Any = None
+    stderr_source: Any = None
+    event_global_seq: int | None = None
 
 
 ToolExecute = Callable[[ToolInvocation, "WorkContext"], Awaitable[ToolResult]]
-EventSink = Callable[[str, dict[str, Any]], Awaitable[None]]
+EventSink = Callable[[str, dict[str, Any]], Awaitable[Any]]
 AskResolver = Callable[[str], Awaitable[str | None]]
 
 
@@ -63,15 +67,30 @@ class WorkContext:
     """一次任务的工具执行上下文（scope/cwd/保护路径由会话装配统一提供，S09）。"""
 
     scope: list[Any] = field(default_factory=list)          # Path 列表（realpath 已规范）
+    write_scope: list[Any] | None = None
+    readonly_scope: list[Any] | None = None
+    filesystem: Any = None
+    filesystem_resolver: Callable[[], Any] | None = None
     protected: list[Any] = field(default_factory=list)      # 受保护路径（realpath）
     artifacts_dir: Any = None                               # Path：外部化工件落盘处
     allowed_hosts: list[str] = field(default_factory=list)
+    enforce_http_hosts: bool = False
+    connector_id: str | None = None
+    registry: Any = None
     task_run_id: str = ""
+    job_id: str | None = None
     emit: EventSink | None = None        # 事件出口（tool.*/artifact.*/question.*）
     ask_resolver: AskResolver | None = None  # ask_user 的回答通道（C8 接真实 HTTP）
-    # 任务工作目录（S09，C7 会话装配提供）：read_file/write_file 的相对路径
-    # 统一对此解析；bash 子进程以它为 cwd。缺省 None = 维持进程 cwd（旧语义）
+    # 会话装配提供任务工作目录，文件工具据此解析相对路径，bash在此启动。
     cwd: Any = None
-    # 经三级闸门授权的 http_request 调用（call_id 级）：M0 allowed_hosts 空 =
-    # 全部需审批——人工/规则放行后执行器的域名硬检查须认这笔授权（外审 S02）
+    # 调用级审批结果，连接器目标和当前Grant由执行服务独立检查。
     approved_calls: set[str] = field(default_factory=set)
+    memory_writer: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
+    memory_search: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
+    memory_skills: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
+    output_store: Any = None
+    source_global_seq: int = 0
+    readable_artifacts: dict[str, str | None] = field(default_factory=dict)
+    schedule_proposal: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
+    trace_reader: Callable[[ToolInvocation, "WorkContext"], Awaitable[dict]] | None = None
+    search_owner_only: bool = False

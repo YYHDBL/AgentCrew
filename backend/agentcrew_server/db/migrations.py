@@ -18,6 +18,25 @@ from pathlib import Path
 
 from .schema_v1 import V1_STATEMENTS
 from .schema_v2 import V2_STATEMENTS
+from .schema_v3 import V3_STATEMENTS
+from .schema_v4 import V4_STATEMENTS
+from .schema_v5 import V5_STATEMENTS
+from .schema_v6 import V6_STATEMENTS
+from .schema_v7 import V7_STATEMENTS
+from .schema_v8 import V8_STATEMENTS
+from .schema_v9 import V9_STATEMENTS
+from .schema_v10 import V10_STATEMENTS
+from .schema_v11 import V11_STATEMENTS
+from .schema_v12 import V12_STATEMENTS
+from .schema_v13 import V13_STATEMENTS
+from .schema_v14 import V14_STATEMENTS
+from .schema_v15 import V15_STATEMENTS
+from .schema_v16 import V16_STATEMENTS
+from .schema_v17 import V17_STATEMENTS
+from .schema_v18 import V18_STATEMENTS
+from .schema_v19 import V19_STATEMENTS
+from .schema_v20 import V20_STATEMENTS
+from .schema_v21 import V21_STATEMENTS
 
 _SNAPSHOT_KEEP = 3
 _BUSY_RETRIES = 3
@@ -28,11 +47,31 @@ class Migration:
     version: int
     name: str
     statements: tuple[str, ...]
+    rebuild_foreign_keys: bool = False
 
 
 MIGRATIONS: tuple[Migration, ...] = (
     Migration(version=1, name="M0 初始建表", statements=V1_STATEMENTS),
     Migration(version=2, name="C7 客户端幂等键", statements=V2_STATEMENTS),
+    Migration(version=3, name="M1 三库与记忆账本", statements=V3_STATEMENTS),
+    Migration(version=4, name="M1 会话快照与注入统计", statements=V4_STATEMENTS),
+    Migration(version=5, name="M1 trigram 检索与使用去重", statements=V5_STATEMENTS),
+    Migration(version=6, name="M1 Skill 生命周期与读取修订", statements=V6_STATEMENTS),
+    Migration(version=7, name="M1 辅助作业与唯一任务摘要", statements=V7_STATEMENTS),
+    Migration(version=8, name="M1 上下文压缩检查点", statements=V8_STATEMENTS),
+    Migration(version=9, name="M1 后台提炼与独立审批", statements=V9_STATEMENTS),
+    Migration(version=10, name="M1 确定性遗忘治理", statements=V10_STATEMENTS, rebuild_foreign_keys=True),
+    Migration(version=11, name="M2 治理资源与授权", statements=V11_STATEMENTS),
+    Migration(version=12, name="M2 任务技能版本绑定", statements=V12_STATEMENTS),
+    Migration(version=13, name="M2 MCP连接器工具目录", statements=V13_STATEMENTS),
+    Migration(version=14, name="M2 连接器启动资源绑定", statements=V14_STATEMENTS),
+    Migration(version=15, name="M2 审计锚点登记", statements=V15_STATEMENTS),
+    Migration(version=16, name="M3 计划发生与持久通知", statements=V16_STATEMENTS),
+    Migration(version=17, name="M3 不可变员工计划提案", statements=V17_STATEMENTS),
+    Migration(version=18, name="M3 轨迹审查与报告", statements=V18_STATEMENTS, rebuild_foreign_keys=True),
+    Migration(version=19, name="M3 真人确认技能固化", statements=V19_STATEMENTS),
+    Migration(version=20, name="M3 固化确认请求及分析要求绑定", statements=V20_STATEMENTS),
+    Migration(version=21, name="M3-14 桌面行为偏好", statements=V21_STATEMENTS),
 )
 
 
@@ -111,6 +150,9 @@ def _snapshot_before_upgrade(conn: sqlite3.Connection, backups_dir: Path, curren
 
 def _apply_migration(conn: sqlite3.Connection, migration: Migration) -> None:
     """单条迁移一个事务；失败回滚并抛 MigrationFailedError。"""
+    foreign_keys = conn.execute("PRAGMA foreign_keys").fetchone()[0]
+    if migration.rebuild_foreign_keys and foreign_keys:
+        conn.execute("PRAGMA foreign_keys=OFF")
     try:
         conn.execute("BEGIN IMMEDIATE")
         for no, statement in enumerate(migration.statements, start=1):
@@ -118,6 +160,10 @@ def _apply_migration(conn: sqlite3.Connection, migration: Migration) -> None:
                 conn.execute(statement)
             except sqlite3.Error as e:
                 raise MigrationFailedError(migration.version, no, str(e)) from None
+        if migration.rebuild_foreign_keys:
+            violations = conn.execute("PRAGMA foreign_key_check").fetchall()
+            if violations:
+                raise MigrationFailedError(migration.version, len(migration.statements), f"外键校验失败：{violations}")
         conn.execute(
             "INSERT INTO schema_migrations (version, name, applied_at) VALUES (?, ?, ?)",
             (migration.version, migration.name, _now()),
@@ -129,6 +175,9 @@ def _apply_migration(conn: sqlite3.Connection, migration: Migration) -> None:
     except sqlite3.OperationalError as e:
         conn.execute("ROLLBACK")
         raise MigrationFailedError(migration.version, 0, f"开启事务失败：{e}") from None
+    finally:
+        if migration.rebuild_foreign_keys and foreign_keys:
+            conn.execute("PRAGMA foreign_keys=ON")
 
 
 def run_migrations(conn: sqlite3.Connection, backups_dir: Path) -> MigrationResult:

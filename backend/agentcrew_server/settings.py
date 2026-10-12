@@ -28,14 +28,18 @@ from typing import Any
 from .config import DEFAULTS, Config, ConfigError, apply_env, load_config, merge_config
 from .db.audit import SNAPSHOT_EVERY, append_audit, snapshot_chain_head
 from .db.write_channel import WriteChannel
+from .memory.tokenizer import TOKENIZER_FIELDS
+from .providers import DEFAULT_BASE_URL, bind_slot, known_models
+from .secrets import register_secret
 
 _log = logging.getLogger("agentcrew.settings")
 
-_ALLOWED_TOP_KEYS = {"models", "gates", "limits", "api_key_clear"}
-_ALLOWED_SLOT_FIELDS = {"provider", "model", "base_url", "api_key", "max_tokens"}
+_ALLOWED_TOP_KEYS = {"models", "gates", "limits", "memory", "api_key_clear"}
+_ALLOWED_SLOT_FIELDS = {"provider", "model", "base_url", "api_key", "max_tokens", *TOKENIZER_FIELDS}
 _ALLOWED_GATES = {"max_steps", "stall_seconds", "repeat_limit",
                   "global_concurrency", "token_budget"}
 _ALLOWED_LIMITS = {"max_files", "max_file_mb", "max_folders"}
+_ALLOWED_MEMORY = {"user_quota", "workspace_quota", "soul_quota", "write_approval"}
 # 运行期构造、PATCH 仅落盘待重启的字段（backend-service §4）
 _RESTART_REQUIRED_FIELDS = {"gates.global_concurrency"}
 
@@ -83,21 +87,28 @@ class SettingsService:
         models: dict[str, Any] = {}
         for slot in ("main", "aux"):
             entry = cfg.get("models", {}).get(slot, {})
+            bound = bind_slot(entry)
             key = entry.get("api_key", "") or ""
             env_sourced = any(p.startswith(f"models.{slot}.")
                               for p in self._config.env_fields)
             models[slot] = {
                 "provider": entry.get("provider", ""),
                 "model": entry.get("model", ""),
+                "base_url": entry.get("base_url", "")
+                or (DEFAULT_BASE_URL if entry.get("provider", "glm") == "glm" else ""),
                 "api_key_configured": bool(key),
                 "api_key_hint": key[-4:] if key else "",
                 "effective_source": "env" if env_sourced else "file",
+                "max_tokens": entry.get("max_tokens", 4096),
+                **{field: getattr(bound, field) or None for field in TOKENIZER_FIELDS},
             }
         return {
             "config_version": str(self._file_object().get("config_version", 0)),
             "models": models,
+            "catalog": known_models(),
             "gates": dict(cfg.get("gates", {})),
             "limits": dict(cfg.get("limits", {})),
+            "memory": dict(cfg["memory"]),
         }
 
     # ── 写侧（版本化 + 原子写 + 审计）───────────────────────────
@@ -134,8 +145,11 @@ class SettingsService:
             raise SettingsWriteFailed(
                 f"配置文件写入失败（{self._path}）：{e}") from None
 
-        # 文件已成新事实：重载生效配置（用构造时的同一环境，覆盖链一致）
+        # 文件已成新事实：重载生效配置（用构造时的同一环境，覆盖链一致）；
+        # 新密钥立即进入脱敏登记表（此后任何日志/错误文本出现都会被遮蔽）
         self._config = load_config(self._data_dir, self._env)
+        for key in self._config.api_keys():
+            register_secret(key)
         ignored = sorted(p for p in self._config.env_fields if p in touched)
         audit_status = await self._audit(
             new_file["config_version"], touched, cleared)
@@ -171,7 +185,7 @@ class SettingsService:
                             raise ValueError(f"未知字段：models.{slot}.{field}")
                         touched.append(f"models.{slot}.{field}")
             else:
-                allowed = _ALLOWED_GATES if key == "gates" else _ALLOWED_LIMITS
+                allowed = {"gates": _ALLOWED_GATES, "limits": _ALLOWED_LIMITS, "memory": _ALLOWED_MEMORY}[key]
                 if not isinstance(value, dict):
                     raise ValueError(f"{key} 需要对象")
                 for field in value:

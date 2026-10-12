@@ -22,24 +22,30 @@ from pathlib import Path
 
 import uvicorn
 
-from agentcrew_core.provider.glm_anthropic import DEFAULT_BASE_URL
 from agentcrew_core.tools import ToolScheduler, build_default_registry
 
 from .api.app import create_app
 from .approvals import ApprovalService
 from .bus import EventBus
 from .config import ConfigError, load_config
-from .db.audit import verify_with_anchor
+from .db.audit import recover_anchor, verify_with_anchor
 from .db.database import Database
 from .db.event_store import EventStore
 from .db.migrations import MigrationFailedError, run_migrations
 from .db.write_channel import WriteChannel
+from .governance.backups import apply_pending_restore
 from .providers import build_provider
 from .questions import QuestionService
 from .recovery import RecoveryService
 from .run_manager import RunManager
 from .sessions import SessionService
 from .settings import SettingsService
+from .memory.store import MemoryStore
+from .memory.snapshots import MemorySnapshots
+from .memory.search import MemorySearch
+from .memory.skills import MemorySkills
+from .memory.jobs import MemoryJobs
+from .memory.summaries import SessionSummaries
 from .instance_lock import (
     DataDirNotWritable,
     InstanceLock,
@@ -50,6 +56,8 @@ from .lifecycle import run_startup_hooks
 from .logging_setup import setup_logging, shutdown_logging
 from .runtime import DiagnosticInfo, RuntimeState
 from .secrets import register_secret
+from .governance.resources import Resources
+from .governance.skills import SkillVersions
 
 READY_MARKER = "AGENTCREW_READY"
 DEFAULT_PORT = 8710
@@ -256,6 +264,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"启动失败：{e}", file=sys.stderr)
             return 2
 
+        restored = apply_pending_restore(data_dir)
+        if restored is not None:
+            config = load_config(data_dir)
+            for key in config.api_keys():
+                register_secret(key)
+            log.info("startup.restore 受控恢复已经完成 backup=%s preserved=%s", restored["backup_id"], restored["preserved_path"])
+
         try:
             db = Database(data_dir / "agentcrew.db")
         except Exception as e:  # noqa: BLE001 —— SQLite 打开失败按启动失败处理
@@ -288,9 +303,9 @@ def main(argv: list[str] | None = None) -> int:
 
         # §1 第 5 步：审计链两级校验（空链 = 通过；C6 起有写入方）
         if diagnostic is None:
-            verification = verify_with_anchor(
-                db.write_conn, data_dir / "chain-head.txt"
-            )
+            verification = recover_anchor(db.write_conn, data_dir / "chain-head.txt")
+            if verification.ok:
+                verification = verify_with_anchor(db.write_conn, data_dir / "chain-head.txt")
             if not verification.ok:
                 log.error(
                     "startup.audit 审计链校验失败 seq=%s：%s",
@@ -327,18 +342,30 @@ def main(argv: list[str] | None = None) -> int:
         settings = SettingsService(config, data_dir, channel,
                                    data_dir / "chain-head.txt")
         sessions = SessionService(db, event_store, data_dir, settings)
+        memory = MemoryStore(db, event_store, data_dir, settings)
+        snapshots = MemorySnapshots(memory)
+        memory_search = MemorySearch(memory)
+        memory_skills = MemorySkills(memory)
+        memory_jobs = MemoryJobs(memory, bus, settings)
+        sessions.memory_jobs = memory_jobs
+        summaries = SessionSummaries(db)
+        from .memory.checkpoints import ContextCheckpoints
+        checkpoints = ContextCheckpoints(db, event_store, data_dir)
         # 提问回答链 + RunManager（M0-C8）：run.queued → runner 派发，
         # attempt 配置绑定与取消传播见 run_manager 模块头
         questions = QuestionService(db, event_store)
         run_manager = RunManager(
             db=db, event_store=event_store, bus=bus, settings=settings,
             sessions=sessions, approvals=approvals, scheduler=scheduler,
-            questions=questions)
+            questions=questions, memory=memory, snapshots=snapshots, memory_search=memory_search, memory_skills=memory_skills, summaries=summaries, checkpoints=checkpoints)
         # 恢复域（M0-C9）：对账在 lifespan 内执行（RunManager 派发之前）
         recovery = RecoveryService(db, event_store, sessions, data_dir,
-                                   registry=scheduler.registry)
+                                   registry=scheduler.registry, checkpoints=checkpoints)
         recovery.wire(run_manager)
         run_manager.wire(recovery)
+        governance = Resources(db, event_store, data_dir)
+        skill_versions = SkillVersions(governance, memory)
+        governance.skill_versions = skill_versions
         runtime = RuntimeState(
             log=log, data_dir=data_dir, db=db,
             write_channel=channel, diagnostic=diagnostic,
@@ -346,14 +373,16 @@ def main(argv: list[str] | None = None) -> int:
             approvals=approvals, scheduler=scheduler,
             settings=settings, sessions=sessions,
             questions=questions, run_manager=run_manager,
-            recovery=recovery,
+            recovery=recovery, memory=memory, snapshots=snapshots, memory_search=memory_search, memory_jobs=memory_jobs,
+            governance=governance, skill_versions=skill_versions,
         )
         log.info("startup.bus 事件总线就绪（队列上限 1000，SSE 连接上限 32）")
         log.info(
-            "startup.provider main=%s aux=%s @ %s",
+            "startup.provider main=%s @ %s aux=%s @ %s",
             config.values.get("models", {}).get("main", {}).get("model", "?"),
+            provider.slots["main"].base_url,
             config.values.get("models", {}).get("aux", {}).get("model", "?"),
-            DEFAULT_BASE_URL,
+            provider.slots["aux"].base_url,
         )
         app = create_app(runtime)
 

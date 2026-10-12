@@ -5,3 +5,5 @@
 其磁盘/子进程/网络副作用受 WorkContext 的 scope、protected、allowed_hosts
 约束。M0 各卡片按需填充下列子包，C1 只建立骨架。
 """
+
+__version__ = "0.4.0"

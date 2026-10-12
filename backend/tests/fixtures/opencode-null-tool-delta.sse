@@ -1,0 +1,20 @@
+data: {"id":"chatcmpl-RU9NwHgGg4ZefnohOyZlzLmQ","object":"chat.completion.chunk","created":1791020360,"model":"deepseek-v4.1-flash","choices":[{"index":0,"finish_reason":null,"logprobs":null,"delta":{"role":"assistant","content":"","reasoning_content":null,"tool_calls":null}}],"usage":null}
+
+data: {"id":"chatcmpl-RU9NwHgGg4ZefnohOyZlzLmQ","object":"chat.completion.chunk","created":1791020360,"model":"deepseek-v4.1-flash","choices":[{"index":0,"finish_reason":null,"logprobs":null,"delta":{"role":"assistant","content":"","reasoning_content":null,"tool_calls":null}}],"usage":null}
+
+data: {"id":"chatcmpl-RU9NwHgGg4ZefnohOyZlzLmQ","object":"chat.completion.chunk","created":1791020360,"model":"deepseek-v4.1-flash","choices":[{"index":0,"finish_reason":null,"logprobs":null,"delta":{"role":null,"content":"I","reasoning_content":null,"tool_calls":null}}],"usage":null}
+
+k","created":1791020360,"model":"deepseek-v4.1-flash","choices":[{"index":0,"finish_reason":null,"logprobs":null,"delta":{"role":null,"content":"I","reasoning_content":null,"tool_calls":null}}],"usage":null}
+
+data: {"id":"chatcmpl-RU9NwHgGg4ZefnohOyZlzLmQ","object":"chat.completion.chunk","created":1791020360,"model":"deepseek-v4.1-flash","choices":[{"index":0,"finish_reason":null,"logprobs":null,"delta":{"role":null,"content":"'ll start by reading the workspace memory to get the latest revision, then archive","reasoning_content":null,"tool_calls":null}}],"usage":null}
+
+data: {"id":"chatcmpl-RU9NwHgGg4ZefnohOyZlzLmQ","object":"chat.completion.chunk","created":1791020360,"model":"deepseek-v4.1-flash","choices":[{"index":0,"finish_reason":null,"logprobs":null,"delta":{"role":null,"content":" the specified entries","reasoning_content":null,"tool_calls":null}}],"usage":null}
+
+data: {"id":"chatcmpl-RU9NwHgGg4ZefnohOyZlzLmQ","object":"chat.completion.chunk","created":1791020360,"model":"deepseek-v4.1-flash","choices":[{"index":0,"finish_reason":null,"logprobs":null,"delta":{"role":null,"content":".\n\n","reasoning_content":null,"tool_calls":null}}],"usage":null}
+
+data: {"id":"chatcmpl-RU9NwHgGg4ZefnohOyZlzLmQ","object":"chat.completion.chunk","created":1791020360,"model":"deepseek-v4.1-flash","choices":[{"index":0,"finish_reason":null,"logprobs":null,"delta":{"role":null,"content":"","reasoning_content":null,"tool_calls":[{"index":0,"id":"chatcmpl-tool-b4781891f114923a","type":"function","function":{"name":"memory_write","arguments":""}}]}}],"usage":null}
+
+data: {"id":"chatcmpl-RU9NwHgGg4ZefnohOyZlzLmQ","object":"chat.completion.chunk","created":1791020360,"model":"deepseek-v4.1-flash","choices":[{"index":0,"finish_reason":null,"logprobs":null,"delta":{"role":null,"content":"","reasoning_content":null,"tool_calls":[{"index":0,"id":null,"type":null,"function":{"name":null,"arguments":""}}]}}],"usage":null}
+
+","created":1791020360,"model":"deepseek-v4.1-flash","choices":[{"index":0,"finish_reason":null,"logprobs":null,"delta":{"role":null,"content":"","reasoning_content":null,"tool_calls":[{"index":0,"id":null,"type":null,"function":{"name":null,"arguments":""}}]}}],"usage":null}
+

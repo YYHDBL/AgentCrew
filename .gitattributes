@@ -1,0 +1,2 @@
+# SSE 原始录制的末尾空行属于事件边界。
+backend/tests/fixtures/*.sse whitespace=-blank-at-eof

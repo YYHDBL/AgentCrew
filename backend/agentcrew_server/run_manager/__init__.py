@@ -26,6 +26,7 @@ import asyncio
 import json
 import logging
 import time
+import traceback
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -34,9 +35,12 @@ from typing import TYPE_CHECKING, Any
 import httpx
 
 from agentcrew_core.events import RunEventType
+from agentcrew_core.memory import sha256
+from agentcrew_core.memory.budget import ContextBudgetError
 from agentcrew_core.loop import (
     LoopDeps,
     LoopGates,
+    LoopResult,
     context_fingerprint,
     env_block,
     run_task,
@@ -55,6 +59,11 @@ from agentcrew_core.tools.scheduler import (
 
 from ..bus import Subscription, Topic
 from ..providers import ConfiguredProvider, bind_slot
+from ..memory.tokenizer import TOKENIZER_FIELDS
+from ..memory.snapshots import MemorySnapshotError
+from ..memory.checkpoints import CheckpointCorrupt
+from ..tool_outputs import ArtifactIntegrityError
+from ..governance.resources import GovernanceError
 
 if TYPE_CHECKING:
     from .approvals import ApprovalService
@@ -115,6 +124,12 @@ class RunManager:
         approvals: "ApprovalService",
         scheduler: "ToolScheduler",
         questions: "QuestionService",
+        memory=None,
+        snapshots=None,
+        memory_search=None,
+        memory_skills=None,
+        summaries=None,
+        checkpoints=None,
     ):
         self._db = db
         self._store = event_store
@@ -124,6 +139,12 @@ class RunManager:
         self._approvals = approvals
         self._scheduler = scheduler
         self._questions = questions
+        self._memory = memory
+        self._snapshots = snapshots
+        self._memory_search = memory_search
+        self._memory_skills = memory_skills
+        self._summaries = summaries
+        self._checkpoints = checkpoints
         self._runs: dict[str, _Run] = {}
         self._guardrails: dict[str, str] = {}  # task_id → 护栏提示（接续注入）
         self._recovery = None  # C9：RecoveryService（cli 装配后注回，resume 重建用）
@@ -176,6 +197,21 @@ class RunManager:
             self._on_event(item)
 
     def _on_event(self, event) -> None:
+        if hasattr(self, "automation") and event.type == RunEventType.CRON_JOB_CHANGED:
+            for task_id, active in tuple(self._runs.items()):
+                row = self.automation.task(task_id)
+                if row is not None and row["id"] == event.payload["job_id"] and (not row["enabled"] or row["deleted_at"] or row["revision"] != row["occurrence_revision"]):
+                    active.fail_reason = "PLAN_DISABLED：计划已停用或修订已经改变"
+                    active.task.cancel()
+            return
+        if hasattr(self, "grants") and event.type in {RunEventType.GOVERNANCE_GRANT_CHANGED,
+                RunEventType.GOVERNANCE_ROLE_CHANGED, RunEventType.GOVERNANCE_RESOURCE_CHANGED, RunEventType.GOVERNANCE_RULE_CHANGED,
+                RunEventType.GOVERNANCE_SKILL_VERSION_PUBLISHED}:
+            for task_id, active in tuple(self._runs.items()):
+                if self.grants.affects(event, task_id):
+                    active.fail_reason = "AUTHORIZATION_REVOKED：当前执行授权已经变化"
+                    active.task.cancel()
+            return
         if event.type in (RunEventType.RUN_QUEUED, RunEventType.RUN_RESUMED):
             self._spawn(event.task_run_id, event.conversation_id,
                         resume=event.type == RunEventType.RUN_RESUMED)
@@ -225,6 +261,7 @@ class RunManager:
             "model": cfg.model,
             "base_url": cfg.base_url,
             "max_tokens": cfg.max_tokens,
+            **{field: getattr(cfg, field) for field in TOKENIZER_FIELDS},
             "api_key_sha256": input_hash(
                 {"api_key": cfg.api_key})[:16],
         }
@@ -233,46 +270,107 @@ class RunManager:
 
     async def _emit(self, task_run_id: str, conversation_id: str,
                     event_type: str, payload: dict,
-                    attempt_no: int | None = 1):
+                    attempt_no: int | None = 1, extra_writes=None):
         return await self._store.append(
             task_run_id=task_run_id, conversation_id=conversation_id,
             type=RunEventType(event_type), payload=payload,
             attempt_no=attempt_no,
+            extra_writes=extra_writes,
         )
 
     async def _assemble_attempt(self, conversation_id: str, task_run_id: str):
+        if hasattr(self, "identities"):
+            self.identities.task(task_run_id)
         """attempt 装配：配置/环境块/工具 schema 在此刻绑定（v1.7 配置
         快照 + fingerprint）。initial 与 resume 共用（start_resume 发
         run.resumed 前取同一份指纹）。DB 读取全在线程内。"""
 
         def build_all():
-            slot = self._bind_slot("main")
+            slot_name = self._employee_slot(task_run_id)
+            slot = self._bind_slot(slot_name)
             conv = self._sessions.conversation_or_404(conversation_id)
             scope = self._sessions.scope_of(conv)
             folders = [f["path"] for f in
                        json.loads(conv["folders_json"] or "[]")]
             tools = self._scheduler.registry.schemas()
+            authorization = None
+            if hasattr(self, "grants"):
+                tools, authorization = self.grants.schemas(task_run_id, tools)
             system = SYSTEM_PROMPT + "\n\n" + env_block(
                 datetime.now(), scope["workspace_dir"],
                 scope["materials_dir"], folders, conv["workspace_id"])
-            return (slot, tools, system, conv["agent_id"],
-                    context_fingerprint(system, tools,
-                                        self._model_config(slot)))
+            if hasattr(self, "identities"):
+                bound = json.loads(self._db.read_conn.execute("SELECT agent_spec FROM task_governance WHERE task_run_id=?", (task_run_id,)).fetchone()[0])
+                system += "\n\n【当前任务绑定的员工岗位】\n" + bound["position"]
+            fingerprint = context_fingerprint(system, tools, self._model_config(slot))
+            fingerprint["model_slot"] = slot_name
+            if authorization is not None:
+                fingerprint["authorization_sha256"] = authorization["sha256"]
+            if hasattr(self, "identities"):
+                fingerprint["agent_spec_sha256"] = input_hash(bound)
+            return slot, tools, system, conv["agent_id"], fingerprint
 
-        return await asyncio.to_thread(build_all)
+        slot, tools, system, agent, fingerprint = await asyncio.to_thread(build_all)
+        if self._snapshots is not None:
+            aux = self._bind_slot("aux")
+            snapshot = await self._snapshots.ensure(conversation_id, task_run_id,
+                provider=ConfiguredProvider({"aux": aux}, client=self._http, session_id=conversation_id),
+                aux_model=aux.model, default_role=SYSTEM_PROMPT)
+            memory_block = snapshot["system_block"]
+            if hasattr(self._memory, "skill_versions"):
+                from agentcrew_core.memory import snapshot_prompt
+                from ..memory.store import MemoryIdentity, canonical
+                memory_block = snapshot_prompt(snapshot["stores"])
+                identity = MemoryIdentity(snapshot["scope"]["workspace_id"], agent, "agent", agent, conversation_id, task_run_id)
+                index = self._memory.skill_versions.task_index(identity)
+                system += "\n\n【当前任务已授权Skill版本索引；正文通过skill_view读取】\n" + canonical(index)
+                fingerprint["skill_versions"] = self._memory.skill_versions.task_bindings(identity)
+            system += "\n\n" + memory_block
+            bound_versions = fingerprint.get("skill_versions")
+            slot_name = fingerprint["model_slot"]
+            agent_spec_sha = fingerprint.get("agent_spec_sha256")
+            authorization_sha = fingerprint.get("authorization_sha256")
+            fingerprint = context_fingerprint(system, tools, self._model_config(slot))
+            fingerprint["model_slot"] = slot_name
+            if agent_spec_sha is not None:
+                fingerprint["agent_spec_sha256"] = agent_spec_sha
+            if bound_versions is not None:
+                fingerprint["skill_versions"] = bound_versions
+            if authorization_sha is not None:
+                fingerprint["authorization_sha256"] = authorization_sha
+            fingerprint.update(memory_snapshot_id=snapshot["snapshot_id"], memory_snapshot_sha256=snapshot["sha256"],
+                               memory_block_sha256=sha256(memory_block.encode()))
+        return slot, tools, system, agent, fingerprint
+
+    def _employee_slot(self, task_run_id):
+        if not hasattr(self, "identities"):
+            return "main"
+        row = self._db.read_conn.execute("SELECT agent_spec FROM task_governance WHERE task_run_id=?", (task_run_id,)).fetchone()
+        if row is None:
+            raise GovernanceError("OUT_OF_SCOPE", "员工模型槽缺少任务配置绑定", 403)
+        return json.loads(row[0])["model_slot"]
 
     async def start_resume(self, task_run_id: str, conversation_id: str,
-                           resume_reason: str, attempt_no: int) -> None:
+                           resume_reason: str, attempt_no: int, request_identity=None) -> None:
         """C9：发 run.resumed（含与 run.started 同源的指纹）→ 总线派发
         resume runner。校验已由 RecoveryService.resume 完成。"""
         _slot, _tools, _system, _agent, fingerprint = \
             await self._assemble_attempt(conversation_id, task_run_id)
+        def record_actor(conn, event):
+            from ..db.audit import append_audit
+            if request_identity is not None:
+                self.identities.conversation(request_identity, conversation_id, conn)
+                append_audit(conn, ts=event.ts, actor_type="user", actor_id=request_identity.effective_user_id,
+                    action="run.resume_requested", resource_type="task_run", resource_id=task_run_id,
+                    detail=json.dumps({"credential_owner_id": request_identity.credential_owner_id, "attempt_no": attempt_no,
+                        "scope": self.identities.resources.scope("agent", _agent, conn)}, ensure_ascii=False, sort_keys=True))
         await self._emit(task_run_id, conversation_id, "run.resumed", {
             "attempt_no": attempt_no,
             "attempt_id": uuid.uuid4().hex,
             "resume_reason": resume_reason,
             "context_fingerprint": fingerprint,
-        }, attempt_no=attempt_no)
+            **({"actor_id": request_identity.effective_user_id, "credential_owner_id": request_identity.credential_owner_id} if request_identity else {}),
+        }, attempt_no=attempt_no, extra_writes=record_actor)
 
     async def _runner(self, task_run_id: str, conversation_id: str,
                       *, resume: bool = False) -> None:
@@ -303,19 +401,34 @@ class RunManager:
             # ── attempt 装配：配置/环境块/工具 schema 全部在此刻绑定 ──
             slot, tools, system, _agent_id, fingerprint = \
                 await self._assemble_attempt(conversation_id, task_run_id)
-            provider = ConfiguredProvider({"main": slot}, client=self._http,
+            aux_slot = self._bind_slot("aux") if self._checkpoints is not None else None
+            slot_name = fingerprint["model_slot"]
+            provider = ConfiguredProvider({slot_name: slot}, client=self._http,
                                           session_id=conversation_id)
             ctx = await asyncio.to_thread(
                 self._sessions.build_work_context, conversation_id,
                 task_run_id)
             ctx.ask_resolver = self._questions.make_resolver(
                 task_run_id, conversation_id)
+            if self._memory is not None:
+                ctx.memory_writer = self._memory.run_tool
+            if self._memory_search is not None:
+                ctx.memory_search = self._memory_search.run_tool
+            if self._memory_skills is not None:
+                ctx.memory_skills = self._memory_skills.run_tool
+            if hasattr(self, "cron_proposals"):
+                ctx.schedule_proposal = self.cron_proposals.execute
+            if hasattr(self, "trace_reader"):
+                ctx.trace_reader = self.trace_reader.run_tool
 
             async def sink(event_type: str, payload: dict) -> None:
-                await self._emit(task_run_id, conversation_id,
+                if event_type == "llm.request_started":
+                    payload = {**payload, "tool_declarations": tools}
+                return await self._emit(task_run_id, conversation_id,
                                  event_type, payload, attempt_no=attempt_no)
 
             ctx.emit = sink
+            provider.budget_sink = sink
 
             if resume:
                 # C9 §7：attempt 行已由 run.resumed 投影建立，不重发
@@ -329,9 +442,15 @@ class RunManager:
                 # S5：与 initial 同口径——同会话已完成任务的（指令, 回复）
                 # 对先入上下文，再拼接本任务重放历史（同任务两次 attempt 的
                 # 上下文集合一致）
-                messages = await asyncio.to_thread(
-                    self._history_messages, conversation_id) + replay.messages
+                task_checkpoint = (await asyncio.to_thread(self._checkpoints.latest,
+                    conversation_id, task_run_id=task_run_id)) if self._checkpoints is not None else None
+                messages = (replay.messages if task_checkpoint else
+                    await asyncio.to_thread(self._history_messages, conversation_id) + replay.messages)
                 system = system + "\n\n" + ledger
+                if hasattr(self, "automation") and self.automation.task(task_run_id) is not None:
+                    reason = self._db.read_conn.execute("SELECT resume_reason FROM run_attempts WHERE task_run_id=? AND attempt_no=?", (task_run_id, attempt_no)).fetchone()[0]
+                    if (reason or "").startswith("automatic_cron_retry:"):
+                        messages.append(user_text_message("本次是同一计划发生的自动重试。原指令的失败部分尚未解决，请依据上述真实事件和副作用账本实际重新核查失败操作，再报告本次结果。保留已完成副作用，禁止从头重复整条指令。原指令：\n" + row["instruction"]))
             else:
                 attempt_id = uuid.uuid4().hex
                 await self._emit(task_run_id, conversation_id, "run.started", {
@@ -344,6 +463,9 @@ class RunManager:
                 guardrail = self._guardrails.pop(task_run_id, None)
                 messages.append(user_text_message(
                     instruction + (f"\n\n{guardrail}" if guardrail else "")))
+                messages[-1]["_task_instruction_id"] = task_run_id
+                if row["instruction_global_seq"] is not None:
+                    messages[-1]["_event_global_seqs"] = [row["instruction_global_seq"]]
 
             # 停滞计时从 attempt 生效重置起（外审建议④）：等名额耗时
             # 不计入窗口，启动即误判 stalled
@@ -352,7 +474,10 @@ class RunManager:
                 self._watchdog(run, gates), name=f"watchdog:{task_run_id[:12]}")
 
             async def execute(call: ToolCall) -> ToolResult:
-                if call.name == "ask_user":
+                if hasattr(self, "identities"):
+                    self.identities.task(task_run_id)
+                automated = hasattr(self, "automation") and self.automation.task(task_run_id) is not None
+                if call.name == "ask_user" and not automated:
                     return await self._ask_user_direct(
                         run, sink, ctx, call)
                 return await self._approvals.run_tool(
@@ -362,17 +487,45 @@ class RunManager:
                         call_id=call.id, name=call.name, input=call.input),
                     ctx=ctx)
 
+            async def before_request() -> None:
+                nonlocal tools
+                if hasattr(self, "identities"):
+                    self.identities.task(task_run_id)
+                if hasattr(self, "grants"):
+                    tools, authorization = self.grants.schemas(task_run_id, self._scheduler.registry.schemas())
+                    await sink("governance.authorization_checked", {
+                        "actor_id": authorization["actor_id"], "agent_id": run.agent_id, "allowed": True,
+                        "reason": "当前角色、资源及Grant已核查", "authorization_sha256": authorization["sha256"],
+                        "scope": self.identities.resources.scope("agent", run.agent_id, self._db.read_conn),
+                        "tool_names": [schema["name"] for schema in tools]})
+                if self._checkpoints is not None:
+                    await self._checkpoints.maybe_compact(
+                        conversation_id=conversation_id, task_run_id=task_run_id,
+                        attempt_no=attempt_no,
+                        snapshot_id=fingerprint["memory_snapshot_id"],
+                        messages=messages, main_slot=slot, aux_slot=aux_slot,
+                        tools=tools, system=system, client=self._http,
+                        ctx=ctx, sink=sink,
+                        on_progress=lambda: setattr(run, "last_progress", time.monotonic()))
+
             deps = LoopDeps(
                 request=lambda: provider.stream(
-                    "main", messages, tools, system=system),
+                    slot_name, messages, tools, system=system),
                 execute=execute, emit=sink,
                 on_progress=lambda: setattr(
                     run, "last_progress", time.monotonic()),
-                gates=gates, model=slot.model,
+                gates=gates, model=slot.model, model_slot=slot_name,
                 start_ordinal=(await asyncio.to_thread(
                     self._next_ordinal, task_run_id) if resume else 1),
+                before_request=before_request if self._checkpoints is not None or hasattr(self, "identities") else None,
             )
             result = await run_task(messages, deps)
+            if result.status == "completed" and hasattr(self, "automation") and self.automation.task(task_run_id) is not None:
+                failure = self.automation.attempt_error(task_run_id, attempt_no)
+                if failure is None:
+                    failure = self.automation.retry_without_evidence(task_run_id, attempt_no)
+                if failure is not None:
+                    result = LoopResult("failed", final_text=result.final_text, reason="cron_tool_failure:" + failure)
             if result.status == "completed":
                 terminal = "completed"
                 await self._finish(task_run_id, conversation_id,
@@ -427,10 +580,36 @@ class RunManager:
                             conversation_id, task_run_id, attempt_no=attempt_no)
             finally:
                 raise
+        except MemorySnapshotError as error:
+            terminal = "failed"
+            fail_reason = error.result["error"]
+            await self._finish(task_run_id, conversation_id, "run.failed",
+                {"reason": fail_reason, "error": error.result}, run=run, attempt_no=attempt_no)
         except BaseException as e:  # noqa: BLE001 —— asyncio 任务异常→RUN_FAILED
             _log.exception("run.crash task=%s", task_run_id)
             terminal = "failed"
             fail_reason = f"internal:{type(e).__name__}"
+            causes = [e]
+            while causes:
+                cause = causes.pop()
+                if isinstance(cause, BaseExceptionGroup):
+                    causes.extend(cause.exceptions)
+                elif isinstance(cause, GovernanceError):
+                    fail_reason = f"{cause.code}：{cause.message}"
+                    break
+                elif isinstance(cause, ContextBudgetError):
+                    fail_reason = str(cause)
+                    break
+                elif isinstance(cause, json.JSONDecodeError) and any(
+                        frame.f_code.co_name == "_summarize" and frame.f_globals.get("__name__") == "agentcrew_server.memory.checkpoints"
+                        for frame, _line in traceback.walk_tb(cause.__traceback__)):
+                    fail_reason = "CONTEXT_SUMMARY_FAILED：辅助模型返回的 JSON 非法"
+                elif isinstance(cause, (CheckpointCorrupt, ArtifactIntegrityError)):
+                    fail_reason = str(cause)
+                elif isinstance(cause, OSError) and "artifacts" in str(cause):
+                    fail_reason = "ARTIFACT_WRITE_FAILED"
+                elif isinstance(cause, RuntimeError) and "EXTERNALIZATION_UNAVAILABLE" in str(cause):
+                    fail_reason = "EXTERNALIZATION_UNAVAILABLE"
             try:
                 # F2 防线：兜底补发前查终态事件是否已在库
                 if not await self._terminal_event_exists(task_run_id):
@@ -479,6 +658,9 @@ class RunManager:
 
     async def _settle_dispatched(self, task_run_id: str,
                                  conversation_id: str) -> None:
+        if self._recovery is not None:
+            await self._recovery._settle_dispatched(task_run_id, conversation_id)
+            return
         rows = await asyncio.to_thread(self._dispatched_calls, task_run_id)
         for call_id in rows:
             await self._emit(task_run_id, conversation_id,
@@ -614,7 +796,9 @@ class RunManager:
     def _task_row(self, task_run_id: str):
         return self._db.read_conn.execute(
             "SELECT id, conversation_id, instruction, status,"
-            " current_attempt_no FROM task_runs"
+            " current_attempt_no,(SELECT MIN(global_seq) FROM run_events e "
+            "WHERE e.task_run_id=task_runs.id AND e.type='run.queued') AS instruction_global_seq "
+            "FROM task_runs"
             " WHERE id = ?", (task_run_id,)).fetchone()
 
     def _next_ordinal(self, task_run_id: str) -> int:
@@ -628,21 +812,34 @@ class RunManager:
     def _history_messages(self, conversation_id: str) -> list[dict]:
         """同会话已完成任务的（指令, 最终回复）对——上下文连续（v1.7：模型
         本可见此前交换）；失败/取消的任务不进上下文，由护栏提示显式化。"""
+        if self._checkpoints is not None:
+            checkpoint = self._checkpoints.latest(conversation_id)
+            if checkpoint is not None:
+                recent = self._summaries.messages(conversation_id) if self._summaries is not None else []
+                return recent + self._checkpoints.completed_after(checkpoint)
         rows = self._db.read_conn.execute(
-            "SELECT id, instruction FROM task_runs"
+            "SELECT id, instruction,"
+            "(SELECT MIN(global_seq) FROM run_events e WHERE e.task_run_id=task_runs.id AND e.type='run.queued'),"
+            "(SELECT MAX(global_seq) FROM run_events e WHERE e.task_run_id=task_runs.id AND e.type='run.completed') "
+            "FROM task_runs"
             " WHERE conversation_id = ? AND status = 'completed'"
             " ORDER BY created_at", (conversation_id,)).fetchall()
-        messages: list[dict] = []
-        for task_id, instruction in rows:
+        messages: list[dict] = self._summaries.messages(conversation_id) if self._summaries is not None else []
+        for task_id, instruction, instruction_source, reply_source in rows:
             reply = self._db.read_conn.execute(
                 "SELECT content FROM messages"
                 " WHERE task_run_id = ? AND role = 'assistant'"
                 " ORDER BY created_at DESC LIMIT 1", (task_id,)).fetchone()
             messages.append(user_text_message(instruction))
+            messages[-1]["_task_instruction_id"] = task_id
+            if instruction_source is not None:
+                messages[-1]["_event_global_seqs"] = [instruction_source]
             if reply and reply[0]:
                 messages.append({"role": "assistant",
                                  "content": [{"type": "text",
                                               "text": reply[0]}]})
+                if reply_source is not None:
+                    messages[-1]["_event_global_seqs"] = [reply_source]
         return messages
 
     # ── 取消（API 入口）───────────────────────────────────────────

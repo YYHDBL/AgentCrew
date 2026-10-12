@@ -1,6 +1,6 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
-import { appendFileSync } from 'node:fs'
+import { accessSync, appendFileSync, constants, existsSync } from 'node:fs'
 import { createServer } from 'node:net'
 import { join, resolve } from 'node:path'
 import { app, BrowserWindow, dialog } from 'electron'
@@ -45,8 +45,72 @@ export class Sidecar {
   getBackendPort(): number | null { return this.port }
   getToken(): string | null { return this.port === null ? null : this.token }
 
-  async start(): Promise<void> {
-    if (this.stopping) return
+  /** 启动/重启统一排队：并发调用串行执行，同一时刻至多一个启动流程。 */
+  private queue: Promise<void> = Promise.resolve()
+
+  async restart(): Promise<void> {
+    const run = this.queue.then(async () => {
+      if (!await this.stop()) throw new Error('任务服务未完成关闭，禁止重复启动')
+      this.port = null
+      this.token = null
+      this.stopping = false
+      this.restarts = []
+      await this.startOnce(true)
+    })
+    this.queue = run.catch(() => {})
+    await run
+  }
+
+  async start(waitForReady = false): Promise<void> {
+    const run = this.queue.then(() => this.startOnce(waitForReady))
+    this.queue = run.catch(() => {})
+    await run
+  }
+
+  /**
+   * 解析本次启动命令：生产用包内当前架构真实 sidecar（绝对路径 + 显式计数
+   * 资源目录），开发保持仓库 uv 启动；AGENTCREW_SIDECAR_BINARY 仅在未打包
+   * 时生效，供真实打包产物的监管检查使用。生产资源缺失立即报错，不回退。
+   */
+  private resolveLaunch(requestedPort: number, token: string): { command: string; args: string[]; cwd: string; env: NodeJS.ProcessEnv } {
+    const baseArgs = ['--port', String(requestedPort), '--data-dir', this.dataDir, '--parent-pid', String(process.pid)]
+    if (app.isPackaged) {
+      const platformDir = process.platform === 'darwin' ? `darwin-${process.arch}` : process.platform
+      const binary = join(process.resourcesPath, 'sidecar', platformDir, 'agentcrew-sidecar')
+      const tokenizerDir = join(process.resourcesPath, 'tokenizers')
+      const problems: string[] = []
+      if (!existsSync(binary)) problems.push(`sidecar 可执行文件缺失：${binary}`)
+      else {
+        try { accessSync(binary, constants.X_OK) } catch { problems.push(`sidecar 可执行文件不可执行：${binary}`) }
+      }
+      if (!existsSync(join(tokenizerDir, 'manifest.json'))) problems.push(`模型计数资源缺失：${tokenizerDir}`)
+      if (problems.length > 0) {
+        const detail = `${problems.join('\n')}\n启动日志：${this.launchLogPath}`
+        appendLaunchLog(`${new Date().toISOString()} 资源缺失\n${detail}\n`)
+        dialog.showMessageBoxSync({
+          type: 'error', title: '应用资源缺失', message: '应用携带的任务服务资源不完整，无法启动。',
+          detail, buttons: ['确定']
+        })
+        throw new Error(`应用资源缺失：${problems.join('；')}`)
+      }
+      // Finder 启动的 PATH/工作目录不可依赖：绝对路径 + 独立可写 cwd
+      return { command: binary, args: baseArgs, cwd: app.getPath('userData'),
+               env: { ...process.env, AGENTCREW_TOKEN: token, AGENTCREW_TOKENIZER_DIR: tokenizerDir } }
+    }
+    const override = process.env.AGENTCREW_SIDECAR_BINARY
+    if (override) {
+      const tokenizerDir = process.env.AGENTCREW_TOKENIZER_DIR
+        ?? resolve(app.getAppPath(), 'resources/tokenizers')
+      return { command: resolve(override), args: baseArgs, cwd: app.getPath('userData'),
+               env: { ...process.env, AGENTCREW_TOKEN: token, AGENTCREW_TOKENIZER_DIR: tokenizerDir } }
+    }
+    return { command: 'uv', args: ['run', 'python', '-m', 'agentcrew_server', ...baseArgs],
+             cwd: resolve(app.getAppPath(), '../backend'),
+             env: { ...process.env, AGENTCREW_TOKEN: token } }
+  }
+
+  private async startOnce(waitForReady: boolean): Promise<void> {
+    if (this.stopping || this.port !== null) return // 已在停止流程或已有就绪实例
     const requestedPort = await new Promise<number>((resolvePort, reject) => {
       const server = createServer()
       server.once('error', reject)
@@ -59,15 +123,22 @@ export class Sidecar {
       this.failed(`无法分配本地端口：${error.message}`)
       return null
     })
-    if (requestedPort === null || this.stopping) return
+    if (requestedPort === null || this.stopping) {
+      if (waitForReady) throw new Error('任务服务启动未能分配端口或已经停止')
+      return
+    }
     const token = randomBytes(32).toString('hex')
-    const child = spawn('uv', ['run', 'python', '-m', 'agentcrew_server', '--port', String(requestedPort), '--data-dir', this.dataDir, '--parent-pid', String(process.pid)], {
-      cwd: resolve(app.getAppPath(), '../backend'),
-      env: { ...process.env, AGENTCREW_TOKEN: token },
+    const launch = this.resolveLaunch(requestedPort, token)
+    const child = spawn(launch.command, launch.args, {
+      cwd: launch.cwd,
+      env: launch.env,
       detached: true,
       stdio: ['pipe', 'pipe', 'pipe']
     })
     child.stdin.end()
+    let readyResolve: (() => void) | undefined
+    let readyReject: ((error: Error) => void) | undefined
+    const ready = waitForReady ? new Promise<void>((resolveReady, rejectReady) => { readyResolve = resolveReady; readyReject = rejectReady }) : null
     this.child = child
     this.port = null
     this.token = null
@@ -102,6 +173,7 @@ export class Sidecar {
       clearTimeout(timeout)
       clearInterval(health)
       failureReason = reason
+      readyReject?.(new Error(reason))
       terminate()
     }
     child.stdout.on('data', (chunk: Buffer) => {
@@ -141,6 +213,7 @@ export class Sidecar {
     child.once('error', (error) => fail(`启动进程失败：${error.message}`))
     child.once('close', (code, signal) => {
       if (this.child !== child) return
+      if (!settled) { readyReject?.(new Error(`任务服务在就绪前退出：${code ?? signal}`)); settled = true }
       this.child = null
       this.port = null
       this.token = null
@@ -163,8 +236,10 @@ export class Sidecar {
         clearInterval(health)
         this.port = actualPort
         this.token = token
+        readyResolve?.()
       } catch { /* 启动期间继续轮询。 */ }
     }, 250)
+    if (ready) await ready
   }
 
   private failed(reason: string, output = ''): void {
@@ -173,6 +248,7 @@ export class Sidecar {
     const now = Date.now()
     this.restarts = this.restarts.filter((time) => now - time < RESTART_WINDOW_MS)
     if (this.restarts.length >= MAX_RESTARTS) {
+      appendLaunchLog(`${new Date().toISOString()} 已达到自动重启上限（${MAX_RESTARTS}），停止自动重启\n`)
       const window = BrowserWindow.getAllWindows()[0]
       if (window && !window.isDestroyed()) {
         window.show()

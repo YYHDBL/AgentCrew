@@ -66,7 +66,42 @@ class RunEventType(StrEnum):
 
     # 上下文管理（M1 起启用，占位）
     CONTEXT_COMPACTED = "context.compacted"
+    CONTEXT_BUDGET_CHECKED = "context.budget_checked"
     TOOL_RESULT_EXTERNALIZED = "tool.result_externalized"
+
+    MEMORY_UPDATED = "memory.updated"
+    MEMORY_ARCHIVED = "memory.archived"
+    MEMORY_SNAPSHOT_CREATED = "memory.snapshot_created"
+    SKILL_PATCHED = "skill.patched"
+    MEMORY_JOB_STATUS = "memory.job_status"
+    MEMORY_SUMMARY_CREATED = "memory.summary_created"
+    MEMORY_APPROVAL_REQUESTED = "memory.approval_requested"
+    MEMORY_APPROVAL_RESOLVED = "memory.approval_resolved"
+    MEMORY_CURATED = "memory.curated"
+    GOVERNANCE_RESOURCE_CHANGED = "governance.resource_changed"
+    GOVERNANCE_IDENTITY_CHANGED = "governance.identity_changed"
+    GOVERNANCE_ROLE_CHANGED = "governance.role_changed"
+    GOVERNANCE_GRANT_CHANGED = "governance.grant_changed"
+    GOVERNANCE_RULE_CHANGED = "governance.rule_changed"
+    GOVERNANCE_SKILL_VERSION_PUBLISHED = "governance.skill_version_published"
+    GOVERNANCE_AUTHORIZATION_CHECKED = "governance.authorization_checked"
+    GOVERNANCE_AUDIT_VERIFIED = "governance.audit_verified"
+    GOVERNANCE_BACKUP_CREATED = "governance.backup_created"
+    GOVERNANCE_BACKUP_RESTORED = "governance.backup_restored"
+    GOVERNANCE_ACCESS_DENIED = "governance.access_denied"
+    CRON_JOB_CHANGED = "cron.job_changed"
+    CRON_JOB_FIRED = "cron.job_fired"
+    CRON_JOB_MISSED = "cron.job_missed"
+    CRON_JOB_SKIPPED = "cron.job_skipped"
+    CRON_JOB_FAILED = "cron.job_failed"
+    CRON_JOB_STATUS = "cron.job_status"
+    CRON_PROPOSAL_REQUESTED = "cron.proposal_requested"
+    CRON_PROPOSAL_RESOLVED = "cron.proposal_resolved"
+    REVIEW_JOB_STATUS = "review.job_status"
+    AUDIT_REPORTED = "audit.reported"
+    NOTIFICATION_CREATED = "notification.created"
+    NOTIFICATION_UPDATED = "notification.updated"
+    RUNTIME_POWER_CHANGED = "runtime.power_changed"
 
 
 @dataclass(frozen=True)
@@ -80,12 +115,13 @@ class Event:
     id: str
     task_run_id: str | None
     seq: int
-    conversation_id: str
+    conversation_id: str | None
     type: RunEventType
     payload: dict[str, Any] = field(default_factory=dict)
     attempt_no: int | None = None
     agent_run_id: str | None = None
     ts: str = ""
+    followups: tuple["Event", ...] = field(default=(), compare=False, repr=False)
 
     def as_frame(self) -> dict[str, Any]:
         frame: dict[str, Any] = {

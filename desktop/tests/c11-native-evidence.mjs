@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { chromium } from 'playwright-core'
 import { readFile, writeFile } from 'node:fs/promises'
+import { recordDesktopEvidence } from './helpers/desktop.mjs'
 
 // 原生材料选择由桌面操作完成，此脚本只检查真实响应并保存证据。
 const browser = await chromium.connectOverCDP('http://127.0.0.1:9229')
@@ -17,7 +18,7 @@ assert.equal(result.state.state, 'idle')
 assert.equal(await readFile(`${result.scope.materials_dir}/package.json`, 'utf8'), await readFile('package.json', 'utf8'))
 assert.equal(result.scope.folders[0].access, 'read_write')
 assert.ok(result.events.items.some((event) => event.type === 'materials.imported'))
-await page.screenshot({ path: '../docs/acceptance/assets/C11/native-materials.png' })
+await recordDesktopEvidence(page, '../docs/acceptance/assets/C11/native-materials-interface.json')
 await writeFile('../docs/acceptance/assets/C11/native-materials.json', JSON.stringify(result, null, 2))
 console.log(JSON.stringify({ nativeMaterials: 'passed', conversation: result.id, scope: result.scope }))
 await browser.close()

@@ -16,9 +16,13 @@ data/
 node_modules/
 dist/
 out/
+desktop/.artifacts/
 
 # Electron 打包
-release/
+/desktop/release/
+
+# M4 打包生成的 sidecar/计数资源（声明在 scripts/release/，产物不入库）
+desktop/resources/
 
 # macOS
 .DS_Store
@@ -27,3 +31,17 @@ release/
 .idea/
 .vscode/
 .clean/
+
+# 本地内部文档与验收产物
+/docs/acceptance/
+/docs/architecture/
+/docs/assets/
+/docs/decisions/
+/docs/design/
+/docs/features/
+/docs/plans/
+/docs/product/
+/docs/tasks/
+/docs/tech/
+/desktop/evidence/
+/desktop/assets/brand/README.md

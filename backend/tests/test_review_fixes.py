@@ -36,6 +36,7 @@ from agentcrew_server.db.event_store import EventStore
 from agentcrew_server.db.migrations import run_migrations
 from agentcrew_server.db.write_channel import WriteChannel
 from agentcrew_server.runtime import RuntimeState
+from agentcrew_server.tool_outputs import ToolOutputStore
 
 CONV, RUN, AGENT = "conv-1", "run-1", "agent-1"
 
@@ -72,8 +73,8 @@ def _ctx(a: Assembly, tmp_path: Path, **kw) -> WorkContext:
     scope = tmp_path / "ws"
     scope.mkdir(exist_ok=True)
     return WorkContext(
-        scope=[scope], protected=[], artifacts_dir=tmp_path / "art",
-        task_run_id=RUN, **kw,
+        scope=[scope], cwd=scope, protected=[], artifacts_dir=tmp_path / "art",
+        task_run_id=RUN, output_store=ToolOutputStore(), **kw,
     )
 
 
@@ -286,10 +287,11 @@ def test_f07_sandbox_denies_nonexistent_protected_path(tmp_path):
         a = Assembly(tmp_path)
         scope = tmp_path / "ws"
         secret = scope / "notyet-config.json"
-        ctx = WorkContext(scope=[scope], protected=[secret],
-                          artifacts_dir=tmp_path / "art", task_run_id=RUN)
-        from agentcrew_core.tools.builtin import _bash
-        result = await _bash(
+        scope.mkdir(exist_ok=True)
+        ctx = WorkContext(scope=[scope], cwd=scope, protected=[secret],
+                          artifacts_dir=tmp_path / "art", task_run_id=RUN,
+                          output_store=ToolOutputStore())
+        result = await ToolScheduler(build_default_registry()).run(
             ToolInvocation(new_call_id(), "bash",
                            {"command": f"echo pwned > '{secret}'"}), ctx)
         assert not result.ok, "受保护路径被写入"
@@ -346,7 +348,7 @@ def test_f09_full_output_persisted_in_terminal_event(tmp_path):
 
         ctx = WorkContext(scope=[tmp_path], protected=[],
                           artifacts_dir=tmp_path / "art", task_run_id=RUN,
-                          emit=emit)
+                          emit=emit, output_store=ToolOutputStore())
         big = tmp_path / "big.txt"
         big.write_text("x" * 5000)
         scheduler = ToolScheduler(build_default_registry())
@@ -555,16 +557,14 @@ def test_s04_read_file_externalization_missing(tmp_path):
     """artifacts_dir 未配置 + 超限输出：明确报错而非内联。"""
 
     async def scenario():
-        from agentcrew_core.tools.builtin import _read_file
-
         big = tmp_path / "big2.txt"
         big.write_text("y" * 40000)
         ctx = WorkContext(scope=[tmp_path], protected=[],
                           artifacts_dir=None, task_run_id=RUN)
-        result = await _read_file(
-            ToolInvocation(new_call_id(), "read_file",
-                           {"path": str(big), "limit": 10_000_000}), ctx)
-        assert not result.ok and result.error == "EXTERNALIZATION_UNAVAILABLE"
+        with pytest.raises(RuntimeError, match="EXTERNALIZATION_UNAVAILABLE"):
+            await ToolScheduler(build_default_registry()).run(
+                ToolInvocation(new_call_id(), "read_file",
+                               {"path": str(big), "limit": 10_000_000}), ctx)
 
     asyncio.run(scenario())
 
@@ -577,11 +577,10 @@ def test_s05_background_child_reaped_after_normal_exit(tmp_path):
     import subprocess
 
     async def scenario():
-        from agentcrew_core.tools.builtin import _bash
-
-        ctx = WorkContext(scope=[tmp_path], protected=[],
-                          artifacts_dir=tmp_path / "art", task_run_id=RUN)
-        result = await _bash(
+        ctx = WorkContext(scope=[tmp_path], cwd=tmp_path, protected=[],
+                          artifacts_dir=tmp_path / "art", task_run_id=RUN,
+                          output_store=ToolOutputStore())
+        result = await ToolScheduler(build_default_registry()).run(
             ToolInvocation(new_call_id(), "bash",
                            {"command": "sleep 30 & echo started"}), ctx)
         assert result.ok
@@ -634,9 +633,9 @@ def test_s08_dispatched_after_slots(tmp_path):
         async def emit(event_type, payload):
             order.append(event_type)
 
-        ctx = WorkContext(scope=[tmp_path], protected=[],
+        ctx = WorkContext(scope=[tmp_path], cwd=tmp_path, protected=[],
                           artifacts_dir=tmp_path / "art", task_run_id=RUN,
-                          emit=emit)
+                          emit=emit, output_store=ToolOutputStore())
         scheduler = ToolScheduler(build_default_registry(), max_concurrency=1)
         slow = asyncio.ensure_future(scheduler.run(
             ToolInvocation(new_call_id(), "bash",

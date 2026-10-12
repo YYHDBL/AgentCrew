@@ -44,6 +44,7 @@ from agentcrew_core.recovery import (
     replay_messages,
     side_effect_ledger,
 )
+from agentcrew_core.tools.builtin.externalize import _check_path
 
 from .db.audit import append_audit
 from .sessions import SessionError
@@ -59,7 +60,7 @@ _log = logging.getLogger("agentcrew.recovery")
 
 # 对账口径：全部非终态（终态 = completed/failed/cancelled 不扫）
 NON_TERMINAL_STATUSES = ("queued", "running", "waiting_user",
-                         "waiting_verification")
+                         "waiting_verification", "interrupted")
 
 
 def _now() -> str:
@@ -69,12 +70,13 @@ def _now() -> str:
 class RecoveryService:
     def __init__(self, db: "Database", event_store: "EventStore",
                  sessions: "SessionService", data_dir: Path,
-                 registry=None):
+                 registry=None, checkpoints=None):
         self._db = db
         self._store = event_store
         self._sessions = sessions
         self._data_dir = data_dir
         self._registry = registry  # 工具注册表（K4：read_only 豁免判定）
+        self._checkpoints = checkpoints
         self._run_manager: "RunManager | None" = None  # cli 装配后注回
 
     def wire(self, run_manager: "RunManager") -> None:
@@ -124,6 +126,22 @@ class RecoveryService:
                 continue  # §6.2 v1.8 豁免：账本停 dispatched，重放合成占位
             if self._is_read_only(tool_name):
                 continue  # 外审 K4：纯读无副作用可核验，占位降级即可
+            if tool_name in {"memory_write", "skill_patch"}:
+                change = self._db.read_conn.execute("SELECT status,result FROM memory_changes WHERE change_id=?", (call_id,)).fetchone()
+                if change is not None and change[0] == "committed":
+                    result = json.loads(change[1])
+                    await self._store.append(task_run_id=task_id, conversation_id=conversation_id,
+                        type=RunEventType.TOOL_COMPLETED,
+                        payload={"call_id": call_id, "output": json.dumps(result, ensure_ascii=False),
+                                 "output_summary": "记忆意图已提交，恢复核对账本完成", "details": result})
+                    auto_done += 1
+                elif change is None:
+                    await self._store.append(task_run_id=task_id, conversation_id=conversation_id,
+                        type=RunEventType.TOOL_FAILED,
+                        payload={"call_id": call_id, "error": "MEMORY_NOT_COMMITTED", "output_summary": "记忆调用没有持久化意图，没有发生写入"})
+                else:
+                    raise RuntimeError("记忆未完成意图必须先恢复，再核对工具调用")
+                continue
             artifact_path: str | None = None
             if effect_class == "verifiable":
                 artifact_path = await asyncio.to_thread(
@@ -181,6 +199,9 @@ class RecoveryService:
         expected = p.get("content_sha256")
         raw_path = (p.get("input") or {}).get("path", "")
         if not expected or not raw_path:
+            return None
+        context = self._sessions.build_work_context(conversation_id, task_id)
+        if _check_path(context, str(raw_path), read_only=True):
             return None
         path = Path(str(raw_path)).expanduser()
         if not path.is_absolute():
@@ -242,6 +263,11 @@ class RecoveryService:
                 return ("verifiable：prepared 未记 content_sha256，"
                         "无法自动核验，待人工确认")
             path = Path(str(raw_path)).expanduser()
+            conversation = self._db.read_conn.execute("SELECT conversation_id FROM task_runs WHERE id=?", (task_id,)).fetchone()
+            context = self._sessions.build_work_context(conversation[0], task_id)
+            boundary = _check_path(context, str(raw_path), read_only=True)
+            if boundary:
+                return "verifiable：当前合法范围不允许读取核验目标，需保留待核验状态"
             if not path.is_absolute():
                 path = Path(self._task_cwd_for(task_id)) / path
             if not os.path.exists(path):
@@ -260,7 +286,7 @@ class RecoveryService:
         return self._task_cwd(row[0]) if row else str(self._data_dir)
 
     async def submit_verification(self, call_id: str, verdict: str,
-                                  note: str | None) -> dict:
+                                  note: str | None, request_identity=None) -> dict:
         if verdict not in ("confirmed_executed", "confirmed_not_executed"):
             raise SessionError(ErrorCode.VALIDATION_ERROR,
                                f"非法核验决定：{verdict}")
@@ -283,6 +309,8 @@ class RecoveryService:
                     raise SessionError(ErrorCode.NOT_FOUND,
                                        f"调用不存在：{call_id}")
                 task_id, conversation_id, status = row
+                if request_identity is not None:
+                    self.identities.conversation(request_identity, conversation_id, conn)
                 if status != "pending_verification":
                     raise SessionError(
                         ErrorCode.INVALID_TRANSITION,
@@ -292,13 +320,14 @@ class RecoveryService:
                     conversation_id=conversation_id,
                     type=RunEventType.TOOL_VERIFICATION_SUBMITTED,
                     payload={"call_id": call_id, "verdict": verdict,
-                             "note": note},
+                             "note": note, "actor": request_identity.effective_user_id if request_identity else "owner",
+                             "credential_owner_id": request_identity.credential_owner_id if request_identity else "owner"},
                 ))
                 append_audit(
-                    conn, ts=_now(), actor_type="user", actor_id="owner",
+                    conn, ts=_now(), actor_type="user", actor_id=request_identity.effective_user_id if request_identity else "owner",
                     action=f"tool.verification:{verdict}",
                     resource_type="tool_call", resource_id=call_id,
-                    detail=json.dumps({"note": note or ""},
+                    detail=json.dumps({"note": note or "", "credential_owner_id": request_identity.credential_owner_id if request_identity else "owner"},
                                       ensure_ascii=False),
                 )
                 conn.execute("COMMIT")
@@ -319,13 +348,28 @@ class RecoveryService:
 
     def rebuild_for_resume(self, task_run_id: str) -> tuple[ReplayResult, str]:
         """重放重建消息上下文 + 副作用账本文本（attempt 开始时调用）。"""
+        task = self._db.read_conn.execute(
+            "SELECT conversation_id FROM task_runs WHERE id=?", (task_run_id,)).fetchone()
+        checkpoint = (self._checkpoints.latest(task[0], task_run_id=task_run_id)
+                      if self._checkpoints is not None and task is not None else None)
         rows = self._db.read_conn.execute(
-            "SELECT seq, type, payload FROM run_events WHERE task_run_id=?"
+            "SELECT global_seq, seq, type, payload FROM run_events WHERE task_run_id=?"
             " ORDER BY seq", (task_run_id,)).fetchall()
+        replay_rows = ([row for row in rows if row[0] > checkpoint["source_global_seq"]]
+            if checkpoint else rows)
+        from .tool_outputs import ToolOutputStore
+
+        for _, _, event_type, payload in replay_rows:
+            if event_type in ("tool.completed", "tool.failed"):
+                ToolOutputStore.verify_record(json.loads(payload))
         result = replay_messages(
-            [tuple(r) for r in rows],
+            [(r[0], r[2], r[3]) for r in replay_rows],
             read_artifact=self._read_artifact,
+            instruction_task_id=task_run_id,
+            include_event_sources=True,
         )
+        if checkpoint is not None:
+            result.messages = checkpoint["messages"] + result.messages
         calls = self._db.read_conn.execute(
             "SELECT call_id, tool_name, input, status FROM tool_calls"
             " WHERE task_run_id=? ORDER BY prepared_at",
@@ -334,7 +378,7 @@ class RecoveryService:
         # 对"回答已落库、崩溃在等名额窗口"的调用误写"未获回答"
         return result, side_effect_ledger(
             [tuple(c) for c in calls],
-            answered=question_answers([tuple(r) for r in rows]))
+            answered=question_answers([tuple(r[1:]) for r in rows]))
 
     def _read_artifact(self, path_text: str) -> str | None:
         try:
@@ -343,7 +387,7 @@ class RecoveryService:
             return None
 
     async def resume(self, task_run_id: str,
-                     resume_reason: str | None) -> dict:
+                     resume_reason: str | None, request_identity=None, automatic_occurrence_id=None) -> dict:
         assert self._run_manager is not None, "RunManager 未装配"
         # 首次读取仅用于定位会话（conversation_id 不变量，无校验语义）；
         # 行状态与全部前置校验在会话锁内**重读**（外审回稿 S2：锁外校验
@@ -360,7 +404,23 @@ class RecoveryService:
                 raise SessionError(ErrorCode.NOT_FOUND,
                                    f"任务不存在：{task_run_id}")
             conversation_id, status, attempt_no = row
-            if status not in ("interrupted", "waiting_verification"):
+            if request_identity is not None:
+                self.identities.conversation(request_identity, conversation_id)
+            automated = None
+            if hasattr(self, "cron_recovery"):
+                automated = self.cron_recovery.executor.task(task_run_id)
+            automation_allowed = False
+            if automatic_occurrence_id is not None:
+                automation_allowed, reason = self.cron_recovery.permitted(self._db.read_conn, automatic_occurrence_id, automatic=True)
+                if automated is None or automated["occurrence_id"] != automatic_occurrence_id or not automation_allowed:
+                    raise SessionError(ErrorCode.INVALID_TRANSITION, reason or "自动重试的发生身份不匹配")
+            elif automated is not None and status == "failed":
+                occurrence = self.cron_recovery.store.occurrence(automated["occurrence_id"])
+                if occurrence["status"] == "interrupted":
+                    automation_allowed, reason = self.cron_recovery.permitted(self._db.read_conn, occurrence["id"], automatic=False)
+                    if not automation_allowed:
+                        raise SessionError(ErrorCode.INVALID_TRANSITION, reason)
+            if status not in ("interrupted", "waiting_verification") and not (status == "failed" and automation_allowed):
                 raise SessionError(
                     ErrorCode.INVALID_TRANSITION,
                     f"任务状态 {status} 不可恢复（仅 interrupted/"
@@ -378,18 +438,19 @@ class RecoveryService:
                 raise SessionError(
                     ErrorCode.INVALID_TRANSITION,
                     f"会话状态 {fsm.state} 不可恢复（有任务执行中）")
-            result, _ledger = await asyncio.to_thread(
-                self.rebuild_for_resume, task_run_id)
-            if result.needs_manual_review:
-                _log.error("resume.replay_corrupt task=%s warnings=%s",
-                           task_run_id, result.warnings)
-                raise SessionError(
-                    ErrorCode.REPLAY_CORRUPT,
-                    "重放遇损坏事件行，上下文完整性无保证，需人工介入",
-                    detail={"warnings": result.warnings})
-            await self._run_manager.start_resume(
-                task_run_id, conversation_id,
-                resume_reason or "user_requested", attempt_no + 1)
+            async with self._sessions.foreground():
+                result, _ledger = await asyncio.to_thread(
+                    self.rebuild_for_resume, task_run_id)
+                if result.needs_manual_review:
+                    _log.error("resume.replay_corrupt task=%s warnings=%s",
+                               task_run_id, result.warnings)
+                    raise SessionError(
+                        ErrorCode.REPLAY_CORRUPT,
+                        "重放遇损坏事件行，上下文完整性无保证，需人工介入",
+                        detail={"warnings": result.warnings})
+                await self._run_manager.start_resume(
+                    task_run_id, conversation_id,
+                    resume_reason or "user_requested", attempt_no + 1, request_identity=request_identity)
         # K1：非 409 路径的降级告警（如工件缺失）返回调用方可见
         return {"warnings": list(result.warnings)}
 

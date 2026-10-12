@@ -19,7 +19,7 @@ import asyncio
 import json
 import logging
 
-from fastapi import Query
+from fastapi import Query, Request
 from sse_starlette.sse import EventSourceResponse, ServerSentEvent
 
 from ..bus import ConnectionLimitError, EventBus, Subscription, Topic
@@ -33,6 +33,7 @@ from ..db.queries import (
     task_run_exists,
 )
 from .errors import ApiError, ErrorCode
+from ..runs import Runs, event_frame
 
 _log = logging.getLogger("agentcrew.api.sse")
 
@@ -51,7 +52,7 @@ def _retry_hint() -> ServerSentEvent:
 
 def _data_frame(event) -> ServerSentEvent:
     return ServerSentEvent(
-        data=json.dumps(event.as_frame(), ensure_ascii=False, separators=(",", ":"))
+        data=json.dumps(event_frame(event), ensure_ascii=False, separators=(",", ":"))
     )
 
 
@@ -77,7 +78,7 @@ def _subscribe_or_503(bus: EventBus, topic: Topic) -> Subscription:
 
 
 async def _conversation_stream(
-    runtime, sub: Subscription, conversation_id: str, from_seq: int
+    runtime, sub: Subscription, conversation_id: str, from_seq: int, identity=None
 ):
     sub.bind_consumer()
     db = runtime.db
@@ -100,11 +101,15 @@ async def _conversation_stream(
             if not batch:
                 break
             for event in batch:
+                if identity is not None and not runtime.identities.visible_conversation(identity, conversation_id):
+                    return
                 cursor = event.global_seq
                 sent = event.global_seq
                 sub.last_sent_global_seq = sent
                 yield _data_frame(event)
         while True:
+            if identity is not None and not runtime.identities.visible_conversation(identity, conversation_id):
+                return
             if sub.shutdown_requested:  # 优雅关闭优先于溢出（队满也送达）
                 yield _shutdown_frame(sent)
                 return
@@ -117,7 +122,10 @@ async def _conversation_stream(
                 return
             item = sub.take_nowait()
             if item is None:
-                await sub.wait_for_data()
+                if identity is None:
+                    await sub.wait_for_data()
+                else:
+                    await asyncio.sleep(0.25)
                 continue
             if item.global_seq <= sent:
                 continue  # 交接去重：缓冲中 ≤ 补播 head 的帧丢弃
@@ -128,7 +136,7 @@ async def _conversation_stream(
         runtime.bus.unsubscribe(sub)
 
 
-async def _task_stream(runtime, sub: Subscription, task_run_id: str, from_seq: int):
+async def _task_stream(runtime, sub: Subscription, task_run_id: str, from_seq: int, identity=None, conversation_id=None):
     sub.bind_consumer()
     db = runtime.db
     try:
@@ -146,12 +154,16 @@ async def _task_stream(runtime, sub: Subscription, task_run_id: str, from_seq: i
             if not batch:
                 break
             for event in batch:
+                if identity is not None and not runtime.identities.visible_conversation(identity, conversation_id):
+                    return
                 cursor = event.seq
                 sent_seq = event.seq
                 sub.last_sent_global_seq = event.global_seq
                 yield _data_frame(event)
         sent_global = sub.last_sent_global_seq
         while True:
+            if identity is not None and not runtime.identities.visible_conversation(identity, conversation_id):
+                return
             if sub.shutdown_requested:
                 yield _shutdown_frame(
                     sent_global, extra={"task_run_id": task_run_id, "seq": sent_seq}
@@ -168,7 +180,10 @@ async def _task_stream(runtime, sub: Subscription, task_run_id: str, from_seq: i
                 return
             item = sub.take_nowait()
             if item is None:
-                await sub.wait_for_data()
+                if identity is None:
+                    await sub.wait_for_data()
+                else:
+                    await asyncio.sleep(0.25)
                 continue
             # 双重去重（外审回稿 S13）：无补播段（from ≥ head）时 sent_global
             # 仍是 0，仅按 global_seq 过滤会把 ≤ 游标的旧帧再发一遍——任务
@@ -188,24 +203,29 @@ def install_sse_routes(app, runtime) -> None:
 
     @app.get("/api/conversations/{conversation_id}/stream")
     async def conversation_stream(
-        conversation_id: str,
+        conversation_id: str, request: Request,
         from_seq: int = Query(0, alias="from"),
     ):
         if not await asyncio.to_thread(_conversation_exists, runtime.db, conversation_id):
             raise ApiError(ErrorCode.NOT_FOUND, f"会话不存在：{conversation_id}")
         sub = _subscribe_or_503(bus, Topic("conversation", conversation_id))
         return EventSourceResponse(
-            _conversation_stream(runtime, sub, conversation_id, from_seq),
+            _conversation_stream(runtime, sub, conversation_id, from_seq,
+                request.state.identity if runtime.governance is not None else None),
             ping=PING_INTERVAL_SECONDS,
             headers=_SSE_HEADERS,
+            shutdown_grace_period=1,
         )
 
     @app.get("/api/task-runs/{task_run_id}/events")
     async def task_run_events(
-        task_run_id: str,
+        task_run_id: str, request: Request,
         from_seq: int = Query(0, alias="from"),
-        after_seq: int | None = Query(None),
-        limit: int | None = Query(None, le=500),
+        after_seq: int | None = Query(None, ge=0),
+        limit: int | None = Query(None, ge=1, le=500),
+        through_global_seq: int | None = Query(None, ge=0),
+        attempt_no: int | None = Query(None, ge=1),
+        after_global_seq: int | None = Query(None, ge=0),
     ):
         if not await asyncio.to_thread(_task_run_exists, runtime.db, task_run_id):
             raise ApiError(ErrorCode.NOT_FOUND, f"任务不存在：{task_run_id}")
@@ -214,20 +234,26 @@ def install_sse_routes(app, runtime) -> None:
             # JSON 分页模式（契约：{data:{items, next_after_seq}}；after_seq 排他）
             effective_after = after_seq if after_seq is not None else 0
             effective_limit = limit if limit is not None else 500
+            if runtime.identities is not None:
+                return await asyncio.to_thread(Runs(runtime).events, request.state.identity,
+                    task_run_id, effective_after, effective_limit, through_global_seq, attempt_no, after_global_seq)
             events = await asyncio.to_thread(
                 _task_events_page, runtime.db, task_run_id,
                 effective_after, effective_limit,
             )
             return {
-                "items": [event.as_frame() for event in events],
+                "items": [event_frame(event) for event in events],
                 "next_after_seq": events[-1].seq if events else effective_after,
             }
 
         sub = _subscribe_or_503(bus, Topic("task", task_run_id))
         return EventSourceResponse(
-            _task_stream(runtime, sub, task_run_id, from_seq),
+            _task_stream(runtime, sub, task_run_id, from_seq,
+                request.state.identity if runtime.governance is not None else None,
+                runtime.db.read_conn.execute("SELECT conversation_id FROM task_runs WHERE id=?", (task_run_id,)).fetchone()[0]),
             ping=PING_INTERVAL_SECONDS,
             headers=_SSE_HEADERS,
+            shutdown_grace_period=1,
         )
 
 

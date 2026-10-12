@@ -58,6 +58,12 @@ class SlotConfig:
     base_url: str = DEFAULT_BASE_URL
     max_tokens: int = DEFAULT_MAX_TOKENS
     provider: str = "glm"
+    context_window: int = 0
+    context_window_source: str = ""
+    tokenizer_repository: str = ""
+    tokenizer_revision: str = ""
+    tokenizer_sha256: str = ""
+    prompt_format: str = ""
 
 
 def backoff_seconds(attempt: int) -> float:

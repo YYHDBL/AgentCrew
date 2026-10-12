@@ -29,7 +29,7 @@ RUN = "run-1"
 
 
 class LiveServer:
-    def __init__(self, tmp_path, *, bus_kwargs=None):
+    def __init__(self, tmp_path, *, bus_kwargs=None, send_buffer=None):
         self.db = Database(tmp_path / "t.db")
         run_migrations(self.db.write_conn, tmp_path / "backups")
         self.db.write_conn.execute(
@@ -53,14 +53,15 @@ class LiveServer:
             event_store=self.store,
         )
         self.app = create_app(self.runtime)
-        probe = socket.socket()
-        probe.bind(("127.0.0.1", 0))
-        self.port = probe.getsockname()[1]
-        probe.close()
+        self.listener = socket.socket()
+        if send_buffer is not None:
+            self.listener.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, send_buffer)
+        self.listener.bind(("127.0.0.1", 0))
+        self.port = self.listener.getsockname()[1]
         self.server = uvicorn.Server(uvicorn_config(self.app, self.port))
 
     def start(self):
-        threading.Thread(target=self.server.run, daemon=True).start()
+        threading.Thread(target=self.server.run, kwargs={"sockets": [self.listener]}, daemon=True).start()
         for _ in range(100):
             if self.server.started:
                 return
@@ -95,6 +96,7 @@ class LiveServer:
         asyncio.run(_go())
 
     def close(self):
+        self.listener.close()
         self.channel.close()
         self.db.close()
 
@@ -270,7 +272,7 @@ def test_slow_consumer_gets_resync_then_catches_up(tmp_path):
       机器上终止块晚到会被窗口吃掉）。
     """
     srv = LiveServer(
-        tmp_path, bus_kwargs={"max_queue": 20, "hard_kill_grace": 30.0}
+        tmp_path, bus_kwargs={"max_queue": 20, "hard_kill_grace": 30.0}, send_buffer=4096
     )
     srv.start()
     srv.append(3)  # 历史
@@ -354,9 +356,8 @@ def test_slow_consumer_gets_resync_then_catches_up(tmp_path):
 
 
 def test_shutdown_wins_over_overflow(tmp_path):
-    """外审回稿修复：队列已满的订阅在优雅关闭时也必须收到 shutdown 帧
-    （标志位优先于溢出 resync），而不是走 resync 分支。"""
-    srv = LiveServer(tmp_path, bus_kwargs={"max_queue": 3})
+    """真实 TCP 背压使订阅队列溢出，优雅关闭必须优先发送 shutdown 帧。"""
+    srv = LiveServer(tmp_path, bus_kwargs={"max_queue": 3}, send_buffer=4096)
     srv.start()
     srv.append(2)
     try:
@@ -367,7 +368,13 @@ def test_shutdown_wins_over_overflow(tmp_path):
             f"GET /api/conversations/{CONV}/stream?from=0 HTTP/1.1\r\n"
             f"Host: x\r\nAuthorization: Bearer {TOKEN}\r\n\r\n".encode()
         )
-        time.sleep(0.3)  # 不读：让队列灌满溢出
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            if any(sub.last_sent_global_seq >= 2 for sub in srv.bus._subs):
+                break
+            time.sleep(0.05)
+        else:
+            raise AssertionError("历史补播未在期限内送达")
         deadline = time.monotonic() + 20
         overflowed = False
         while time.monotonic() < deadline:

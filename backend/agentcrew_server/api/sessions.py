@@ -9,14 +9,16 @@ from __future__ import annotations
 import asyncio
 
 from fastapi import Query, Request, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from ..sessions import SessionError
 from .errors import ApiError, ErrorCode, error_response
 
 
 class ConversationCreateRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     instruction: str = Field(min_length=1)
+    workspace_id: str = "default"
     agent_id: str | None = None
     client_request_id: str | None = None
     import_files: list[str] | None = Field(None, max_length=20)
@@ -41,15 +43,22 @@ def install_session_routes(app, runtime) -> None:
         return service.limits_view()
 
     @app.post("/api/conversations", status_code=201)
-    async def create_conversation(body: ConversationCreateRequest):
+    async def create_conversation(body: ConversationCreateRequest, request: Request):
+        identity = request.state.identity if runtime.governance is not None else None
+        if identity is not None:
+            runtime.identities.agent(identity, body.agent_id or "default", body.workspace_id)
         return await service.create_conversation(
             instruction=body.instruction, agent_id=body.agent_id,
+            workspace_id=body.workspace_id, request_identity=identity,
             client_request_id=body.client_request_id,
             import_files=body.import_files, folders=body.folders)
 
     @app.get("/api/conversations")
-    async def list_conversations():
-        return await asyncio.to_thread(service.list_conversations)
+    async def list_conversations(request: Request):
+        rows = await asyncio.to_thread(service.list_conversations)
+        if runtime.governance is None:
+            return rows
+        return [row for row in rows if runtime.identities.visible_conversation(request.state.identity, row["id"])]
 
     @app.get("/api/conversations/{conversation_id}/messages")
     async def list_messages(conversation_id: str,
@@ -67,9 +76,10 @@ def install_session_routes(app, runtime) -> None:
     @app.post("/api/conversations/{conversation_id}/instructions",
               status_code=202)
     async def post_instruction(conversation_id: str,
-                               body: InstructionRequest):
+                               body: InstructionRequest, request: Request):
         return await service.send_instruction(
-            conversation_id, body.text, body.client_request_id)
+            conversation_id, body.text, body.client_request_id,
+            request_identity=request.state.identity if runtime.governance is not None else None)
 
     @app.get("/api/conversations/{conversation_id}/state")
     async def get_state(conversation_id: str):

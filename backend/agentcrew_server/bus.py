@@ -24,6 +24,7 @@ from dataclasses import dataclass
 from typing import Iterable
 
 from agentcrew_core.events import Event
+from agentcrew_core.memory.event_scope import memory_event_visible
 
 _log = logging.getLogger("agentcrew.bus")
 
@@ -42,8 +43,12 @@ class Topic:
 
     kind: str  # "conversation" | "task" | "all"
     key: str = ""
+    workspace_id: str = ""
+    agent_id: str = ""
 
     def matches(self, event: Event) -> bool:
+        if self.kind == "memory":
+            return memory_event_visible(event.type, event.payload, self.workspace_id, self.agent_id)
         if self.kind == "all":
             return True
         if self.kind == "conversation":

@@ -28,6 +28,7 @@ import logging
 import shutil
 import sqlite3
 import uuid
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -43,7 +44,7 @@ from agentcrew_core.events.reducer import (
     replay,
 )
 from agentcrew_core.tools import WorkContext
-from agentcrew_core.tools.judgment import build_protected_paths
+from agentcrew_core.tools.judgment import build_protected_paths, normalize_filesystem, path_is_protected
 
 from .api.errors import ErrorCode
 from .db.event_store import EventStore
@@ -89,7 +90,7 @@ def _unique_stored_name(name: str, used: set[str]) -> str:
 
 
 def import_materials(sources: list[str], materials_dir: Path,
-                     limits: dict[str, int]) -> list[dict[str, Any]]:
+                     limits: dict[str, int], protected=None) -> list[dict[str, Any]]:
     """逐文件：存在 / 常规文件 / ≤max_file_mb / 数量 ≤max_files，复制进
     materials/。部分失败逐文件回报，不抛异常（任务照建）。"""
     results: list[dict[str, Any]] = []
@@ -104,6 +105,14 @@ def import_materials(sources: list[str], materials_dir: Path,
                             "error": f"超出单任务文件数上限（{limits['max_files']}）"})
             continue
         src = Path(raw).expanduser()
+        if path_is_protected(src, protected or []):
+            results.append({"original_path": original, "stored_name": "", "size_bytes": None,
+                "error": "PROTECTED_PATH：保护文件不能导入为员工材料"})
+            continue
+        if src.is_symlink() or any(parent.is_symlink() for parent in src.parents):
+            results.append({"original_path": original, "stored_name": "", "size_bytes": None,
+                "error": "INVALID_PATH：材料来源不能包含符号链接"})
+            continue
         try:
             if not src.exists():
                 raise FileNotFoundError(f"文件不存在：{src}")
@@ -154,6 +163,15 @@ class SessionService:
         self._settings = settings  # limits 取生效配置（PATCH 成功后即为新值）
         self._locks: dict[str, asyncio.Lock] = {}
         self._locks_guard = asyncio.Lock()
+        self.memory_jobs = None
+
+    @asynccontextmanager
+    async def foreground(self):
+        if self.memory_jobs is None:
+            yield
+        else:
+            async with self.memory_jobs.foreground():
+                yield
 
     async def _conv_lock(self, conversation_id: str) -> asyncio.Lock:
         return await self._scoped_lock(f"conv:{conversation_id}")
@@ -256,6 +274,8 @@ class SessionService:
             "title": conv["title"],
             "status": conv["status"],
             "agent_name": conv["agent_id"],
+            "agent_id": conv["agent_id"],
+            "workspace_id": conv["workspace_id"],
             "last_activity_at": conv["updated_at"],
             "state_badge": self._badge(fsm, self._last_task_status(conv["id"])),
         }
@@ -263,11 +283,13 @@ class SessionService:
     # ── scope / 材料目录 / 工作目录（S09 会话装配）─────────────────
 
     def _workspace_dir(self, workspace_id: str) -> Path:
+        if hasattr(self, "identities"):
+            return Path(self.identities.resources.get("workspace", workspace_id)["data_dir"])
         return (self._data_dir / "workspaces" / workspace_id).resolve()
 
     def _materials_dir(self, conversation_id: str) -> Path:
         return (self._data_dir / "conversations" / conversation_id
-                / "materials").resolve()
+                / "materials").absolute()
 
     def scope_of(self, conv: sqlite3.Row) -> dict[str, Any]:
         folders = json.loads(conv["folders_json"] or "[]")
@@ -291,21 +313,40 @@ class SessionService:
         workspace.mkdir(parents=True, exist_ok=True)
         materials = self._materials_dir(conversation_id)
         materials.mkdir(parents=True, exist_ok=True)
-        folders = [Path(f["path"]) for f in json.loads(conv["folders_json"] or "[]")]
-        scope = [workspace, materials] + [f.resolve() for f in folders]
+        folders = json.loads(conv["folders_json"] or "[]")
+        if any(folder.get("access", "read_write") not in {"read", "read_write"} for folder in folders):
+            raise ValueError("授权文件夹访问类型无效")
+        scope = [workspace, materials] + [Path(folder["path"]) for folder in folders]
+        write_scope = [workspace, materials] + [Path(folder["path"]) for folder in folders if folder.get("access", "read_write") == "read_write"]
+        readonly_scope = [Path(folder["path"]) for folder in folders if folder.get("access") == "read"]
+        readonly_scope.append(Path(__file__).resolve().parent)
+        readonly_scope.extend(Path(path) for row in self._db.read_conn.execute("SELECT s.source_path,s.canonical_path FROM connector_startup_files s JOIN connectors c ON c.id=s.connector_id AND c.revision=s.connector_revision") for path in row)
+        protected = build_protected_paths(self._data_dir, Path.home())
+        from .tool_outputs import ToolOutputStore
+
+        readable = self._db.read_conn.execute(
+            "SELECT a.path,json_extract(e.payload,'$.sha256') FROM artifacts a "
+            "JOIN task_runs t ON t.id=a.task_run_id LEFT JOIN run_events e "
+            "ON e.task_run_id=t.id AND e.type='tool.result_externalized' "
+            "AND json_extract(e.payload,'$.artifact_path')=a.path "
+            "WHERE t.conversation_id=? AND a.status='ready'", (conversation_id,)).fetchall()
         return WorkContext(
             scope=scope,
-            protected=build_protected_paths(self._data_dir, Path.home()),
+            write_scope=write_scope, readonly_scope=readonly_scope, protected=protected,
+            filesystem=normalize_filesystem(scope, protected, write_scope, readonly_scope, canonical_roots=True),
             artifacts_dir=(self._data_dir / "artifacts" / task_run_id
                            if task_run_id else None),
             task_run_id=task_run_id or "",
             cwd=workspace,
+            output_store=ToolOutputStore(),
+            readable_artifacts={str(Path(path).resolve()): digest for path, digest in readable},
         )
 
     # ── 创建会话（首条指令 + 材料导入，F001）──────────────────────
 
     async def create_conversation(
         self, *, instruction: str, agent_id: str | None = None,
+        workspace_id: str = DEFAULT_WORKSPACE_ID, request_identity=None,
         client_request_id: str | None = None,
         import_files: list[str] | None = None,
         folders: list[str] | None = None,
@@ -313,6 +354,7 @@ class SessionService:
         if not client_request_id:
             return await self._create_conversation_once(
                 instruction=instruction, agent_id=agent_id,
+                workspace_id=workspace_id, request_identity=request_identity,
                 client_request_id=None, import_files=import_files,
                 folders=folders)
         # 幂等键串行（外审回稿）：查重在事务外、材料复制在前、插入在后——
@@ -322,14 +364,31 @@ class SessionService:
             existing = await asyncio.to_thread(
                 self._find_conversation_by_request_id, client_request_id)
             if existing is not None:
+                if request_identity is not None:
+                    self.identities.conversation(request_identity, existing["conversation"]["id"])
                 return existing  # 网络重试幂等：返回首次结果，不重复建
             return await self._create_conversation_once(
                 instruction=instruction, agent_id=agent_id,
+                workspace_id=workspace_id, request_identity=request_identity,
                 client_request_id=client_request_id,
                 import_files=import_files, folders=folders)
 
     async def _create_conversation_once(
         self, *, instruction: str, agent_id: str | None,
+        workspace_id: str, request_identity,
+        client_request_id: str | None,
+        import_files: list[str] | None, folders: list[str] | None,
+    ) -> dict[str, Any]:
+        async with self.foreground():
+            return await self._create_foreground_conversation(
+                instruction=instruction, agent_id=agent_id,
+                workspace_id=workspace_id, request_identity=request_identity,
+                client_request_id=client_request_id,
+                import_files=import_files, folders=folders)
+
+    async def _create_foreground_conversation(
+        self, *, instruction: str, agent_id: str | None,
+        workspace_id: str, request_identity,
         client_request_id: str | None,
         import_files: list[str] | None, folders: list[str] | None,
     ) -> dict[str, Any]:
@@ -338,9 +397,9 @@ class SessionService:
         agent = agent_id or DEFAULT_AGENT_ID
         limits = self._limits()
         materials_dir = self._data_dir / "conversations" / conv_id / "materials"
-        file_results = import_materials(list(import_files or []),
-                                        materials_dir, limits)
-        folder_results = validate_folders(list(folders or []), limits)
+        file_results = await asyncio.to_thread(import_materials, list(import_files or []),
+                                                materials_dir, limits, build_protected_paths(self._data_dir, Path.home()))
+        folder_results = await asyncio.to_thread(validate_folders, list(folders or []), limits)
         provided = len(file_results) + len(folder_results)
         rejected = sum(1 for r in file_results if r["error"]) + \
             sum(1 for r in folder_results if r["error"])
@@ -358,14 +417,20 @@ class SessionService:
             conn.execute("BEGIN IMMEDIATE")
             try:
                 conn.execute("PRAGMA defer_foreign_keys=ON")
+                if request_identity is not None:
+                    resource = self.identities.agent(request_identity, agent, workspace_id, conn)
                 conn.execute(
                     "INSERT INTO conversations (id, workspace_id, agent_id, status,"
                     " folders_json, client_request_id, created_at, updated_at)"
                     " VALUES (?, ?, ?, 'active', ?, ?, ?, ?)",
-                    (conv_id, DEFAULT_WORKSPACE_ID, agent,
+                    (conv_id, workspace_id, agent,
                      json.dumps(accepted, ensure_ascii=False), client_request_id,
                      ts, ts),
                 )
+                if request_identity is not None:
+                    conn.execute("INSERT INTO governance_conversations VALUES(?,?,?,?,?)", (conv_id, workspace_id, agent,
+                        request_identity.credential_owner_id, request_identity.effective_user_id))
+                    conn.execute("UPDATE conversations SET agent_spec_snapshot=? WHERE id=?", (json.dumps(resource["spec"], ensure_ascii=False), conv_id))
                 events.append(self._store.append_in_tx(
                     conn, task_run_id=task_id, conversation_id=conv_id,
                     type=RunEventType.RUN_QUEUED,
@@ -435,7 +500,7 @@ class SessionService:
     # ── 指令（直跑 / 入队 / 审批 409，D5）────────────────────────
 
     async def send_instruction(self, conversation_id: str, text: str,
-                               client_request_id: str | None = None
+                               client_request_id: str | None = None, request_identity=None
                                ) -> dict[str, Any]:
         async with await self._conv_lock(conversation_id):
             await asyncio.to_thread(self.conversation_or_404, conversation_id)
@@ -444,16 +509,21 @@ class SessionService:
                     self._instruction_replay, conversation_id, client_request_id)
                 if replayed is not None:
                     return replayed
+            if await asyncio.to_thread(self._pending_verifications, conversation_id):
+                raise SessionError(ErrorCode.PENDING_VERIFICATION, "该会话仍有副作用需要核验，完成后才能提交新指令")
             fsm, _ = await asyncio.to_thread(self._fsm_sync, conversation_id)
 
             if can_send(fsm):
                 task_id = uuid.uuid4().hex
-                event = await self._store.append(
-                    task_run_id=task_id, conversation_id=conversation_id,
-                    type=RunEventType.RUN_QUEUED,
-                    payload={"instruction": text,
-                             "client_request_id": client_request_id},
-                )
+                async with self.foreground():
+                    event = await self._store.append(
+                        task_run_id=task_id, conversation_id=conversation_id,
+                        type=RunEventType.RUN_QUEUED,
+                        payload={"instruction": text,
+                                 "client_request_id": client_request_id,
+                                 **({"request_identity": {"credential_owner_id": request_identity.credential_owner_id,
+                                     "effective_user_id": request_identity.effective_user_id}} if request_identity else {})},
+                    )
                 return {"mode": "started", "queue_position": None,
                         "task_run_id": event.task_run_id}
 
@@ -466,12 +536,15 @@ class SessionService:
 
             if can_queue(fsm):
                 item_id = uuid.uuid4().hex
-                await self._store.append(
-                    task_run_id=None, conversation_id=conversation_id,
-                    type=RunEventType.QUEUE_ITEM_ENQUEUED,
-                    payload={"item_id": item_id, "text": text,
-                             "client_request_id": client_request_id},
-                )
+                async with self.foreground():
+                    await self._store.append(
+                        task_run_id=None, conversation_id=conversation_id,
+                        type=RunEventType.QUEUE_ITEM_ENQUEUED,
+                        payload={"item_id": item_id, "text": text,
+                                 "client_request_id": client_request_id,
+                                 **({"request_identity": {"credential_owner_id": request_identity.credential_owner_id,
+                                     "effective_user_id": request_identity.effective_user_id}} if request_identity else {})},
+                    )
                 fsm2, _ = await asyncio.to_thread(
                     self._fsm_sync, conversation_id)
                 return {"mode": "queued",
@@ -569,6 +642,8 @@ class SessionService:
         before_publish(task_id) 在事件发布前、写线程内调用——调用方借此刻
         挂任务级先决信息（RunManager 的护栏提示），杜绝"runner 先取走"竞态。"""
         async with await self._conv_lock(conversation_id):
+            if await asyncio.to_thread(self._pending_verifications, conversation_id):
+                return None
             fsm, _ = await asyncio.to_thread(self._fsm_sync, conversation_id)
             if fsm.state != "idle" or fsm.queue_paused or not fsm.queued_items:
                 return None
@@ -587,6 +662,9 @@ class SessionService:
             def tx(conn: sqlite3.Connection) -> None:
                 conn.execute("BEGIN IMMEDIATE")
                 try:
+                    if conn.execute("SELECT 1 FROM tool_calls c JOIN task_runs t ON t.id=c.task_run_id WHERE t.conversation_id=? AND c.status='pending_verification'", (conversation_id,)).fetchone():
+                        conn.execute("COMMIT")
+                        return False
                     if before_publish is not None:
                         before_publish(task_id)
                     events.append(self._store.append_in_tx(
@@ -604,12 +682,13 @@ class SessionService:
                     raise
                 for event in events:  # COMMIT 后、闭包返回前发布（顺序=提交序）
                     self._store.publish(event)
+                return True
 
-            await self._channel.execute(tx)
-            return task_id
+            dispatched = await self._channel.execute(tx)
+            return task_id if dispatched else None
 
     async def continue_queue(self, conversation_id: str) -> None:
-        async with await self._conv_lock(conversation_id):
+        async with await self._conv_lock(conversation_id), self.foreground():
             await asyncio.to_thread(self.conversation_or_404, conversation_id)
             fsm, _ = await asyncio.to_thread(self._fsm_sync, conversation_id)
             head = fsm.queued_items[0] if fsm.queued_items else None
@@ -698,9 +777,10 @@ class SessionService:
             "       json_extract(re.payload, '$.tool'), re.created_at"
             " FROM run_events re"
             " WHERE re.conversation_id = ? AND re.type = 'permission.requested'"
-            "   AND re.task_run_id IN (SELECT id FROM task_runs"
-            "       WHERE conversation_id = ?"
-            "       AND status NOT IN ('completed', 'failed', 'cancelled'))"
+            "   AND EXISTS (SELECT 1 FROM task_runs t"
+            "       WHERE t.id=re.task_run_id AND t.conversation_id = ?"
+            "       AND t.status IN ('running', 'waiting_user')"
+            "       AND re.attempt_no=t.current_attempt_no)"
             "   AND NOT EXISTS ("
             "     SELECT 1 FROM run_events r2 WHERE r2.type = 'permission.resolved'"
             "     AND json_extract(r2.payload, '$.tool_call_id')"
@@ -749,8 +829,8 @@ class SessionService:
             "queue_paused": fsm.queue_paused,
             "at_global_seq": head,
             "queue": [item.as_dict() for item in fsm.queued_items],
-            "can_send": can_send(fsm),
-            "can_queue": can_queue(fsm),
+            "can_send": can_send(fsm) and not verifications,
+            "can_queue": can_queue(fsm) and not verifications,
             "can_cancel": can_cancel(fsm),
             "can_continue_queue": can_continue_queue(
                 fsm, pending_verifications=len(verifications),
